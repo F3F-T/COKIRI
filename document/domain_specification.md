@@ -1,0 +1,6 @@
+## ERD
+
+
+![](img/domainERD.png)
+
+# 😵‍💫
