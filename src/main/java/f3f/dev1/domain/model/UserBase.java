@@ -20,11 +20,6 @@ public class UserBase extends BaseTimeEntity{
     private String email;
 
     private String password;
-    @Embedded
-    private Address address;
 
-    private String birthDate;
-
-    private String phoneNumber;
 
 }

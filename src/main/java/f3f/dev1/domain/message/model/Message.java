@@ -2,6 +2,7 @@ package f3f.dev1.domain.message.model;
 
 import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.user.model.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,11 @@ public class Message extends BaseTimeEntity {
     @JoinColumn(name = "messageRoom_id")
     private MessageRoom messageRoom;
 
+    @Builder
+    public Message(Long id, String content, User sender, MessageRoom messageRoom) {
+        this.id = id;
+        this.content = content;
+        this.sender = sender;
+        this.messageRoom = messageRoom;
+    }
 }

@@ -6,6 +6,7 @@ import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.user.model.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -46,4 +47,15 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<ScrapPost> scrapPosts = new ArrayList<>();
+
+    @Builder
+    public Post(Long id, String title, String content, TradeStatus tradeStatus, Boolean tradeEachOther, Category category, User author) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.tradeStatus = tradeStatus;
+        this.tradeEachOther = tradeEachOther;
+        this.category = category;
+        this.author = author;
+    }
 }

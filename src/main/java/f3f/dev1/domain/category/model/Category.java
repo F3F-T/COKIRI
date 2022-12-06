@@ -20,8 +20,8 @@ public class Category {
 
     private String name;
 
+    private Long depth;
     @ManyToOne
-    @JoinColumn(name = "category_id")
     private Category parent;
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<Category> child = new ArrayList<>();
