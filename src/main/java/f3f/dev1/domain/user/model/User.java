@@ -26,6 +26,5 @@ public class User extends UserBase {
     @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
     private List<Message> sendMessages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY)
-    private List<Message> receiveMessages = new ArrayList<>();
+
 }

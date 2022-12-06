@@ -20,7 +20,8 @@ public class Message {
     @JoinColumn(name = "user_id")
     private User sender;
 
+
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User receiver;
+    @JoinColumn(name = "messageRoom_id")
+    private MessageRoom messageRoom;
 }
