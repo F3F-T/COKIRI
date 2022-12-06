@@ -1,12 +1,12 @@
 package f3f.dev1.domain.category.model;
 
+import f3f.dev1.domain.post.model.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -17,4 +17,14 @@ public class Category {
     @GeneratedValue
     @Column(name = "category_id")
     private Long id;
+
+    private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category parent;
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
+    private List<Category> child = new ArrayList<>();
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    private List<Post> posts = new ArrayList<>();
 }

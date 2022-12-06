@@ -22,7 +22,7 @@ public class MessageRoom {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @OneToMany(mappedBy = "messageRoom")
+    @OneToMany(mappedBy = "messageRoom", fetch = FetchType.LAZY)
     private List<Message> messages = new ArrayList<>();
 }
 
