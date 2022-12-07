@@ -20,12 +20,17 @@ public class Message extends BaseTimeEntity {
 
     private String content;
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "sender_id")
     private User sender;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private User receiver;
 
     @ManyToOne
     @JoinColumn(name = "messageRoom_id")
     private MessageRoom messageRoom;
+
 
     @Builder
     public Message(Long id, String content, User sender, MessageRoom messageRoom) {

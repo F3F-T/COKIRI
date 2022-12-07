@@ -1,6 +1,7 @@
 package f3f.dev1.domain.scrap.model;
 import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.user.model.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,4 +24,10 @@ public class Scrap {
 
     @OneToMany(mappedBy = "scrap", fetch = FetchType.LAZY)
     private List<ScrapPost> scrapPosts = new ArrayList<>();
+
+    @Builder
+    public Scrap(Long id, User user) {
+        this.id = id;
+        this.user = user;
+    }
 }

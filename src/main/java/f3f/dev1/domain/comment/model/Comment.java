@@ -1,0 +1,50 @@
+package f3f.dev1.domain.comment.model;
+
+import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.user.model.User;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@NoArgsConstructor
+public class Comment {
+    @Id
+    @GeneratedValue
+    @Column(name = "comment_id")
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post;
+
+    private String content;
+
+    private Long depth;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User author;
+
+    @OneToMany(mappedBy = "parent")
+    private List<Comment> childs = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Comment parent;
+
+    @Builder
+    public Comment(Long id, Post post, String content, Long depth, User author, Comment parent) {
+        this.id = id;
+        this.post = post;
+        this.content = content;
+        this.depth = depth;
+        this.author = author;
+        this.parent = parent;
+    }
+}

@@ -1,6 +1,7 @@
 package f3f.dev1.domain.category.model;
 
 import f3f.dev1.domain.post.model.Post;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,4 +28,12 @@ public class Category {
     private List<Category> child = new ArrayList<>();
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Post> posts = new ArrayList<>();
+
+    @Builder
+    public Category(Long id, String name, Long depth, Category parent) {
+        this.id = id;
+        this.name = name;
+        this.depth = depth;
+        this.parent = parent;
+    }
 }
