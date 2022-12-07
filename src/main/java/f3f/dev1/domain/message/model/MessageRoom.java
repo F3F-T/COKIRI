@@ -1,5 +1,6 @@
 package f3f.dev1.domain.message.model;
 
+import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.post.model.Post;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import java.util.List;
 @Getter
 @Entity
 @NoArgsConstructor
-public class MessageRoom {
+public class MessageRoom extends BaseTimeEntity {
 
     @Id
     @GeneratedValue

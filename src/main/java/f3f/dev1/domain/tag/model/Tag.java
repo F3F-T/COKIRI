@@ -1,4 +1,5 @@
 package f3f.dev1.domain.tag.model;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,4 +20,10 @@ public class Tag {
 
     @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY)
     private List<PostTag> postTags = new ArrayList<>();
+
+    @Builder
+    public Tag(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

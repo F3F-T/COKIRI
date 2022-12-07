@@ -1,10 +1,11 @@
 package f3f.dev1.domain.post.model;
 
 import f3f.dev1.domain.category.model.Category;
+import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.BaseTimeEntity;
-import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.tag.model.PostTag;
+import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.domain.user.model.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,9 +28,9 @@ public class Post extends BaseTimeEntity {
 
     private String content;
 
-    private TradeStatus tradeStatus;
-
     private Boolean tradeEachOther;
+    @OneToOne(mappedBy = "post")
+    private Trade trade;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -48,12 +49,15 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<ScrapPost> scrapPosts = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    private List<Comment> comments = new ArrayList<>();
+
     @Builder
-    public Post(Long id, String title, String content, TradeStatus tradeStatus, Boolean tradeEachOther, Category category, User author) {
+    public Post(Long id, String title, String content, Trade trade, Boolean tradeEachOther, Category category, User author) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.tradeStatus = tradeStatus;
+        this.trade = trade;
         this.tradeEachOther = tradeEachOther;
         this.category = category;
         this.author = author;
