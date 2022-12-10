@@ -43,7 +43,7 @@
 | Description | HTTP Method | URL             | Query string  | Message Body             | Return data               |
 |-------------|-------------|-----------------|---------------|--------------------------|---------------------------|
 | 게시글 전체 조회   | GET         | /post           | category, tag |                          | {posts:[~~]}              |
-| 게시글 작성      | POST        | /post           |               | {title:~~,content: ~~,…} | {title:~~, content: ~~,…} |
+| 게시글 작성      | POST        | /post           |               | {title:~~,content: ~~, token : ~~ …} | {title:~~, content: ~~,…} |
 | 게시글 정보 조회   | GET         | /post/{post_id} |               |                          | {title:~~,content: ~~, …} |
 | 게시글 정보 수정   | PATCH       | /post/{post_id} |               | {content:~~}             | {content:~~}              |
 | 게시글 삭제      | DELETE      | /post/{post_id} |               |                          | {removed_post:~~}         |
@@ -58,8 +58,8 @@
 |-------------|-------------|--------------------------|--------------|-----------------|----------------------|
 | 게시글 댓글 조회   | GET         | /post/{post_id}/comments |              |                 | { comments:[~~]}     |
 | 게시글 댓글 작성   | POST        | /post/{post_id}/comments |              | {content:~~, …} | { content: ~~}       |
-| 게시글 댓글 수정   | PATCH       | /post/{post_id}/comments |              | {content:~~, …} | { content: ~~}       |
-| 게시글 댓글 삭제   | DELETE      | /post/{post_id}/comments |              |                 | {removed_comment:~~} |
+| 게시글 댓글 수정   | PATCH       | /post/{post_id}/comments/{comment_id} |              | {content:~~, …} | { content: ~~}       |
+| 게시글 댓글 삭제   | DELETE      | /post/{post_id}/comments/{comment_id} |              |                 | {removed_comment:~~} |
 
 
 
@@ -67,9 +67,9 @@
 
 | Description | HTTP Method | URL                                           | Query string | Message body                       | Return data          |
 |-------------|-------------|-----------------------------------------------|--------------|------------------------------------|----------------------|
-| 채팅방 조회      | GET         | /post/{post_id}/messageRooms                  |              |                                    | { messageRooms:[~~]} |
-| 채팅방 쪽지 조회   | GET         | /post/{post_id}/messageRooms/{messageRoom_id} |              |                                    | {messages:[~~]}      |
-| 메시지 전송      | POST        | /post/{post_id}/messageRooms/{messageRoom_id} |              | {sender_id:~~, receiver_id: ~~, …} | { message:~~}        |
+| 채팅방 조회      | GET         | /user/{user_id}/messageRooms                  |              |                                    | { messageRooms:[~~]} |
+| 채팅방 쪽지 조회   | GET         | /user/{user_id}/messageRooms/{messageRoom_id} |      post_id        |                                    | {messages:[~~]}      |
+| 메시지 전송      | POST        | /user/{user_id}/messageRooms/{messageRoom_id} |              | {sender_id:~~, receiver_id: ~~, …} | { message:~~}        |
 
 
 
