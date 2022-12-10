@@ -26,16 +26,17 @@
 
 ## User
 
-| Description | HTTP Method | URL                 | Query string | Message body                                                | Return data                                           |
-|-------------|-------------|---------------------|--------------|-------------------------------------------------------------|-------------------------------------------------------|
-| 회원가입        | POST        | /user/signup        |              | {email:~~, password: ~~, phone: ~~, … } 회원가입에 필요한 데이터 넘겨줘야함 | { id:~~, token: ~~, … } 회원가입이 성공하면 유저아이디, 토큰 값 등등을 리턴 || 로그인 | POST                | /user/login |  | {email:~~, password:~~} | {id:~~, token:~~, …} |
-| 로그아웃        | DELETE      | /user/logout        |              |                                                             |                                                       |
-| 회원 정보 조회    | GET         | /user/{user_id}     |              |                                                             | {id:~~,name: ~~,phone: ~~, … } 회원 정보 가져오기             || 회원 정보 수정 | PATCH | /user/{user_id} |  | {nickname:~~} | {nickname: 변경된 닉네임} |
-| 회원 삭제       | DELETE      | /user/{user_id}     |              |                                                             | {removed_user:~~}                                     |
-| 아이디 찾기      | POST        | /user/find/email    |              | {value from external api:~~}                                | {email:~~~}                                           |
-| 비밀번호 찾기     | POST        | /user/find/password |              | {email:~~~, username: ~~~,phone: ~~}                        | {password:~~}                                         |
-| 비밀번호 변경     | PATCH       | /user/password      |              | {email:~~, beforePassword: ~~~, afterPassword: ~~~}         | {password:~~~}                                        |
-
+| Description | HTTP Method | URL | Query string | Message body | Return data |
+| --- | --- | --- | --- | --- | --- |
+| 회원가입 | POST | /user/signup |  | {email:~~, password:~~,phone:~~, … }회원가입에 필요한 데이터 넘겨줘야함 | { id:~~,token:~~, … } 회원가입이 성공하면 유저아이디, 토큰 값 등등을 리턴 |
+| 로그인 | POST | /user/login |  | {email:~~,password:~~} | {id:~~, token:~~, …} |
+| 로그아웃 | DELETE | /user/logout |  |  |  |
+| 회원 정보 조회 | GET | /user/{user_id} |  |  | {id:~~,name:~~, phone:~~, … }회원 정보 가져오기 |
+| 회원 정보 수정 | PATCH | /user/{user_id} |  | {nickname:~~} | {nickname: 변경된 닉네임} |
+| 회원 삭제 | DELETE | /user/{user_id} |  |  | {removed_user:~~} |
+| 아이디 찾기 | POST | /user/find/email |  | {value from external api:~~} | {email:~~~} |
+| 비밀번호 찾기 | POST | /user/find/password |  | {email:~~~,username:~~~,phone:~~} | {password:~~} |
+| 비밀번호 변경 | PATCH | /user/password |  | {email:~~,beforePassword:~~~,afterPassword:~~~} | {password:~~~} |
 
 ## Post
 
