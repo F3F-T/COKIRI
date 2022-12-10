@@ -33,8 +33,12 @@ public class Post extends BaseTimeEntity {
     private Trade trade;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @JoinColumn(name = "productCategory_id")
+    private Category productCategory;
+
+    @ManyToOne
+    @JoinColumn(name = "wishCategory_id")
+    private Category wishCategory;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -53,13 +57,14 @@ public class Post extends BaseTimeEntity {
     private List<Comment> comments = new ArrayList<>();
 
     @Builder
-    public Post(Long id, String title, String content, Trade trade, Boolean tradeEachOther, Category category, User author) {
+    public Post(Long id, String title, String content, Trade trade, Boolean tradeEachOther, Category productCategory, Category wishCategory, User author) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.trade = trade;
         this.tradeEachOther = tradeEachOther;
-        this.category = category;
+        this.productCategory = productCategory;
+        this.wishCategory = wishCategory;
         this.author = author;
     }
 }
