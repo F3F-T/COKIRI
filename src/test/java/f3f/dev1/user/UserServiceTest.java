@@ -39,14 +39,24 @@ public class UserServiceTest {
     @Autowired
     ScrapRepository scrapRepository;
 
+    // 주소 오브젝트 생성
+    public Address createAddress() {
+        return Address.builder()
+                .addressName("address")
+                .postalAddress("13556")
+                .latitude("37.49455")
+                .longitude("127.12170")
+                .build();
+    }
+
     // 회원가입 DTO 생성 메소드
     public SignUpRequest createSignUpRequest() {
         return SignUpRequest.builder()
                 .userName("username")
                 .nickname("nickname")
-                .phoneNumber("phoneNumber")
-                .email("userEmail")
-                .address(new Address())
+                .phoneNumber("01012345678")
+                .email("userEmail@email.com")
+                .address(createAddress())
                 .password("password")
                 .build();
     }
@@ -54,7 +64,7 @@ public class UserServiceTest {
     // 로그인 DTO 생성 메소드
     public LoginRequest createLoginRequest() {
         return LoginRequest.builder()
-                .email("userEmail")
+                .email("userEmail@email.com")
                 .password("password").build();
     }
 
@@ -62,7 +72,7 @@ public class UserServiceTest {
     public UpdateUserInfo createUpdateRequest(Long userId) {
         return UpdateUserInfo.builder()
                 .id(userId)
-                .address(new Address())
+                .address(createAddress())
                 .nickname("newNickname")
                 .build();
     }
@@ -92,11 +102,11 @@ public class UserServiceTest {
 
         // then
         SignUpRequest differentRequest = SignUpRequest.builder()
-                .email("userEmail")
+                .email("userEmail@email.com")
                 .userName("differentUser")
                 .nickname("differentUser")
                 .phoneNumber("differentUser")
-                .address(new Address())
+                .address(createAddress())
                 .password("differentUser")
                 .build();
 
@@ -115,8 +125,8 @@ public class UserServiceTest {
                 .email("differentUser")
                 .userName("differentUser")
                 .nickname("differentUser")
-                .phoneNumber("phoneNumber")
-                .address(new Address())
+                .phoneNumber("01012345678")
+                .address(createAddress())
                 .password("differentUser")
                 .build();
 
@@ -166,7 +176,7 @@ public class UserServiceTest {
 
         // when
         LoginRequest differentUser = LoginRequest.builder()
-                .email("userEmail")
+                .email("userEmail@email.com")
                 .password("wrongPassword").build();
 
         // then
@@ -213,18 +223,63 @@ public class UserServiceTest {
 
     // 유저 정보 업데이트 테스트
     @Test
-    @DisplayName("유저 정보 업데이트 성공 테스트")
-    public void updateUserInfoTestSuccess() throws Exception{
+    @DisplayName("유저 닉네임 업데이트 성공 테스트")
+    public void updateUserNicknameTestSuccess() throws Exception{
         //given
         SignUpRequest signUpRequest = createSignUpRequest();
         Long userId = userService.signUp(signUpRequest);
         UpdateUserInfo updateRequest = createUpdateRequest(userId);
 
         // when
-        userService.updateUserInfo(updateRequest);
+        UpdateUserInfo updateUserInfo = userService.updateUserInfo(updateRequest);
         Optional<User> byId = userRepository.findById(userId);
         // then
-        assertThat(updateRequest.getNickname()).isEqualTo(byId.get().getNickname());
+        assertThat(updateUserInfo.getNickname()).isEqualTo(byId.get().getNickname());
+    }
+
+    @Test
+    @DisplayName("유저 주소 업데이트 성공 테스트")
+    public void updateUserAddressTestSuccess() throws Exception{
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        Long userId = userService.signUp(signUpRequest);
+        UpdateUserInfo updateUserInfo = UpdateUserInfo.builder()
+                .nickname("nickname")
+                .address(Address.builder()
+                        .addressName("home")
+                        .postalAddress("13556")
+                        .latitude("37.37125")
+                        .longitude("127.10560").build())
+                .id(userId)
+                .build();
+
+
+        // when
+        UpdateUserInfo updateUserInfo1 = userService.updateUserInfo(updateUserInfo);
+        Optional<User> byId = userRepository.findById(userId);
+        // then
+        assertThat(updateUserInfo1.getAddress()).isEqualTo(byId.get().getAddress());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 아이디의 유저 업데이트 실패 테스트")
+    public void updateUserInfoTestFailById() throws Exception{
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        Long userId = userService.signUp(signUpRequest);
+        UpdateUserInfo updateUserInfo = UpdateUserInfo.builder()
+                .nickname("nickname")
+                .address(Address.builder()
+                        .addressName("home")
+                        .postalAddress("13556")
+                        .latitude("37.37125")
+                        .longitude("127.10560").build())
+                .id(userId+1)
+                .build();
+
+
+        // then
+        assertThrows(NotFoundByIdException.class, () -> userService.updateUserInfo(updateUserInfo));
     }
 
     // 유저 삭제 테스트
@@ -236,9 +291,20 @@ public class UserServiceTest {
         Long userId = userService.signUp(signUpRequest);
 
         // when
-        userService.deleteUser(userId);
+        Long deleteUser = userService.deleteUser(userId);
         // then
-        assertThrows(NotFoundByIdException.class, () -> userService.getUserInfo(userId));
+        assertThrows(NotFoundByIdException.class, () -> userService.getUserInfo(deleteUser));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 아이디로 삭제 실패 테스트")
+    public void deleteUserTestFailById() throws Exception{
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        Long userId = userService.signUp(signUpRequest);
+
+        // then
+        assertThrows(NotFoundByIdException.class, () -> userService.deleteUser(userId + 1));
     }
 
 
