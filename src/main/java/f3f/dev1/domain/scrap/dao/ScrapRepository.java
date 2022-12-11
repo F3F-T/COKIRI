@@ -1,4 +1,7 @@
 package f3f.dev1.domain.scrap.dao;
 
-public class ScrapRepository {
+import f3f.dev1.domain.scrap.model.Scrap;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ScrapRepository extends JpaRepository<Scrap, Long> {
 }
