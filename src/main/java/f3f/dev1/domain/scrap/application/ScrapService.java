@@ -7,6 +7,7 @@ import f3f.dev1.domain.scrap.dto.ScrapDTO;
 import f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
 import f3f.dev1.domain.scrap.exception.DuplicateScrapByUserIdException;
 import f3f.dev1.domain.scrap.model.Scrap;
+import f3f.dev1.global.common.constants.ResponseConstants;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -60,10 +61,10 @@ public class ScrapService {
     // 스크랩에 있는 포스트 삭제 메서드
     // TODO: scrap post 쪽 작성되면 구현예정
     @Transactional
-    public Long deleteScrapPost(Long userId, Long postId) {
+    public String deleteScrapPost(Long userId, Long postId) {
         Scrap scrap = scrapRepository.findScrapByUserId(userId).orElseThrow(NotFoundByIdException::new);
 
-        return scrap.getId();
+        return ResponseConstants.DELETE;
     }
 
 }

@@ -18,6 +18,7 @@ import f3f.dev1.domain.user.exception.DuplicatePhoneNumberExepction;
 import f3f.dev1.domain.user.exception.InvalidPasswordException;
 import f3f.dev1.domain.user.exception.NotFoundByEmailException;
 import f3f.dev1.domain.user.model.User;
+import f3f.dev1.global.common.constants.ResponseConstants;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
+import static f3f.dev1.global.common.constants.ResponseConstants.*;
 
 
 @Service
@@ -144,18 +146,18 @@ public class UserService {
     // 업데이트 메소드
     // 유저 정보 업데이트 처리 메소드
     @Transactional
-    public UpdateUserInfo updateUserInfo(UpdateUserInfo updateUserInfo) {
+    public String updateUserInfo(UpdateUserInfo updateUserInfo) {
         User user = userRepository.findById(updateUserInfo.getId()).orElseThrow(NotFoundByIdException::new);
-        return user.updateUserInfo(updateUserInfo);
+        return UPDATE;
     }
 
     // 유저 삭제 메소드
     // 아이디로 회원 삭제 메소드
     @Transactional
-    public Long deleteUser(Long userId) {
+    public String deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
         userRepository.delete(user);
-        return userId;
+        return DELETE;
     }
 
 

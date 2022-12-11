@@ -247,10 +247,10 @@ public class UserServiceTest {
         UpdateUserInfo updateRequest = createUpdateRequest(userId);
 
         // when
-        UpdateUserInfo updateUserInfo = userService.updateUserInfo(updateRequest);
+        String s = userService.updateUserInfo(updateRequest);
         Optional<User> byId = userRepository.findById(userId);
         // then
-        assertThat(updateUserInfo.getNickname()).isEqualTo(byId.get().getNickname());
+        assertThat(updateRequest.getNickname()).isEqualTo(byId.get().getNickname());
     }
 
     @Test
@@ -271,10 +271,10 @@ public class UserServiceTest {
 
 
         // when
-        UpdateUserInfo updateUserInfo1 = userService.updateUserInfo(updateUserInfo);
+        String s = userService.updateUserInfo(updateUserInfo);
         Optional<User> byId = userRepository.findById(userId);
         // then
-        assertThat(updateUserInfo1.getAddress()).isEqualTo(byId.get().getAddress());
+        assertThat(updateUserInfo.getAddress()).isEqualTo(byId.get().getAddress());
     }
 
     @Test
@@ -307,9 +307,9 @@ public class UserServiceTest {
         Long userId = userService.signUp(signUpRequest);
 
         // when
-        Long deleteUser = userService.deleteUser(userId);
+        String s = userService.deleteUser(userId);
         // then
-        assertThrows(NotFoundByIdException.class, () -> userService.getUserInfo(deleteUser));
+        assertThrows(NotFoundByIdException.class, () -> userService.getUserInfo(userId));
     }
 
     @Test

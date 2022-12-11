@@ -74,17 +74,17 @@ public class User extends UserBase {
 
     public UserInfo toUserInfo() {
         return UserInfo.builder()
-                .address(address)
-                .userName(userName)
+                .address(this.address)
+                .userName(this.userName)
                 .email(getEmail())
-                .phoneNumber(phoneNumber)
-                .nickname(nickname)
+                .phoneNumber(this.phoneNumber)
+                .nickname(this.nickname)
                 .build();
     }
 
     public UpdateUserInfo updateUserInfo(UpdateUserInfo updateUserInfo) {
-        address = updateUserInfo.getAddress();
-        nickname = updateUserInfo.getNickname();
+        this.address = updateUserInfo.getAddress();
+        this.nickname = updateUserInfo.getNickname();
 
         return updateUserInfo;
     }
