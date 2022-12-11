@@ -148,6 +148,7 @@ public class UserService {
     @Transactional
     public String updateUserInfo(UpdateUserInfo updateUserInfo) {
         User user = userRepository.findById(updateUserInfo.getId()).orElseThrow(NotFoundByIdException::new);
+        user.updateUserInfo(updateUserInfo);
         return UPDATE;
     }
 
