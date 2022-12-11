@@ -12,4 +12,8 @@ public class Address {
 
     String postalAddress;
 
+    String latitude;
+
+    String longitude;
+
 }
