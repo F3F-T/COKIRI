@@ -2,6 +2,7 @@ package f3f.dev1.user;
 
 import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
+import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.user.application.UserService;
 import f3f.dev1.domain.user.dao.UserRepository;
 import f3f.dev1.domain.user.dto.UserDTO.LoginRequest;
@@ -90,6 +91,21 @@ public class UserServiceTest {
         Optional<User> byId = userRepository.findById(userId);
         // then
         assertThat(byId.get().getId()).isEqualTo(userId);
+    }
+
+    @Test
+    @DisplayName("유저 생성시 스크랩도 같이 생성되는지 확인 테스트")
+    public void signUpTestWithScrap() throws Exception{
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+
+
+        // when
+        Long userId = userService.signUp(signUpRequest);
+        Optional<Scrap> scrapByUserId = scrapRepository.findScrapByUserId(userId);
+
+        // then
+        assertThat(userId).isEqualTo(scrapByUserId.get().getUser().getId());
     }
 
     @Test

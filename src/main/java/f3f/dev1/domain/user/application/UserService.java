@@ -4,6 +4,7 @@ import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.message.model.Message;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
@@ -25,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
+
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,8 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ScrapRepository scrapRepository;
+
+    private final ScrapService scrapService;
 
     // 회원가입 요청 처리 메소드, 유저 생성
     // signUpRequest로 넘어오는 값 검증은 컨트롤러에서 진행하게 구현 예정
@@ -47,8 +52,8 @@ public class UserService {
 
         User user = signUpRequest.toEntity();
         userRepository.save(user);
-        Scrap userScrap = Scrap.builder().user(user).build();
-        scrapRepository.save(userScrap);
+        CreateScrapDTO userScrap = CreateScrapDTO.builder().user(user).build();
+        scrapService.createScrap(userScrap);
         return user.getId();
     }
     // 로그인 요청 처리 메소드, 이메일 & 비밀번호로 로그인 가능 여부 확인
