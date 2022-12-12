@@ -7,8 +7,6 @@ import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
-
-import f3f.dev1.domain.user.dto.UserDTO.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +15,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static f3f.dev1.domain.user.dto.UserDTO.*;
+import static f3f.dev1.domain.user.dto.UserDTO.UpdateUserInfo;
+import static f3f.dev1.domain.user.dto.UserDTO.UserInfo;
 
 @Entity
 @Getter

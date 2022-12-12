@@ -57,6 +57,7 @@ public class UserServiceTest {
                 .nickname("nickname")
                 .phoneNumber("01012345678")
                 .email("userEmail@email.com")
+                .birthDate("990128")
                 .address(createAddress())
                 .password("password")
                 .build();

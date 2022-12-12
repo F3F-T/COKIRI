@@ -26,12 +26,15 @@ public class UserDTO {
 
         private String password;
 
+        private String birthDate;
+
         public User toEntity() {
             return User.builder()
                     .username(userName)
                     .nickname(nickname)
                     .address(address)
                     .phoneNumber(phoneNumber)
+                    .birthDate(birthDate)
                     .email(email)
                     .password(password)
                     .build();

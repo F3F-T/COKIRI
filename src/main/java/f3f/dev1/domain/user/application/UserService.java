@@ -40,6 +40,15 @@ public class UserService {
 
     private final ScrapService scrapService;
 
+    // authentication에 쓰이는 메소드, 이메일로 유저객체 리턴
+    @Transactional
+    public User findByEmail(String email) {
+
+        return userRepository.findByEmail(email).orElseThrow(NotFoundByEmailException::new);
+
+    }
+
+
     // 회원가입 요청 처리 메소드, 유저 생성
     // signUpRequest로 넘어오는 값 검증은 컨트롤러에서 진행하게 구현 예정
     @Transactional
