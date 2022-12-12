@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 public class CommentDTO {
 
@@ -78,5 +79,21 @@ public class CommentDTO {
         private Post post;
         @Size(min = 1, message = "수정할 댓글을 한 글자 이상 적어주세요")
         private String content;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FindByIdCommentResponse {
+        @NotNull
+        private Comment responseComment;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FindByPostIdCommentListResponse {
+        @NotNull
+        private List<Comment> results;
     }
 }

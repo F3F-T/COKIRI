@@ -15,6 +15,8 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 
+import java.util.List;
+
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 
 @Service
@@ -56,4 +58,23 @@ public class CommentService {
         R : Read
         댓글 조회
      */
+
+    // id로 조회
+    public FindByIdCommentResponse findCommentById(Long id) {
+        Comment comment = commentRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        return new FindByIdCommentResponse(comment);
+    }
+
+    // post로 조회
+    // TODO Repository 명명규칙 이상 없나?
+    public FindByPostIdCommentListResponse findCommentsByPostId(Long postId) {
+        if(!commentRepository.existsByPostId(postId)) {
+            throw new NotFoundByIdException();
+        }
+        List<Comment> byPostId = commentRepository.findByPostId(postId);
+        return new FindByPostIdCommentListResponse(byPostId);
+    }
+
+    // 게시글 주인이 쓴 댓글 조회? (작성자 태그 등을 표시해주기 위해 필요할 수도 있다고 생각함)
+    // 근데 백에서 할 일이 아닌 것 같기도 하다
 }
