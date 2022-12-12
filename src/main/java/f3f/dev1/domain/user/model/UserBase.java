@@ -22,5 +22,8 @@ public class UserBase extends BaseTimeEntity {
 
     private String password;
 
+    public void updatePassword(String pw) {
+        this.password = pw;
+    }
 
 }

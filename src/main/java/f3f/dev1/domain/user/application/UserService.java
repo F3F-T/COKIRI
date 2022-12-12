@@ -9,6 +9,7 @@ import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.domain.user.dao.UserRepository;
+import f3f.dev1.domain.user.dto.UserDTO;
 import f3f.dev1.domain.user.dto.UserDTO.LoginRequest;
 import f3f.dev1.domain.user.dto.UserDTO.SignUpRequest;
 import f3f.dev1.domain.user.dto.UserDTO.UpdateUserInfo;
@@ -26,8 +27,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
+import static f3f.dev1.domain.user.dto.UserDTO.*;
 import static f3f.dev1.global.common.constants.ResponseConstants.*;
 
 
@@ -60,7 +63,7 @@ public class UserService {
             throw new DuplicatePhoneNumberExepction();
         }
 
-
+        signUpRequest.encrypt();
 
         User user = signUpRequest.toEntity();
 
@@ -73,6 +76,8 @@ public class UserService {
     @Transactional
     public Long login(LoginRequest loginRequest) {
         User byEmail = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(NotFoundByEmailException::new);
+
+        loginRequest.encrypt();
 
         if (!byEmail.getPassword().equals(loginRequest.getPassword())) {
             throw new InvalidPasswordException();
@@ -160,6 +165,20 @@ public class UserService {
     public String updateUserInfo(UpdateUserInfo updateUserInfo) {
         User user = userRepository.findById(updateUserInfo.getId()).orElseThrow(NotFoundByIdException::new);
         user.updateUserInfo(updateUserInfo);
+        return UPDATE;
+    }
+
+    // 유저 비밀번호 업데이트 처리 메소드
+    @Transactional
+    public String updateUserPassword(UpdateUserPassword updateUserPassword) {
+        User user = userRepository.findById(updateUserPassword.getId()).orElseThrow(NotFoundByIdException::new);
+        updateUserPassword.encrypt();
+        System.out.println("user.getPassword() = " + user.getPassword());
+        System.out.println("updateUserPassword = " + updateUserPassword.getOldPassword());
+        if (!Objects.equals(user.getPassword(), updateUserPassword.getOldPassword())) {
+            throw new InvalidPasswordException();
+        }
+        user.updateUserPassword(updateUserPassword);
         return UPDATE;
     }
 

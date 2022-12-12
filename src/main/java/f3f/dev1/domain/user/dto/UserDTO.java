@@ -35,8 +35,12 @@ public class UserDTO {
 
         private String birthDate;
 
-        public User toEntity() {
+        public void encrypt(){
             password = encryptionService.encrypt(password);
+        }
+
+        public User toEntity() {
+
             return User.builder()
                     .username(userName)
                     .nickname(nickname)
@@ -58,6 +62,10 @@ public class UserDTO {
 
         private String password;
 
+
+        public void encrypt(){
+            password = encryptionService.encrypt(password);
+        }
 
     }
 
@@ -88,6 +96,23 @@ public class UserDTO {
 
         private Address address;
 
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UpdateUserPassword {
+        private Long id;
+
+        private String oldPassword;
+
+        private String newPassword;
+
+        public void encrypt(){
+            oldPassword = encryptionService.encrypt(oldPassword);
+            newPassword = encryptionService.encrypt(newPassword);
+        }
     }
 
 }
