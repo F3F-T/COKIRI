@@ -44,7 +44,7 @@ public class UserService {
     private final ScrapService scrapService;
 
     // authentication에 쓰이는 메소드, 이메일로 유저객체 리턴
-    @Transactional
+    @Transactional(readOnly = true)
     public User findByEmail(String email) {
 
         return userRepository.findByEmail(email).orElseThrow(NotFoundByEmailException::new);
@@ -73,7 +73,7 @@ public class UserService {
         return user.getId();
     }
     // 로그인 요청 처리 메소드, 이메일 & 비밀번호로 로그인 가능 여부 확인
-    @Transactional
+    @Transactional(readOnly = true)
     public Long login(LoginRequest loginRequest) {
         User byEmail = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(NotFoundByEmailException::new);
 
@@ -90,7 +90,7 @@ public class UserService {
 
     // 조회 메소드
     // 아이디로 유저 정보 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public UserInfo getUserInfo(Long userId) {
         User byId = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
 
@@ -98,13 +98,13 @@ public class UserService {
 
     }
     // 아이디로 유저가 쓴 게시글 리스트 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Post> getUserWrittenPosts(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
         return user.getPosts();
     }
     // 아이디로 유저가 쓴 댓글 리스트 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Comment> getUserWrittenComments(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
         return user.getComments();
@@ -112,47 +112,47 @@ public class UserService {
 
     // 아이디로 유저가 스크랩한 게시글 리스트 조회
     // TODO: scrapPost 구현되면 유저가 스크랩한 포스트 리스트 리턴하게 구현해야함
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Post> getUserScrapPosts(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
         Scrap userScrap = user.getScrap();
         return new ArrayList<>();
     }
     // 아이디로 유저가 판매자인 거래 리스트 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trade> getUserSellingTrades(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
         return user.getSellingTrades();
     }
 
     // 아이디로 유저가 구매자인 거래 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Trade> getUserBuyingTrades(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
         return user.getBuyingTrades();
     }
 
     // 아이디로 유저가 판매자인 채팅방 리스트 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<MessageRoom> getUserSellingMessageRooms(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
         return user.getSellingRooms();
     }
     // 아이디로 유저가 구매자인 채팅방 리스트 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<MessageRoom> getUserBuyingMessageRooms(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
         return user.getBuyingRooms();
     }
 
     // 아이디로 유저가 보낸 메시지 리스트 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Message> getUserSendMessages(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
         return user.getSendMessages();
     }
     // 아이디로 유저가 받은 메시지 리스트 조회
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Message> getUserReceivedMessages(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
         return user.getReceivedMessages();

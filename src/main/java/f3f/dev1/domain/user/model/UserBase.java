@@ -22,6 +22,9 @@ public class UserBase extends BaseTimeEntity {
 
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    protected UserLevel userLevel;
+
     public void updatePassword(String pw) {
         this.password = pw;
     }

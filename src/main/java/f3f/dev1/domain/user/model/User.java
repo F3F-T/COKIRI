@@ -19,6 +19,7 @@ import java.util.List;
 
 import static f3f.dev1.domain.user.dto.UserDTO.UpdateUserInfo;
 import static f3f.dev1.domain.user.dto.UserDTO.UserInfo;
+import static f3f.dev1.domain.user.model.UserLevel.AUTH;
 
 @Entity
 @Getter
@@ -65,7 +66,7 @@ public class User extends UserBase {
 
     @Builder
     public User(Long id, String email, String password,String username, Address address, String birthDate, String phoneNumber, String nickname) {
-        super(id, email, password);
+        super(id, email, password, AUTH);
         this.userName = username;
         this.address = address;
         this.birthDate = birthDate;
