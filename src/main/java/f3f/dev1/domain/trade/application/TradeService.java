@@ -1,8 +1,13 @@
 package f3f.dev1.domain.trade.application;
 
+import f3f.dev1.domain.post.dao.PostRepository;
+import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.dto.TradeDTO;
+import f3f.dev1.domain.trade.exception.InvalidSellerIdException;
 import f3f.dev1.domain.trade.model.Trade;
+import f3f.dev1.domain.user.dao.UserRepository;
+import f3f.dev1.domain.user.model.User;
 import f3f.dev1.global.common.constants.ResponseConstants;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static f3f.dev1.domain.trade.dto.TradeDTO.*;
 import static f3f.dev1.domain.trade.dto.TradeDTO.CreateTradeDto;
@@ -20,11 +26,26 @@ import static f3f.dev1.global.common.constants.ResponseConstants.*;
 public class TradeService {
 
     private final TradeRepository tradeRepository;
+
+    private final UserRepository userRepository;
+
+    private final PostRepository postRepository;
+
     // 트레이드 생성 메소드
-    // TODO: 포스트 조회 구현 되면 구현 예정
     @Transactional
     public Long createTrade(CreateTradeDto createTradeDto) {
-        return createTradeDto.getSellerId();
+        Long sellerId = createTradeDto.getSellerId();
+        User seller = userRepository.findById(createTradeDto.getSellerId()).orElseThrow(NotFoundByIdException::new);
+        User buyer = userRepository.findById(createTradeDto.getBuyerId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(createTradeDto.getPostId()).orElseThrow(NotFoundByIdException::new);
+
+        if (!sellerId.equals(post.getAuthor().getId())) {
+            throw new InvalidSellerIdException();
+        }
+        Trade trade = createTradeDto.toEntity(seller, buyer, post);
+        tradeRepository.save(trade);
+
+        return trade.getId();
     }
 
     // 트레이드 조회 메소드
