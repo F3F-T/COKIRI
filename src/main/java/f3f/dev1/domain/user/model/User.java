@@ -7,8 +7,8 @@ import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
-
-import f3f.dev1.domain.user.dto.UserDTO.*;
+import f3f.dev1.domain.user.dto.UserDTO;
+import f3f.dev1.domain.user.dto.UserDTO.UpdateUserPassword;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,9 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static f3f.dev1.domain.user.dto.UserDTO.*;
+import static f3f.dev1.domain.user.dto.UserDTO.UpdateUserInfo;
+import static f3f.dev1.domain.user.dto.UserDTO.UserInfo;
+import static f3f.dev1.domain.user.model.UserLevel.AUTH;
 
 @Entity
 @Getter
@@ -64,7 +66,7 @@ public class User extends UserBase {
 
     @Builder
     public User(Long id, String email, String password,String username, Address address, String birthDate, String phoneNumber, String nickname) {
-        super(id, email, password);
+        super(id, email, password, AUTH);
         this.userName = username;
         this.address = address;
         this.birthDate = birthDate;
@@ -87,5 +89,10 @@ public class User extends UserBase {
         this.nickname = updateUserInfo.getNickname();
 
         return updateUserInfo;
+    }
+
+    public UpdateUserPassword updateUserPassword(UpdateUserPassword updateUserPassword) {
+        super.updatePassword(updateUserPassword.getNewPassword());
+        return updateUserPassword;
     }
 }

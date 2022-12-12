@@ -5,6 +5,7 @@ import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.user.application.UserService;
 import f3f.dev1.domain.user.dao.UserRepository;
+import f3f.dev1.domain.user.dto.UserDTO;
 import f3f.dev1.domain.user.dto.UserDTO.LoginRequest;
 import f3f.dev1.domain.user.dto.UserDTO.UpdateUserInfo;
 import f3f.dev1.domain.user.dto.UserDTO.UserInfo;
@@ -13,6 +14,7 @@ import f3f.dev1.domain.user.exception.DuplicatePhoneNumberExepction;
 import f3f.dev1.domain.user.exception.InvalidPasswordException;
 import f3f.dev1.domain.user.exception.NotFoundByEmailException;
 import f3f.dev1.domain.user.model.User;
+import f3f.dev1.global.config.SHA256Encryptor;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+import static f3f.dev1.domain.user.dto.UserDTO.*;
 import static f3f.dev1.domain.user.dto.UserDTO.SignUpRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -57,6 +60,7 @@ public class UserServiceTest {
                 .nickname("nickname")
                 .phoneNumber("01012345678")
                 .email("userEmail@email.com")
+                .birthDate("990128")
                 .address(createAddress())
                 .password("password")
                 .build();
@@ -296,6 +300,27 @@ public class UserServiceTest {
 
         // then
         assertThrows(NotFoundByIdException.class, () -> userService.updateUserInfo(updateUserInfo));
+    }
+
+    // 유저 비밀번호 변경 성공 테스트
+    @Test
+    @DisplayName("유저 비밀번호 변경 성공 테스트")
+    public void updateUserPasswordTestSuccess() throws Exception{
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        Long userId = userService.signUp(signUpRequest);
+        UpdateUserPassword updateUserPassword = UpdateUserPassword.builder()
+                .id(userId)
+                .oldPassword("password")
+                .newPassword("newPassword")
+                .build();
+
+
+        // when
+        userService.updateUserPassword(updateUserPassword);
+        SHA256Encryptor sha256Encryptor = new SHA256Encryptor();
+        // then
+        assertThat(sha256Encryptor.encrypt("newPassword")).isEqualTo(userRepository.findById(userId).get().getPassword());
     }
 
     // 유저 삭제 테스트
