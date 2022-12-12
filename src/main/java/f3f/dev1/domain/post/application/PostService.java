@@ -15,9 +15,9 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.Valid;
 
 import java.util.List;
-import java.util.Optional;
 
 import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static f3f.dev1.global.common.constants.ResponseConstants.*;
 
 @Service
 @Validated
@@ -53,19 +53,19 @@ public class PostService {
 
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     @Transactional(readOnly = true)
-    public FindByAuthorPostListDTO findPostByAuthor(User author) {
+    public FindByAuthorPostListResponse findPostByAuthor(User author) {
         if(!postRepository.existsByAuthor(author)) {
             throw new NotFoundPostListByAuthor("해당 작성자의 게시글이 없습니다.");
         }
         List<Post> byAuthor = postRepository.findByAuthor(author);
         // DTO로 반환
-        return new FindByAuthorPostListDTO(byAuthor);
+        return new FindByAuthorPostListResponse(byAuthor);
     }
 
     @Transactional(readOnly = true)
-    public FindByIdPostDTO findPostById(Long id) {
+    public FindByIdPostResponse findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        return new FindByIdPostDTO(post);
+        return new FindByIdPostResponse(post);
     }
 
     /* TODO
@@ -74,8 +74,10 @@ public class PostService {
 
     // TODO 피드백 받기 : 반환 타입을 Long (id)으로 하는 거랑 Post 객체 하나만 가지고 있는 DTO로 하는 것 중 뭐가 더 나은가
     @Transactional
-    public Long updatePost(@Valid UpdatePostRequest updatePostRequest) {
+    public String updatePost(@Valid UpdatePostRequest updatePostRequest) {
         Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        // 게시글 변경 정보가 기존이랑 똑같다면 (변화가 없다면) 예외를 터트리려 했는데, 그럴 필요가 없어보여서 일단은 검증하지 않겠다
+        // 근데 또 예외는 던져놓고 처리를 안하는 방법도 있으니 이건 피드백을 받아 볼 예정
         /* TODO
             업데이트된 카테고리들이 유효한지 각각 Id로 확인한다.
             관련 기능이 구현되면 추가할 것이고, 지금은 유효하다고 가정하고 로직을 작성하겠음
@@ -86,11 +88,11 @@ public class PostService {
         post.updateProductCategory(updatePostRequest.getProductCategory());
         post.updateWishCategory(updatePostRequest.getWishCategory());
 
-        return post.getId();
+        return UPDATE;
     }
 
     @Transactional
-    public void deletePost(@Valid DeletePostRequest deletePostRequest) {
+    public String deletePost(@Valid DeletePostRequest deletePostRequest) {
         // 먼저 해당 게시글이 존재하는지 검증
         Post post = postRepository.findById(deletePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         // 그 후 작성자가 요청자와 동일인물인지 검증
@@ -100,6 +102,7 @@ public class PostService {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
         }
         postRepository.deleteById(deletePostRequest.getId());
+        return DELETE;
     }
 
 }
