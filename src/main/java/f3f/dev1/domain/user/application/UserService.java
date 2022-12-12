@@ -61,7 +61,9 @@ public class UserService {
         }
 
 
+
         User user = signUpRequest.toEntity();
+
         userRepository.save(user);
         CreateScrapDTO userScrap = CreateScrapDTO.builder().user(user).build();
         scrapService.createScrap(userScrap);

@@ -29,7 +29,7 @@
 | Description | HTTP Method | URL | Query string | Message body                                              | Return data                              |
 | --- | --- | --- | --- |-----------------------------------------------------------|------------------------------------------|
 | 회원가입 | POST | /user/signup |  | {"userName":"김동준","nickname":"nickname","address":{"addressName":"정자동","postalAddress":"13556","latitude":"37.49455","longitude":"127.12170"},"birthDate":"990128","phoneNumber":"01012345678","email":"test@email.com","password":"12345678"} | OK                                       |
-| 로그인 | POST | /user/login |  | {email:~~,password: ~~}                                   | {id:~~, token: ~~, …}                    |
+| 로그인 | POST | /user/login |  | {"email":"test@email.com", "password":"12345678"}                                   | {id:~~, token: ~~, …}                    |
 | 로그아웃 | DELETE | /user/logout |  | {token: ~~~, }                                            |                                          |
 | 회원 정보 조회 | GET | /user/{user_id} | token |                                                           | {id:~~,name: ~~,phone: ~~, … }회원 정보 가져오기 |
 | 회원 정보 수정 | PATCH | /user/{user_id} |  | {nickname:~~, token: ~~}                                  | {nickname: 변경된 닉네임}                      |
