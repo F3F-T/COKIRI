@@ -7,6 +7,7 @@ import f3f.dev1.domain.user.exception.UserNotFoundException;
 import f3f.dev1.domain.user.model.User;
 import f3f.dev1.domain.user.model.UserLevel;
 import f3f.dev1.global.common.constants.UserConstants;
+import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,11 +36,13 @@ public class SessionLoginService {
     }
 
     @Transactional(readOnly = true)
-    public void login(LoginRequest loginRequest) {
+    public Long login(LoginRequest loginRequest) {
         existsByEmailAndPassword(loginRequest);
         String email = loginRequest.getEmail();
         setUserLevel(email);
         httpSession.setAttribute(USER_ID, email);
+
+        return userRepository.findByEmail(email).orElseThrow(NotFoundByEmailException::new).getId();
     }
 
     public void setUserLevel(String email){
@@ -54,8 +57,8 @@ public class SessionLoginService {
 
     }
 
-    public UserInfo getCurrentUser(String email) {
-        return userRepository.findByEmail(email).orElseThrow(NotFoundByEmailException::new).toUserInfo();
+    public User getCurrentUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
 
     }
 
