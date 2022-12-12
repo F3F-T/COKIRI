@@ -41,4 +41,9 @@ public class Trade extends BaseTimeEntity {
         this.buyer = buyer;
         this.tradeStatus = tradeStatus;
     }
+
+    public TradeStatus updateTradeStatus(TradeStatus tradeStatus) {
+        this.tradeStatus = tradeStatus;
+        return tradeStatus;
+    }
 }

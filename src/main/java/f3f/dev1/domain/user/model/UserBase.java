@@ -1,5 +1,6 @@
-package f3f.dev1.domain.model;
+package f3f.dev1.domain.user.model;
 
+import f3f.dev1.domain.model.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
-public class UserBase extends BaseTimeEntity{
+public class UserBase extends BaseTimeEntity {
     @Id
     @GeneratedValue
     @Column(name = "user_id")
