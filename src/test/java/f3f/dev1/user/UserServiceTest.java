@@ -317,10 +317,29 @@ public class UserServiceTest {
 
 
         // when
-        userService.updateUserPassword(updateUserPassword);
+        String s = userService.updateUserPassword(updateUserPassword);
         SHA256Encryptor sha256Encryptor = new SHA256Encryptor();
         // then
         assertThat(sha256Encryptor.encrypt("newPassword")).isEqualTo(userRepository.findById(userId).get().getPassword());
+    }
+
+    // 유저 비밀번호 변경 실패 테스트
+    @Test
+    @DisplayName("잘못된 과거 비밀번호 입력으로 비밀번호 변경 실패")
+    public void updateUserPasswordTestFailByOldPassword() throws Exception{
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        Long userId = userService.signUp(signUpRequest);
+        UpdateUserPassword updateUserPassword = UpdateUserPassword.builder()
+                .id(userId)
+                .oldPassword("oldpassword")
+                .newPassword("newPassword")
+                .build();
+
+
+
+        // then
+        assertThrows(InvalidPasswordException.class, () -> userService.updateUserPassword(updateUserPassword));
     }
 
     // 유저 삭제 테스트

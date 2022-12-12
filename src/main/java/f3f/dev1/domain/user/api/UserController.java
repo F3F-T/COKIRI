@@ -28,9 +28,9 @@ public class UserController {
     }
 
     @PostMapping(value = "/user/login")
-    public Long login(@RequestBody LoginRequest loginRequest) {
-
-        return sessionLoginService.login(loginRequest);
+    public String login(@RequestBody LoginRequest loginRequest) {
+        sessionLoginService.login(loginRequest);
+        return OK;
     }
     @LoginCheck
     @DeleteMapping(value = "/user/logout")
@@ -40,9 +40,9 @@ public class UserController {
     }
 
     @LoginCheck
-    @GetMapping(value = "/user/{userId}")
-    public UserInfo getUserInfo(@PathVariable Long userId) {
-        return sessionLoginService.getCurrentUser(userId).toUserInfo();
+    @GetMapping(value = "/user")
+    public UserInfo getUserInfo() {
+        return sessionLoginService.getCurrentUser().toUserInfo();
 
     }
 }

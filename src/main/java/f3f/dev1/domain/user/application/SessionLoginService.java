@@ -57,8 +57,8 @@ public class SessionLoginService {
 
     }
 
-    public User getCurrentUser(Long userId) {
-        return userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
+    public User getCurrentUser() {
+        return userRepository.findByEmail((String) httpSession.getAttribute(USER_ID)).orElseThrow(NotFoundByIdException::new);
 
     }
 

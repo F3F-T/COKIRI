@@ -43,6 +43,8 @@ public class UserService {
 
     private final ScrapService scrapService;
 
+    private final SessionLoginService sessionLoginService;
+
     // authentication에 쓰이는 메소드, 이메일로 유저객체 리턴
     @Transactional(readOnly = true)
     public User findByEmail(String email) {
@@ -73,6 +75,7 @@ public class UserService {
         return user.getId();
     }
     // 로그인 요청 처리 메소드, 이메일 & 비밀번호로 로그인 가능 여부 확인
+    // TODO: SessionLoginService 로그인 사용해서 사라져도된다.
     @Transactional(readOnly = true)
     public Long login(LoginRequest loginRequest) {
         User byEmail = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(NotFoundByEmailException::new);
