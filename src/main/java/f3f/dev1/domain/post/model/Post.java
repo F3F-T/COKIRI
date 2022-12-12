@@ -57,6 +57,26 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<Comment> comments = new ArrayList<>();
 
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updatePostTags(List<PostTag> postTags) {
+        this.postTags = postTags;
+    }
+
+    public void updateProductCategory(Category productCategory) {
+        this.productCategory = productCategory;
+    }
+
+    public void updateWishCategory(Category wishCategory) {
+        this.wishCategory = wishCategory;
+    }
+
     @Builder
     public Post(Long id, String title, String content, Trade trade, Boolean tradeEachOther, Category productCategory, Category wishCategory, User author) {
         this.id = id;

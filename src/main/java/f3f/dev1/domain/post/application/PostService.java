@@ -46,8 +46,8 @@ public class PostService {
 
     /* TODO
         R : 게시글은 조회가 좀 양이 많을 듯 하다
-        productCategory, wishCategory, 작성자, 태그
-        title 별로 조회도 필요할까?
+        카테고리, 태그 필터링은 Post에서 할 수 없다. 각각의 서비스에서 구현하겠다.
+        title 별로 조회도 필요할까? 검색엔진이 필요한가? - 피드백 결과 일단은 제외하는 걸로.
      */
 
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
@@ -65,6 +65,26 @@ public class PostService {
     public FindByIdPostDTO findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         return new FindByIdPostDTO(post);
+    }
+
+    /* TODO
+        U : 게시글 업데이트
+     */
+
+    // TODO 피드백 받기 : 반환 타입을 Long (id)으로 하는 거랑 Post 객체 하나만 가지고 있는 DTO로 하는 것 중 뭐가 더 나은가
+    public Long updatePost(@Valid UpdatePostRequest updatePostRequest) {
+        Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        /* TODO
+            업데이트된 카테고리들이 유효한지 각각 Id로 확인한다.
+            관련 기능이 구현되면 추가할 것이고, 지금은 유효하다고 가정하고 로직을 작성하겠음
+         */
+        post.updateTitle(updatePostRequest.getTitle());
+        post.updateContent(updatePostRequest.getContent());
+        post.updatePostTags(updatePostRequest.getPostTags());
+        post.updateProductCategory(updatePostRequest.getProductCategory());
+        post.updateWishCategory(updatePostRequest.getWishCategory());
+
+        return post.getId();
     }
 
 }
