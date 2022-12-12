@@ -72,6 +72,7 @@ public class PostService {
      */
 
     // TODO 피드백 받기 : 반환 타입을 Long (id)으로 하는 거랑 Post 객체 하나만 가지고 있는 DTO로 하는 것 중 뭐가 더 나은가
+    @Transactional
     public Long updatePost(@Valid UpdatePostRequest updatePostRequest) {
         Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         /* TODO
@@ -86,5 +87,7 @@ public class PostService {
 
         return post.getId();
     }
+
+    public
 
 }
