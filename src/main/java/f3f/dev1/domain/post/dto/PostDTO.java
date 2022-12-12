@@ -88,4 +88,14 @@ public class PostDTO {
         private Category wishCategory;
         private List<PostTag> postTags;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeletePostRequest {
+        @NotNull
+        private Long id;
+        @NotNull
+        private User requester;
+    }
 }

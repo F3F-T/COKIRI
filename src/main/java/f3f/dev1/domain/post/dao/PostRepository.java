@@ -15,5 +15,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     boolean existsById(Long id);
     boolean existsByAuthor(User author);
     List<Post> findByAuthor(User author);
+    void deleteById(Long id);
 
 }
