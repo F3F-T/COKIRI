@@ -12,7 +12,8 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     Optional<Post> findById(Long id);
-    Boolean existsByAuthor(User author);
+    boolean existsById(Long id);
+    boolean existsByAuthor(User author);
     List<Post> findByAuthor(User author);
 
 }

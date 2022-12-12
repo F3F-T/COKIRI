@@ -6,10 +6,7 @@ import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.domain.user.model.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -20,6 +17,7 @@ import java.util.List;
 public class PostDTO {
 
     @Builder
+    @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PostSaveRequest {
@@ -54,9 +52,17 @@ public class PostDTO {
 
 
     // Id로 찾아진 객체를 감싸서 뱉어주는 DTO
+    @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class FindByAuthorPostListDTO {
         private List<Post> postList;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class FindByIdPostDTO {
+        private Post byIdPost;
     }
 }
