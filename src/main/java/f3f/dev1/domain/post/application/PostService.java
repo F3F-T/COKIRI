@@ -24,8 +24,8 @@ import static f3f.dev1.domain.post.dto.PostDTO.*;
 @RequiredArgsConstructor
 public class PostService {
 
-    private PostRepository postRepository;
-    private UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public Long savePost(@Valid PostSaveRequest postSaveRequest) {
