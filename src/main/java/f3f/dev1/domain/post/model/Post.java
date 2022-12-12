@@ -28,6 +28,7 @@ public class Post extends BaseTimeEntity {
 
     private String content;
 
+    // 끼리끼리 거래 여부
     private Boolean tradeEachOther;
     @OneToOne(mappedBy = "post")
     private Trade trade;
@@ -67,4 +68,6 @@ public class Post extends BaseTimeEntity {
         this.wishCategory = wishCategory;
         this.author = author;
     }
+
+
 }
