@@ -15,5 +15,8 @@ public class UserErrorResponse {
                     "ID 또는 PW를 확인하세요.", HttpStatus.NOT_FOUND
             );
 
+    public static final ResponseEntity<String> WRONG_USERNAME_PHONENUMBER = new ResponseEntity<>("해당 이름과 전화번호로 존재하는 유저는 없습니다.", HttpStatus.NOT_FOUND);
+
+
     public static final ResponseEntity<String> UNAUTHENTICATED = new ResponseEntity<>("로그인 후에 사용하세요.", HttpStatus.UNAUTHORIZED);
 }

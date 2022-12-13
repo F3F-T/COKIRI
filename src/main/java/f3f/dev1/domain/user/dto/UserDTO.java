@@ -17,7 +17,6 @@ public class UserDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-
     public static class SignUpRequest {
 
 
@@ -118,12 +117,14 @@ public class UserDTO {
     @NoArgsConstructor
     @Getter
     public static class FindEmailDto{
-        private String username;
-
+        private String userName;
         private String phoneNumber;
     }
 
+    @Builder
     @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
     public static class EncryptEmailDto{
         private String email;
     }

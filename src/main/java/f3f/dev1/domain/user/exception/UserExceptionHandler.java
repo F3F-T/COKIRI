@@ -31,6 +31,14 @@ public class UserExceptionHandler {
         return USER_NOT_FOUND;
     }
 
+    @ExceptionHandler(UserNotFoundByUsernameAndPhoneException.class)
+    protected final ResponseEntity<String> handleUserNotFoundByNameAndPhoneExeption(
+            UserNotFoundByUsernameAndPhoneException ex, WebRequest request
+    ) {
+        log.debug("해당 이름과 전화번호로 존재하지 않는 유저", request.getDescription(false));
+        return WRONG_USERNAME_PHONENUMBER;
+    }
+
     @ExceptionHandler(DuplicatePhoneNumberExepction.class)
     protected final ResponseEntity<String> handleDuplicatePhoneNumberException(
             DuplicatePhoneNumberExepction ex, WebRequest request) {

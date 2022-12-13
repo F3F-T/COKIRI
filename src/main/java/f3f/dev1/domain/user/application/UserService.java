@@ -186,9 +186,9 @@ public class UserService {
 
     @Transactional
     public EncryptEmailDto findUserEmail(FindEmailDto findEmailDto) {
-        String username = findEmailDto.getUsername();
+        String userName = findEmailDto.getUserName();
         String phoneNumber = findEmailDto.getPhoneNumber();
-        User user = userRepository.findByUserNameAndPhoneNumber(username, phoneNumber).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findByUserNameAndPhoneNumber(userName, phoneNumber).orElseThrow(UserNotFoundByUsernameAndPhoneException::new);
         return user.encryptEmail();
 
 
