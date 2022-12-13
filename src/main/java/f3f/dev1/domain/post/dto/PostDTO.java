@@ -59,14 +59,14 @@ public class PostDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FindByAuthorPostListDTO {
+    public static class FindByAuthorPostListResponse {
         private List<Post> postList;
     }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FindByIdPostDTO {
+    public static class FindByIdPostResponse {
         private Post byIdPost;
     }
 
@@ -87,5 +87,15 @@ public class PostDTO {
         private Category productCategory;
         private Category wishCategory;
         private List<PostTag> postTags;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeletePostRequest {
+        @NotNull
+        private Long id;
+        @NotNull
+        private User requester;
     }
 }
