@@ -11,6 +11,7 @@ import f3f.dev1.domain.user.model.User;
 import f3f.dev1.global.common.constants.ResponseConstants;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,7 +82,7 @@ public class TradeService {
 
     // 거래상태 업데이트 메서드
     @Transactional
-    public String updateTradeStatus(UpdateTradeDto updateTradeDto) {
+    public ResponseEntity<String> updateTradeStatus(UpdateTradeDto updateTradeDto) {
         Trade trade = tradeRepository.findById(updateTradeDto.getTradeId()).orElseThrow(NotFoundByIdException::new);
 
         trade.updateTradeStatus(updateTradeDto.getTradeStatus());
@@ -90,7 +91,7 @@ public class TradeService {
 
     // 거래 삭제 메서드
     @Transactional
-    public String deleteTradeById(Long tradeId) {
+    public ResponseEntity<String> deleteTradeById(Long tradeId) {
         Trade trade = tradeRepository.findById(tradeId).orElseThrow(NotFoundByIdException::new);
         tradeRepository.delete(trade);
         return DELETE;
