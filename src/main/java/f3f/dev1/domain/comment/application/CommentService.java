@@ -66,7 +66,8 @@ public class CommentService {
     @Transactional(readOnly = false)
     public FindByIdCommentResponse findCommentById(Long id) {
         Comment comment = commentRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        return new FindByIdCommentResponse(comment);
+        @Valid FindByIdCommentResponse response = new FindByIdCommentResponse(comment);
+        return response;
     }
 
     // post로 조회
@@ -77,7 +78,8 @@ public class CommentService {
             throw new NotFoundByIdException();
         }
         List<Comment> byPostId = commentRepository.findByPostId(postId);
-        return new FindByPostIdCommentListResponse(byPostId);
+        @Valid FindByPostIdCommentListResponse response = new FindByPostIdCommentListResponse(byPostId);
+        return response;
     }
 
     // 게시글 주인이 쓴 댓글 조회? (작성자 태그 등을 표시해주기 위해 필요할 수도 있다고 생각함)
