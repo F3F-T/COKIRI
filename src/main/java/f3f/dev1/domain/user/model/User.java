@@ -8,6 +8,7 @@ import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.domain.user.dto.UserDTO;
+import f3f.dev1.domain.user.dto.UserDTO.EncryptEmailDto;
 import f3f.dev1.domain.user.dto.UserDTO.UpdateUserPassword;
 import lombok.Builder;
 import lombok.Getter;
@@ -94,5 +95,14 @@ public class User extends UserBase {
     public UpdateUserPassword updateUserPassword(UpdateUserPassword updateUserPassword) {
         super.updatePassword(updateUserPassword.getNewPassword());
         return updateUserPassword;
+    }
+
+    public EncryptEmailDto encryptEmail() {
+        String[] subEmail = this.getEmail().split("@");
+        int asteriskNum = subEmail[0].length() - 3;
+        String asterisks = "*".repeat(asteriskNum);
+        subEmail[0] = subEmail[0].substring(0, 3) + asterisks;
+        String returnEmail = subEmail[0] + "@" + subEmail[1];
+        return new EncryptEmailDto(returnEmail);
     }
 }

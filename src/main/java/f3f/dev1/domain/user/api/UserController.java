@@ -2,17 +2,16 @@ package f3f.dev1.domain.user.api;
 
 import f3f.dev1.domain.user.application.SessionLoginService;
 import f3f.dev1.domain.user.application.UserService;
-import f3f.dev1.domain.user.dto.UserDTO.SignUpRequest;
-import f3f.dev1.domain.user.dto.UserDTO.UserInfo;
 import f3f.dev1.global.common.annotation.LoginCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static f3f.dev1.domain.user.dto.UserDTO.*;
-import static f3f.dev1.domain.user.dto.UserDTO.LoginRequest;
-import static f3f.dev1.global.common.constants.ResponseConstants.*;
+import static f3f.dev1.global.common.constants.ResponseConstants.CREATE;
+import static f3f.dev1.global.common.constants.ResponseConstants.OK;
 
 @Slf4j
 @RestController
@@ -20,6 +19,12 @@ import static f3f.dev1.global.common.constants.ResponseConstants.*;
 public class UserController {
     private final UserService userService;
     private final SessionLoginService sessionLoginService;
+
+    @PostMapping(value = "/user/find/email")
+    public ResponseEntity<EncryptEmailDto> findEmail(@RequestBody FindEmailDto findEmailDto) {
+        EncryptEmailDto userEmail = userService.findUserEmail(findEmailDto);
+        return new ResponseEntity<>(userEmail, HttpStatus.OK);
+    }
 
     @PostMapping(value = "/user/signup")
     public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {
@@ -71,5 +76,5 @@ public class UserController {
         return userService.updateUserPassword(updateUserPassword);
     }
 
-    //TODO: 아이디 찾기, 비밀번호 찾기, 구현예정
+
 }

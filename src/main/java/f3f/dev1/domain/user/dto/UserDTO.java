@@ -113,4 +113,19 @@ public class UserDTO {
         }
     }
 
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class FindEmailDto{
+        private String username;
+
+        private String phoneNumber;
+    }
+
+    @AllArgsConstructor
+    public static class EncryptEmailDto{
+        private String email;
+    }
+
 }

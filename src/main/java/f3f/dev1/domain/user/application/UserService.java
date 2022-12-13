@@ -8,6 +8,7 @@ import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.domain.user.dao.UserRepository;
+import f3f.dev1.domain.user.dto.UserDTO;
 import f3f.dev1.domain.user.dto.UserDTO.SignUpRequest;
 import f3f.dev1.domain.user.dto.UserDTO.UpdateUserInfo;
 import f3f.dev1.domain.user.dto.UserDTO.UserInfo;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
+import static f3f.dev1.domain.user.dto.UserDTO.*;
 import static f3f.dev1.domain.user.dto.UserDTO.UpdateUserPassword;
 import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
 import static f3f.dev1.global.common.constants.ResponseConstants.UPDATE;
@@ -181,6 +183,18 @@ public class UserService {
         sessionLoginService.logout();
         return DELETE;
     }
+
+    @Transactional
+    public EncryptEmailDto findUserEmail(FindEmailDto findEmailDto) {
+        String username = findEmailDto.getUsername();
+        String phoneNumber = findEmailDto.getPhoneNumber();
+        User user = userRepository.findByUserNameAndPhoneNumber(username, phoneNumber).orElseThrow(UserNotFoundException::new);
+        return user.encryptEmail();
+
+
+
+    }
+
 
     // TODO: 마이페이지 조회 메소드 필요할 것 같음 추가예정
 

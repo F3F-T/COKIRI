@@ -6,6 +6,7 @@ import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.user.api.UserController;
 import f3f.dev1.domain.user.application.SessionLoginService;
 import f3f.dev1.domain.user.application.UserService;
+import f3f.dev1.domain.user.dao.UserRepository;
 import f3f.dev1.domain.user.exception.DuplicateEmailException;
 import f3f.dev1.domain.user.exception.DuplicateNicknameException;
 import f3f.dev1.domain.user.exception.DuplicatePhoneNumberExepction;
@@ -21,6 +22,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.Optional;
 
 import static f3f.dev1.domain.user.dto.UserDTO.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -38,6 +41,9 @@ public class UserControllerTest {
     private UserService userService;
     @MockBean
     private SessionLoginService sessionLoginService;
+
+    @MockBean
+    private UserRepository userRepository;
 
     private MockMvc mockMvc;
 
@@ -86,6 +92,13 @@ public class UserControllerTest {
                 .address(createAddress())
                 .nickname("newNickname")
                 .build();
+    }
+
+    // 이메일 찾기 DTO 생성 메소드
+    public FindEmailDto createFindEmailDto() {
+        return FindEmailDto.builder()
+                .username("username")
+                .phoneNumber("01012345678").build();
     }
     @Test
     @DisplayName("회원 가입 성공 테스트")
@@ -289,5 +302,31 @@ public class UserControllerTest {
                 .content(objectMapper.writeValueAsString(""))).andDo(print()).andExpect(status().isOk());
     }
 
+    @Test
+    @DisplayName("이메일 찾기 성공 테스트")
+    public void findEmailTestSuccess() throws Exception{
+        //given
+        given(userRepository.findByUserNameAndPhoneNumber(any(), any())).willReturn(Optional.ofNullable(createSignUpRequest().toEntity()));
 
+        // then
+        mockMvc.perform(post("/user/find/email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createFindEmailDto())))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 유저로 인한 이메일 찾기 실패 테스트")
+    public void findEmailTestFailByNullUser() throws Exception{
+        // given
+        doThrow(UserNotFoundException.class).when(userService).findUserEmail(any());
+
+        // then
+        mockMvc.perform(post("/user/find/email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createFindEmailDto())))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
 }
