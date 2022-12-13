@@ -31,7 +31,7 @@ public class Comment {
     @JoinColumn(name = "user_id")
     private User author;
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
     private List<Comment> childs = new ArrayList<>();
 
     @ManyToOne
