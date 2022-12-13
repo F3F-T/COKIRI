@@ -46,7 +46,7 @@ public class PostService {
     }
 
     /* TODO
-        R : 게시글은 조회가 좀 양이 많을 듯 하다
+        R : read
         카테고리, 태그 필터링은 Post에서 할 수 없다. 각각의 서비스에서 구현하겠다.
         title 별로 조회도 필요할까? 검색엔진이 필요한가? - 피드백 결과 일단은 제외하는 걸로.
      */
@@ -58,14 +58,15 @@ public class PostService {
             throw new NotFoundPostListByAuthor("해당 작성자의 게시글이 없습니다.");
         }
         List<Post> byAuthor = postRepository.findByAuthor(author);
-        // DTO로 반환
-        return new FindByAuthorPostListResponse(byAuthor);
+        @Valid FindByAuthorPostListResponse response = new FindByAuthorPostListResponse(byAuthor);
+        return response;
     }
 
     @Transactional(readOnly = true)
     public FindByIdPostResponse findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        return new FindByIdPostResponse(post);
+        @Valid FindByIdPostResponse response = new FindByIdPostResponse(post);
+        return response;
     }
 
     /* TODO
