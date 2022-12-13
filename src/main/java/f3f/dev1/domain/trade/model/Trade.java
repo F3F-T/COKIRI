@@ -3,6 +3,8 @@ package f3f.dev1.domain.trade.model;
 import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.trade.dto.TradeDTO;
+import f3f.dev1.domain.trade.dto.TradeDTO.TradeInfoDto;
 import f3f.dev1.domain.user.model.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,4 +48,12 @@ public class Trade extends BaseTimeEntity {
         this.tradeStatus = tradeStatus;
         return tradeStatus;
     }
+
+    public TradeInfoDto tradeInfoDto(String sellerNickname, String buyerNickname) {
+        return TradeInfoDto.builder()
+                .sellerNickname(sellerNickname)
+                .buyerNickname(buyerNickname)
+                .tradeStatus(tradeStatus).build();
+    }
+
 }

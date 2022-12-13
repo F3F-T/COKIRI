@@ -14,7 +14,7 @@ public class TradeDTO {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class CreateTradeDto{
+    public static class CreateTradeDto {
         private Long sellerId;
 
         private Long buyerId;
@@ -42,5 +42,15 @@ public class TradeDTO {
     }
 
 
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class TradeInfoDto{
+        private String sellerNickname;
 
+        private String buyerNickname;
+
+        private TradeStatus tradeStatus;
+    }
 }
