@@ -1,20 +1,17 @@
 package f3f.dev1.domain.user.application;
 
 import f3f.dev1.domain.user.dao.UserRepository;
-import f3f.dev1.domain.user.dto.UserDTO;
 import f3f.dev1.domain.user.exception.NotFoundByEmailException;
 import f3f.dev1.domain.user.exception.UserNotFoundException;
 import f3f.dev1.domain.user.model.User;
 import f3f.dev1.domain.user.model.UserLevel;
-import f3f.dev1.global.common.constants.UserConstants;
-import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 
-import static f3f.dev1.domain.user.dto.UserDTO.*;
+import static f3f.dev1.domain.user.dto.UserDTO.LoginRequest;
 import static f3f.dev1.global.common.constants.UserConstants.AUTH_State;
 import static f3f.dev1.global.common.constants.UserConstants.USER_ID;
 
@@ -58,7 +55,7 @@ public class SessionLoginService {
     }
 
     public User getCurrentUser() {
-        return userRepository.findByEmail((String) httpSession.getAttribute(USER_ID)).orElseThrow(NotFoundByIdException::new);
+        return userRepository.findByEmail((String) httpSession.getAttribute(USER_ID)).orElseThrow(UserNotFoundException::new);
 
     }
 

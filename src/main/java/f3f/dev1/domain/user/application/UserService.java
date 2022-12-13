@@ -9,19 +9,14 @@ import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.domain.user.dao.UserRepository;
-import f3f.dev1.domain.user.dto.UserDTO;
-import f3f.dev1.domain.user.dto.UserDTO.LoginRequest;
 import f3f.dev1.domain.user.dto.UserDTO.SignUpRequest;
 import f3f.dev1.domain.user.dto.UserDTO.UpdateUserInfo;
 import f3f.dev1.domain.user.dto.UserDTO.UserInfo;
-import f3f.dev1.domain.user.exception.DuplicateEmailException;
-import f3f.dev1.domain.user.exception.DuplicatePhoneNumberExepction;
-import f3f.dev1.domain.user.exception.InvalidPasswordException;
-import f3f.dev1.domain.user.exception.NotFoundByEmailException;
+import f3f.dev1.domain.user.exception.*;
 import f3f.dev1.domain.user.model.User;
-import f3f.dev1.global.common.constants.ResponseConstants;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +25,9 @@ import java.util.List;
 import java.util.Objects;
 
 import static f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
-import static f3f.dev1.domain.user.dto.UserDTO.*;
-import static f3f.dev1.global.common.constants.ResponseConstants.*;
+import static f3f.dev1.domain.user.dto.UserDTO.UpdateUserPassword;
+import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
+import static f3f.dev1.global.common.constants.ResponseConstants.UPDATE;
 
 
 @Service
@@ -64,6 +60,11 @@ public class UserService {
         if (userRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
             throw new DuplicatePhoneNumberExepction();
         }
+        // TODO: 닉네임 중복 검사 추가
+        if (userRepository.existsByNickname(signUpRequest.getNickname())) {
+            throw new DuplicateNicknameException();
+        }
+
 
         signUpRequest.encrypt();
 
@@ -73,21 +74,6 @@ public class UserService {
         CreateScrapDTO userScrap = CreateScrapDTO.builder().user(user).build();
         scrapService.createScrap(userScrap);
         return user.getId();
-    }
-    // 로그인 요청 처리 메소드, 이메일 & 비밀번호로 로그인 가능 여부 확인
-    // TODO: SessionLoginService 로그인 사용해서 사라져도된다.
-    @Transactional(readOnly = true)
-    public Long login(LoginRequest loginRequest) {
-        User byEmail = userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(NotFoundByEmailException::new);
-
-        loginRequest.encrypt();
-
-        if (!byEmail.getPassword().equals(loginRequest.getPassword())) {
-            throw new InvalidPasswordException();
-        }
-
-        return byEmail.getId();
-
     }
 
 
@@ -165,16 +151,17 @@ public class UserService {
     // 업데이트 메소드
     // 유저 정보 업데이트 처리 메소드
     @Transactional
-    public String updateUserInfo(UpdateUserInfo updateUserInfo) {
-        User user = userRepository.findById(updateUserInfo.getId()).orElseThrow(NotFoundByIdException::new);
+    public ResponseEntity<String> updateUserInfo(UpdateUserInfo updateUserInfo) {
+        User user = sessionLoginService.getCurrentUser();
         user.updateUserInfo(updateUserInfo);
         return UPDATE;
     }
 
     // 유저 비밀번호 업데이트 처리 메소드
     @Transactional
-    public String updateUserPassword(UpdateUserPassword updateUserPassword) {
-        User user = userRepository.findById(updateUserPassword.getId()).orElseThrow(NotFoundByIdException::new);
+    public ResponseEntity<String> updateUserPassword(UpdateUserPassword updateUserPassword) {
+
+        User user = sessionLoginService.getCurrentUser();
         updateUserPassword.encrypt();
         System.out.println("user.getPassword() = " + user.getPassword());
         System.out.println("updateUserPassword = " + updateUserPassword.getOldPassword());
@@ -188,7 +175,7 @@ public class UserService {
     // 유저 삭제 메소드
     // 아이디로 회원 삭제 메소드
     @Transactional
-    public String deleteUser(Long userId) {
+    public ResponseEntity<String> deleteUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
         userRepository.delete(user);
         return DELETE;

@@ -90,7 +90,6 @@ public class UserDTO {
     @NoArgsConstructor
     @Getter
     public static class UpdateUserInfo {
-        private Long id;
 
         private String nickname;
 
@@ -103,7 +102,6 @@ public class UserDTO {
     @NoArgsConstructor
     @Getter
     public static class UpdateUserPassword {
-        private Long id;
 
         private String oldPassword;
 
