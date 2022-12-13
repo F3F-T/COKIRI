@@ -96,4 +96,17 @@ public class CommentDTO {
         @NotNull
         private List<Comment> results;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteCommentRequest {
+        @NotNull
+        private Long id;
+        @NotNull
+        private User author;
+        @NotNull
+        private Post post;
+        // TODO 로그인 (토큰) 정보?
+    }
 }

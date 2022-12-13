@@ -38,6 +38,10 @@ public class Comment {
     @JoinColumn(name = "parent_id")
     private Comment parent;
 
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
     @Builder
     public Comment(Long id, Post post, String content, Long depth, User author, Comment parent) {
         this.id = id;
