@@ -1,7 +1,7 @@
 package f3f.dev1.domain.user.application;
 
 import f3f.dev1.domain.user.dao.UserRepository;
-import f3f.dev1.domain.user.exception.NotFoundByEmailException;
+import f3f.dev1.domain.user.exception.UserNotFoundByEmailException;
 import f3f.dev1.domain.user.exception.UserNotFoundException;
 import f3f.dev1.domain.user.model.User;
 import f3f.dev1.domain.user.model.UserLevel;
@@ -38,8 +38,9 @@ public class SessionLoginService {
         String email = loginRequest.getEmail();
         setUserLevel(email);
         httpSession.setAttribute(USER_ID, email);
+        httpSession.setMaxInactiveInterval(3600*24);
 
-        return userRepository.findByEmail(email).orElseThrow(NotFoundByEmailException::new).getId();
+        return userRepository.findByEmail(email).orElseThrow(UserNotFoundByEmailException::new).getId();
     }
 
     public void setUserLevel(String email){
@@ -54,10 +55,6 @@ public class SessionLoginService {
 
     }
 
-    public User getCurrentUser() {
-        return userRepository.findByEmail((String) httpSession.getAttribute(USER_ID)).orElseThrow(UserNotFoundException::new);
-
-    }
 
     public String getLoginUser() {
         return (String) httpSession.getAttribute(USER_ID);

@@ -9,10 +9,7 @@ import f3f.dev1.domain.user.dao.UserRepository;
 import f3f.dev1.domain.user.dto.UserDTO.LoginRequest;
 import f3f.dev1.domain.user.dto.UserDTO.UpdateUserInfo;
 import f3f.dev1.domain.user.dto.UserDTO.UserInfo;
-import f3f.dev1.domain.user.exception.DuplicateEmailException;
-import f3f.dev1.domain.user.exception.DuplicatePhoneNumberExepction;
-import f3f.dev1.domain.user.exception.InvalidPasswordException;
-import f3f.dev1.domain.user.exception.UserNotFoundException;
+import f3f.dev1.domain.user.exception.*;
 import f3f.dev1.domain.user.model.User;
 import f3f.dev1.global.config.SHA256Encryptor;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
@@ -171,7 +168,7 @@ public class UserServiceTest {
 
 
         // then
-        assertThat(userId).isEqualTo(sessionLoginService.getCurrentUser().getId());
+        assertThat(userId).isEqualTo(userRepository.findByEmail(sessionLoginService.getLoginUser()).get().getId());
     }
 
     @Test
@@ -217,7 +214,7 @@ public class UserServiceTest {
 
         // when
         sessionLoginService.login(loginRequest);
-        UserInfo userInfo = userService.getUserInfo(sessionLoginService.getCurrentUser().getId());
+        UserInfo userInfo = userService.getUserInfo(userRepository.findByEmail(sessionLoginService.getLoginUser()).get().getId());
 
         // then
         assertArrayEquals(new String[]{
@@ -304,7 +301,7 @@ public class UserServiceTest {
 
 
         // then
-        assertThrows(UserNotFoundException.class, () -> userService.updateUserInfo(updateUserInfo));
+        assertThrows(UserNotFoundByEmailException.class, () -> userService.updateUserInfo(updateUserInfo));
     }
 
     // 유저 비밀번호 변경 성공 테스트
@@ -360,7 +357,7 @@ public class UserServiceTest {
         sessionLoginService.login(loginRequest);
 
         // when
-        userService.deleteUser(userId);
+        userService.deleteUser();
         // then
         assertThrows(NotFoundByIdException.class, () -> userService.getUserInfo(userId));
     }
@@ -374,7 +371,7 @@ public class UserServiceTest {
 
 
         // then
-        assertThrows(NotFoundByIdException.class, () -> userService.deleteUser(userId + 1));
+        assertThrows(UserNotFoundByEmailException.class, () -> userService.deleteUser());
     }
 
 

@@ -1,10 +1,6 @@
 package f3f.dev1.global.error.exception;
 
-import f3f.dev1.domain.user.exception.DuplicateEmailException;
-import f3f.dev1.domain.user.exception.DuplicateNicknameException;
-import f3f.dev1.domain.user.exception.DuplicatePhoneNumberExepction;
-import f3f.dev1.domain.user.exception.UserNotFoundException;
-import f3f.dev1.global.common.constants.ResponseConstants;
+import f3f.dev1.domain.user.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -41,7 +37,14 @@ public class GlobalExceptionHandler {
     protected final ResponseEntity<String> handleDuplicatePhoneNumberException(
             DuplicatePhoneNumberExepction ex, WebRequest request) {
         log.debug("Duplicate phonNumber :: {}, detection time = {}", request.getDescription(false));
-        return DUPLICATE_PHONENUMBER;
+        return DUPLICATE_PHONE_NUMBER;
 
+    }
+
+    @ExceptionHandler(UnauthenticatedUserException.class)
+    protected final ResponseEntity<String> handleUnauthenticatedUserExeption(
+            UnauthenticatedUserException ex, WebRequest request) {
+        log.debug("로그인 한 후에 이용할 수 있는 서비스 입니다.", request.getDescription(false));
+        return UNAUTHENTICATED;
     }
 }

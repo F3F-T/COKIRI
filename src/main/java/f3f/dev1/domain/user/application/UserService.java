@@ -5,7 +5,6 @@ import f3f.dev1.domain.message.model.Message;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.application.ScrapService;
-import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.domain.user.dao.UserRepository;
@@ -35,7 +34,6 @@ import static f3f.dev1.global.common.constants.ResponseConstants.UPDATE;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final ScrapRepository scrapRepository;
 
     private final ScrapService scrapService;
 
@@ -43,9 +41,9 @@ public class UserService {
 
     // authentication에 쓰이는 메소드, 이메일로 유저객체 리턴
     @Transactional(readOnly = true)
-    public User findByEmail(String email) {
+    public User findUserInfoByEmail(String email) {
 
-        return userRepository.findByEmail(email).orElseThrow(NotFoundByEmailException::new);
+        return userRepository.findByEmail(email).orElseThrow(UserNotFoundByEmailException::new);
 
     }
 
@@ -79,6 +77,7 @@ public class UserService {
 
     // 조회 메소드
     // 아이디로 유저 정보 조회
+    // TODO: 리팩터링하면서 사용하지 않게됨, 제거 예정
     @Transactional(readOnly = true)
     public UserInfo getUserInfo(Long userId) {
         User byId = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
@@ -86,6 +85,8 @@ public class UserService {
         return byId.toUserInfo();
 
     }
+
+    // TODO: 수요일 이후에 구현 예정
     // 아이디로 유저가 쓴 게시글 리스트 조회
     @Transactional(readOnly = true)
     public List<Post> getUserWrittenPosts(Long userId) {
@@ -100,7 +101,7 @@ public class UserService {
     }
 
     // 아이디로 유저가 스크랩한 게시글 리스트 조회
-    // TODO: scrapPost 구현되면 유저가 스크랩한 포스트 리스트 리턴하게 구현해야함
+
     @Transactional(readOnly = true)
     public List<Post> getUserScrapPosts(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
@@ -152,7 +153,7 @@ public class UserService {
     // 유저 정보 업데이트 처리 메소드
     @Transactional
     public ResponseEntity<String> updateUserInfo(UpdateUserInfo updateUserInfo) {
-        User user = sessionLoginService.getCurrentUser();
+        User user = userRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
         user.updateUserInfo(updateUserInfo);
         return UPDATE;
     }
@@ -161,7 +162,7 @@ public class UserService {
     @Transactional
     public ResponseEntity<String> updateUserPassword(UpdateUserPassword updateUserPassword) {
 
-        User user = sessionLoginService.getCurrentUser();
+        User user = userRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
         updateUserPassword.encrypt();
         System.out.println("user.getPassword() = " + user.getPassword());
         System.out.println("updateUserPassword = " + updateUserPassword.getOldPassword());
@@ -173,13 +174,14 @@ public class UserService {
     }
 
     // 유저 삭제 메소드
-    // 아이디로 회원 삭제 메소드
     @Transactional
-    public ResponseEntity<String> deleteUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
+    public ResponseEntity<String> deleteUser() {
+        User user = userRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
         userRepository.delete(user);
+        sessionLoginService.logout();
         return DELETE;
     }
 
+    // TODO: 마이페이지 조회 메소드 필요할 것 같음 추가예정
 
 }
