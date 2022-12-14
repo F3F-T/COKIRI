@@ -97,9 +97,17 @@ public class UserControllerTest {
     // 이메일 찾기 DTO 생성 메소드
     public FindEmailDto createFindEmailDto() {
         return FindEmailDto.builder()
-                .username("username")
+                .userName("username")
                 .phoneNumber("01012345678").build();
     }
+    // 비밀번호 찾기 DTO 생성 메소드
+    public FindPasswordDto createFindPasswordDto() {
+        return FindPasswordDto.builder()
+                .userName("username")
+                .phoneNumber("01012345678")
+                .email("userEmail@email.com").build();
+    }
+
     @Test
     @DisplayName("회원 가입 성공 테스트")
     public void signUpTestSuccess() throws Exception{
@@ -326,6 +334,34 @@ public class UserControllerTest {
         mockMvc.perform(post("/user/find/email")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createFindEmailDto())))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("비밀번호 찾기 성공 테스트")
+    public void findPasswordTestSuccess() throws Exception{
+        //given
+        given(userRepository.findByUserNameAndPhoneNumberAndEmail(any(), any(), any())).willReturn(Optional.ofNullable(createSignUpRequest().toEntity()));
+
+        // then
+        mockMvc.perform(post("/user/find/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createFindPasswordDto())))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 유저로 비밀번호 찾기 실패 테스트")
+    public void findPasswordTestFailByUser() throws Exception{
+        //given
+        doThrow(UserNotFoundException.class).when(userService).findUserPassword(any());
+
+        // then
+        mockMvc.perform(post("/user/find/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createFindPasswordDto())))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }

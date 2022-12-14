@@ -129,4 +129,26 @@ public class UserDTO {
         private String email;
     }
 
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class FindPasswordDto{
+        private String userName;
+        private String phoneNumber;
+
+        private String email;
+
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class ReturnPasswordDto{
+        private String password;
+    }
+
+
+
 }

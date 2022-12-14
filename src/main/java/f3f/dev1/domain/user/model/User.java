@@ -7,7 +7,6 @@ import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
-import f3f.dev1.domain.user.dto.UserDTO;
 import f3f.dev1.domain.user.dto.UserDTO.EncryptEmailDto;
 import f3f.dev1.domain.user.dto.UserDTO.UpdateUserPassword;
 import lombok.Builder;
@@ -85,16 +84,14 @@ public class User extends UserBase {
                 .build();
     }
 
-    public UpdateUserInfo updateUserInfo(UpdateUserInfo updateUserInfo) {
+    public void updateUserInfo(UpdateUserInfo updateUserInfo) {
         this.address = updateUserInfo.getAddress();
         this.nickname = updateUserInfo.getNickname();
 
-        return updateUserInfo;
     }
 
-    public UpdateUserPassword updateUserPassword(UpdateUserPassword updateUserPassword) {
+    public void updateUserPassword(UpdateUserPassword updateUserPassword) {
         super.updatePassword(updateUserPassword.getNewPassword());
-        return updateUserPassword;
     }
 
     public EncryptEmailDto encryptEmail() {

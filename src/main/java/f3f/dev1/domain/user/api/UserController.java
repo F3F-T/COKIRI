@@ -20,11 +20,22 @@ public class UserController {
     private final UserService userService;
     private final SessionLoginService sessionLoginService;
     // 이메일 찾기
+    // TODO: 생각해보니까 아스테리스크 처리 안하고 뱉어도 될 것 같은데,,
     @PostMapping(value = "/user/find/email")
     public ResponseEntity<EncryptEmailDto> findEmail(@RequestBody FindEmailDto findEmailDto) {
         EncryptEmailDto userEmail = userService.findUserEmail(findEmailDto);
         return new ResponseEntity<>(userEmail, HttpStatus.OK);
     }
+
+    // 비밀번호 찾기
+    @PostMapping(value = "/user/find/password")
+    public ResponseEntity<ReturnPasswordDto> findPassword(@RequestBody FindPasswordDto findPasswordDto) {
+        ReturnPasswordDto userPassword = userService.findUserPassword(findPasswordDto);
+        return new ResponseEntity<>(userPassword, HttpStatus.OK);
+
+
+    }
+
     // 회원가입
     @PostMapping(value = "/user/signup")
     public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {

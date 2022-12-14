@@ -14,6 +14,7 @@ import f3f.dev1.domain.user.dto.UserDTO.UpdateUserInfo;
 import f3f.dev1.domain.user.dto.UserDTO.UserInfo;
 import f3f.dev1.domain.user.exception.*;
 import f3f.dev1.domain.user.model.User;
+import f3f.dev1.global.common.constants.RandomCharacter;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import static f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
 import static f3f.dev1.domain.user.dto.UserDTO.*;
 import static f3f.dev1.domain.user.dto.UserDTO.UpdateUserPassword;
+import static f3f.dev1.global.common.constants.RandomCharacter.*;
 import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
 import static f3f.dev1.global.common.constants.ResponseConstants.UPDATE;
 
@@ -196,6 +199,34 @@ public class UserService {
 
 
 
+    }
+
+    @Transactional
+    public ReturnPasswordDto findUserPassword(FindPasswordDto findPasswordDto) {
+        String userName = findPasswordDto.getUserName();
+        String phoneNumber = findPasswordDto.getPhoneNumber();
+        String email = findPasswordDto.getEmail();
+        User user = userRepository.findByUserNameAndPhoneNumberAndEmail(userName, phoneNumber, email).orElseThrow(UserNotFoundException::new);
+        String newPassword = createRandomPassword();
+
+        UpdateUserPassword updateUserPassword = UpdateUserPassword.builder()
+                .newPassword(newPassword)
+                .oldPassword("resetPassword").build();
+        updateUserPassword.encrypt();
+        user.updateUserPassword(updateUserPassword);
+        return ReturnPasswordDto.builder().password(newPassword).build();
+    }
+
+    public String createRandomPassword() {
+        int targetStringLength = 10;
+        Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = (int) (random.nextFloat() * RandomCharacters.length);
+            stringBuilder.append(RandomCharacters[randomLimitedInt]);
+        }
+
+        return stringBuilder.toString();
     }
 
 
