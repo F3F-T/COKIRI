@@ -19,13 +19,13 @@ import static f3f.dev1.global.common.constants.ResponseConstants.OK;
 public class UserController {
     private final UserService userService;
     private final SessionLoginService sessionLoginService;
-
+    // 이메일 찾기
     @PostMapping(value = "/user/find/email")
     public ResponseEntity<EncryptEmailDto> findEmail(@RequestBody FindEmailDto findEmailDto) {
         EncryptEmailDto userEmail = userService.findUserEmail(findEmailDto);
         return new ResponseEntity<>(userEmail, HttpStatus.OK);
     }
-
+    // 회원가입
     @PostMapping(value = "/user/signup")
     public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {
         // TODO: 회원가입할때 정보 검증을 프론트에서 할지 백에서할지 결정해야함
@@ -33,41 +33,41 @@ public class UserController {
         userService.signUp(signUpRequest);
         return CREATE;
     }
-
+    // 로그인
     @PostMapping(value = "/user/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         sessionLoginService.login(loginRequest);
         return OK;
     }
-
+    // 로그아웃
     @LoginCheck
     @DeleteMapping(value = "/user/logout")
     public ResponseEntity<String> logout() {
         sessionLoginService.logout();
         return OK;
     }
-
+    // 유저 정보 조회
     @LoginCheck
     @GetMapping(value = "/user")
     public UserInfo getUserInfo() {
         return userService.findUserInfoByEmail(sessionLoginService.getLoginUser()).toUserInfo();
 
     }
-
+    // 유저 정보 수정
     @LoginCheck
     @PatchMapping(value = "/user")
     public ResponseEntity<String> updateUserInfo(@RequestBody UpdateUserInfo updateUserInfo) {
 
         return userService.updateUserInfo(updateUserInfo);
     }
-
+    // 유저 삭제
     @LoginCheck
     @DeleteMapping(value = "/user")
     public ResponseEntity<String> deleteUser() {
         return userService.deleteUser();
 
     }
-
+    // 유저 비밀번호 변정
     @LoginCheck
     @PatchMapping(value = "/user/password")
     public ResponseEntity<String> updateUserPassword(@RequestBody UpdateUserPassword updateUserPassword) {

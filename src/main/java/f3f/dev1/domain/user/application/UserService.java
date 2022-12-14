@@ -161,6 +161,9 @@ public class UserService {
     }
 
     // 유저 비밀번호 업데이트 처리 메소드
+    // TODO: 트레이드와 마찬가지로, 세션에서 가져온 유저 값을 항상 신뢰할 수 있을까 고민
+    // TODO: 프론트에서 따로 유저를 구분짓는 아이디나 이메일을 넘겨받아야될 것 같은데, 현재는 세션에서 가져온 값을 항상 신뢰할 수 있다고 판단해서 로그인시에도 프론트로 따로 유저 아이디나 이메일 값을 안넘긴다
+    // TODO: 코드리뷰후 수정 예정
     @Transactional
     public ResponseEntity<String> updateUserPassword(UpdateUserPassword updateUserPassword) {
 
