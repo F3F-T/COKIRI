@@ -8,13 +8,8 @@ import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.domain.user.dao.UserRepository;
-import f3f.dev1.domain.user.dto.UserDTO;
-import f3f.dev1.domain.user.dto.UserDTO.SignUpRequest;
-import f3f.dev1.domain.user.dto.UserDTO.UpdateUserInfo;
-import f3f.dev1.domain.user.dto.UserDTO.UserInfo;
 import f3f.dev1.domain.user.exception.*;
 import f3f.dev1.domain.user.model.User;
-import f3f.dev1.global.common.constants.RandomCharacter;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +23,7 @@ import java.util.Random;
 
 import static f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
 import static f3f.dev1.domain.user.dto.UserDTO.*;
-import static f3f.dev1.domain.user.dto.UserDTO.UpdateUserPassword;
-import static f3f.dev1.global.common.constants.RandomCharacter.*;
+import static f3f.dev1.global.common.constants.RandomCharacter.RandomCharacters;
 import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
 import static f3f.dev1.global.common.constants.ResponseConstants.UPDATE;
 
@@ -92,6 +86,7 @@ public class UserService {
     }
 
     // TODO: 수요일 이후에 구현 예정
+    // TODO: 조회에서 당장은 사용하지 않는 메소드들, api에서 호출안될 것 같으면 삭제 예현
     // 아이디로 유저가 쓴 게시글 리스트 조회
     @Transactional(readOnly = true)
     public List<Post> getUserWrittenPosts(Long userId) {
