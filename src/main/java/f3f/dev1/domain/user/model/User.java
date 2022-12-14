@@ -65,8 +65,8 @@ public class User extends UserBase {
     private List<Trade> sellingTrades = new ArrayList<>();
 
     @Builder
-    public User(Long id, String email, String password,String username, Address address, String birthDate, String phoneNumber, String nickname) {
-        super(id, email, password, AUTH);
+    public User(Long id, String email, String password,String username, Address address, String birthDate, String phoneNumber, String nickname, UserLoginType userLoginType) {
+        super(id, email, password, AUTH,userLoginType);
         this.userName = username;
         this.address = address;
         this.birthDate = birthDate;

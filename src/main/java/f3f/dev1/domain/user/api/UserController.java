@@ -20,7 +20,6 @@ public class UserController {
     private final UserService userService;
     private final SessionLoginService sessionLoginService;
     // 이메일 찾기
-    // TODO: 생각해보니까 아스테리스크 처리 안하고 뱉어도 될 것 같은데,,
     // TODO: 던지는 예외 메시지도 한번 다듬어야될 것 같음, 같은 예외 재사용이 많아서 비밀번호 찾기에서 유저 못 찾았는데 ID 비밀번호 확인하라는 메시지가 출력됨
     @PostMapping(value = "/user/find/email")
     public ResponseEntity<EncryptEmailDto> findEmail(@RequestBody FindEmailDto findEmailDto) {
@@ -29,7 +28,7 @@ public class UserController {
     }
 
     // 비밀번호 찾기
-    // TODO: 디비에 암호화된 비밀번호로 원래 비밀번호를 못 가져올 것 같아서 일단 랜덤 비밀번호 생성해서 사용자에게 뿌려주는 방식으로 구현
+
     @PostMapping(value = "/user/find/password")
     public ResponseEntity<ReturnPasswordDto> findPassword(@RequestBody FindPasswordDto findPasswordDto) {
         ReturnPasswordDto userPassword = userService.findUserPassword(findPasswordDto);
@@ -69,15 +68,15 @@ public class UserController {
     // 유저 정보 수정
     @LoginCheck
     @PatchMapping(value = "/user")
-    public ResponseEntity<String> updateUserInfo(@RequestBody UpdateUserInfo updateUserInfo) {
+    public ResponseEntity<UserInfo> updateUserInfo(@RequestBody UpdateUserInfo updateUserInfo) {
 
-        return userService.updateUserInfo(updateUserInfo);
+        return new ResponseEntity<>(userService.updateUserInfo(updateUserInfo), HttpStatus.OK);
     }
     // 유저 삭제
     @LoginCheck
     @DeleteMapping(value = "/user")
     public ResponseEntity<String> deleteUser() {
-        return userService.deleteUser();
+        return new ResponseEntity<>(userService.deleteUser(), HttpStatus.OK);
 
     }
     // 유저 비밀번호 변정
@@ -86,7 +85,7 @@ public class UserController {
     public ResponseEntity<String> updateUserPassword(@RequestBody UpdateUserPassword updateUserPassword) {
 
 
-        return userService.updateUserPassword(updateUserPassword);
+        return new ResponseEntity<>(userService.updateUserPassword(updateUserPassword), HttpStatus.OK);
     }
 
 

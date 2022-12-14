@@ -1,31 +1,20 @@
 package f3f.dev1.domain.user.application;
 
-import f3f.dev1.domain.comment.model.Comment;
-import f3f.dev1.domain.message.model.Message;
-import f3f.dev1.domain.message.model.MessageRoom;
-import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.application.ScrapService;
-import f3f.dev1.domain.scrap.model.Scrap;
-import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.domain.user.dao.UserRepository;
 import f3f.dev1.domain.user.exception.*;
 import f3f.dev1.domain.user.model.User;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
 import static f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
 import static f3f.dev1.domain.user.dto.UserDTO.*;
 import static f3f.dev1.global.common.constants.RandomCharacter.RandomCharacters;
-import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
-import static f3f.dev1.global.common.constants.ResponseConstants.UPDATE;
 
 
 @Service
@@ -76,7 +65,6 @@ public class UserService {
 
     // 조회 메소드
     // 아이디로 유저 정보 조회
-    // TODO: 리팩터링하면서 사용하지 않게됨, 제거 예정
     @Transactional(readOnly = true)
     public UserInfo getUserInfo(Long userId) {
         User byId = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
@@ -85,106 +73,39 @@ public class UserService {
 
     }
 
-    // TODO: 수요일 이후에 구현 예정
-    // TODO: 조회에서 당장은 사용하지 않는 메소드들, api에서 호출안될 것 같으면 삭제 예현
-    // 아이디로 유저가 쓴 게시글 리스트 조회
-    @Transactional(readOnly = true)
-    public List<Post> getUserWrittenPosts(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
-        return user.getPosts();
-    }
-    // 아이디로 유저가 쓴 댓글 리스트 조회
-    @Transactional(readOnly = true)
-    public List<Comment> getUserWrittenComments(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
-        return user.getComments();
-    }
-
-    // 아이디로 유저가 스크랩한 게시글 리스트 조회
-
-    @Transactional(readOnly = true)
-    public List<Post> getUserScrapPosts(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
-        Scrap userScrap = user.getScrap();
-        return new ArrayList<>();
-    }
-    // 아이디로 유저가 판매자인 거래 리스트 조회
-    @Transactional(readOnly = true)
-    public List<Trade> getUserSellingTrades(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
-        return user.getSellingTrades();
-    }
-
-    // 아이디로 유저가 구매자인 거래 조회
-    @Transactional(readOnly = true)
-    public List<Trade> getUserBuyingTrades(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
-        return user.getBuyingTrades();
-    }
-
-    // 아이디로 유저가 판매자인 채팅방 리스트 조회
-    @Transactional(readOnly = true)
-    public List<MessageRoom> getUserSellingMessageRooms(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
-        return user.getSellingRooms();
-    }
-    // 아이디로 유저가 구매자인 채팅방 리스트 조회
-    @Transactional(readOnly = true)
-    public List<MessageRoom> getUserBuyingMessageRooms(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
-        return user.getBuyingRooms();
-    }
-
-    // 아이디로 유저가 보낸 메시지 리스트 조회
-    @Transactional(readOnly = true)
-    public List<Message> getUserSendMessages(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
-        return user.getSendMessages();
-    }
-    // 아이디로 유저가 받은 메시지 리스트 조회
-    @Transactional(readOnly = true)
-    public List<Message> getUserReceivedMessages(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
-        return user.getReceivedMessages();
-    }
-
 
     // 업데이트 메소드
     // 유저 정보 업데이트 처리 메소드
     @Transactional
-    public ResponseEntity<String> updateUserInfo(UpdateUserInfo updateUserInfo) {
+    public UserInfo updateUserInfo(UpdateUserInfo updateUserInfo) {
         User user = userRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
         user.updateUserInfo(updateUserInfo);
-        return UPDATE;
+        return user.toUserInfo();
     }
 
     // 유저 비밀번호 업데이트 처리 메소드
-    // TODO: 트레이드와 마찬가지로, 세션에서 가져온 유저 값을 항상 신뢰할 수 있을까 고민
-    // TODO: 프론트에서 따로 유저를 구분짓는 아이디나 이메일을 넘겨받아야될 것 같은데, 현재는 세션에서 가져온 값을 항상 신뢰할 수 있다고 판단해서 로그인시에도 프론트로 따로 유저 아이디나 이메일 값을 안넘긴다
-    // TODO: 코드리뷰후 수정 예정
     @Transactional
-    public ResponseEntity<String> updateUserPassword(UpdateUserPassword updateUserPassword) {
+    public String updateUserPassword(UpdateUserPassword updateUserPassword) {
 
         User user = userRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
         updateUserPassword.encrypt();
-        System.out.println("user.getPassword() = " + user.getPassword());
-        System.out.println("updateUserPassword = " + updateUserPassword.getOldPassword());
+
         if (!Objects.equals(user.getPassword(), updateUserPassword.getOldPassword())) {
             throw new InvalidPasswordException();
         }
         user.updateUserPassword(updateUserPassword);
-        return UPDATE;
+        return "UPDATE";
     }
 
     // 유저 삭제 메소드
     @Transactional
-    public ResponseEntity<String> deleteUser() {
+    public String deleteUser() {
         User user = userRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
         userRepository.delete(user);
         sessionLoginService.logout();
-        return DELETE;
+        return "DELETE";
     }
-
+    // 이메일 찾기 메소드
     @Transactional
     public EncryptEmailDto findUserEmail(FindEmailDto findEmailDto) {
         String userName = findEmailDto.getUserName();
@@ -192,10 +113,8 @@ public class UserService {
         User user = userRepository.findByUserNameAndPhoneNumber(userName, phoneNumber).orElseThrow(UserNotFoundByUsernameAndPhoneException::new);
         return user.encryptEmail();
 
-
-
     }
-
+    // 비밀 번호 찾기 메소드
     @Transactional
     public ReturnPasswordDto findUserPassword(FindPasswordDto findPasswordDto) {
         String userName = findPasswordDto.getUserName();
@@ -225,6 +144,7 @@ public class UserService {
     }
 
 
-    // TODO: 마이페이지 조회 메소드 필요할 것 같음 추가예정
+    // TODO: 마이페이지 조회 메소드 필요할 것 같음 추가예정 - 조회할떄 각 정보 DTO로 감싸서 리턴하게 해야함
+    // TODO: 이메일 인증 추가해야된다.
 
 }
