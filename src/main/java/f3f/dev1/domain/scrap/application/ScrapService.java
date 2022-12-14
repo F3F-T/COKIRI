@@ -46,8 +46,7 @@ public class ScrapService {
 
     // 스크랩에 있는 포스트조회 메서드
     // TODO: 유저의 스크랩한 포스트 조회가 유저쪽에 있는게 나을까 스크랩에 있는게 나을까 고민해보고 수정예정
-    // TODO: 현재 유저 정보를 sessionLoginService에서 받아와서 처리하는데, 추가로 유저 검증이 필요하지는 않을까
-    @Transactional
+    @Transactional(readOnly = true)
     public GetScrapPostDTO getUserScrapPosts(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(UserNotFoundByEmailException::new);
 
