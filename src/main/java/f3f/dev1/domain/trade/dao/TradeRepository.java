@@ -3,6 +3,7 @@ package f3f.dev1.domain.trade.dao;
 import f3f.dev1.domain.trade.model.Trade;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import javax.swing.text.html.Option;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,5 +20,5 @@ public interface TradeRepository extends JpaRepository<Trade, Long> {
 
     boolean existsByPostId(Long postId);
 
-    List<Trade> findTradesByPostId(Long postId);
+    Optional<Trade> findByPostId(Long postId);
 }

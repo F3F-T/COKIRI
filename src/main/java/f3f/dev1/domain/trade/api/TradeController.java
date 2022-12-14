@@ -25,10 +25,10 @@ public class TradeController {
         return new ResponseEntity<>(trade, HttpStatus.CREATED);
     }
     // 트레이드 정보 조회
-    @GetMapping(value = "/trade/{tradeId}")
+    @GetMapping(value = "/trade/{postId}")
     @LoginCheck
-    public ResponseEntity<TradeInfoDto> getTradeStatus(@PathVariable Long tradeId) {
-        TradeInfoDto tradeInfo = tradeService.getTradeInfo(tradeId);
+    public ResponseEntity<TradeInfoDto> getTradeStatus(@PathVariable Long postId) {
+        TradeInfoDto tradeInfo = tradeService.getTradeInfo(postId);
 
         return new ResponseEntity<>(tradeInfo, HttpStatus.OK);
     }
