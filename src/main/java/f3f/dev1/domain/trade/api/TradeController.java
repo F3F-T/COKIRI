@@ -36,8 +36,8 @@ public class TradeController {
     // TODO: 프론트와 경로 상의후 수정 예정
     @PatchMapping(value = "/trade")
     @LoginCheck
-    public ResponseEntity<String> updateTradeStatus(@RequestBody UpdateTradeDto updateTradeDto) {
-        return tradeService.updateTradeStatus(updateTradeDto);
+    public ResponseEntity<TradeInfoDto> updateTradeStatus(@RequestBody UpdateTradeDto updateTradeDto) {
+        return new ResponseEntity<>(tradeService.updateTradeStatus(updateTradeDto), HttpStatus.OK);
 
     }
     // TODO: 거래는 내부적으로 포스트 사라지면서 거래도 사라질거라고 생각되어서 따로 거래 삭제 API는 구현하지 않음
