@@ -5,7 +5,7 @@ import myImage from "../img/cokkiriLogo.png"
 const KiriKiriCategoryRoundImage = ({props}) => {
     return (
         <>
-            <Image src={props} className='img-fluid rounded-circle'/>
+            <Image src={props} className='img-fluid rounded-circle' />
         </>
     );
 }
