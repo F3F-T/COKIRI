@@ -18,7 +18,7 @@ public class Tag {
 
     private String name;
 
-    @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<PostTag> postTags = new ArrayList<>();
 
     @Builder
