@@ -1,5 +1,7 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/Home.module.css"
+import UncontrolledExample from "../component/UncontrolledExample";
+import Carousel from 'react-bootstrap/Carousel';
 
 const Home = () => {
     return (<body>
@@ -16,10 +18,42 @@ const Home = () => {
             </div>
         </section>
         <section className={styles.mulmulTrade}>
-            물물 교환
+            <h1>우리 동네 인기 물물 교환</h1>
+            <Carousel>
+                <Carousel.Item interval={5000}>
+            <div className={styles.mulmulCardView}>
+            <UncontrolledExample/>
+            <UncontrolledExample/>
+            <UncontrolledExample/>
+            <UncontrolledExample/>
+                <div>
+                <Carousel.Caption>
+                    <h3 style={{color:"black"}}>First slide label</h3>
+                    <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+                </Carousel.Caption>
+                </div>
+            </div>
+                </Carousel.Item>
+
+                <Carousel.Item interval={5000}>
+                    <div className={styles.mulmulCardView}>
+                        <UncontrolledExample/>
+                        <UncontrolledExample/>
+                        <UncontrolledExample/>
+                        <UncontrolledExample/>
+                    </div>
+                </Carousel.Item>
+            </Carousel>
         </section>
         <section className={styles.kirikiriTrade}>
-            끼리끼리
+            <h1>gasga</h1>
+            <h1>gasga</h1>
+            <h1>gasga</h1>
+            <h1>gasga</h1>
+            <h1>gasga</h1>
+            <h1>gasga</h1>
+            <h1>gasga</h1>
+            <h1>gasga</h1>
         </section>
         <footer>
             footer
