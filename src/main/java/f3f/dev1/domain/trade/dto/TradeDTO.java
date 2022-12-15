@@ -1,9 +1,9 @@
 package f3f.dev1.domain.trade.dto;
 
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.trade.model.Trade;
-import f3f.dev1.domain.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public class TradeDTO {
 
         private Long postId;
 
-        public Trade toEntity(User seller, User buyer, Post post) {
+        public Trade toEntity(Member seller, Member buyer, Post post) {
             return Trade.builder()
                     .seller(seller)
                     .buyer(buyer)

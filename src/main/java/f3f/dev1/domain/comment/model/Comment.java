@@ -1,7 +1,7 @@
 package f3f.dev1.domain.comment.model;
 
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.user.model.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,8 +28,8 @@ public class Comment {
     private Long depth;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User author;
+    @JoinColumn(name = "member_id")
+    private Member author;
 
     @OneToMany(mappedBy = "parent")
     private List<Comment> childs = new ArrayList<>();
@@ -39,7 +39,7 @@ public class Comment {
     private Comment parent;
 
     @Builder
-    public Comment(Long id, Post post, String content, Long depth, User author, Comment parent) {
+    public Comment(Long id, Post post, String content, Long depth, Member author, Comment parent) {
         this.id = id;
         this.post = post;
         this.content = content;

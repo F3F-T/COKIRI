@@ -3,6 +3,7 @@ package f3f.dev1.domain.scrap.application;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
+import f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
 import f3f.dev1.domain.scrap.exception.DuplicateScrapByUserIdException;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.user.application.SessionLoginService;
