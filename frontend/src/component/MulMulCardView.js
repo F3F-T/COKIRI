@@ -2,7 +2,7 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import myImage from "../img/cokkiriLogo.png"
 import styles from "../styles/Home.module.css"
-function BasicExample() {
+function MulMulCardView() {
     return (
         <Card className={styles.mulmulCardView}>
             <Card.Img className={styles.mulmulCardImg}
@@ -22,4 +22,4 @@ function BasicExample() {
     );
 }
 
-export default BasicExample;
+export default MulMulCardView;

@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/Home.module.css"
-import UncontrolledExample from "../component/UncontrolledExample";
+import MulMulCardView from "../component/MulMulCardView";
 import Carousel from 'react-bootstrap/Carousel';
 import KiriKiriCategoryRoundImage from "../component/KiriKiriCategoryRoundImage";
 import Row from 'react-bootstrap/Row';
@@ -25,14 +25,14 @@ const Home = () => {
             </div>
         </section>
         <section className={styles.mulmulTrade}>
-            <h2>우리 동네 인기 물물 교환</h2>
+            <h2>우리 동네 인기 물물교환</h2>
             <Carousel>
                 <Carousel.Item interval={5000}>
             <div className={styles.mulmulCardView}>
-            <UncontrolledExample/>
-            <UncontrolledExample/>
-            <UncontrolledExample/>
-            <UncontrolledExample/>
+            <MulMulCardView/>
+            <MulMulCardView/>
+            <MulMulCardView/>
+            <MulMulCardView/>
                 <div>
                 </div>
             </div>
@@ -40,10 +40,10 @@ const Home = () => {
 
                 <Carousel.Item interval={5000}>
                     <div className={styles.mulmulCardView}>
-                        <UncontrolledExample/>
-                        <UncontrolledExample/>
-                        <UncontrolledExample/>
-                        <UncontrolledExample/>
+                        <MulMulCardView/>
+                        <MulMulCardView/>
+                        <MulMulCardView/>
+                        <MulMulCardView/>
                     </div>
                 </Carousel.Item>
             </Carousel>
@@ -73,10 +73,10 @@ const Home = () => {
             <Carousel>
                 <Carousel.Item interval={5000}>
                     <div className={styles.mulmulCardView}>
-                        <UncontrolledExample/>
-                        <UncontrolledExample/>
-                        <UncontrolledExample/>
-                        <UncontrolledExample/>
+                        <MulMulCardView/>
+                        <MulMulCardView/>
+                        <MulMulCardView/>
+                        <MulMulCardView/>
                         <div>
                         </div>
                     </div>
@@ -84,10 +84,10 @@ const Home = () => {
 
                 <Carousel.Item interval={5000}>
                     <div className={styles.mulmulCardView}>
-                        <UncontrolledExample/>
-                        <UncontrolledExample/>
-                        <UncontrolledExample/>
-                        <UncontrolledExample/>
+                        <MulMulCardView/>
+                        <MulMulCardView/>
+                        <MulMulCardView/>
+                        <MulMulCardView/>
                     </div>
                 </Carousel.Item>
             </Carousel>
