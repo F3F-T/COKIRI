@@ -2,17 +2,17 @@ package f3f.dev1.domain.user.api;
 
 import f3f.dev1.domain.user.application.SessionLoginService;
 import f3f.dev1.domain.user.application.UserService;
-import f3f.dev1.domain.user.dto.UserDTO;
 import f3f.dev1.domain.user.dto.UserDTO.SignUpRequest;
 import f3f.dev1.domain.user.dto.UserDTO.UserInfo;
 import f3f.dev1.global.common.annotation.LoginCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static f3f.dev1.domain.user.dto.UserDTO.*;
 import static f3f.dev1.domain.user.dto.UserDTO.LoginRequest;
-import static f3f.dev1.global.common.constants.ResponseConstants.CREATE;
-import static f3f.dev1.global.common.constants.ResponseConstants.OK;
+import static f3f.dev1.global.common.constants.ResponseConstants.*;
 
 @Slf4j
 @RestController
@@ -22,27 +22,54 @@ public class UserController {
     private final SessionLoginService sessionLoginService;
 
     @PostMapping(value = "/user/signup")
-    public String signUp(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<String> signUp(@RequestBody SignUpRequest signUpRequest) {
+        // TODO: 회원가입할때 정보 검증을 프론트에서 할지 백에서할지 결정해야함
+
         userService.signUp(signUpRequest);
         return CREATE;
     }
 
     @PostMapping(value = "/user/login")
-    public Long login(@RequestBody LoginRequest loginRequest) {
-
-        return sessionLoginService.login(loginRequest);
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+        sessionLoginService.login(loginRequest);
+        return OK;
     }
+
     @LoginCheck
     @DeleteMapping(value = "/user/logout")
-    public String logout() {
+    public ResponseEntity<String> logout() {
         sessionLoginService.logout();
         return OK;
     }
 
     @LoginCheck
-    @GetMapping(value = "/user/{userId}")
-    public UserInfo getUserInfo(@PathVariable Long userId) {
-        return sessionLoginService.getCurrentUser(userId).toUserInfo();
+    @GetMapping(value = "/user")
+    public UserInfo getUserInfo() {
+        return userService.findUserInfoByEmail(sessionLoginService.getLoginUser()).toUserInfo();
 
     }
+
+    @LoginCheck
+    @PatchMapping(value = "/user")
+    public ResponseEntity<String> updateUserInfo(@RequestBody UpdateUserInfo updateUserInfo) {
+
+        return userService.updateUserInfo(updateUserInfo);
+    }
+
+    @LoginCheck
+    @DeleteMapping(value = "/user")
+    public ResponseEntity<String> deleteUser() {
+        return userService.deleteUser();
+
+    }
+
+    @LoginCheck
+    @PatchMapping(value = "/user/password")
+    public ResponseEntity<String> updateUserPassword(@RequestBody UpdateUserPassword updateUserPassword) {
+
+
+        return userService.updateUserPassword(updateUserPassword);
+    }
+
+    //TODO: 아이디 찾기, 비밀번호 찾기, 구현예정
 }
