@@ -2,7 +2,7 @@ package f3f.dev1.domain.comment.dto;
 
 import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.member.model.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +20,7 @@ public class CommentDTO {
         @NotNull
         private Long id;
         @NotNull
-        private User author;
+        private Member author;
         @NotNull
         private Post post;
         @Size(min = 1, message = "댓글은 한글자 이상 작성해주세요")
@@ -46,7 +46,7 @@ public class CommentDTO {
         @NotNull
         private Long id;
         @NotNull
-        private User author;
+        private Member author;
         @NotNull
         private Post post;
         @Size(min = 1, message = "댓글은 한 글자 이상 작성해주세요")
@@ -74,7 +74,7 @@ public class CommentDTO {
         @NotNull
         private Long id;
         @NotNull
-        private User author;
+        private Member author;
         @NotNull
         private Post post;
         @Size(min = 1, message = "수정할 댓글을 한 글자 이상 적어주세요")

@@ -1,7 +1,7 @@
 package f3f.dev1.domain.post.dao;
 
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,8 +13,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Optional<Post> findById(Long id);
     boolean existsById(Long id);
-    boolean existsByAuthorId(Long authorId);
-    List<Post> findByAuthorId(Long authorId);
+    boolean existsByAuthor(Member author);
+    List<Post> findByAuthor(Member author);
     void deleteById(Long id);
 
 }

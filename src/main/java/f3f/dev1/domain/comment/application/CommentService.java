@@ -1,14 +1,13 @@
 package f3f.dev1.domain.comment.application;
 
 import f3f.dev1.domain.comment.dao.CommentRepository;
-import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingCommentException;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.user.dao.UserRepository;
-import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     /*
         C : Create
@@ -39,17 +38,17 @@ public class CommentService {
     // 부모 댓글 생성 로직
     @Transactional
     public Long createParentComment(@Valid CreateParentCommentRequest parentCommentRequest) {
-        User user = userRepository.findById(parentCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+        Member member = memberRepository.findById(parentCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(parentCommentRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = parentCommentRequest.ToParentEntity();
         Comment save = commentRepository.save(comment);
-        user.getComments().add(save);
+        member.getComments().add(save);
         return save.getId();
     }
 
     @Transactional
     public Long createChildComment(@Valid CreateChildCommentRequest childCommentRequest) {
-        User user = userRepository.findById(childCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+        Member member = memberRepository.findById(childCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(childCommentRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
         Comment parent = commentRepository.findById(childCommentRequest.getParent().getId()).orElseThrow(NotFoundByIdException::new);
         Comment child = childCommentRequest.ToChildEntity();

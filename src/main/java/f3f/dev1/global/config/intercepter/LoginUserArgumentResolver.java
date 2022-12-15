@@ -1,6 +1,6 @@
 package f3f.dev1.global.config.intercepter;
 
-import f3f.dev1.domain.user.application.SessionLoginService;
+import f3f.dev1.domain.member.application.SessionLoginService;
 import f3f.dev1.global.common.annotation.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;

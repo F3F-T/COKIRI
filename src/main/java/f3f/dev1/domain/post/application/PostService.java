@@ -1,11 +1,11 @@
 package f3f.dev1.domain.post.application;
 
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthor;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.user.dao.UserRepository;
-import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +26,14 @@ import static f3f.dev1.global.common.constants.ResponseConstants.*;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public Long savePost(PostSaveRequest postSaveRequest) {
 
         // 유저 객체 받아와서 포스트 리스트에 추가해줘야 함
         // TODO Trade 객체를 어떻게 처리할지 아직 명확하지 않음
-        User user = userRepository.findById(postSaveRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+        Member member = memberRepository.findById(postSaveRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
 
         /* TODO 카테고리 객체 받아와서 카테고리 리스트에 추가해줘야 함
             categoryRepository.findById(productCategory.getId()) ~
@@ -41,7 +41,7 @@ public class PostService {
          */
 
         Post post = postSaveRequest.toEntity();
-        user.getPosts().add(post);
+        member.getPosts().add(post);
         postRepository.save(post);
         return post.getId();
     }
