@@ -8,6 +8,7 @@ import f3f.dev1.domain.user.dao.UserRepository;
 import f3f.dev1.domain.user.model.User;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -75,7 +76,7 @@ public class PostService {
 
     // TODO 피드백 받기 : 반환 타입을 Long (id)으로 하는 거랑 Post 객체 하나만 가지고 있는 DTO로 하는 것 중 뭐가 더 나은가
     @Transactional
-    public String updatePost(UpdatePostRequest updatePostRequest) {
+    public ResponseEntity<String> updatePost(UpdatePostRequest updatePostRequest) {
         Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         // 게시글 변경 정보가 기존이랑 똑같다면 (변화가 없다면) 예외를 터트리려 했는데, 그럴 필요가 없어보여서 일단은 검증하지 않겠다
         // 근데 또 예외는 던져놓고 처리를 안하는 방법도 있으니 이건 피드백을 받아 볼 예정
@@ -96,7 +97,7 @@ public class PostService {
     }
 
     @Transactional
-    public String deletePost(DeletePostRequest deletePostRequest) {
+    public ResponseEntity<String> deletePost(DeletePostRequest deletePostRequest) {
         // 먼저 해당 게시글이 존재하는지 검증
         Post post = postRepository.findById(deletePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         // 그 후 작성자가 요청자와 동일인물인지 검증
