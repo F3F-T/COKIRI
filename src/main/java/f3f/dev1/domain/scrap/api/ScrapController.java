@@ -1,8 +1,8 @@
 package f3f.dev1.domain.scrap.api;
 
+import f3f.dev1.domain.member.application.SessionLoginService;
 import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.dto.ScrapDTO.GetScrapPostDTO;
-import f3f.dev1.domain.user.application.SessionLoginService;
 import f3f.dev1.global.common.annotation.LoginCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
