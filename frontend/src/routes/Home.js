@@ -27,10 +27,6 @@ const Home = () => {
             <UncontrolledExample/>
             <UncontrolledExample/>
                 <div>
-                <Carousel.Caption>
-                    <h3 style={{color:"black"}}>First slide label</h3>
-                    <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-                </Carousel.Caption>
                 </div>
             </div>
                 </Carousel.Item>
