@@ -11,7 +11,7 @@ import Nav from "./component/Nav";
 function App() {
   return (
       <div className="App">
-          <Nav />
+          {/*<Nav />*/}
         <Switch>
           <Route exact path="/" component={Home} />
           <Route path="/mulmultrade" component={ MulmulTrade} />
