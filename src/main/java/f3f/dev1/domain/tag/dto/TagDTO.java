@@ -43,9 +43,17 @@ public class TagDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GetPostListByTagRequest {
+    public static class GetPostListByTagIdRequest {
         @NotNull
         private Long id;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetPostListByTagNameRequest {
+        @NotNull
+        private String name;
     }
 
     @Getter

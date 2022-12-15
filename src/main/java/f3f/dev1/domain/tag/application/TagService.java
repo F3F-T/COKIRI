@@ -9,16 +9,16 @@ import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.Valid;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static f3f.dev1.domain.tag.dto.TagDTO.*;
+import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
 
 @Service
 @Validated
@@ -70,8 +70,9 @@ public class TagService {
         태그 자체에 대한 조회는 필요 없을 것 같아서.
      */
 
+    // TODO 요청으로 넘기는 DTO 객체는 Id만 가지고 있다. 이런 경우 그냥 Long으로 바로 넘기는게 나으려나? - 피드백 받기
     @Transactional(readOnly = true)
-    public GetPostListByTagResponse getPosts(GetPostListByTagRequest request) {
+    public GetPostListByTagResponse getPostsByTagId(GetPostListByTagIdRequest request) {
         // 먼저 postTag 리스트를 찾고 하나하나 포스트를 찾아서 추가해준다.
         if(!tagRepository.existsById(request.getId())) {
             throw new NotFoundByIdException();
@@ -85,6 +86,22 @@ public class TagService {
         return response;
     }
 
+    @Transactional(readOnly = true)
+    public GetPostListByTagResponse getPostsByTagName(GetPostListByTagNameRequest request) {
+        // 먼저 postTag 리스트를 찾고 하나하나 포스트를 찾아서 추가해준다.
+        if(!tagRepository.existsByName(request.getName())) {
+            throw new NotFoundByIdException();
+        }
+        List<PostTag> postTagList = postTagRepository.findByTagName(request.getName());
+        List<Post> postList = new ArrayList<>();
+        for (PostTag postTagEach : postTagList) {
+            postList.add(postTagEach.getPost());
+        }
+        GetPostListByTagResponse response = new GetPostListByTagResponse(postList);
+        return response;
+    }
+
+
     /*
         U : update
         태그는 업데이트가 필요 없어보인다.
@@ -97,14 +114,15 @@ public class TagService {
         TODO 태그 삭제가 조금 애매하다. 관리자가 태그를 지우나? 일반인이 지우면 문제가 생길 것 같은데
      */
 
-    @Transactional
-    public String deleteTagFromPost(DeleteTagFromPostRequest request) {
-        /*
-            확인해야할 것들
-            1. 요청으로 넘어온 태그가 존재하는 태그인가
-            2. 해당 태그가 요청으로 넘어온 게시글에 포함되어있나
-            3. 태그를 삭제하려는 요청자가 게시글 작성자 본인인가
-         */
-        return "TEMP";
-    }
+    // TODO 삭제는 피드백에서 일단 보류하라고 했다.
+//    @Transactional
+//    public ResponseEntity<String> deleteTagFromPost(DeleteTagFromPostRequest request) {
+//        /*
+//            확인해야할 것들
+//            1. 요청으로 넘어온 태그가 존재하는 태그인가
+//            2. 해당 태그가 요청으로 넘어온 게시글에 포함되어있나
+//            3. 태그를 삭제하려는 요청자가 게시글 작성자 본인인가
+//         */
+//        return DELETE;
+//    }
 }

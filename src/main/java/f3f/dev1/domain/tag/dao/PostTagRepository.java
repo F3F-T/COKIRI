@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface PostTagRepository extends JpaRepository<PostTag, Long> {
 
     Optional<PostTag> findById(Long id);
+    List<PostTag> findByTagName(String name);
     Optional<PostTag> findByPostAndTag(Post post, Tag tag);
     List<PostTag> findByTagId(Long tagId);
     boolean existsByPostAndTag(Post post, Tag tag);
