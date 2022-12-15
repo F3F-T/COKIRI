@@ -26,17 +26,17 @@
 
 ## User
 
-| Description | HTTP Method | URL | Query string | Message body                                              | Return data                              |
-| --- | --- | --- | --- |-----------------------------------------------------------|------------------------------------------|
-| 회원가입 | POST | /user/signup |  | {"userName":"김동준","nickname":"nickname","address":{"addressName":"정자동","postalAddress":"13556","latitude":"37.49455","longitude":"127.12170"},"birthDate":"990128","phoneNumber":"01012345678","email":"test@email.com","password":"12345678"} | CREATE                                   |
-| 로그인 | POST | /user/login |  | {"email":"test@email.com", "password":"12345678"}                                   | userId                                   |
-| 로그아웃 | DELETE | /user/logout |  |                                            | OK                                       |
-| 회원 정보 조회 | GET | /user/{user_id} |  |                                                           | {"userName": "김동준","nickname": "nickname","address": {"addressName": "정자동","postalAddress": "13556","latitude": "37.49455","longitude": "127.12170"},"phoneNumber": "01012345678","email": "test@email.com"} |
-| 회원 정보 수정 | PATCH | /user/{user_id} |  | {nickname:~~, token: ~~}                                  | {nickname: 변경된 닉네임}                      |
-| 회원 삭제 | DELETE | /user/{user_id} |  | {token:~~}                                                | {removed_user:~~}                        |
-| 아이디 찾기 | POST | /user/find/email |  | {value from external api:~~}                              | {email:~~~}                              |
-| 비밀번호 찾기 | POST | /user/find/password |  | {email:~~~,username: ~~~,phone: ~~}                       | {password:~~}                            |
-| 비밀번호 변경 | PATCH | /user/password |  | {email:~~,beforePassword: ~~~,afterPassword: ~~~}         | {password:~~~}                           |
+| Description | HTTP Method | URL | Query string | Message body                                | Return data                                                                                                                                                                                                  |
+| --- | --- | --- | --- |---------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 회원가입 | POST | /user/signup |  | {"userName":"김동준","nickname":"nickname","address":{"addressName":"정자동","postalAddress":"13556","latitude":"37.49455","longitude":"127.12170"},"birthDate":"990128","phoneNumber":"01012345678","email":"test@email.com","password":"12345678"} | CREATE                                                                                                                                                                                                       |
+| 로그인 | POST | /user/login |  | {"email":"test@email.com", "password":"12345678"}                     | OK                                                                                                                                                                                                           |
+| 로그아웃 | DELETE | /user/logout |  |                                            | OK                                                                                                                                                                                                           |
+| 회원 정보 조회 | GET | /user |  |                                             | {"userName": "김동준","nickname": "nickname","address": {"addressName": "정자동","postalAddress": "13556","latitude": "37.49455","longitude": "127.12170"},"phoneNumber": "01012345678","email": "test@email.com"} |
+| 회원 정보 수정 | PATCH | /user |  | {"nickname":"updatenickname","address":{"addressName":"바뀐 주소","postalAddress":"999","latitude":"37.49455","longitude":"127.12170"}}                   | UPDATE                                                                                                                                                                                         |
+| 회원 삭제 | DELETE | /user |  |                                             | DELETE                                                                                                                                                                                            |
+| 아이디 찾기 | POST | /user/find/email |  | {value from external api:~~}                | {email:~~~}                                                                                                                                                                                                  |
+| 비밀번호 찾기 | POST | /user/find/password |  | {email:~~~,username: ~~~,phone: ~~}         | {password:~~}                                                                                                                                                                                                |
+| 비밀번호 변경 | PATCH | /user/password |  | {"oldPassword":"12345678","newPassword":"56781234"} | UPDATE                                                                                                                                                                                              |
 
 ## Post
 

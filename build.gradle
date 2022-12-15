@@ -9,7 +9,7 @@ plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     //1. restdocs
-    id 'org.asciidoctor.convert' version "1.5.9.2"
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
     // 2. querydsl plugins 추가
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
@@ -21,9 +21,12 @@ sourceCompatibility = '11'
 repositories {
     mavenCentral()
 }
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
+
+configurations {
+    asciidoctorExt
 }
+
+
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -37,12 +40,19 @@ dependencies {
     implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
 
     annotationProcessor 'org.projectlombok:lombok'
 
     compileOnly 'org.projectlombok:lombok'
 
     runtimeOnly 'mysql:mysql-connector-java'
+}
+
+ext {
+    set('snippetsDir', file("build/generated-snippets"))
 }
 
 test {
@@ -52,6 +62,7 @@ test {
 
 asciidoctor {
     inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
     dependsOn test
 }
 
@@ -61,6 +72,7 @@ bootJar { // SpringBoot 1.5 이하일 경우 jar
         into 'static/docs'
     }
 }
+
 
 /*
  * queryDSL 설정 추가

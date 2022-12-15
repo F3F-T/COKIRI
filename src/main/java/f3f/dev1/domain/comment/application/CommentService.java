@@ -4,14 +4,15 @@ import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.domain.comment.exception.DuplicateCommentException;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingCommentException;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.user.dao.UserRepository;
-import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +31,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     /*
         C : Create
@@ -42,7 +43,7 @@ public class CommentService {
     // 부모 자식 대통합
     @Transactional
     public Long createComment(CreateCommentRequest createCommentRequest) {
-        User user = userRepository.findById(createCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+        Member user = memberRepository.findById(createCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(createCommentRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
         // 유저, 포스트 존재 확인
         if(commentRepository.existsById(createCommentRequest.getId())) {
@@ -107,7 +108,7 @@ public class CommentService {
     @Transactional
     public String deleteComment(DeleteCommentRequest deleteCommentRequest) {
         Post post = postRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
-        User user = userRepository.findById(deleteCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+        Member user = memberRepository.findById(deleteCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
         if(commentInPost.getId().equals(comment.getId())) {

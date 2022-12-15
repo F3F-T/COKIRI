@@ -3,19 +3,18 @@ package f3f.dev1.domain.scrap.application;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
-import f3f.dev1.domain.scrap.dto.ScrapDTO;
 import f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
 import f3f.dev1.domain.scrap.exception.DuplicateScrapByUserIdException;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.global.common.constants.ResponseConstants;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -61,7 +60,7 @@ public class ScrapService {
     // 스크랩에 있는 포스트 삭제 메서드
     // TODO: scrap post 쪽 작성되면 구현예정
     @Transactional
-    public String deleteScrapPost(Long userId, Long postId) {
+    public ResponseEntity<String> deleteScrapPost(Long userId, Long postId) {
         Scrap scrap = scrapRepository.findScrapByUserId(userId).orElseThrow(NotFoundByIdException::new);
 
         return ResponseConstants.DELETE;
