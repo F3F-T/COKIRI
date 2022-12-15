@@ -53,11 +53,11 @@ public class PostService {
 
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     @Transactional(readOnly = true)
-    public FindByAuthorPostListResponse findPostByAuthor(User author) {
-        if(!postRepository.existsByAuthor(author)) {
+    public FindByAuthorPostListResponse findPostByAuthor(Long authorId) {
+        if(!postRepository.existsByAuthorId(authorId)) {
             throw new NotFoundPostListByAuthor("해당 작성자의 게시글이 없습니다.");
         }
-        List<Post> byAuthor = postRepository.findByAuthor(author);
+        List<Post> byAuthor = postRepository.findByAuthorId(authorId);
         @Valid FindByAuthorPostListResponse response = new FindByAuthorPostListResponse(byAuthor);
         return response;
     }
@@ -83,11 +83,14 @@ public class PostService {
             업데이트된 카테고리들이 유효한지 각각 Id로 확인한다.
             관련 기능이 구현되면 추가할 것이고, 지금은 유효하다고 가정하고 로직을 작성하겠음
          */
-        post.updateTitle(updatePostRequest.getTitle());
-        post.updateContent(updatePostRequest.getContent());
-        post.updatePostTags(updatePostRequest.getPostTags());
-        post.updateProductCategory(updatePostRequest.getProductCategory());
-        post.updateWishCategory(updatePostRequest.getWishCategory());
+
+        post.updatePostInfos(
+                updatePostRequest.getTitle(),
+                updatePostRequest.getContent(),
+                updatePostRequest.getPostTags(),
+                updatePostRequest.getProductCategory(),
+                updatePostRequest.getWishCategory()
+        );
 
         return UPDATE;
     }
