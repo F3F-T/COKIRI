@@ -175,6 +175,30 @@ public class MemberDTO {
     }
 
 
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class CheckEmailDto {
+        private String email;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class CheckNicknameDto {
+        private String nickname;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class CheckPhoneNumberDto {
+        private String phoneNumber;
+    }
+
 
 
 }

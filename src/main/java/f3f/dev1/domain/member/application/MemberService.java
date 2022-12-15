@@ -38,6 +38,10 @@ public class MemberService {
         return memberRepository.existsByNickname(nickname);
     }
 
+    @Transactional(readOnly = true)
+    public Boolean existsByPhoneNumber(String phoneNumber){
+        return memberRepository.existsByPhoneNumber(phoneNumber);}
+
 
 
     // authentication에 쓰이는 메소드, 이메일로 유저객체 리턴
@@ -93,10 +97,10 @@ public class MemberService {
     @Transactional
     public UserInfo updateUserInfo(UpdateUserInfo updateUserInfo) {
         Member member = memberRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
-        if (memberRepository.existsByNickname(updateUserInfo.getNickname())) {
+        if (!member.getNickname().equals(updateUserInfo.getNickname()) && memberRepository.existsByNickname(updateUserInfo.getNickname())) {
             throw new DuplicateNicknameException();
         }
-        if (memberRepository.existsByPhoneNumber(updateUserInfo.getPhoneNumber())) {
+        if (!member.getPhoneNumber().equals(updateUserInfo.getPhoneNumber()) && memberRepository.existsByPhoneNumber(updateUserInfo.getPhoneNumber())) {
             throw new DuplicatePhoneNumberExepction();
         }
         member.updateUserInfo(updateUserInfo);

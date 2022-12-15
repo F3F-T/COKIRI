@@ -23,16 +23,25 @@ public class MemberController {
 
     private final EmailCertificationService emailCertificationService;
     // 이메일 중복 확인
-    @GetMapping(value = "/user/email/{email}")
-    public ResponseEntity<Boolean> emailDuplicateCheck(@PathVariable String email) {
-        return ResponseEntity.ok(memberService.existsByEmail(email));
+    @PostMapping(value = "/user/check-email")
+    public ResponseEntity<Boolean> emailDuplicateCheck(@RequestBody CheckEmailDto checkEmailDto) {
+        return ResponseEntity.ok(memberService.existsByEmail(checkEmailDto.getEmail()));
     }
 
     // 닉네임 중복 확인
-    @GetMapping(value = "/user/nickname/{nickname}")
-    public ResponseEntity<Boolean> nicknameDuplicateCheck(@PathVariable String nickname) {
-        return ResponseEntity.ok(memberService.existsByNickname(nickname));
+    @PostMapping(value = "/user/check-nickname")
+    public ResponseEntity<Boolean> nicknameDuplicateCheck(@RequestBody CheckNicknameDto checkNicknameDto) {
+        return ResponseEntity.ok(memberService.existsByNickname(checkNicknameDto.getNickname()));
     }
+
+    // 전화번호 중복 확인
+    @PostMapping(value = "/user/check-phone")
+    public ResponseEntity<Boolean> phoneNumberDuplicateCheck(@RequestBody CheckPhoneNumberDto checkPhoneNumberDto) {
+        return ResponseEntity.ok(memberService.existsByPhoneNumber(checkPhoneNumberDto.getPhoneNumber()));
+
+    }
+
+
 
 
 

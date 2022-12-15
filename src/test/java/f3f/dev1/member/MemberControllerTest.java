@@ -587,6 +587,5 @@ public class MemberControllerTest {
                         fieldWithPath("email").description("The email of user that doesn't exists or match with userName and phoneNumber")
                 )));
     }
-
-
+    // TODO: 중복 확인 메소드 테스트 작성되어야함, 예외 통일해야할듯
 }
