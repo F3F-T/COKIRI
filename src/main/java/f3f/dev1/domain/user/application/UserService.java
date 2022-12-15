@@ -76,6 +76,7 @@ public class UserService {
 
     // 업데이트 메소드
     // 유저 정보 업데이트 처리 메소드
+    // TODO: 유저 닉네임 중복 검사 추가
     @Transactional
     public UserInfo updateUserInfo(UpdateUserInfo updateUserInfo) {
         User user = userRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);

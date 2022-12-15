@@ -14,11 +14,15 @@ import f3f.dev1.domain.user.exception.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -26,9 +30,13 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Optional;
 
 import static f3f.dev1.domain.user.dto.UserDTO.*;
+import static f3f.dev1.domain.user.model.UserLoginType.EMAIL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,6 +44,7 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
 
 @WebMvcTest(UserController.class)
 @MockBean(JpaMetamodelMappingContext.class)
+@ExtendWith({RestDocumentationExtension.class, SpringExtension.class})
 public class UserControllerTest {
     @MockBean
     private UserService userService;
@@ -51,9 +60,10 @@ public class UserControllerTest {
     ObjectMapper objectMapper;
 
     @BeforeEach
-    public void setup(WebApplicationContext webApplicationContext) {
+    public void setup(WebApplicationContext webApplicationContext, RestDocumentationContextProvider restDocumentationContextProvider) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .apply(sharedHttpSession())
+                .apply(documentationConfiguration(restDocumentationContextProvider))
                 .build();
     }
 
@@ -76,6 +86,7 @@ public class UserControllerTest {
                 .birthDate("990128")
                 .address(createAddress())
                 .password("password")
+                .userLoginType(EMAIL)
                 .build();
     }
 
@@ -83,7 +94,8 @@ public class UserControllerTest {
     public LoginRequest createLoginRequest() {
         return LoginRequest.builder()
                 .email("userEmail@email.com")
-                .password("password").build();
+                .password("password")
+                .build();
     }
 
     // 업데이트 DTO 생성 메소드
@@ -119,7 +131,21 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(signUpRequest)))
                 .andDo(print())
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andDo(document("user/signup/successful", requestFields(
+                        fieldWithPath("userName").description("The user's name"),
+                        fieldWithPath("address").description("The user's address class"),
+                        fieldWithPath("address.addressName").description("The user's address name"),
+                        fieldWithPath("address.postalAddress").description("The user's postal address"),
+                        fieldWithPath("address.latitude").description("latitude of user address"),
+                        fieldWithPath("address.longitude").description("longitude of user address"),
+                        fieldWithPath("nickname").description("The user's nickname"),
+                        fieldWithPath("phoneNumber").description("The user's phoneNumber"),
+                        fieldWithPath("email").description("The user's email"),
+                        fieldWithPath("password").description("The user's password"),
+                        fieldWithPath("birthDate").description("The user's birthDate"),
+                        fieldWithPath("userLoginType").description("The user's loginType")
+                )));
 
 
     }
@@ -141,7 +167,21 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(differentUser)))
                 .andDo(print())
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andDo(document("user/signup/fail/duplicateEmail", requestFields(
+                        fieldWithPath("userName").description("The user's name"),
+                        fieldWithPath("address").description("The user's address class"),
+                        fieldWithPath("address.addressName").description("The user's address name"),
+                        fieldWithPath("address.postalAddress").description("The user's postal address"),
+                        fieldWithPath("address.latitude").description("latitude of user address"),
+                        fieldWithPath("address.longitude").description("longitude of user address"),
+                        fieldWithPath("nickname").description("The user's nickname"),
+                        fieldWithPath("phoneNumber").description("The user's phoneNumber"),
+                        fieldWithPath("email").description("The user's email, which already in server"),
+                        fieldWithPath("password").description("The user's password"),
+                        fieldWithPath("birthDate").description("The user's birthDate"),
+                        fieldWithPath("userLoginType").description("The user's loginType")
+                )));
     }
 
     @Test
@@ -158,7 +198,21 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(differentUser)))
                 .andDo(print())
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andDo(document("user/signup/fail/duplicateNickname",requestFields(
+                        fieldWithPath("userName").description("The user's name"),
+                        fieldWithPath("address").description("The user's address class"),
+                        fieldWithPath("address.addressName").description("The user's address name"),
+                        fieldWithPath("address.postalAddress").description("The user's postal address"),
+                        fieldWithPath("address.latitude").description("latitude of user address"),
+                        fieldWithPath("address.longitude").description("longitude of user address"),
+                        fieldWithPath("nickname").description("The user's nickname, nickname already in server."),
+                        fieldWithPath("phoneNumber").description("The user's phoneNumber"),
+                        fieldWithPath("email").description("The user's email"),
+                        fieldWithPath("password").description("The user's password"),
+                        fieldWithPath("birthDate").description("The user's birthDate"),
+                        fieldWithPath("userLoginType").description("The user's loginType")
+                )));
     }
 
     @Test
@@ -175,7 +229,21 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(differentUser)))
                 .andDo(print())
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict())
+                .andDo(document("user/signup/fail/duplicatePhoneNumber", requestFields(
+                        fieldWithPath("userName").description("The user's name"),
+                        fieldWithPath("address").description("The user's address class"),
+                        fieldWithPath("address.addressName").description("The user's address name"),
+                        fieldWithPath("address.postalAddress").description("The user's postal address"),
+                        fieldWithPath("address.latitude").description("latitude of user address"),
+                        fieldWithPath("address.longitude").description("longitude of user address"),
+                        fieldWithPath("nickname").description("The user's nickname"),
+                        fieldWithPath("phoneNumber").description("The user's phoneNumber, which is already in server"),
+                        fieldWithPath("email").description("The user's email"),
+                        fieldWithPath("password").description("The user's password"),
+                        fieldWithPath("birthDate").description("The user's birthDate"),
+                        fieldWithPath("userLoginType").description("The user's loginType")
+                )));
     }
 
     @Test
@@ -188,7 +256,11 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("user/login/success", requestFields(
+                        fieldWithPath("email").description("User's id for login which is email"),
+                        fieldWithPath("password").description("User's login password"))
+                ));
     }
 
     @Test
@@ -205,7 +277,11 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andDo(document("user/login/fail/wrongEmail", requestFields(
+                        fieldWithPath("email").description("Wrong email for login"),
+                        fieldWithPath("password").description("login password")
+                )));
 
     }
 
@@ -224,7 +300,11 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andDo(document("user/login/fail/wrongPassword", requestFields(
+                        fieldWithPath("email").description("Correct user email"),
+                        fieldWithPath("password").description("Wrong password")
+                )));
     }
 
     @Test
@@ -235,13 +315,20 @@ public class UserControllerTest {
         // when
 
         given(sessionLoginService.getLoginUser()).willReturn(createSignUpRequest().getEmail());
-
         // then
         mockMvc.perform(patch("/user")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("user/update/success",requestFields(
+                        fieldWithPath("address").description("The user's address class"),
+                        fieldWithPath("address.addressName").description("The user's address name"),
+                        fieldWithPath("address.postalAddress").description("The user's postal address"),
+                        fieldWithPath("address.latitude").description("latitude of user address"),
+                        fieldWithPath("address.longitude").description("longitude of user address"),
+                        fieldWithPath("nickname").description("The user's nickname")
+                )));
     }
 
     @Test
@@ -255,7 +342,15 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(document("user/update/fail/non-login", requestFields(
+                        fieldWithPath("address").description("The user's address class"),
+                        fieldWithPath("address.addressName").description("The user's address name"),
+                        fieldWithPath("address.postalAddress").description("The user's postal address"),
+                        fieldWithPath("address.latitude").description("latitude of user address"),
+                        fieldWithPath("address.longitude").description("longitude of user address"),
+                        fieldWithPath("nickname").description("The user's nickname")
+                )));
 
     }
 
@@ -278,7 +373,12 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateUserPassword))
                 ).andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("user/update-password/success", requestFields(
+                        fieldWithPath("oldPassword").description("Previous password"),
+                        fieldWithPath("newPassword").description("New password")
+                )));
+
     }
 
     @Test
@@ -295,7 +395,11 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateUserPassword))
                 ).andDo(print())
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isUnauthorized())
+                .andDo(document("user/update-password/fail/non-login", requestFields(
+                        fieldWithPath("oldPassword").description("Previous password"),
+                        fieldWithPath("newPassword").description("New password")
+                )));
     }
 
     @Test
@@ -307,7 +411,10 @@ public class UserControllerTest {
         // then
         mockMvc.perform(delete("/user")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(""))).andDo(print()).andExpect(status().isOk());
+                .content(objectMapper.writeValueAsString("")))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("user/delete-user/success"));
     }
 
     @Test
@@ -321,7 +428,11 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createFindEmailDto())))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("user/find-email/success", requestFields(
+                        fieldWithPath("userName").description("The name of user"),
+                        fieldWithPath("phoneNumber").description("The phoneNumber of user")
+                )));
     }
 
     @Test
@@ -335,7 +446,11 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createFindEmailDto())))
                 .andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andDo(document("user/find-email/fail/no-user", requestFields(
+                        fieldWithPath("userName").description("The name of user that doesn't exists or doesn't match with phoneNumber"),
+                        fieldWithPath("phoneNumber").description("The phoneNumber of user that doesn't exists or doesn't match with username")
+                )));
     }
 
     @Test
@@ -349,7 +464,12 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createFindPasswordDto())))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("user/find-password/success", requestFields(
+                        fieldWithPath("userName").description("The name of user"),
+                        fieldWithPath("phoneNumber").description("The phone number of user"),
+                        fieldWithPath("email").description("The email of user")
+                )));
     }
 
     @Test
@@ -363,6 +483,11 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(createFindPasswordDto())))
                 .andDo(print())
-                .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound())
+                .andDo(document("user/find-password/fail/no-user", requestFields(
+                        fieldWithPath("userName").description("The name of user that doesn't exists or match with email and phoneNumber"),
+                        fieldWithPath("phoneNumber").description("The phone number of user that doesn't exists or match with userName and email"),
+                        fieldWithPath("email").description("The email of user that doesn't exists or match with userName and phoneNumber")
+                )));
     }
 }
