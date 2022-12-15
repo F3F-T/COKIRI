@@ -35,7 +35,7 @@ public class TagService {
      */
 
     @Transactional
-    public Long createTag(@Valid CreateTagRequest createTagRequest) {
+    public Long createTag(CreateTagRequest createTagRequest) {
         if(tagRepository.existsById(createTagRequest.getId())) {
             throw new DuplicateTagException("이미 존재하는 태그입니다.");
         }
@@ -47,7 +47,7 @@ public class TagService {
         return tag.getId();
     }
 
-    public Long addTagToPost(@Valid AddTagToPostRequest addTagToPostRequest) {
+    public Long addTagToPost(AddTagToPostRequest addTagToPostRequest) {
         Post post = postRepository.findById(addTagToPostRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
         Tag tag = tagRepository.findById(addTagToPostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         if(postTagRepository.existsByPostAndTag(post, tag)) {
@@ -71,7 +71,7 @@ public class TagService {
      */
 
     @Transactional(readOnly = true)
-    public GetPostListByTagResponse getPosts(@Validated GetPostListByTagRequest request) {
+    public GetPostListByTagResponse getPosts(GetPostListByTagRequest request) {
         // 먼저 postTag 리스트를 찾고 하나하나 포스트를 찾아서 추가해준다.
         if(!tagRepository.existsById(request.getId())) {
             throw new NotFoundByIdException();
@@ -81,7 +81,7 @@ public class TagService {
         for (PostTag postTagEach : postTagList) {
             postList.add(postTagEach.getPost());
         }
-        @Valid GetPostListByTagResponse response = new GetPostListByTagResponse(postList);
+        GetPostListByTagResponse response = new GetPostListByTagResponse(postList);
         return response;
     }
 
@@ -98,12 +98,13 @@ public class TagService {
      */
 
     @Transactional
-    public String deleteTagFromPost(@Valid DeleteTagFromPostRequest request) {
+    public String deleteTagFromPost(DeleteTagFromPostRequest request) {
         /*
             확인해야할 것들
             1. 요청으로 넘어온 태그가 존재하는 태그인가
             2. 해당 태그가 요청으로 넘어온 게시글에 포함되어있나
             3. 태그를 삭제하려는 요청자가 게시글 작성자 본인인가
          */
+        return "TEMP";
     }
 }
