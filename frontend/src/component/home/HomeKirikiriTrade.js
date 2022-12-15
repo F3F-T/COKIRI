@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../../styles/Home.module.css";
+import styles from "../../styles/home/HomeKirikiriTrade.module.css";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import KiriKiriCategoryRoundImage from "../KiriKiriCategoryRoundImage";

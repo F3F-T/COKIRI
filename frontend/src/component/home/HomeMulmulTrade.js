@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../../styles/Home.module.css";
+import styles from "../../styles/home/HomeMulmulTrade.module.css";
 import Carousel from "react-bootstrap/Carousel";
 import MulMulCardView from "../MulMulCardView";
 

@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../../styles/Home.module.css";
+// import styles from "../../styles/home/Home.module.css";
+import styles from "../../styles/home/HomeStart.module.css"
 
 const HomeStart = () => {
     return (

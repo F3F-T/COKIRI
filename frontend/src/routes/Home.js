@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../styles/Home.module.css"
+import styles from "../styles/home/Home.module.css"
 import MulMulCardView from "../component/MulMulCardView";
 import Carousel from 'react-bootstrap/Carousel';
 import KiriKiriCategoryRoundImage from "../component/KiriKiriCategoryRoundImage";
