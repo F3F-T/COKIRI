@@ -2,6 +2,7 @@ package f3f.dev1.domain.user.dto;
 
 import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.user.model.UserLoginType;
 import f3f.dev1.global.config.EncryptionService;
 import f3f.dev1.global.config.SHA256Encryptor;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,6 @@ public class UserDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-
     public static class SignUpRequest {
 
 
@@ -35,6 +35,8 @@ public class UserDTO {
 
         private String birthDate;
 
+        private UserLoginType userLoginType;
+
         public void encrypt(){
             password = encryptionService.encrypt(password);
         }
@@ -49,6 +51,7 @@ public class UserDTO {
                     .birthDate(birthDate)
                     .email(email)
                     .password(password)
+                    .userLoginType(userLoginType)
                     .build();
         }
     }
@@ -112,5 +115,44 @@ public class UserDTO {
             newPassword = encryptionService.encrypt(newPassword);
         }
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class FindEmailDto{
+        private String userName;
+        private String phoneNumber;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class EncryptEmailDto{
+        private String email;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class FindPasswordDto{
+        private String userName;
+        private String phoneNumber;
+
+        private String email;
+
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class ReturnPasswordDto{
+        private String password;
+    }
+
+
 
 }
