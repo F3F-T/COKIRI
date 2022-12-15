@@ -1,7 +1,7 @@
 package f3f.dev1.domain.message.model;
 
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.BaseTimeEntity;
-import f3f.dev1.domain.user.model.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,11 +21,11 @@ public class Message extends BaseTimeEntity {
     private String content;
     @ManyToOne
     @JoinColumn(name = "sender_id")
-    private User sender;
+    private Member sender;
 
     @ManyToOne
     @JoinColumn(name = "receiver_id")
-    private User receiver;
+    private Member receiver;
 
     @ManyToOne
     @JoinColumn(name = "messageRoom_id")
@@ -33,7 +33,7 @@ public class Message extends BaseTimeEntity {
 
 
     @Builder
-    public Message(Long id, String content, User sender, MessageRoom messageRoom) {
+    public Message(Long id, String content, Member sender, MessageRoom messageRoom) {
         this.id = id;
         this.content = content;
         this.sender = sender;

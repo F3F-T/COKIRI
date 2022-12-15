@@ -1,6 +1,6 @@
 package f3f.dev1.domain.scrap.model;
 import f3f.dev1.domain.post.model.ScrapPost;
-import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.member.model.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,14 +19,14 @@ public class Scrap {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "member_id")
+    private Member user;
 
     @OneToMany(mappedBy = "scrap", fetch = FetchType.LAZY)
     private List<ScrapPost> scrapPosts = new ArrayList<>();
 
     @Builder
-    public Scrap(Long id, User user) {
+    public Scrap(Long id, Member user) {
         this.id = id;
         this.user = user;
     }
