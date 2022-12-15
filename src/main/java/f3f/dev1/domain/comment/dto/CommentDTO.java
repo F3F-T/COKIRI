@@ -104,7 +104,7 @@ public class CommentDTO {
         @NotNull
         private Long id;
         @NotNull
-        private User author;
+        private Member author;
         @NotNull
         private Post post;
         // TODO 로그인 (토큰) 정보?

@@ -1,6 +1,7 @@
 package f3f.dev1.domain.comment.application;
 
 import f3f.dev1.domain.comment.dao.CommentRepository;
+import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
@@ -10,6 +11,7 @@ import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -92,7 +94,7 @@ public class CommentService {
      */
 
     @Transactional
-    public String updateComment(@Valid UpdateCommentRequest updateCommentRequest) {
+    public ResponseEntity<String> updateComment(@Valid UpdateCommentRequest updateCommentRequest) {
         Post post = postRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
@@ -104,9 +106,9 @@ public class CommentService {
     }
 
     @Transactional
-    public String deleteComment(@Valid DeleteCommentRequest deleteCommentRequest) {
+    public ResponseEntity<String> deleteComment(@Valid DeleteCommentRequest deleteCommentRequest) {
         Post post = postRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
-        User user = userRepository.findById(deleteCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+        Member user = memberRepository.findById(deleteCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
         if(commentInPost.getId() != comment.getId()) {

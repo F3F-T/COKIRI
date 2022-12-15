@@ -13,8 +13,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Optional<Post> findById(Long id);
     boolean existsById(Long id);
-    boolean existsByAuthor(Member author);
-    List<Post> findByAuthor(Member author);
+    boolean existsByAuthorId(Long authorId);
+    List<Post> findByAuthorId(Long authorId);
     void deleteById(Long id);
 
 }

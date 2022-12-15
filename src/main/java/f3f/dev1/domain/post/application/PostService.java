@@ -101,7 +101,7 @@ public class PostService {
         // 먼저 해당 게시글이 존재하는지 검증
         Post post = postRepository.findById(deletePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         // 그 후 작성자가 요청자와 동일인물인지 검증
-        User author = post.getAuthor();
+        Member author = post.getAuthor();
         // TODO Id로만 비교하는게 좀 걸린다. 그렇다고 비밀번호 검증은 너무 투머치 같기도 하다
         if(!author.getId().equals(deletePostRequest.getRequester().getId())) {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
