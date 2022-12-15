@@ -1,5 +1,10 @@
 package f3f.dev1.domain.trade.application;
 
+import f3f.dev1.domain.member.application.SessionLoginService;
+import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.member.exception.NotAuthorizedException;
+import f3f.dev1.domain.member.exception.UserNotFoundException;
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.model.Post;
@@ -7,13 +12,6 @@ import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.dto.TradeDTO.TradeInfoDto;
 import f3f.dev1.domain.trade.exception.InvalidSellerIdException;
 import f3f.dev1.domain.trade.model.Trade;
-import f3f.dev1.domain.user.application.SessionLoginService;
-import f3f.dev1.domain.user.dao.UserRepository;
-import f3f.dev1.domain.user.exception.NotAuthorizedException;
-import f3f.dev1.domain.user.exception.UserNotFoundException;
-import f3f.dev1.domain.user.model.User;
-import f3f.dev1.domain.member.dao.MemberRepository;
-import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +23,6 @@ import java.util.Optional;
 import static f3f.dev1.domain.trade.dto.TradeDTO.CreateTradeDto;
 import static f3f.dev1.domain.trade.dto.TradeDTO.UpdateTradeDto;
 import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
-import static f3f.dev1.global.common.constants.ResponseConstants.UPDATE;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +70,7 @@ public class TradeService {
             String buyerNickname = trade.getBuyer().getNickname();
             return trade.tradeInfoDto(sellerNickname, buyerNickname);
         } else {
-            String userNickname = userRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundException::new).getNickname();
+            String userNickname = memberRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundException::new).getNickname();
             return TradeInfoDto.builder()
                     .sellerNickname(userNickname)
                     .buyerNickname("none")
