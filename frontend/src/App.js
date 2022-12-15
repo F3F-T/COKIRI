@@ -1,24 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
 
+import React from "react";
+
+import Home from "./routes/Home";
+import { Route, Switch } from "react-router-dom";
+import MyPage from "./routes/MyPage";
+import MulmulTrade from "./routes/MulmulTrade";
+import kiriKiriTrade from "./routes/KiriKiriTrade";
+import KiriKiriTrade from "./routes/KiriKiriTrade";
+import Nav from "./component/Nav";
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <div className="App">
+          <Nav />
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route path="/mulmultrade" component={ MulmulTrade} />
+          <Route path="/kirikiritrade" component={KiriKiriTrade} />
+          <Route path="/mypage" component={MyPage} />
+        </Switch>
+      </div>
   );
 }
 
