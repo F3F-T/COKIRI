@@ -88,6 +88,7 @@ public class Member extends UserBase {
     public void updateUserInfo(UpdateUserInfo updateUserInfo) {
         this.address = updateUserInfo.getAddress();
         this.nickname = updateUserInfo.getNickname();
+        this.phoneNumber = updateUserInfo.getPhoneNumber();
 
     }
 

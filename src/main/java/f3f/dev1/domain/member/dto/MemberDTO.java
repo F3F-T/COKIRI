@@ -100,6 +100,8 @@ public class MemberDTO {
 
         private Address address;
 
+        private String phoneNumber;
+
     }
 
     @Builder

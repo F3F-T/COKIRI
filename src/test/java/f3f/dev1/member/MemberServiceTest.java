@@ -82,6 +82,7 @@ public class MemberServiceTest {
         return UpdateUserInfo.builder()
                 .address(createAddress())
                 .nickname("newNickname")
+                .phoneNumber("01088888888")
                 .build();
     }
 
@@ -155,6 +156,27 @@ public class MemberServiceTest {
 
         // then
         assertThrows(DuplicatePhoneNumberExepction.class, () -> memberService.signUp(differentRequest));
+    }
+
+    // 중복 닉네임으로 유저 생성 실패 테스트
+    @Test
+    @DisplayName("중복 닉네임으로 유저 생성 실패 테스트")
+    public void signUpTestFailByNickname() throws Exception{
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        Long userId = memberService.signUp(signUpRequest);
+
+        // when
+        SignUpRequest differentRequest = SignUpRequest.builder()
+                .email("differentUser")
+                .userName("differentUser")
+                .nickname("nickname")
+                .phoneNumber("01056781234")
+                .address(createAddress())
+                .password("differentUser")
+                .build();
+        // then
+        assertThrows(DuplicateNicknameException.class, () -> memberService.signUp(differentRequest));
     }
 
     // 로그인 테스트
@@ -262,6 +284,43 @@ public class MemberServiceTest {
         // then
         assertThat(updateRequest.getNickname()).isEqualTo(byId.get().getNickname());
     }
+    
+    // 중복된 닉네임 변경 요청으로 실패 테스트
+    @Test
+    @DisplayName("중복된 닉네임으로 변경 실패 테스트")
+    public void updateUserNicknameTestFailByNickname() throws Exception{
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        Long userId = memberService.signUp(signUpRequest);
+        LoginRequest loginRequest = createLoginRequest();
+        sessionLoginService.login(loginRequest);
+
+        // when
+        UpdateUserInfo updateRequest = UpdateUserInfo.builder()
+                .nickname("nickname")
+                .phoneNumber("01088888888").address(createAddress()).build();
+
+        // then
+        assertThrows(DuplicateNicknameException.class, () -> memberService.updateUserInfo(updateRequest));
+    }
+
+    @Test
+    @DisplayName("중복된 전화번호로 변경 실패 테스트")
+    public void updateUserPhoneNumberTestFailByPhoneNumber() throws Exception{
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        Long userId = memberService.signUp(signUpRequest);
+        LoginRequest loginRequest = createLoginRequest();
+        sessionLoginService.login(loginRequest);
+
+        // when
+        UpdateUserInfo updateRequest = UpdateUserInfo.builder()
+                .nickname("newnickname")
+                .phoneNumber("01012345678").address(createAddress()).build();
+
+        // then
+        assertThrows(DuplicatePhoneNumberExepction.class, () -> memberService.updateUserInfo(updateRequest));
+    }
 
     @Test
     @DisplayName("유저 주소 업데이트 성공 테스트")
@@ -348,6 +407,22 @@ public class MemberServiceTest {
 
         // then
         assertThrows(InvalidPasswordException.class, () -> memberService.updateUserPassword(updateUserPassword));
+    }
+
+    // 로그인하지 않은 요청으로 유저 비밀번호 변경 실패 테스트
+    @Test
+    @DisplayName("로그인 하지 않은 요청으로 유저 비밀번호 변경 실패")
+    public void updateUserPasswordTestFailByNonLogin() throws Exception{
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        Long userId = memberService.signUp(signUpRequest);
+        // when
+        UpdateUserPassword updateUserPassword = UpdateUserPassword.builder()
+                .oldPassword("password")
+                .newPassword("newPassword")
+                .build();
+        // then
+        assertThrows(UserNotFoundByEmailException.class, () -> memberService.updateUserPassword(updateUserPassword));
     }
 
     // 유저 삭제 테스트

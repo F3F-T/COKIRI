@@ -96,6 +96,9 @@ public class MemberService {
         if (memberRepository.existsByNickname(updateUserInfo.getNickname())) {
             throw new DuplicateNicknameException();
         }
+        if (memberRepository.existsByPhoneNumber(updateUserInfo.getPhoneNumber())) {
+            throw new DuplicatePhoneNumberExepction();
+        }
         member.updateUserInfo(updateUserInfo);
         return member.toUserInfo();
     }

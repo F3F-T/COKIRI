@@ -49,9 +49,17 @@ public class UserExceptionHandler {
     }
 
     @ExceptionHandler(UnauthenticatedUserException.class)
-    protected final ResponseEntity<String> handleUnauthenticatedUserExeption(
+    protected final ResponseEntity<String> handleUnauthenticatedUserException(
             UnauthenticatedUserException ex, WebRequest request) {
         log.debug("로그인 한 후에 이용할 수 있는 서비스 입니다.", request.getDescription(false));
         return UNAUTHENTICATED;
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    protected final ResponseEntity<String> handleInvalidPasswordException(
+            InvalidPasswordException ex, WebRequest request
+    ) {
+        log.debug("잘못된 비밀번호 입력입니다.", request.getDescription(false));
+        return INVALID_PASSWORD;
     }
 }

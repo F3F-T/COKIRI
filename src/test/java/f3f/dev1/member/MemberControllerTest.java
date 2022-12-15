@@ -3,15 +3,12 @@ package f3f.dev1.member;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.domain.member.application.EmailCertificationService;
+import f3f.dev1.domain.member.exception.*;
 import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.member.api.MemberController;
 import f3f.dev1.domain.member.application.SessionLoginService;
 import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.member.dao.MemberRepository;
-import f3f.dev1.domain.member.exception.DuplicateEmailException;
-import f3f.dev1.domain.member.exception.DuplicateNicknameException;
-import f3f.dev1.domain.member.exception.DuplicatePhoneNumberExepction;
-import f3f.dev1.domain.member.exception.UserNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -107,6 +104,7 @@ public class MemberControllerTest {
         return UpdateUserInfo.builder()
                 .address(createAddress())
                 .nickname("newNickname")
+                .phoneNumber("01088888888")
                 .build();
     }
 
@@ -289,7 +287,7 @@ public class MemberControllerTest {
 
     }
 
-    // TODO: 컨트롤러 테스트 추가하고, trade 테스트 작성하기
+
     @Test
     @DisplayName("로그인 실패 테스트 - 잘못된 비밀번호")
     public void loginTestFailByPassword() throws Exception{
@@ -331,7 +329,8 @@ public class MemberControllerTest {
                         fieldWithPath("address.postalAddress").description("The user's postal address"),
                         fieldWithPath("address.latitude").description("latitude of user address"),
                         fieldWithPath("address.longitude").description("longitude of user address"),
-                        fieldWithPath("nickname").description("The user's nickname")
+                        fieldWithPath("nickname").description("The user's nickname"),
+                        fieldWithPath("phoneNumber").description("The user's phoneNumber")
                 )));
     }
 
@@ -353,9 +352,64 @@ public class MemberControllerTest {
                         fieldWithPath("address.postalAddress").description("The user's postal address"),
                         fieldWithPath("address.latitude").description("latitude of user address"),
                         fieldWithPath("address.longitude").description("longitude of user address"),
-                        fieldWithPath("nickname").description("The user's nickname")
+                        fieldWithPath("nickname").description("The user's nickname"),
+                        fieldWithPath("phoneNumber").description("The user's phoneNumber")
                 )));
 
+    }
+
+    @Test
+    @DisplayName("중복된 닉네임으로 유저 정보 변경 실패 테스트")
+    public void updateUserInfoTestFailByDuplicateNickname() throws Exception{
+        //given
+        UpdateUserInfo updateRequest = createUpdateRequest();
+
+
+        // when
+        given(sessionLoginService.getLoginUser()).willReturn(createSignUpRequest().getEmail());
+        doThrow(DuplicateNicknameException.class).when(memberService).updateUserInfo(any());
+        // then
+        mockMvc.perform(patch("/user")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andDo(document("user/update/fail/duplicate-nickname", requestFields(
+                        fieldWithPath("address").description("The user's address class"),
+                        fieldWithPath("address.addressName").description("The user's address name"),
+                        fieldWithPath("address.postalAddress").description("The user's postal address"),
+                        fieldWithPath("address.latitude").description("latitude of user address"),
+                        fieldWithPath("address.longitude").description("longitude of user address"),
+                        fieldWithPath("nickname").description("The user's nickname that is duplicate"),
+                        fieldWithPath("phoneNumber").description("The user's phoneNumber")
+                )));
+    }
+
+    @Test
+    @DisplayName("중복된 전화번호로 유저 정보 업데이트 실패 테스트")
+    public void updateUserInfoTestFailByDuplicatePhone() throws Exception{
+        //given
+        UpdateUserInfo updateRequest = createUpdateRequest();
+
+        // when
+        given(sessionLoginService.getLoginUser()).willReturn(createSignUpRequest().getEmail());
+        doThrow(DuplicatePhoneNumberExepction.class).when(memberService).updateUserInfo(any());
+
+        // then
+        mockMvc.perform(patch("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andDo(document("user/update/fail/duplicate-nickname", requestFields(
+                        fieldWithPath("address").description("The user's address class"),
+                        fieldWithPath("address.addressName").description("The user's address name"),
+                        fieldWithPath("address.postalAddress").description("The user's postal address"),
+                        fieldWithPath("address.latitude").description("latitude of user address"),
+                        fieldWithPath("address.longitude").description("longitude of user address"),
+                        fieldWithPath("nickname").description("The user's nickname"),
+                        fieldWithPath("phoneNumber").description("The user's phoneNumber that is duplicate")
+                )));
     }
 
     @Test
@@ -407,6 +461,30 @@ public class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("과거에 틀린 비밀번호 입력으로 비밀번호 변경 실패 테스트")
+    public void updateUserPasswordTestFailByWrongOldPassword() throws Exception{
+        //given
+        UpdateUserPassword updateUserPassword = UpdateUserPassword.builder()
+                .oldPassword("password")
+                .newPassword("12345678")
+                .build();
+
+        // when
+        given(sessionLoginService.getLoginUser()).willReturn(createSignUpRequest().getEmail());
+        doThrow(InvalidPasswordException.class).when(memberService).updateUserPassword(any());
+
+        // then
+        mockMvc.perform(patch("/user/password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateUserPassword)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andDo(document("user/update-password/fail/wrong-password", requestFields(fieldWithPath("oldPassword").description("Previous password that is wrong"),
+                        fieldWithPath("newPassword").description("New password")
+                )));
+    }
+
+    @Test
     @DisplayName("회원 삭제 요청 성공 테스트")
     public void deleteUserTestSuccess() throws Exception{
         //given
@@ -419,6 +497,21 @@ public class MemberControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("user/delete-user/success"));
+    }
+
+    @Test
+    @DisplayName("로그인 하지 않은 상태에서 회원 삭제 요청 실패 테스트")
+    public void deleteUserTestFailByNonLogin() throws Exception{
+        //given
+
+
+        // then
+        mockMvc.perform(delete("/user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString("")))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andDo(document("user/delete-user/fail"));
     }
 
     @Test
@@ -494,4 +587,6 @@ public class MemberControllerTest {
                         fieldWithPath("email").description("The email of user that doesn't exists or match with userName and phoneNumber")
                 )));
     }
+
+
 }
