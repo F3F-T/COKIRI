@@ -69,16 +69,25 @@
     font-size: 1rem;
 }
 
-.mulmulTrade h1{
+.mulmulTrade h2{
     text-align: center;
 }
 .kirikiriTrade{
-    border-style: solid;
+    width : 75%;
+    margin: auto; /* content를 중앙으로 보낸다*/
+    height: var( --mulmul-height);
+    max-height: var( --mulmul-height);
+
+}
+
+.kirikiriTrade h2{
+    margin-top: 3rem;
+    text-align: center;
 }
 
 .mulmulCardView{
     display: flex;
-    width:100%;
+    width:95%;
     margin-left: 1rem;
     font-size: 1rem;
     max-height: var( --mulmul-height);
@@ -108,4 +117,12 @@
     display: flex;
     font-size: 0.1rem;
 
+}
+
+.kirikiriCatagoryCardView{
+    display: flex;
+    justify-content: center;
+    width:100%;
+    margin-left: 1rem;
+    max-height: var( --mulmul-height);
 }
