@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import {NavLink} from "react-router-dom";
-import '../styles/Nav.css'
 import styles from '../styles/nav/nav.module.css'
 
 const Nav = () => {

@@ -1,4 +1,57 @@
-#content{
-    background-color: aqua;
-    position: relative;
+
+:root {
+    --start-height: 15rem /*변수 할당, start div의 height*/
 }
+
+/*시작화면 전체*/
+.start{
+    width : 100%;
+    max-width: 1920px;
+    min-width: 5vw; /*최소를 정해줬는데 이건 적용이 안된듯*/
+    border-style: solid;
+    height: var( --start-height);  /* start 전체크기 200px */
+    display: flex;  /*div 안에서 start left와 start right의 비율로 분할해준다*/
+    font-size: 1rem;
+}
+
+/*시작화면 왼쪽*/
+.startLeft{
+    padding-left: 6rem; /*left padding*/
+    padding-top: calc(var( --start-height) /2 - 2.5rem); /*추후 height를 변경할시에 동적으로 변경될수 있게 calc 사용, -2.5는 startLeft의 font-size를 고려한것*/
+    flex: 4.0; /*div 안에서 start left와 start right의 비율로 분할해준다*/
+    font-size: 4rem;
+
+}
+
+/*시작화면 오른쪽 전체*/
+.startRight{
+    padding: 4rem;
+    flex: 5;
+    /*border-left-color: grey;*/
+    /*border-left-style: solid;*/
+    /*border-left-width: 0.1rem;*/
+}
+
+/*설명 폰트 사이즈*/
+.startRight1{
+    font-size: 1.75rem
+
+}
+
+/*버튼 css*/
+.startRight2 button{
+    margin-top: 1rem;
+    margin-right: 1rem;
+    font-size: 2rem;
+}
+
+
+
+
+.mulmulTrade{
+    border-style: solid;
+}
+.kirikiriTrade{
+    border-style: solid;
+}
+
