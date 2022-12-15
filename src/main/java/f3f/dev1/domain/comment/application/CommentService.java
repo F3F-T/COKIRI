@@ -2,6 +2,7 @@ package f3f.dev1.domain.comment.application;
 
 import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.comment.dto.CommentDTO;
+import f3f.dev1.domain.comment.exception.DuplicateCommentException;
 import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
@@ -34,27 +35,32 @@ public class CommentService {
     /*
         C : Create
         2가지 경우(Parent Comment와 Child Comment를 생성하는 경우)로 나누겠음
+        -> 취소, 하나로 통일하고 builder 활용
      */
 
-    // 부모 댓글 생성 로직
-    @Transactional
-    public Long createParentComment(CreateParentCommentRequest parentCommentRequest) {
-        User user = userRepository.findById(parentCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
-        Post post = postRepository.findById(parentCommentRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
-        Comment comment = parentCommentRequest.ToParentEntity();
-        Comment save = commentRepository.save(comment);
-        user.getComments().add(save);
-        return save.getId();
-    }
 
+    // 부모 자식 대통합
     @Transactional
-    public Long createChildComment(CreateChildCommentRequest childCommentRequest) {
-        User user = userRepository.findById(childCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
-        Post post = postRepository.findById(childCommentRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
-        Comment parent = commentRepository.findById(childCommentRequest.getParent().getId()).orElseThrow(NotFoundByIdException::new);
-        Comment child = childCommentRequest.ToChildEntity();
-        parent.getChilds().add(child);
-        return child.getId();
+    public Long createComment(CreateCommentRequest createCommentRequest) {
+        User user = userRepository.findById(createCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(createCommentRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        // 유저, 포스트 존재 확인
+        if(commentRepository.existsById(createCommentRequest.getId())) {
+            throw new DuplicateCommentException("이미 존재하는 댓글입니다.");
+        }
+        if(createCommentRequest.getParentComment() == null) {
+            // 부모 댓글이 null이라면 부모 댓글로 처리
+            Comment parentComment = createCommentRequest.toEntity();
+            commentRepository.save(parentComment);
+            return parentComment.getId();
+        } else {
+            // 부모 댓글이 존재한다면 자식 댓글로 처리
+            Comment parentComment = createCommentRequest.getParentComment();
+            Comment comment = commentRepository.findById(createCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
+            // TODO 피드백 부분, 일단은 아래와 같이 작성해두고 나중에 다시 생각해보기로 하자
+            parentComment.getChilds().add(comment);
+            return comment.getId();
+        }
     }
 
     /*
@@ -63,7 +69,7 @@ public class CommentService {
      */
 
     // id로 조회
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = true)
     public FindByIdCommentResponse findCommentById(Long id) {
         Comment comment = commentRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         FindByIdCommentResponse response = new FindByIdCommentResponse(comment);
