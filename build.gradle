@@ -42,7 +42,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.1'
 
     annotationProcessor 'org.projectlombok:lombok'
 
@@ -72,20 +72,6 @@ bootJar { // SpringBoot 1.5 이하일 경우 jar
         into 'static/docs'
     }
 }
-
-//asciidoctor.doFirst{
-//    delete file('src/main/resources/static/docs')
-//}
-//
-//task copyDocument(type: Copy) {
-//    dependsOn asciidoctor
-//    from file("build/generated-snippets")
-//    into file("src/main/resources/static/docs")
-//}
-//
-//build {
-//    dependsOn copyDocument
-//}
 
 
 /*
