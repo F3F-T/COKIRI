@@ -8,6 +8,7 @@ import f3f.dev1.domain.user.dao.UserRepository;
 import f3f.dev1.domain.user.model.User;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -28,7 +29,7 @@ public class PostService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Long savePost(@Valid PostSaveRequest postSaveRequest) {
+    public Long savePost(PostSaveRequest postSaveRequest) {
 
         // 유저 객체 받아와서 포스트 리스트에 추가해줘야 함
         // TODO Trade 객체를 어떻게 처리할지 아직 명확하지 않음
@@ -53,19 +54,19 @@ public class PostService {
 
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     @Transactional(readOnly = true)
-    public FindByAuthorPostListResponse findPostByAuthor(User author) {
-        if(!postRepository.existsByAuthor(author)) {
+    public FindByAuthorPostListResponse findPostByAuthor(Long authorId) {
+        if(!postRepository.existsByAuthorId(authorId)) {
             throw new NotFoundPostListByAuthor("해당 작성자의 게시글이 없습니다.");
         }
-        List<Post> byAuthor = postRepository.findByAuthor(author);
-        @Valid FindByAuthorPostListResponse response = new FindByAuthorPostListResponse(byAuthor);
+        List<Post> byAuthor = postRepository.findByAuthorId(authorId);
+        FindByAuthorPostListResponse response = new FindByAuthorPostListResponse(byAuthor);
         return response;
     }
 
     @Transactional(readOnly = true)
     public FindByIdPostResponse findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        @Valid FindByIdPostResponse response = new FindByIdPostResponse(post);
+        FindByIdPostResponse response = new FindByIdPostResponse(post);
         return response;
     }
 
@@ -75,7 +76,7 @@ public class PostService {
 
     // TODO 피드백 받기 : 반환 타입을 Long (id)으로 하는 거랑 Post 객체 하나만 가지고 있는 DTO로 하는 것 중 뭐가 더 나은가
     @Transactional
-    public String updatePost(@Valid UpdatePostRequest updatePostRequest) {
+    public ResponseEntity<String> updatePost(UpdatePostRequest updatePostRequest) {
         Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         // 게시글 변경 정보가 기존이랑 똑같다면 (변화가 없다면) 예외를 터트리려 했는데, 그럴 필요가 없어보여서 일단은 검증하지 않겠다
         // 근데 또 예외는 던져놓고 처리를 안하는 방법도 있으니 이건 피드백을 받아 볼 예정
@@ -83,17 +84,20 @@ public class PostService {
             업데이트된 카테고리들이 유효한지 각각 Id로 확인한다.
             관련 기능이 구현되면 추가할 것이고, 지금은 유효하다고 가정하고 로직을 작성하겠음
          */
-        post.updateTitle(updatePostRequest.getTitle());
-        post.updateContent(updatePostRequest.getContent());
-        post.updatePostTags(updatePostRequest.getPostTags());
-        post.updateProductCategory(updatePostRequest.getProductCategory());
-        post.updateWishCategory(updatePostRequest.getWishCategory());
+
+        post.updatePostInfos(
+                updatePostRequest.getTitle(),
+                updatePostRequest.getContent(),
+                updatePostRequest.getPostTags(),
+                updatePostRequest.getProductCategory(),
+                updatePostRequest.getWishCategory()
+        );
 
         return UPDATE;
     }
 
     @Transactional
-    public String deletePost(@Valid DeletePostRequest deletePostRequest) {
+    public ResponseEntity<String> deletePost(DeletePostRequest deletePostRequest) {
         // 먼저 해당 게시글이 존재하는지 검증
         Post post = postRepository.findById(deletePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         // 그 후 작성자가 요청자와 동일인물인지 검증
