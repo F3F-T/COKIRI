@@ -105,5 +105,6 @@ public class TagService {
             2. 해당 태그가 요청으로 넘어온 게시글에 포함되어있나
             3. 태그를 삭제하려는 요청자가 게시글 작성자 본인인가
          */
+        return "delete";
     }
 }

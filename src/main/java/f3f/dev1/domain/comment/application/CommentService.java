@@ -94,7 +94,7 @@ public class CommentService {
      */
 
     @Transactional
-    public String updateComment(UpdateCommentRequest updateCommentRequest) {
+    public ResponseEntity<String> updateComment(UpdateCommentRequest updateCommentRequest) {
         Post post = postRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
@@ -106,7 +106,7 @@ public class CommentService {
     }
 
     @Transactional
-    public String deleteComment(DeleteCommentRequest deleteCommentRequest) {
+    public ResponseEntity<String> deleteComment(DeleteCommentRequest deleteCommentRequest) {
         Post post = postRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Member user = memberRepository.findById(deleteCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);

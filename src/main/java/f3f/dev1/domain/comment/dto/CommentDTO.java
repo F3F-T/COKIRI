@@ -24,7 +24,7 @@ public class CommentDTO {
         @NotNull
         private Long id;
         @NotNull
-        private User author;
+        private Member author;
         @NotNull
         private Post post;
         private Long depth;
