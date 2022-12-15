@@ -1,14 +1,10 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
+import styles from "../styles/Home.module.css"
 
 const Home = () => {
-    return (<div>
+    return (<body>
 
-
-        <head>header</head>
-        <body>body</body>
-
-
-        </div>
+        </body>
     );
 }
 

@@ -4,6 +4,7 @@ import '../styles/Nav.css'
 
 const Nav = () => {
     return (
+        <header>
         <nav>
             <div>
                 <NavLink to="/">
@@ -26,6 +27,7 @@ const Nav = () => {
                 </NavLink>
             </div>
         </nav>
+        </header>
     );
 };
 
