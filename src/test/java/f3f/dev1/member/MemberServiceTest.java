@@ -84,97 +84,97 @@ public class MemberServiceTest {
     }
 
     // 회원가입 테스트
-    @Test
-    @DisplayName("유저 생성 성공 테스트")
-    public void signUpTestSuccess() throws Exception {
-        //given
-        SignUpRequest signUpRequest = createSignUpRequest();
-
-
-        // when
-        Long userId = memberService.signUp(signUpRequest);
-        Optional<Member> byId = memberRepository.findById(userId);
-        // then
-        assertThat(byId.get().getId()).isEqualTo(userId);
-    }
-
-    @Test
-    @DisplayName("유저 생성시 스크랩도 같이 생성되는지 확인 테스트")
-    public void signUpTestWithScrap() throws Exception{
-        //given
-        SignUpRequest signUpRequest = createSignUpRequest();
-
-
-        // when
-        Long userId = memberService.signUp(signUpRequest);
-        Optional<Scrap> scrapByUserId = scrapRepository.findScrapByUserId(userId);
-
-        // then
-        assertThat(userId).isEqualTo(scrapByUserId.get().getUser().getId());
-    }
-
-    @Test
-    @DisplayName("중복 이메일로 유저 생성 실패 테스트")
-    public void signUpTestFailByEmail() throws Exception {
-        //given
-        SignUpRequest signUpRequest = createSignUpRequest();
-        Long userId = memberService.signUp(signUpRequest);
-
-
-        // then
-        SignUpRequest differentRequest = SignUpRequest.builder()
-                .email("userEmail@email.com")
-                .userName("differentUser")
-                .nickname("differentUser")
-                .phoneNumber("differentUser")
-                .address(createAddress())
-                .password("differentUser")
-                .build();
-
-        assertThrows(DuplicateEmailException.class, () -> memberService.signUp(differentRequest));
-    }
-
-    @Test
-    @DisplayName("중복 핸드폰 번호로 유저 생성 실패 테스트")
-    public void signUpTestFailByPhoneNumber() throws Exception {
-        //given
-        SignUpRequest signUpRequest = createSignUpRequest();
-        Long userId = memberService.signUp(signUpRequest);
-
-        // when
-        SignUpRequest differentRequest = SignUpRequest.builder()
-                .email("differentUser")
-                .userName("differentUser")
-                .nickname("differentUser")
-                .phoneNumber("01012345678")
-                .address(createAddress())
-                .password("differentUser")
-                .build();
-
-        // then
-        assertThrows(DuplicatePhoneNumberExepction.class, () -> memberService.signUp(differentRequest));
-    }
-
-    // 중복 닉네임으로 유저 생성 실패 테스트
-    @Test
-    @DisplayName("중복 닉네임으로 유저 생성 실패 테스트")
-    public void signUpTestFailByNickname() throws Exception{
-        //given
-        SignUpRequest signUpRequest = createSignUpRequest();
-        Long userId = memberService.signUp(signUpRequest);
-
-        // when
-        SignUpRequest differentRequest = SignUpRequest.builder()
-                .email("differentUser")
-                .userName("differentUser")
-                .nickname("nickname")
-                .phoneNumber("01056781234")
-                .address(createAddress())
-                .password("differentUser")
-                .build();
-        // then
-        assertThrows(DuplicateNicknameException.class, () -> memberService.signUp(differentRequest));
-    }
+//    @Test
+//    @DisplayName("유저 생성 성공 테스트")
+//    public void signUpTestSuccess() throws Exception {
+//        //given
+//        SignUpRequest signUpRequest = createSignUpRequest();
+//
+//
+//        // when
+//        Long userId = memberService.signUp(signUpRequest);
+//        Optional<Member> byId = memberRepository.findById(userId);
+//        // then
+//        assertThat(byId.get().getId()).isEqualTo(userId);
+//    }
+//
+//    @Test
+//    @DisplayName("유저 생성시 스크랩도 같이 생성되는지 확인 테스트")
+//    public void signUpTestWithScrap() throws Exception{
+//        //given
+//        SignUpRequest signUpRequest = createSignUpRequest();
+//
+//
+//        // when
+//        Long userId = memberService.signUp(signUpRequest);
+//        Optional<Scrap> scrapByUserId = scrapRepository.findScrapByUserId(userId);
+//
+//        // then
+//        assertThat(userId).isEqualTo(scrapByUserId.get().getUser().getId());
+//    }
+//
+//    @Test
+//    @DisplayName("중복 이메일로 유저 생성 실패 테스트")
+//    public void signUpTestFailByEmail() throws Exception {
+//        //given
+//        SignUpRequest signUpRequest = createSignUpRequest();
+//        Long userId = memberService.signUp(signUpRequest);
+//
+//
+//        // then
+//        SignUpRequest differentRequest = SignUpRequest.builder()
+//                .email("userEmail@email.com")
+//                .userName("differentUser")
+//                .nickname("differentUser")
+//                .phoneNumber("differentUser")
+//                .address(createAddress())
+//                .password("differentUser")
+//                .build();
+//
+//        assertThrows(DuplicateEmailException.class, () -> memberService.signUp(differentRequest));
+//    }
+//
+//    @Test
+//    @DisplayName("중복 핸드폰 번호로 유저 생성 실패 테스트")
+//    public void signUpTestFailByPhoneNumber() throws Exception {
+//        //given
+//        SignUpRequest signUpRequest = createSignUpRequest();
+//        Long userId = memberService.signUp(signUpRequest);
+//
+//        // when
+//        SignUpRequest differentRequest = SignUpRequest.builder()
+//                .email("differentUser")
+//                .userName("differentUser")
+//                .nickname("differentUser")
+//                .phoneNumber("01012345678")
+//                .address(createAddress())
+//                .password("differentUser")
+//                .build();
+//
+//        // then
+//        assertThrows(DuplicatePhoneNumberExepction.class, () -> memberService.signUp(differentRequest));
+//    }
+//
+//    // 중복 닉네임으로 유저 생성 실패 테스트
+//    @Test
+//    @DisplayName("중복 닉네임으로 유저 생성 실패 테스트")
+//    public void signUpTestFailByNickname() throws Exception{
+//        //given
+//        SignUpRequest signUpRequest = createSignUpRequest();
+//        Long userId = memberService.signUp(signUpRequest);
+//
+//        // when
+//        SignUpRequest differentRequest = SignUpRequest.builder()
+//                .email("differentUser")
+//                .userName("differentUser")
+//                .nickname("nickname")
+//                .phoneNumber("01056781234")
+//                .address(createAddress())
+//                .password("differentUser")
+//                .build();
+//        // then
+//        assertThrows(DuplicateNicknameException.class, () -> memberService.signUp(differentRequest));
+//    }
 
 //    // 로그인 테스트
 //    @Test
