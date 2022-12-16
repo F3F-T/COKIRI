@@ -1,6 +1,7 @@
 package f3f.dev1.domain.post.model;
 
 import f3f.dev1.domain.scrap.model.Scrap;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,4 +23,10 @@ public class ScrapPost {
     @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @Builder
+    public ScrapPost(Scrap scrap, Post post) {
+        this.scrap = scrap;
+        this.post = post;
+    }
 }

@@ -73,7 +73,7 @@ public class TradeServiceTest {
     // 포스트 생성 DTO 생성 메소드
     public PostSaveRequest createPostSaveRequest(Member author) {
 
-        return new PostSaveRequest(1L, "title", "content", false, author, null, null, new Trade());
+        return new PostSaveRequest(1L, "title", "content", false, author, null, null);
     }
 
     // 트레이드 생성 DTO 생성 메소드

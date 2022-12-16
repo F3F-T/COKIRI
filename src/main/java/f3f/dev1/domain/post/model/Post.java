@@ -5,6 +5,8 @@ import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.BaseTimeEntity;
+import f3f.dev1.domain.model.TradeStatus;
+import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
 import lombok.Builder;
@@ -14,6 +16,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static f3f.dev1.domain.post.dto.PostDTO.*;
 
 @Getter
 @NoArgsConstructor
@@ -76,6 +80,19 @@ public class Post extends BaseTimeEntity {
         this.productCategory = productCategory;
         this.wishCategory = wishCategory;
         this.author = author;
+    }
+
+    public PostInfoDto toInfoDto(TradeStatus tradeStatus) {
+        return PostInfoDto.builder()
+                .id(this.id)
+                .authorNickname(this.author.getNickname())
+                .content(this.content)
+                .title(this.title)
+                .productCategory(this.productCategory.getName())
+                .wishCategory(this.wishCategory.getName())
+                .tradeEachOther(this.tradeEachOther)
+                .tradeStatus(tradeStatus)
+                .build();
     }
 
 
