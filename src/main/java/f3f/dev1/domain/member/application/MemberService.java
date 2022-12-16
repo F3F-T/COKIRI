@@ -5,7 +5,9 @@ import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.*;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
+import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +27,9 @@ public class MemberService {
 
     private final ScrapService scrapService;
 
-//    private final SessionLoginService sessionLoginService;
+    private final PasswordEncoder passwordEncoder;
+
+
 
 
     @Transactional(readOnly = true)
@@ -55,6 +59,7 @@ public class MemberService {
 
     // 회원가입 요청 처리 메소드, 유저 생성
     // signUpRequest로 넘어오는 값 검증은 컨트롤러에서 진행하게 구현 예정
+    // TODO: 제거 예정
     @Transactional
     public Long signUp(SignUpRequest signUpRequest) {
         if (memberRepository.existsByEmail(signUpRequest.getEmail())) {
@@ -69,7 +74,7 @@ public class MemberService {
         }
 
 
-        signUpRequest.encrypt();
+//        signUpRequest.encrypt();
 
         Member member = signUpRequest.toEntity();
 
@@ -96,7 +101,7 @@ public class MemberService {
     // TODO: 유저 닉네임 중복 검사 추가
     @Transactional
     public UserInfo updateUserInfo(UpdateUserInfo updateUserInfo) {
-        Member member = memberRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(NotFoundByIdException::new);
         if (!member.getNickname().equals(updateUserInfo.getNickname()) && memberRepository.existsByNickname(updateUserInfo.getNickname())) {
             throw new DuplicateNicknameException();
         }
@@ -111,8 +116,8 @@ public class MemberService {
     @Transactional
     public String updateUserPassword(UpdateUserPassword updateUserPassword) {
 
-        Member member = memberRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
-        updateUserPassword.encrypt();
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(NotFoundByIdException::new);
+        updateUserPassword.encrypt(passwordEncoder);
 
         if (!Objects.equals(member.getPassword(), updateUserPassword.getOldPassword())) {
             throw new InvalidPasswordException();
@@ -124,9 +129,8 @@ public class MemberService {
     // 유저 삭제 메소드
     @Transactional
     public String deleteUser() {
-        Member member = memberRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
+        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(NotFoundByIdException::new);
         memberRepository.delete(member);
-        sessionLoginService.logout();
         return "DELETE";
     }
     // 이메일 찾기 메소드
@@ -150,7 +154,7 @@ public class MemberService {
         UpdateUserPassword updateUserPassword = UpdateUserPassword.builder()
                 .newPassword(newPassword)
                 .oldPassword("resetPassword").build();
-        updateUserPassword.encrypt();
+        updateUserPassword.encrypt(passwordEncoder);
         member.updateUserPassword(updateUserPassword);
         return ReturnPasswordDto.builder().password(newPassword).build();
     }

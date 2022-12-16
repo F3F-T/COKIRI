@@ -9,10 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class MemberDTO {
 
-    static EncryptionService encryptionService = new SHA256Encryptor();
 
     @Builder
     @AllArgsConstructor
@@ -37,8 +38,8 @@ public class MemberDTO {
 
         private UserLoginType userLoginType;
 
-        public void encrypt(){
-            password = encryptionService.encrypt(password);
+        public void encrypt(PasswordEncoder passwordEncoder){
+            this.password = passwordEncoder.encode(password);
         }
 
         public Member toEntity() {
@@ -66,8 +67,12 @@ public class MemberDTO {
         private String password;
 
 
-        public void encrypt(){
-            password = encryptionService.encrypt(password);
+        public void encrypt(PasswordEncoder passwordEncoder){
+            this.password = passwordEncoder.encode(password);
+        }
+
+        public UsernamePasswordAuthenticationToken toAuthentication() {
+            return new UsernamePasswordAuthenticationToken(email, password);
         }
 
     }
@@ -114,9 +119,9 @@ public class MemberDTO {
 
         private String newPassword;
 
-        public void encrypt(){
-            oldPassword = encryptionService.encrypt(oldPassword);
-            newPassword = encryptionService.encrypt(newPassword);
+        public void encrypt(PasswordEncoder passwordEncoder){
+            oldPassword = passwordEncoder.encode(oldPassword);
+            newPassword = passwordEncoder.encode(newPassword);
         }
     }
 
