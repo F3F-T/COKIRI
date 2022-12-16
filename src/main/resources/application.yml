@@ -2,8 +2,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3307/f3f_dev1?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: root
-    password: 0911seSe!!
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect

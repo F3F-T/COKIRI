@@ -1,0 +1,37 @@
+
+/************************************************************************
+ 끼리끼리 Component
+ ************************************************************************/
+
+/*끼리끼리 전체*/
+.kirikiriTrade{
+    width : 75%;
+    margin: auto; /* content를 중앙으로 보낸다*/
+    height: var( --mulmul-height);
+    max-height: var( --mulmul-height);
+
+}
+
+/*끼리끼리 h2(다른 카테고리 뿐만 아니라 같은 카테고리 끼리도 교환할 수 있어요)*/
+.kirikiriTrade h2{
+    margin-top: 3rem;
+    text-align: center;
+}
+
+
+/*끼리끼리 카테고리 원형 이미지*/
+.kirikiriCatagoryCardView{
+    display: flex;
+    justify-content: center;
+    width:100%;
+    margin-left: 1rem;
+    max-height: var( --mulmul-height);
+}
+
+.mulmulCardView{
+    display: flex;
+    width:95%;
+    margin-left: 1rem;
+    font-size: 1rem;
+    max-height: var( --mulmul-height);
+}
