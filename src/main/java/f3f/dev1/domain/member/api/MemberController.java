@@ -1,9 +1,8 @@
 package f3f.dev1.domain.member.api;
 
 import f3f.dev1.domain.member.application.EmailCertificationService;
-import f3f.dev1.domain.member.application.SessionLoginService;
+//import f3f.dev1.domain.member.application.SessionLoginService;
 import f3f.dev1.domain.member.application.MemberService;
-import f3f.dev1.global.common.annotation.LoginCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,7 @@ import static f3f.dev1.global.common.constants.ResponseConstants.OK;
 @RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-    private final SessionLoginService sessionLoginService;
+//    private final SessionLoginService sessionLoginService;
 
     private final EmailCertificationService emailCertificationService;
     // 이메일 중복 확인
@@ -82,32 +81,32 @@ public class MemberController {
     // 로그인
     @PostMapping(value = "/user/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        sessionLoginService.login(loginRequest);
+//        sessionLoginService.login(loginRequest);
         return OK;
     }
     // 로그아웃
-    @LoginCheck
+//    @LoginCheck
     @DeleteMapping(value = "/user/logout")
     public ResponseEntity<String> logout() {
-        sessionLoginService.logout();
+//        sessionLoginService.logout();
         return OK;
     }
     // 유저 정보 조회
-    @LoginCheck
+//    @LoginCheck
     @GetMapping(value = "/user")
     public UserInfo getUserInfo() {
         return memberService.findUserInfoByEmail(sessionLoginService.getLoginUser()).toUserInfo();
 
     }
     // 유저 정보 수정
-    @LoginCheck
+//    @LoginCheck
     @PatchMapping(value = "/user")
     public ResponseEntity<UserInfo> updateUserInfo(@RequestBody UpdateUserInfo updateUserInfo) {
 
         return ResponseEntity.ok(memberService.updateUserInfo(updateUserInfo));
     }
     // 유저 삭제
-    @LoginCheck
+//    @LoginCheck
     @DeleteMapping(value = "/user")
     public ResponseEntity<String> deleteUser() {
 
@@ -115,7 +114,7 @@ public class MemberController {
 
     }
     // 유저 비밀번호 변정
-    @LoginCheck
+//    @LoginCheck
     @PatchMapping(value = "/user/password")
     public ResponseEntity<String> updateUserPassword(@RequestBody UpdateUserPassword updateUserPassword) {
         return ResponseEntity.ok(memberService.updateUserPassword(updateUserPassword));

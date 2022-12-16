@@ -25,7 +25,7 @@ public class MemberService {
 
     private final ScrapService scrapService;
 
-    private final SessionLoginService sessionLoginService;
+//    private final SessionLoginService sessionLoginService;
 
 
     @Transactional(readOnly = true)
