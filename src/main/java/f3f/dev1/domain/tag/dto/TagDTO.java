@@ -2,7 +2,7 @@ package f3f.dev1.domain.tag.dto;
 
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.tag.model.Tag;
-import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.member.model.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -65,6 +65,6 @@ public class TagDTO {
         @NotNull
         private Post post;
         @NotNull
-        private User author;
+        private Member author;
     }
 }

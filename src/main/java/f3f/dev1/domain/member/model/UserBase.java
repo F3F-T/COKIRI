@@ -1,4 +1,4 @@
-package f3f.dev1.domain.user.model;
+package f3f.dev1.domain.member.model;
 
 import f3f.dev1.domain.model.BaseTimeEntity;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,7 @@ import javax.persistence.*;
 public class UserBase extends BaseTimeEntity {
     @Id
     @GeneratedValue
-    @Column(name = "user_id")
+    @Column(name = "member_id")
     private Long id;
 
     private String email;
@@ -24,6 +24,9 @@ public class UserBase extends BaseTimeEntity {
 
     @Enumerated(EnumType.STRING)
     protected UserLevel userLevel;
+
+    @Enumerated(EnumType.STRING)
+    private UserLoginType userLoginType;
 
     public void updatePassword(String pw) {
         this.password = pw;

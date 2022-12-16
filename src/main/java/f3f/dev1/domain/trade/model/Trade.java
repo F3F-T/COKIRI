@@ -1,11 +1,10 @@
 package f3f.dev1.domain.trade.model;
 
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.trade.dto.TradeDTO;
 import f3f.dev1.domain.trade.dto.TradeDTO.TradeInfoDto;
-import f3f.dev1.domain.user.model.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,16 +26,16 @@ public class Trade extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "seller_id")
-    private User seller;
+    private Member seller;
 
     @ManyToOne
     @JoinColumn(name = "buyer_id")
-    private User buyer;
+    private Member buyer;
 
     private TradeStatus tradeStatus;
 
     @Builder
-    public Trade(Long id, Post post, User seller, User buyer, TradeStatus tradeStatus) {
+    public Trade(Long id, Post post, Member seller, Member buyer, TradeStatus tradeStatus) {
         this.id = id;
         this.post = post;
         this.seller = seller;

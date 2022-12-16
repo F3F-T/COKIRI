@@ -1,5 +1,6 @@
 package f3f.dev1.domain.message.model;
 
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.trade.model.Trade;
@@ -24,11 +25,11 @@ public class Message extends BaseTimeEntity {
     private String content;
     @ManyToOne
     @JoinColumn(name = "sender_id")
-    private User sender;
+    private Member sender;
 
     @ManyToOne
     @JoinColumn(name = "receiver_id")
-    private User receiver;
+    private Member receiver;
 
     @ManyToOne
     @JoinColumn(name = "messageRoom_id")

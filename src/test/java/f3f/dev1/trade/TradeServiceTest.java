@@ -1,18 +1,15 @@
 package f3f.dev1.trade;
 
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.application.PostService;
-import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.dto.PostDTO.PostSaveRequest;
 import f3f.dev1.domain.trade.application.TradeService;
 import f3f.dev1.domain.trade.dao.TradeRepository;
-import f3f.dev1.domain.trade.dto.TradeDTO;
 import f3f.dev1.domain.trade.dto.TradeDTO.CreateTradeDto;
 import f3f.dev1.domain.trade.model.Trade;
-import f3f.dev1.domain.user.application.UserService;
-import f3f.dev1.domain.user.dao.UserRepository;
-import f3f.dev1.domain.user.dto.UserDTO;
-import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.member.application.MemberService;
+import f3f.dev1.domain.member.dao.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,18 +22,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static f3f.dev1.domain.user.dto.UserDTO.*;
+import static f3f.dev1.domain.member.dto.MemberDTO.*;
 
 @Transactional
 @SpringBootTest
 public class TradeServiceTest {
     @Autowired
-    UserRepository userRepository;
+    MemberRepository memberRepository;
     @Autowired
     TradeRepository tradeRepository;
 
     @Autowired
-    UserService userService;
+    MemberService memberService;
 
     @Autowired
     PostService postService;
@@ -74,7 +71,7 @@ public class TradeServiceTest {
     }
 
     // 포스트 생성 DTO 생성 메소드
-    public PostSaveRequest createPostSaveRequest(User author) {
+    public PostSaveRequest createPostSaveRequest(Member author) {
 
         return new PostSaveRequest(1L, "title", "content", false, author, null, null, new Trade());
     }
@@ -92,10 +89,10 @@ public class TradeServiceTest {
         //given
         SignUpRequest signUpRequest1 = createSignUpRequest("testuser1@email.com", "01012345678");
         SignUpRequest signUpRequest2 = createSignUpRequest("testuser2@email.com", "01056781234");
-        Long userId1 = userService.signUp(signUpRequest1);
-        Long userId2 = userService.signUp(signUpRequest2);
-        PostSaveRequest postSaveRequest = createPostSaveRequest(userRepository.findById(userId1).get());
-        System.out.println(userRepository.findById(userId1).get().getNickname());;
+        Long userId1 = memberService.signUp(signUpRequest1);
+        Long userId2 = memberService.signUp(signUpRequest2);
+        PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
+        System.out.println(memberRepository.findById(userId1).get().getNickname());;
         Long postId = postService.savePost(postSaveRequest);
 
 
