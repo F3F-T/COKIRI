@@ -98,10 +98,13 @@ postOrWant_2{
     height: 30%;
 }
 .navPostOrWant{
+    border: 0.5px solid red;
     padding-top: 0.5rem;
+    margin-left: 2rem;
     font-size: 2rem;
-    width: 24rem;
+    width: 30%;
     height: 3rem;
+    text-align: left;
 }
 .popularOrNewest{
     display: flex;

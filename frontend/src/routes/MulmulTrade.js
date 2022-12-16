@@ -14,7 +14,7 @@ const MulmulTrade = () => {
                     <div className={styles.categoryBox}>
                         <div className={styles.forWho}>
                             <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade')}>이런 물건이 올라왔어요.</button>
-                            <button className={styles.forWho_2} onClick={()=>navigate('/mulmultrade/mulmultrade2')}>이런 물건을 원해요.</button>
+                            <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade/mulmultrade2')}>이런 물건을 원해요.</button>
                             {/*<Navbar className={styles.postOrWant} bg="white" variant="white">*/}
                             {/*    <Nav className={styles.postOrWant_2}>*/}
                             {/*        <Nav.Link className={styles.forWho_1}  onClick={()=>navigate('/')}>이런 물건이 올라왔어요.</Nav.Link>*/}
