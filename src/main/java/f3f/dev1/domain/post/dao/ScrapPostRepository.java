@@ -14,4 +14,6 @@ public interface ScrapPostRepository extends JpaRepository<ScrapPost, Long> {
     List<ScrapPost> findByScrapId(Long scrapId);
 
     Optional<ScrapPost> findByScrapIdAndPostId(Long scrapId, Long postId);
+
+    boolean existsByScrapIdAndPostId(Long scrapId, Long postId);
 }

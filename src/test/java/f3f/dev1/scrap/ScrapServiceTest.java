@@ -1,16 +1,34 @@
 package f3f.dev1.scrap;
 
+import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.member.application.MemberService;
+import f3f.dev1.domain.member.application.SessionLoginService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.dto.MemberDTO;
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.post.application.PostService;
+import f3f.dev1.domain.post.dao.ScrapPostRepository;
+import f3f.dev1.domain.post.dto.PostDTO;
+import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
+import f3f.dev1.domain.scrap.dto.ScrapDTO;
+import f3f.dev1.domain.scrap.model.Scrap;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+import static f3f.dev1.domain.member.dto.MemberDTO.*;
+import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static f3f.dev1.domain.scrap.dto.ScrapDTO.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @SpringBootTest
@@ -19,11 +37,20 @@ public class ScrapServiceTest {
     ScrapRepository scrapRepository;
 
     @Autowired
+    ScrapPostRepository scrapPostRepository;
+
+    @Autowired
     ScrapService scrapService;
+
+    @Autowired
+    PostService postService;
 
     @Autowired
     MemberService memberService;
 
+
+    @Autowired
+    SessionLoginService sessionLoginService;
     @Autowired
     MemberRepository memberRepository;
 
@@ -38,8 +65,8 @@ public class ScrapServiceTest {
     }
 
     // 회원가입 DTO 생성 메소드
-    public MemberDTO.SignUpRequest createSignUpRequest() {
-        return MemberDTO.SignUpRequest.builder()
+    public SignUpRequest createSignUpRequest() {
+        return SignUpRequest.builder()
                 .userName("username")
                 .nickname("nickname")
                 .phoneNumber("01012345678")
@@ -51,10 +78,22 @@ public class ScrapServiceTest {
     }
 
     // 로그인 DTO 생성 메소드
-    public MemberDTO.LoginRequest createLoginRequest() {
-        return MemberDTO.LoginRequest.builder()
+    public LoginRequest createLoginRequest() {
+        return LoginRequest.builder()
                 .email("userEmail@email.com")
                 .password("password").build();
+    }
+
+    // 포스트 생성 DTO 메소드
+    public PostSaveRequest createPostSaveRequest(Member author) {
+        return PostSaveRequest.builder()
+                .author(author)
+                .title("이건 테스트 게시글 제목이야")
+                .content("이건 테스트 게시글 내용이지 하하")
+                .tradeEachOther(false)
+                .wishCategory(new Category())
+                .productCategory(new Category())
+                .build();
     }
 
 
@@ -62,11 +101,31 @@ public class ScrapServiceTest {
     @DisplayName("유저 생성시 스크랩 생성 확인 테스트")
     public void createScrapTest() throws Exception{
         //given
-        Long signUp = memberService.signUp(createSignUpRequest());
+        Long userId = memberService.signUp(createSignUpRequest());
 
         // when
-
+        Optional<Scrap> scrapByUserId = scrapRepository.findScrapByUserId(userId);
 
         // then
+        assertThat(userId).isEqualTo(scrapByUserId.get().getUser().getId());
+    }
+
+    @Test
+    @DisplayName("스크랩에 포스트 추가 성공 테스트")
+    public void addPostToScrapTestSuccess() throws Exception{
+        //given
+        Long userId = memberService.signUp(createSignUpRequest());
+        sessionLoginService.login(createLoginRequest());
+        Member member = memberRepository.findById(userId).get();
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member);
+        Long postId = postService.savePost(postSaveRequest);
+
+
+        // when
+        AddScrapPostDTO addScrapPostDTO = AddScrapPostDTO.builder().userId(userId).postId(postId).build();
+        scrapService.addScrapPost(addScrapPostDTO);
+        // then
+        assertThat(true).isEqualTo(scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), postId));
+
     }
 }

@@ -77,7 +77,7 @@ public class ScrapService {
     // 스크랩에 관심 포스트 추가 메소드
     // 세션에서 받아온 유저와 프론트에서 넘어온 유저가 다르면 예외 던지게 처리함
     @Transactional
-    public ResponseEntity<String> addScrapPost(AddScrapPostDTO addScrapPostDTO) {
+    public String addScrapPost(AddScrapPostDTO addScrapPostDTO) {
         Member user = memberRepository.findById(addScrapPostDTO.getUserId()).orElseThrow(NotFoundByIdException::new);
         if (!user.getEmail().equals(sessionLoginService.getLoginUser())) {
             throw new NotAuthorizedException();
@@ -87,13 +87,13 @@ public class ScrapService {
 
         ScrapPost scrapPost = ScrapPost.builder().post(post).scrap(scrap).build();
         scrapPostRepository.save(scrapPost);
-        return OK;
+        return "OK";
     }
 
     // 스크랩에 있는 포스트 삭제 메서드
     // 세션에서 받아온 유저와 프론트에서 넘어온 유저가 다르면 예외 던지게 처리할 예정
     @Transactional
-    public ResponseEntity<String> deleteScrapPost(DeleteScrapPostDTO deleteScrapPostDTO) {
+    public String deleteScrapPost(DeleteScrapPostDTO deleteScrapPostDTO) {
         Member user = memberRepository.findById(deleteScrapPostDTO.getUserId()).orElseThrow(NotFoundByIdException::new);
         if (!user.getEmail().equals(sessionLoginService.getLoginUser())) {
             throw new NotAuthorizedException();
@@ -103,7 +103,7 @@ public class ScrapService {
         scrapPostRepository.delete(scrapPost);
 
 
-        return DELETE;
+        return "DELETE";
     }
 
 }

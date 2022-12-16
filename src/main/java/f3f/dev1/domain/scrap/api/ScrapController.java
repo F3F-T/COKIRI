@@ -32,12 +32,12 @@ public class ScrapController {
     @LoginCheck
     public ResponseEntity<String> addScrapPost(@RequestBody AddScrapPostDTO addScrapPostDTO) {
 
-        return scrapService.addScrapPost(addScrapPostDTO);
+        return ResponseEntity.ok(scrapService.addScrapPost(addScrapPostDTO));
     }
     // 유저 스크랩에 포스트 삭제 요청
     @DeleteMapping(value = "/user/scrap")
     @LoginCheck
     public ResponseEntity<String> deleteScrapPost(@RequestBody DeleteScrapPostDTO deleteScrapPostDTO) {
-        return scrapService.deleteScrapPost(deleteScrapPostDTO);
+        return ResponseEntity.ok(scrapService.deleteScrapPost(deleteScrapPostDTO));
     }
 }
