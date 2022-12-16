@@ -6,6 +6,8 @@ import f3f.dev1.domain.post.exception.NotFoundPostListByAuthor;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.trade.dao.TradeRepository;
+import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import static f3f.dev1.domain.post.dto.PostDTO.*;
@@ -27,6 +28,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final TradeRepository tradeRepository;
 
     @Transactional
     public Long savePost(PostSaveRequest postSaveRequest) {
@@ -54,19 +56,26 @@ public class PostService {
 
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     @Transactional(readOnly = true)
-    public FindByAuthorPostListResponse findPostByAuthor(Long authorId) {
+    public List<FindByAuthorPostEachResponse> findPostByAuthor(Long authorId) {
         if(!postRepository.existsByAuthorId(authorId)) {
             throw new NotFoundPostListByAuthor("해당 작성자의 게시글이 없습니다.");
         }
+        List<FindByAuthorPostEachResponse> response = new ArrayList<>();
         List<Post> byAuthor = postRepository.findByAuthorId(authorId);
-        FindByAuthorPostListResponse response = new FindByAuthorPostListResponse(byAuthor);
+        for (Post post : byAuthor) {
+            Trade trade = tradeRepository.findByPostId(post.getId()).orElseThrow(NotFoundByIdException::new);
+            FindByAuthorPostEachResponse findByAuthorPostEachResponse = new FindByAuthorPostEachResponse(post, trade);
+            response.add(findByAuthorPostEachResponse);
+        }
         return response;
     }
 
     @Transactional(readOnly = true)
     public FindByIdPostResponse findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        FindByIdPostResponse response = new FindByIdPostResponse(post);
+        // TODO 거래 가능 상태인지 확인하기
+        Trade trade = tradeRepository.findByPostId(post.getId()).orElseThrow(NotFoundByIdException::new);
+        FindByIdPostResponse response = new FindByIdPostResponse(post, trade);
         return response;
     }
 
