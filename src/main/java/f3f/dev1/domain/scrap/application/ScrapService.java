@@ -1,15 +1,16 @@
 package f3f.dev1.domain.scrap.application;
 
-import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.post.model.ScrapPost;
-import f3f.dev1.domain.scrap.dao.ScrapRepository;
-import f3f.dev1.domain.scrap.exception.DuplicateScrapByUserIdException;
-import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.member.application.SessionLoginService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.exception.UserNotFoundByEmailException;
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.post.model.ScrapPost;
+import f3f.dev1.domain.scrap.dao.ScrapRepository;
+import f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
+import f3f.dev1.domain.scrap.exception.DuplicateScrapByUserIdException;
+import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ import static f3f.dev1.global.common.constants.ResponseConstants.OK;
 public class ScrapService {
 
     private final ScrapRepository scrapRepository;
-    private final MemberRepository userRepository;
+    private final MemberRepository memberRepository;
 
     private final SessionLoginService sessionLoginService;
 
@@ -46,10 +47,9 @@ public class ScrapService {
 
     // 스크랩에 있는 포스트조회 메서드
     // TODO: 유저의 스크랩한 포스트 조회가 유저쪽에 있는게 나을까 스크랩에 있는게 나을까 고민해보고 수정예정
-    // TODO: 현재 유저 정보를 sessionLoginService에서 받아와서 처리하는데, 추가로 유저 검증이 필요하지는 않을까
-    @Transactional
+    @Transactional(readOnly = true)
     public GetScrapPostDTO getUserScrapPosts(String email) {
-        Member user = userRepository.findByEmail(email).orElseThrow(UserNotFoundByEmailException::new);
+        Member user = memberRepository.findByEmail(email).orElseThrow(UserNotFoundByEmailException::new);
 
         Scrap scrapByUserId = scrapRepository.findScrapByUserId(user.getId()).orElseThrow(NotFoundByIdException::new);
         List<ScrapPost> scrapPosts = scrapByUserId.getScrapPosts();
@@ -69,7 +69,7 @@ public class ScrapService {
     // 세션에서 받아온 유저와 프론트에서 넘어온 유저가 다르면 예외 던지게 처리함
     @Transactional
     public ResponseEntity<String> addScrapPost(AddScrapPostDTO addScrapPostDTO) {
-        Member user = userRepository.findById(addScrapPostDTO.getUserId()).orElseThrow(NotFoundByIdException::new);
+        Member user = memberRepository.findById(addScrapPostDTO.getUserId()).orElseThrow(NotFoundByIdException::new);
         if (!user.getEmail().equals(sessionLoginService.getLoginUser())) {
             throw new NotAuthorizedException();
         }
