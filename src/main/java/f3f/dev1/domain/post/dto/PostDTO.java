@@ -1,11 +1,10 @@
 package f3f.dev1.domain.post.dto;
 
 import f3f.dev1.domain.category.model.Category;
-import f3f.dev1.domain.model.TradeStatus;
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
-import f3f.dev1.domain.user.model.User;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -32,7 +31,7 @@ public class PostDTO {
         private String content;
         private Boolean tradeEachOther;
         @NotNull
-        private User author;
+        private Member author;
         private Category productCategory;
         private Category wishCategory;
 
@@ -96,6 +95,6 @@ public class PostDTO {
         @NotNull
         private Long id;
         @NotNull
-        private User requester;
+        private Member requester;
     }
 }

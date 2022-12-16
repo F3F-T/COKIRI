@@ -1,17 +1,17 @@
-package f3f.dev1.domain.user.application;
+package f3f.dev1.domain.member.application;
 
-import f3f.dev1.domain.user.dao.UserRepository;
-import f3f.dev1.domain.user.exception.UserNotFoundByEmailException;
-import f3f.dev1.domain.user.exception.UserNotFoundException;
-import f3f.dev1.domain.user.model.User;
-import f3f.dev1.domain.user.model.UserLevel;
+import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.member.exception.UserNotFoundByEmailException;
+import f3f.dev1.domain.member.exception.UserNotFoundException;
+import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.member.model.UserLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 
-import static f3f.dev1.domain.user.dto.UserDTO.LoginRequest;
+import static f3f.dev1.domain.member.dto.MemberDTO.LoginRequest;
 import static f3f.dev1.global.common.constants.UserConstants.AUTH_State;
 import static f3f.dev1.global.common.constants.UserConstants.USER_ID;
 
@@ -20,14 +20,14 @@ import static f3f.dev1.global.common.constants.UserConstants.USER_ID;
 public class SessionLoginService {
     private final HttpSession httpSession;
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
     public void existsByEmailAndPassword(LoginRequest loginRequest) {
         loginRequest.encrypt();
         String email = loginRequest.getEmail();
         String password = loginRequest.getPassword();
-        if (!userRepository.existsByEmailAndPassword(email, password)) {
+        if (!memberRepository.existsByEmailAndPassword(email, password)) {
             throw new UserNotFoundException("아이디 또는 비밀번호가 일치하지 않습니다.");
         }
     }
@@ -40,14 +40,14 @@ public class SessionLoginService {
         httpSession.setAttribute(USER_ID, email);
         httpSession.setMaxInactiveInterval(3600*24);
 
-        return userRepository.findByEmail(email).orElseThrow(UserNotFoundByEmailException::new).getId();
+        return memberRepository.findByEmail(email).orElseThrow(UserNotFoundByEmailException::new).getId();
     }
 
     public void setUserLevel(String email){
-        User user = userRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("존재하지 않는 사용자입니다."));
 
-        httpSession.setAttribute(AUTH_State,user.getUserLevel());
+        httpSession.setAttribute(AUTH_State, member.getUserLevel());
     }
 
     public void logout() {

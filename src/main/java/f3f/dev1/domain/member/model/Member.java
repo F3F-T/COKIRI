@@ -1,4 +1,4 @@
-package f3f.dev1.domain.user.model;
+package f3f.dev1.domain.member.model;
 
 import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.message.model.Message;
@@ -7,8 +7,8 @@ import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
-import f3f.dev1.domain.user.dto.UserDTO.EncryptEmailDto;
-import f3f.dev1.domain.user.dto.UserDTO.UpdateUserPassword;
+import f3f.dev1.domain.member.dto.MemberDTO.EncryptEmailDto;
+import f3f.dev1.domain.member.dto.MemberDTO.UpdateUserPassword;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,14 +17,14 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static f3f.dev1.domain.user.dto.UserDTO.UpdateUserInfo;
-import static f3f.dev1.domain.user.dto.UserDTO.UserInfo;
-import static f3f.dev1.domain.user.model.UserLevel.AUTH;
+import static f3f.dev1.domain.member.dto.MemberDTO.UpdateUserInfo;
+import static f3f.dev1.domain.member.dto.MemberDTO.UserInfo;
+import static f3f.dev1.domain.member.model.UserLevel.AUTH;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class User extends UserBase {
+public class Member extends UserBase {
 
     @Embedded
     private Address address;
@@ -65,8 +65,8 @@ public class User extends UserBase {
     private List<Trade> sellingTrades = new ArrayList<>();
 
     @Builder
-    public User(Long id, String email, String password,String username, Address address, String birthDate, String phoneNumber, String nickname) {
-        super(id, email, password, AUTH);
+    public Member(Long id, String email, String password, String username, Address address, String birthDate, String phoneNumber, String nickname, UserLoginType userLoginType) {
+        super(id, email, password, AUTH,userLoginType);
         this.userName = username;
         this.address = address;
         this.birthDate = birthDate;
@@ -81,12 +81,14 @@ public class User extends UserBase {
                 .email(getEmail())
                 .phoneNumber(this.phoneNumber)
                 .nickname(this.nickname)
+                .loginType(this.getUserLoginType())
                 .build();
     }
 
     public void updateUserInfo(UpdateUserInfo updateUserInfo) {
         this.address = updateUserInfo.getAddress();
         this.nickname = updateUserInfo.getNickname();
+        this.phoneNumber = updateUserInfo.getPhoneNumber();
 
     }
 

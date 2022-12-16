@@ -1,6 +1,6 @@
 package f3f.dev1.global.common.annotation;
 
-import f3f.dev1.domain.user.model.UserLevel;
+import f3f.dev1.domain.member.model.UserLevel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

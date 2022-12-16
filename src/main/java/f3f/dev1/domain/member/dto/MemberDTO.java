@@ -1,7 +1,8 @@
-package f3f.dev1.domain.user.dto;
+package f3f.dev1.domain.member.dto;
 
 import f3f.dev1.domain.model.Address;
-import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.global.config.EncryptionService;
 import f3f.dev1.global.config.SHA256Encryptor;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public class UserDTO {
+public class MemberDTO {
 
     static EncryptionService encryptionService = new SHA256Encryptor();
 
@@ -34,13 +35,15 @@ public class UserDTO {
 
         private String birthDate;
 
+        private UserLoginType userLoginType;
+
         public void encrypt(){
             password = encryptionService.encrypt(password);
         }
 
-        public User toEntity() {
+        public Member toEntity() {
 
-            return User.builder()
+            return Member.builder()
                     .username(userName)
                     .nickname(nickname)
                     .address(address)
@@ -48,6 +51,7 @@ public class UserDTO {
                     .birthDate(birthDate)
                     .email(email)
                     .password(password)
+                    .userLoginType(userLoginType)
                     .build();
         }
     }
@@ -82,6 +86,8 @@ public class UserDTO {
         private String phoneNumber;
 
         private String email;
+
+        private UserLoginType loginType;
     }
 
     @Builder
@@ -93,6 +99,8 @@ public class UserDTO {
         private String nickname;
 
         private Address address;
+
+        private String phoneNumber;
 
     }
 
@@ -147,6 +155,48 @@ public class UserDTO {
     @Getter
     public static class ReturnPasswordDto{
         private String password;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class ConfirmEmailDto {
+        private String email;
+    }
+
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class EmailConfirmCodeDto {
+        private String code;
+    }
+
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class CheckEmailDto {
+        private String email;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class CheckNicknameDto {
+        private String nickname;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class CheckPhoneNumberDto {
+        private String phoneNumber;
     }
 
 

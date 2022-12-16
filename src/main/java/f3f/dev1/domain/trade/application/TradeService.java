@@ -3,12 +3,11 @@ package f3f.dev1.domain.trade.application;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.trade.dao.TradeRepository;
-import f3f.dev1.domain.trade.dto.TradeDTO;
 import f3f.dev1.domain.trade.dto.TradeDTO.TradeInfoDto;
 import f3f.dev1.domain.trade.exception.InvalidSellerIdException;
 import f3f.dev1.domain.trade.model.Trade;
-import f3f.dev1.domain.user.dao.UserRepository;
-import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,7 @@ public class TradeService {
 
     private final TradeRepository tradeRepository;
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     private final PostRepository postRepository;
 
@@ -36,8 +35,8 @@ public class TradeService {
     @Transactional
     public Long createTrade(CreateTradeDto createTradeDto) {
         Long sellerId = createTradeDto.getSellerId();
-        User seller = userRepository.findById(createTradeDto.getSellerId()).orElseThrow(NotFoundByIdException::new);
-        User buyer = userRepository.findById(createTradeDto.getBuyerId()).orElseThrow(NotFoundByIdException::new);
+        Member seller = memberRepository.findById(createTradeDto.getSellerId()).orElseThrow(NotFoundByIdException::new);
+        Member buyer = memberRepository.findById(createTradeDto.getBuyerId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(createTradeDto.getPostId()).orElseThrow(NotFoundByIdException::new);
 
         if (!sellerId.equals(post.getAuthor().getId())) {

@@ -1,4 +1,4 @@
-package f3f.dev1.domain.user.exception;
+package f3f.dev1.domain.member.exception.response;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,4 +19,7 @@ public class UserErrorResponse {
 
 
     public static final ResponseEntity<String> UNAUTHENTICATED = new ResponseEntity<>("로그인 후에 사용하세요.", HttpStatus.UNAUTHORIZED);
+
+
+    public static final ResponseEntity<String> INVALID_PASSWORD = new ResponseEntity<>("잘못된 비밀번호 입력입니다.", HttpStatus.CONFLICT);
 }

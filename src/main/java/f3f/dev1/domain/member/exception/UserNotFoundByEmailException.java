@@ -1,4 +1,4 @@
-package f3f.dev1.domain.user.exception;
+package f3f.dev1.domain.member.exception;
 
 public class UserNotFoundByEmailException extends UserNotFoundException {
     public UserNotFoundByEmailException() {

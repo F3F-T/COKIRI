@@ -1,12 +1,13 @@
-package f3f.dev1.domain.user.exception;
+package f3f.dev1.domain.member.exception.handler;
 
+import f3f.dev1.domain.member.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import static f3f.dev1.domain.user.exception.UserErrorResponse.*;
+import static f3f.dev1.domain.member.exception.response.UserErrorResponse.*;
 @Slf4j
 @RestControllerAdvice
 public class UserExceptionHandler {
@@ -48,9 +49,17 @@ public class UserExceptionHandler {
     }
 
     @ExceptionHandler(UnauthenticatedUserException.class)
-    protected final ResponseEntity<String> handleUnauthenticatedUserExeption(
+    protected final ResponseEntity<String> handleUnauthenticatedUserException(
             UnauthenticatedUserException ex, WebRequest request) {
         log.debug("로그인 한 후에 이용할 수 있는 서비스 입니다.", request.getDescription(false));
         return UNAUTHENTICATED;
+    }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    protected final ResponseEntity<String> handleInvalidPasswordException(
+            InvalidPasswordException ex, WebRequest request
+    ) {
+        log.debug("잘못된 비밀번호 입력입니다.", request.getDescription(false));
+        return INVALID_PASSWORD;
     }
 }
