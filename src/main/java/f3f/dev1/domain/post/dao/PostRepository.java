@@ -1,6 +1,7 @@
 package f3f.dev1.domain.post.dao;
 
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

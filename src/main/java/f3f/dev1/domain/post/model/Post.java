@@ -30,8 +30,10 @@ public class Post extends BaseTimeEntity {
 
     // 끼리끼리 거래 여부
     private Boolean tradeEachOther;
-    @OneToOne(mappedBy = "post")
-    private Trade trade;
+
+    // TODO trade는 post에서 삭제
+//    @OneToOne(mappedBy = "post")
+//    private Trade trade;
 
     @ManyToOne
     @JoinColumn(name = "productCategory_id")
@@ -66,11 +68,10 @@ public class Post extends BaseTimeEntity {
     }
 
     @Builder
-    public Post(Long id, String title, String content, Trade trade, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author) {
+    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.trade = trade;
         this.tradeEachOther = tradeEachOther;
         this.productCategory = productCategory;
         this.wishCategory = wishCategory;
