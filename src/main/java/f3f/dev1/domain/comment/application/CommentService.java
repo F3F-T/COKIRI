@@ -102,7 +102,7 @@ public class CommentService {
             throw new NotMatchingCommentException("요청한 게시글에 수정하려는 댓글이 없습니다.");
         }
         commentInPost.updateContent(updateCommentRequest.getContent());
-        return "UPDATE";
+        return UPDATE;
     }
 
     @Transactional
@@ -119,6 +119,6 @@ public class CommentService {
            throw new NotMatchingAuthorException("댓글 작성자가 아닙니다.");
         }
         commentRepository.delete(authorComment);
-        return "DELETE";
+        return DELETE;
     }
 }

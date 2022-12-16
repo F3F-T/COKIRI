@@ -2,7 +2,7 @@ package f3f.dev1.domain.message.dto;
 
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.member.model.Member;
 import lombok.*;
 
 import javax.persistence.Column;
@@ -23,10 +23,10 @@ public class MessageRoomDTO {
         private Post post;
 
         @NotNull
-        private User seller;
+        private Member seller;
 
         @NonNull
-        private User buyer;
+        private Member buyer;
 
         public MessageRoom toEntity(){
             return MessageRoom.builder()

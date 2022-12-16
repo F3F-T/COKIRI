@@ -4,7 +4,7 @@ import f3f.dev1.domain.message.model.Message;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.trade.model.Trade;
-import f3f.dev1.domain.user.model.User;
+import f3f.dev1.domain.member.model.Member;
 import lombok.*;
 
 public class MessageDTO {
@@ -18,10 +18,10 @@ public class MessageDTO {
         private String content;
 
         @NonNull
-        private User sender;
+        private Member sender;
 
         @NonNull
-        private User receiver;
+        private Member receiver;
 
         @NonNull
         private Post post;
