@@ -2,7 +2,9 @@ package f3f.dev1.domain.message.model;
 
 import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.domain.user.model.User;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,5 +36,13 @@ public class MessageRoom extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "messageRoom", fetch = FetchType.LAZY)
     private List<Message> messages = new ArrayList<>();
+
+    @Builder
+    public MessageRoom(Long id, Post post, User seller, User buyer) {
+        this.id = id;
+        this.post = post;
+        this.seller = seller;
+        this.buyer = buyer;
+    }
 }
 
