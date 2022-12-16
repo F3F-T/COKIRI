@@ -2,11 +2,11 @@ package f3f.dev1.domain.post.model;
 
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
-import f3f.dev1.domain.user.model.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,8 +42,8 @@ public class Post extends BaseTimeEntity {
     private Category wishCategory;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User author;
+    @JoinColumn(name = "member_id")
+    private Member author;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<MessageRoom> messageRooms = new ArrayList<>();
@@ -66,7 +66,7 @@ public class Post extends BaseTimeEntity {
     }
 
     @Builder
-    public Post(Long id, String title, String content, Trade trade, Boolean tradeEachOther, Category productCategory, Category wishCategory, User author) {
+    public Post(Long id, String title, String content, Trade trade, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author) {
         this.id = id;
         this.title = title;
         this.content = content;
