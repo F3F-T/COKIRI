@@ -19,6 +19,7 @@ public class PostDTO {
     // C : Create 담당 DTO
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PostSaveRequest {
@@ -72,6 +73,7 @@ public class PostDTO {
     // U : Update 담당 DTO들
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdatePostRequest {
@@ -89,6 +91,7 @@ public class PostDTO {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DeletePostRequest {
