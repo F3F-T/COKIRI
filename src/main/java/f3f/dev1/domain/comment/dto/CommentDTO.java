@@ -4,6 +4,7 @@ import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.model.Member;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,36 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 public class CommentDTO {
+
+
+    // TODO 문제 생길 여지 있어보임
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CreateCommentRequest {
+        @NotNull
+        private Long id;
+        @NotNull
+        private Member author;
+        @NotNull
+        private Post post;
+        private Long depth;
+        @Size(min = 1, message = "댓글은 한글자 이상 작성해주세요")
+        private String content;
+        private Comment parentComment;
+
+        public Comment toEntity() {
+            return Comment.builder()
+                    .post(this.post)
+                    .author(this.author)
+                    .content(this.content)
+                    .depth(this.depth)
+                    .parent(this.parentComment)
+                    .build();
+        }
+    }
+
 
     @Getter
     @NoArgsConstructor
