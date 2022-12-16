@@ -1,5 +1,9 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/MulmulTrade.module.css"
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+
+
 const mulmulTrade = () => {
     return (
             <div className={styles.mulmulTrade}>
@@ -8,6 +12,7 @@ const mulmulTrade = () => {
                         <div className={styles.forWho}>
                             <button className={styles.forWho_1}>이런 물건이 올라왔어요.</button>
                             <button className={styles.forWho_2}>이런 물건을 원해요.</button>
+
                         </div>
                         <div className={styles.category}>
                             <button className ={styles.itemC}>전체</button>
@@ -43,8 +48,6 @@ const mulmulTrade = () => {
                                 <button className={styles.priceI}>30만원~50만원</button>
                                 <button className={styles.priceI}>50만원~100만원</button>
                                 <button className={styles.priceI}>100만원~</button>
-
-
                             </div>
                             <div className={styles.priceSet}>
                                     <input type="text" className={styles.setBox1}></input>
