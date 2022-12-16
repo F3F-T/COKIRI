@@ -1,0 +1,86 @@
+.mulmulTrade {
+    width : 100%;
+    height: 1600px;
+    text-align: center;
+    /*border: 1px solid red;*/
+    display: block;
+
+}
+.mulmulTradeContent {
+    width : 1200px;
+    height: 100%;
+    text-align: center;
+    border: 1px solid red;
+    margin : auto; /*가운데 정렬*/
+}
+.categoryBox {
+    display: block; /*내용물 세로 정렬*/
+    border: 1px solid red;
+    width: 100%;
+    height : 20%; /*320px*/
+}
+.forWho{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 0.5px solid red;
+    width: 100%;
+    height : 20%; /*64px*/
+}
+.forWho_1 {
+    margin : 6px
+}
+.forWho_2 {
+    margin : 6px
+}
+.category {
+    border-radius: 10px;
+    border: 0.5px solid red;
+    width: 100%;
+    height : 60%; /*192px*/
+    display: grid;
+    grid-template-columns: repeat(6,1fr);
+    grid-template-rows: auto;
+    gap: 10px;
+}
+.itemC {
+    border: 0.5px solid rgba(255,0,0,5);
+    height: 30%;
+    width: 100px;
+    margin-left: 10px;
+    background-color: transparent;
+}
+.priceBox {
+    display: flex; /*내용물 가로 정렬*/
+    flex-direction: row;
+    border: 0.5px solid red;
+    width: 100%;
+    height : 20%; /*64px*/
+}
+.priceList {
+    width: 70%;
+    border: 0.5px solid red;
+
+}
+.priceI{
+    padding: 6px;
+    margin: 15px 6px 6px 6px;
+}
+.priceSet {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 30%;
+    border: 0.5px solid red;
+    align-items: center;
+    /*flex로 가로정렬 후 space-evenly로 가로 위치 잡고 alogn-items로 세로 가운데에 위치*/
+}
+.setBox1{
+    height: 30%;
+}
+.setBox2{
+    height: 30%;
+}
+.won {
+    height: 30%;
+}
