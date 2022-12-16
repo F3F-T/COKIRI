@@ -26,11 +26,15 @@ public class Category {
     private Category parent;
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     private List<Category> child = new ArrayList<>();
-    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
-    private List<Post> posts = new ArrayList<>();
+    @OneToMany(mappedBy = "productCategory", fetch = FetchType.LAZY)
+    private List<Post> products = new ArrayList<>();
+
+    @OneToMany(mappedBy = "wishCategory", fetch = FetchType.LAZY)
+    private List<Post> wishProducts = new ArrayList<>();
 
     @Builder
     public Category(Long id, String name, Long depth, Category parent) {
+
         this.id = id;
         this.name = name;
         this.depth = depth;
