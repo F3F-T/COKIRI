@@ -41,7 +41,8 @@ const MulmulTrade = () => {
                             <button className ={styles.itemC}>취미/게임</button>
                             <button className ={styles.itemC}>인테리어</button>
                             <button className ={styles.itemC}>생활/주방</button>
-
+                             {/*각 버튼을 눌렀을 때, 00를 올린 사람들이에요.를 하단에 띄워줄거임*/}
+                             {/*받아와서 매핑 후 다 url 만들어주는거겠지? 내일 얘기해봐야할듯*/}
 
 
 
