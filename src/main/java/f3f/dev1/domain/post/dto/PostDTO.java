@@ -2,6 +2,7 @@ package f3f.dev1.domain.post.dto;
 
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
@@ -19,6 +20,7 @@ public class PostDTO {
     // C : Create 담당 DTO
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PostSaveRequest {
@@ -35,9 +37,6 @@ public class PostDTO {
         private Category productCategory;
         private Category wishCategory;
 
-        @NotNull
-        private Trade trade;
-
         public Post toEntity() {
             return Post.builder()
                     .title(this.title)
@@ -46,7 +45,6 @@ public class PostDTO {
                     .author(this.author)
                     .productCategory(this.productCategory)
                     .wishCategory(this.wishCategory)
-                    .trade(this.trade)
                     .build();
         }
     }
@@ -58,8 +56,10 @@ public class PostDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FindByAuthorPostListResponse {
-        private List<Post> postList;
+    public static class FindByAuthorPostEachResponse {
+        private Post postEach;
+        private Trade tradeEach;
+//        private List<TradeStatus> tradeStatuses;
     }
 
     @Getter
@@ -67,11 +67,14 @@ public class PostDTO {
     @AllArgsConstructor
     public static class FindByIdPostResponse {
         private Post byIdPost;
+        private Trade trade;
+//        private TradeStatus tradeStatus;
     }
 
     // U : Update 담당 DTO들
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdatePostRequest {
@@ -89,6 +92,7 @@ public class PostDTO {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DeletePostRequest {
