@@ -15,6 +15,7 @@ import SignUp from "./routes/SignUp";
 import EmailCheck from "./routes/EmailCheck";
 
 import styles from "./styles/App.module.css";
+import EmailCheckOK from "./routes/EmailCheckOK";
 function App() {
     return (
         <div className="App">
@@ -30,6 +31,7 @@ function App() {
                 <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
                 <Route path="/mypage" element={<MyPage/>} />
                 <Route path="/signup/emailcheck" element={<EmailCheck/>}/>
+                <Route path="/signup/emailcheck/ok" element={<EmailCheckOK/>}/>
             </Routes>
         </div>
         </div>
