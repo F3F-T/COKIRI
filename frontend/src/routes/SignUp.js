@@ -8,6 +8,12 @@ import PriceBox from "../component/trade/PriceBox";
 
 
 const SignUp = () => {
+    const navigate = useNavigate();
+
+    const signUpButtonClick = () => {
+        navigate(`/signup/emailcheck`)
+    }
+
     return (
         <div className={styles.signup}>
             <div className={styles.signupHeader}>
@@ -42,7 +48,7 @@ const SignUp = () => {
                 </div>
             </div>
             <div className={styles.btnPlace}>
-                <button className={styles.btn}>회원가입</button>
+                <button className={styles.btn} onClick={signUpButtonClick}>회원가입</button>
             </div>
 
         </div>
