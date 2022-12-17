@@ -59,6 +59,7 @@
     width: 100%;
     height: 72px;
     position: fixed;
+    z-index: 999;
 }
 .navBar {
     /*border: 1px solid red;*/
