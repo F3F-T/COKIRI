@@ -81,3 +81,11 @@
     font-weight: 500;
     margin-right: 1rem;
 }
+
+.btnGoogle{
+    margin-top: 3rem;
+    background-color: white;
+    width: 100%;
+    text-align: center;
+    height: 3rem;
+}

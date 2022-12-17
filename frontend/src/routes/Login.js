@@ -38,6 +38,8 @@ const Login = () => {
                     </div>
                 </section>
                 <section className={styles.footer}></section>
+
+                <button className={styles.btnGoogle} type={"button"}>구글 로그인</button>
             </div>
         </>
     );
