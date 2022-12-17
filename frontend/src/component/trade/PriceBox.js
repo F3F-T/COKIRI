@@ -6,7 +6,7 @@ import Navbar from 'react-bootstrap/Navbar';
 
 // ㅂㅅ
 const PriceBox = () => {
-    return (
+    return ( //
         <div className={styles.priceBox}>
             <div className={styles.priceList}>
                 <button className={styles.priceI}>5천원~1만원</button>
