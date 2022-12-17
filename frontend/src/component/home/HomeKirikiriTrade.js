@@ -2,13 +2,13 @@ import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../../styles/home/HomeKirikiriTrade.module.css";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import KiriKiriCategoryRoundImage from "../KiriKiriCategoryRoundImage";
+import KiriKiriCategoryRoundImage from "./KiriKiriCategoryRoundImage";
 import book from "../../img/book.png";
 import fashion from "../../img/fashion.png";
 import ticket from "../../img/ticket.png";
 import young from "../../img/young.png";
 import Carousel from "react-bootstrap/Carousel";
-import MulMulCardView from "../MulMulCardView";
+import MulMulCardView from "./MulMulCardView";
 
 const HomeKirikiriTrade = () => {
     return (
