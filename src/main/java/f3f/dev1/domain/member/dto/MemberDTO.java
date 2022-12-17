@@ -1,10 +1,8 @@
 package f3f.dev1.domain.member.dto;
 
-import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
-import f3f.dev1.global.config.EncryptionService;
-import f3f.dev1.global.config.SHA256Encryptor;
+import f3f.dev1.domain.model.Address;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -120,8 +118,8 @@ public class MemberDTO {
         private String newPassword;
 
         public void encrypt(PasswordEncoder passwordEncoder){
-            oldPassword = passwordEncoder.encode(oldPassword);
-            newPassword = passwordEncoder.encode(newPassword);
+            this.oldPassword = passwordEncoder.encode(oldPassword);
+            this.newPassword = passwordEncoder.encode(newPassword);
         }
     }
 

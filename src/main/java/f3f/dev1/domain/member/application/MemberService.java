@@ -49,12 +49,6 @@ public class MemberService {
 
 
 
-
-    // 회원가입 요청 처리 메소드, 유저 생성
-    // signUpRequest로 넘어오는 값 검증은 컨트롤러에서 진행하게 구현 예정
-
-
-
     // 조회 메소드
     // 아이디로 유저 정보 조회
     @Transactional(readOnly = true)
@@ -87,11 +81,10 @@ public class MemberService {
     public String updateUserPassword(UpdateUserPassword updateUserPassword) {
 
         Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(NotFoundByIdException::new);
-        updateUserPassword.encrypt(passwordEncoder);
-
-        if (!Objects.equals(member.getPassword(), updateUserPassword.getOldPassword())) {
+        if (!passwordEncoder.matches(updateUserPassword.getOldPassword(), member.getPassword())) {
             throw new InvalidPasswordException();
         }
+        updateUserPassword.encrypt(passwordEncoder);
         member.updateUserPassword(updateUserPassword);
         return "UPDATE";
     }

@@ -84,7 +84,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenInfoDTO reissue(TokenRequestDTO tokenRequestDTO,HttpServletResponse response, String cookieRefreshToken) {
+    public TokenInfoDTO reissue(TokenRequestDTO tokenRequestDTO,HttpServletResponse response) {
         // 1. refresh token 검증
         if (!jwtTokenProvider.validateToken(tokenRequestDTO.getRefreshToken())) {
             throw new InvalidRefreshTokenException();
@@ -111,7 +111,7 @@ public class AuthService {
 //        RefreshToken newRefreshToken = refreshToken.updateValue(tokenInfoDTO.getRefreshToken());
 //        refreshTokenRepository.save(newRefreshToken);
         saveRefreshTokenInStorage(tokenInfoDTO.getRefreshToken());// 추후 디비에 저장
-        setRefreshTokenInCookie(response,refreshToken); // 쿠키에 refresh 토큰 저장
+        setRefreshTokenInCookie(response,tokenInfoDTO.getRefreshToken()); // 쿠키에 refresh 토큰 저장
 
         // 토큰 발급
         return tokenInfoDTO;
@@ -131,8 +131,6 @@ public class AuthService {
 
     /**
      * 쿠키에 refresh 토큰 저장
-     * @param response
-     * @param refreshToken
      */
     private void setRefreshTokenInCookie(HttpServletResponse response, String refreshToken) {
         ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN, refreshToken)
@@ -147,18 +145,15 @@ public class AuthService {
 
     /**
      * 저장소에 토큰 저장 추후에 DB 나 캐시 고려
-     * @param tokenSaveDTO
      */
-    private void saveRefreshTokenInStorage(String tokenSaveDTO) {
+    private void saveRefreshTokenInStorage(String refreshToken) {
 
-        session.setAttribute(REFRESH_TOKEN, tokenSaveDTO);
+        session.setAttribute(REFRESH_TOKEN, refreshToken);
     }
 
 
     /**
      * 쿠키 제거
-     * @param response
-     * @param cookieName
      */
     private void deleteCookie(HttpServletResponse response,String cookieName) {
         Cookie cookie = new Cookie(cookieName, null); // choiceCookieName(쿠키 이름)에 대한 값을 null로 지정

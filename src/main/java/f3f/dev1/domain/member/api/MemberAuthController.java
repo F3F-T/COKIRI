@@ -29,6 +29,7 @@ public class MemberAuthController {
 
     private final AuthService authService;
 
+
     // 이메일 중복 확인
     @PostMapping(value = "/check-email")
     public ResponseEntity<Boolean> emailDuplicateCheck(@RequestBody CheckEmailDto checkEmailDto) {
@@ -90,8 +91,8 @@ public class MemberAuthController {
 
     // 재발급
     @PostMapping(value = "/reissue")
-    public ResponseEntity<TokenInfoDTO> reissue(@RequestBody TokenRequestDTO tokenRequestDTO,HttpServletResponse response, @CookieValue(name = REFRESH_TOKEN) String refreshToken) {
-        return ResponseEntity.ok(authService.reissue(tokenRequestDTO, response, refreshToken));
+    public ResponseEntity<TokenInfoDTO> reissue(@RequestBody TokenRequestDTO tokenRequestDTO,HttpServletResponse response) {
+        return ResponseEntity.ok(authService.reissue(tokenRequestDTO, response));
     }
 
 

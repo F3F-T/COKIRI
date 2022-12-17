@@ -1,5 +1,6 @@
 package f3f.dev1.domain.member.api;
 
+import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.member.application.UserDetailService;
 import f3f.dev1.domain.member.dao.MemberRepository;
@@ -22,15 +23,6 @@ public class MemberController {
 
     private final MemberRepository memberRepository;
 
-
-
-
-    // 로그아웃
-    @DeleteMapping(value = "/user/logout")
-    public ResponseEntity<String> logout() {
-//        sessionLoginService.logout();
-        return OK;
-    }
     // 유저 정보 조회
     @GetMapping(value = "/user")
     public ResponseEntity<UserInfo> getUserInfo() {
@@ -58,6 +50,8 @@ public class MemberController {
         return ResponseEntity.ok(memberService.updateUserPassword(updateUserPassword));
 
     }
+
+    // TODO 주소 업데이트 요청 처리 경로 만들어야함, 서비스도
 
 
 }
