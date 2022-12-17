@@ -17,7 +17,7 @@ public class MessageRoomDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    public static class SaveRequest{
+    public static class MessageRoomSaveRequest{
 
         @NonNull
         private Post post;

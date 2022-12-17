@@ -12,7 +12,7 @@ public class MessageDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    public static class SaveRequest{
+    public static class MessageSaveRequest{
 
         @NonNull
         private String content;
@@ -25,9 +25,6 @@ public class MessageDTO {
 
         @NonNull
         private Post post;
-
-        @NonNull
-        private Trade trade; //거래 상태 받아서 확인해야함.
 
         @NonNull
         private MessageRoom messageRoom;
