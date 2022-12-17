@@ -11,6 +11,7 @@ const Nav1 = () => {
     let navigate = useNavigate();
 
     return (
+        <div className={styles.navBarBar}>
         <Navbar className={styles.navBar} bg="white" variant="white">
             <img className={styles.homeLogo} onClick={()=>navigate('/')}  src = {myImage}/>
             <Nav className={styles.meauto}>
@@ -29,9 +30,10 @@ const Nav1 = () => {
                     <img className={styles.mypageI} onClick={()=>navigate('/')}  src = {talk}/>
                     <button className={styles.signBtn3} onClick={()=>navigate('/')}>코끼리 톡</button>
                 </div>
-
             </Nav>
+
         </Navbar>
+        </div>
 
     );
 };
