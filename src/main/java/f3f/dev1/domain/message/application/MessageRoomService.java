@@ -6,6 +6,8 @@ import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.dto.MessageDTO;
 import f3f.dev1.domain.message.dto.MessageRoomDTO;
 import f3f.dev1.domain.message.exception.CanNotSendMessageByTradeStatus;
+import f3f.dev1.domain.message.exception.NoMessageRoomException;
+import f3f.dev1.domain.message.model.Message;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.dao.PostRepository;
@@ -15,13 +17,20 @@ import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static f3f.dev1.domain.message.dto.MessageDTO.*;
 import static f3f.dev1.domain.message.dto.MessageRoomDTO.*;
 
 /*
 메시지룸을 만들고 메시지 만들기
-
+C:
+R:
+U:
+D:
+    - 거래 완료 후, 7일 뒤에 사라짐.
  */
 @Service
 @RequiredArgsConstructor
@@ -54,6 +63,14 @@ public class MessageRoomService {
         return messageRoom.getId();
     }
 
+    //채팅방 클릭할 때, 조회 (채팅창은 멤버에서 관리, 포스트에서 열어볼 수 없음)
+    @Transactional(readOnly = true)
+    public List<Message> findByMessageRoom(MessageRoom messageRoom){
+        if(!messageRoomRepository.existsById(messageRoom.getId())){
+            throw new NoMessageRoomException();
+        }
+        return messageRoom.getMessages();
+    }
 
 
 
