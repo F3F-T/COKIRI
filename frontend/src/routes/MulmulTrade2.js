@@ -3,10 +3,10 @@ import styles from "../styles/MulmulTrade.module.css"
 import {useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import myImage from "../img/cokkiriLogo.png"
+import myImage from "../img/cokkiriLogo.png";
 
 
-const MulmulTrade = () => {
+const MulmulTrade2 = () => {
     let navigate = useNavigate();
     return (
             <div className={styles.mulmulTrade}>
@@ -14,7 +14,7 @@ const MulmulTrade = () => {
                     <div className={styles.categoryBox}>
                         <div className={styles.forWho}>
                             <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade')}>이런 물건이 올라왔어요.</button>
-                            <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade/mulmultrade2')}>이런 물건을 원해요.</button>
+                            <button className={styles.forWho_2} onClick={()=>navigate('/mulmultrade/mulmultrade2')}>이런 물건을 원해요.</button>
                             {/*<Navbar className={styles.postOrWant} bg="white" variant="white">*/}
                             {/*    <Nav className={styles.postOrWant_2}>*/}
                             {/*        <Nav.Link className={styles.forWho_1}  onClick={()=>navigate('/')}>이런 물건이 올라왔어요.</Nav.Link>*/}
@@ -23,7 +23,7 @@ const MulmulTrade = () => {
                             {/*</Navbar>*/}
                         </div>
                         <div className={styles.category}>
-                            <button className ={styles.itemC}>전체</button>
+                            <button className ={styles.itemC}>의류</button>
                             <button className ={styles.itemC}>도서</button>
                             <button className ={styles.itemC}>생활가전</button>
                             <button className ={styles.itemC}>의류</button>
@@ -41,11 +41,6 @@ const MulmulTrade = () => {
                             <button className ={styles.itemC}>취미/게임</button>
                             <button className ={styles.itemC}>인테리어</button>
                             <button className ={styles.itemC}>생활/주방</button>
-                             {/*각 버튼을 눌렀을 때, 00를 올린 사람들이에요.를 하단에 띄워줄거임*/}
-                             {/*받아와서 매핑 후 다 url 만들어주는거겠지? 내일 얘기해봐야할듯*/}
-
-
-
                         </div>
                         <div className={styles.priceBox}>
                             <div className={styles.priceList}>
@@ -65,7 +60,7 @@ const MulmulTrade = () => {
                             </div>
                         </div>
                     </div>
-                    <div className={styles.navPostOrWant}>도서를 올린 사람들이에요</div>
+                    <div className={styles.navPostOrWant}>도서를 원하는 사람들이에요.</div>
                     <div className={styles.popularOrNewest}>
                         <div className={styles.pupularBtn}>인기도순</div>
                         <div className={styles.slash}>|</div>
@@ -94,4 +89,4 @@ const MulmulTrade = () => {
     );
 }
 
-export default MulmulTrade;
+export default MulmulTrade2;
