@@ -25,7 +25,7 @@ function App() {
                 <Route path="/mulmultrade" element={ <MulmulTrade/>}/>
                 <Route path="/mulmultrade/mulmultrade2" element={<MulmulTrade2/>} />
                 <Route path="/login" element={<Login/>}/>
-                <Route path="/SignUp" element={<SignUp/>}/>
+                <Route path="/signup" element={<SignUp/>}/>
                 <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
                 <Route path="/mypage" element={<MyPage/>} />
             </Routes>
