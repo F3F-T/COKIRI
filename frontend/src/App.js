@@ -11,6 +11,8 @@ import Nav from "./component/Nav";
 import { Navigate } from "react-router-dom";
 import NotFound from "./component/NotFound";
 import Login from "./routes/Login";
+import SignUp from "./routes/SignUp";
+
 import styles from "./styles/App.module.css";
 function App() {
     return (
@@ -23,6 +25,7 @@ function App() {
                 <Route path="/mulmultrade" element={ <MulmulTrade/>}/>
                 <Route path="/mulmultrade/mulmultrade2" element={<MulmulTrade2/>} />
                 <Route path="/login" element={<Login/>}/>
+                <Route path="/SignUp" element={<SignUp/>}/>
                 <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
                 <Route path="/mypage" element={<MyPage/>} />
             </Routes>
