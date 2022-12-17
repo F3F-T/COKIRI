@@ -1,0 +1,83 @@
+.loginAllContent {
+    width: 460px;
+    margin: auto; /* content를 중앙으로 보낸다*/
+}
+
+.header {
+    margin-top: 5rem;
+    margin-bottom: 1.7rem
+}
+
+.loginImg {
+    width: 6rem;
+    height: 6rem;
+    margin: auto;
+    margin-bottom: 0.5rem;
+    display: block; /*IMG를 중앙에 놓으려면, display : block으로 블록 단위로 만들어 주어야한다 */
+
+}
+
+/*header 안에 있는 h1 (코끼리로 물물교환 시작하기)*/
+.header h1 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+;
+}
+
+/*간편하게 가입하고 우리동네 물건들을 확인하세요*/
+.header h2 {
+    margin-top: 0.7rem;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.contents {
+
+}
+
+.id {
+
+}
+
+.idAndPassword {
+    margin-bottom: 0.5rem;
+}
+
+
+.id .idInput {
+    width: 100%;
+    border: 1px solid #e5e8eb;
+    height: 3rem;
+    padding: 1rem 0.7rem; /*위쪽, 옆쪽*/
+    margin-bottom: 0.6rem;
+}
+
+.password .passwordInput {
+    width: 100%;
+    border: 1px solid #e5e8eb;
+    height: 3rem;
+    padding: 1rem 0.7rem;
+}
+
+/*로그인 상태 유지*/
+.savedIdCheck {
+    font-size: 0.8rem;
+    font-weight: 400;
+    padding-bottom: 0.8rem;
+}
+
+.btnLogin{
+    background-color: #17191D;
+    color: white;
+    width: 100%;
+    text-align: center;
+    height: 3rem;
+}
+
+.loginMenu span{
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-right: 1rem;
+}
