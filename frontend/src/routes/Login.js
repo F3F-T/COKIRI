@@ -1,8 +1,17 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/Login.module.css"
 import loginImg from "../img/cokkiriLogo.png"
+import {useNavigate} from "react-router-dom";
 
 const Login = () => {
+
+    const navigate = useNavigate();
+
+
+    const signInClick = () => {
+        navigate(`/signup`)
+    }
+
     return (
         <>
             <div className={styles.loginAllContent}>
@@ -32,7 +41,7 @@ const Login = () => {
                         </fieldset>
                     </div>
                     <div className={styles.loginMenu}>
-                        <span>회원가입</span>
+                        <span onClick={signInClick}>회원가입</span>
                         <span>ID 찾기</span>
                         <span>비밀번호 찾기</span>
                     </div>
