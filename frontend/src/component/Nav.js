@@ -1,30 +1,39 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import {NavLink} from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
 import styles from '../styles/nav/nav.module.css'
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import myImage from "../img/cokkiriLogo.png";
+import mypage from "../img/mypage.png";
+import talk from "../img/talk.png";
 
-const Nav = () => {
+const Nav1 = () => {
+    let navigate = useNavigate();
+
     return (
-        <div className={styles.outerNavbar}>
-            {/*<a className={styles.logo}>*/}
-            {/*    코끼리 사진*/}
-            {/*</a>*/}
-            <nav>
-                <ul>
-                    <li><NavLink to="/">Home </NavLink></li>
-                    <li><NavLink to="/mulmultrade">
-                        물물교환
-                    </NavLink></li>
-                    <li><NavLink to="/kirikiritrade">
-                        끼리끼리
-                    </NavLink></li>
-                    <li><NavLink to="/mypage">
-                        마이페이지
-                    </NavLink></li>
-                </ul>
+        <Navbar className={styles.navBar} bg="white" variant="white">
+            <img className={styles.homeLogo} onClick={()=>navigate('/')}  src = {myImage}/>
+            <Nav className={styles.meauto}>
+                <Nav.Link className={styles.mulBtn}  onClick={()=>navigate('/mulmultrade')}>물물교환</Nav.Link>
+                <Nav.Link className={styles.kiriBtn}  onClick={()=>navigate('/kirikiritrade')}>끼리끼리</Nav.Link>
+                <form className={styles.searchBox}>
+                    <input className={styles.search} type="search" placeholder=" #해시태그를 검색하세요!" aria-disabled="true"/>
+                </form>
 
-            </nav>
-        </div>
+                <button className={styles.signBtn} onClick={()=>navigate('/login')}>로그인/회원가입</button>
+                <div>
+                <img className={styles.mypageI} onClick={()=>navigate('/')}  src = {mypage}/>
+                <button className={styles.signBtn2} onClick={()=>navigate('/')}>내 상점</button>
+                </div>
+                <div>
+                    <img className={styles.mypageI} onClick={()=>navigate('/')}  src = {talk}/>
+                    <button className={styles.signBtn3} onClick={()=>navigate('/')}>코끼리 톡</button>
+                </div>
+
+            </Nav>
+        </Navbar>
+
     );
 };
 
-export default Nav;
+export default Nav1;
