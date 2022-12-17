@@ -10,19 +10,23 @@ import KiriKiriTrade from "./routes/KiriKiriTrade";
 import Nav from "./component/Nav";
 import { Navigate } from "react-router-dom";
 import NotFound from "./component/NotFound";
-
+import Login from "./routes/Login";
+import styles from "./styles/App.module.css";
 function App() {
     return (
         <div className="App">
             <Nav />
+            <div className={styles.content}>
             <Routes>
                 <Route path='*' element={<NotFound />}/>
                 <Route exact path="/" element={<Home/>} />
                 <Route path="/mulmultrade" element={ <MulmulTrade/>}/>
                 <Route path="/mulmultrade/mulmultrade2" element={<MulmulTrade2/>} />
+                <Route path="/login" element={<Login/>}/>
                 <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
                 <Route path="/mypage" element={<MyPage/>} />
             </Routes>
+        </div>
         </div>
     );
 }
