@@ -12,6 +12,7 @@ import { Navigate } from "react-router-dom";
 import NotFound from "./component/NotFound";
 import Login from "./routes/Login";
 import SignUp from "./routes/SignUp";
+import EmailCheck from "./routes/EmailCheck";
 
 import styles from "./styles/App.module.css";
 function App() {
@@ -28,6 +29,7 @@ function App() {
                 <Route path="/signup" element={<SignUp/>}/>
                 <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
                 <Route path="/mypage" element={<MyPage/>} />
+                <Route path="/signup/emailcheck" element={<EmailCheck/>}/>
             </Routes>
         </div>
         </div>

@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../styles/Login.module.css"
+import styles from "../styles/loginAndSignup/Login.module.css"
 import loginImg from "../img/cokkiriLogo.png"
 import {useNavigate} from "react-router-dom";
 
