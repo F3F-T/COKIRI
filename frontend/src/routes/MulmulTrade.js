@@ -5,7 +5,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import myImage from "../img/cokkiriLogo.png"
 
-
+// ㅂㅅ
 const MulmulTrade = () => {
     let navigate = useNavigate();
     return (
@@ -15,12 +15,6 @@ const MulmulTrade = () => {
                         <div className={styles.forWho}>
                             <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade')}>이런 물건이 올라왔어요.</button>
                             <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade/mulmultrade2')}>이런 물건을 원해요.</button>
-                            {/*<Navbar className={styles.postOrWant} bg="white" variant="white">*/}
-                            {/*    <Nav className={styles.postOrWant_2}>*/}
-                            {/*        <Nav.Link className={styles.forWho_1}  onClick={()=>navigate('/')}>이런 물건이 올라왔어요.</Nav.Link>*/}
-                            {/*        <Nav.Link className={styles.forWho_1} onClick={()=>navigate('/')}>이런 물건을 원해요.</Nav.Link>*/}
-                            {/*    </Nav>*/}
-                            {/*</Navbar>*/}
                         </div>
                         <div className={styles.category}>
                             <button className ={styles.itemC}>전체</button>
@@ -71,6 +65,9 @@ const MulmulTrade = () => {
                         <div className={styles.slash}>|</div>
                         <div className={styles.newsetBtn}>누적도순</div>
                     </div>
+
+
+
                     <div className={styles.postContainer}>
                         <div clasName={styles.postItem}><img className={styles.postImage} src = {myImage}/></div>
                         <div clasName={styles.postItem}><img className={styles.postImage} src = {myImage}/></div>
