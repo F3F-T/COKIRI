@@ -2,27 +2,29 @@
 import React from "react";
 
 import Home from "./routes/Home";
-import { Route, Switch } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 import MyPage from "./routes/MyPage";
 import MulmulTrade from "./routes/MulmulTrade";
-import kiriKiriTrade from "./routes/KiriKiriTrade";
+import MulmulTrade2 from "./routes/MulmulTrade2";
 import KiriKiriTrade from "./routes/KiriKiriTrade";
 import Nav from "./component/Nav";
-import styles from "./styles/App.module.css";
+import { Navigate } from "react-router-dom";
+import NotFound from "./component/NotFound";
+
 function App() {
-  return (
-      <div>
-      <Nav />
-      <div className={styles.content}>
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/mulmultrade" component={ MulmulTrade} />
-          <Route path="/kirikiritrade" component={KiriKiriTrade} />
-          <Route path="/mypage" component={MyPage} />
-        </Switch>
-      </div>
-      </div>
-  );
+    return (
+        <div className="App">
+            <Nav />
+            <Routes>
+                <Route path='*' element={<NotFound />}/>
+                <Route exact path="/" element={<Home/>} />
+                <Route path="/mulmultrade" element={ <MulmulTrade/>}/>
+                <Route path="/mulmultrade/mulmultrade2" element={<MulmulTrade2/>} />
+                <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
+                <Route path="/mypage" element={<MyPage/>} />
+            </Routes>
+        </div>
+    );
 }
 
 export default App;
