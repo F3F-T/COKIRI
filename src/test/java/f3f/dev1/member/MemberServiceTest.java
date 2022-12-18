@@ -1,5 +1,6 @@
 package f3f.dev1.member;
 
+import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.EmailCertificationService;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.Address;
@@ -11,12 +12,12 @@ import f3f.dev1.domain.member.dto.MemberDTO.LoginRequest;
 import f3f.dev1.domain.member.dto.MemberDTO.UpdateUserInfo;
 import f3f.dev1.domain.member.dto.MemberDTO.UserInfo;
 import f3f.dev1.domain.member.exception.*;
-import f3f.dev1.global.config.SHA256Encryptor;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -36,6 +37,12 @@ public class MemberServiceTest {
 
     @Autowired
     MemberService memberService;
+
+    @Autowired
+    AuthService authService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
 
     @Autowired
@@ -92,10 +99,10 @@ public class MemberServiceTest {
 //
 //
 //        // when
-//        Long userId = memberService.signUp(signUpRequest);
-//        Optional<Member> byId = memberRepository.findById(userId);
+//        authService.signUp(signUpRequest);
+//        Optional<Member> byId = memberRepository.findByEmail(signUpRequest.getEmail());
 //        // then
-//        assertThat(byId.get().getId()).isEqualTo(userId);
+//        assertThat(byId.get().getEmail()).isEqualTo(signUpRequest.getEmail());
 //    }
 //
 //    @Test
@@ -106,11 +113,12 @@ public class MemberServiceTest {
 //
 //
 //        // when
-//        Long userId = memberService.signUp(signUpRequest);
-//        Optional<Scrap> scrapByUserId = scrapRepository.findScrapByUserId(userId);
+//        authService.signUp(signUpRequest);
+//        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+//        Optional<Scrap> scrapByUserId = scrapRepository.findScrapByUserId(member.getId());
 //
 //        // then
-//        assertThat(userId).isEqualTo(scrapByUserId.get().getUser().getId());
+//        assertThat(member.getId()).isEqualTo(scrapByUserId.get().getUser().getId());
 //    }
 //
 //    @Test
@@ -118,7 +126,7 @@ public class MemberServiceTest {
 //    public void signUpTestFailByEmail() throws Exception {
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //
 //
 //        // then
@@ -131,7 +139,7 @@ public class MemberServiceTest {
 //                .password("differentUser")
 //                .build();
 //
-//        assertThrows(DuplicateEmailException.class, () -> memberService.signUp(differentRequest));
+//        assertThrows(DuplicateEmailException.class, () -> authService.signUp(differentRequest));
 //    }
 //
 //    @Test
@@ -139,7 +147,7 @@ public class MemberServiceTest {
 //    public void signUpTestFailByPhoneNumber() throws Exception {
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //
 //        // when
 //        SignUpRequest differentRequest = SignUpRequest.builder()
@@ -152,79 +160,10 @@ public class MemberServiceTest {
 //                .build();
 //
 //        // then
-//        assertThrows(DuplicatePhoneNumberExepction.class, () -> memberService.signUp(differentRequest));
+//        assertThrows(DuplicatePhoneNumberExepction.class, () -> authService.signUp(differentRequest));
 //    }
 //
-//    // 중복 닉네임으로 유저 생성 실패 테스트
-//    @Test
-//    @DisplayName("중복 닉네임으로 유저 생성 실패 테스트")
-//    public void signUpTestFailByNickname() throws Exception{
-//        //given
-//        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
 //
-//        // when
-//        SignUpRequest differentRequest = SignUpRequest.builder()
-//                .email("differentUser")
-//                .userName("differentUser")
-//                .nickname("nickname")
-//                .phoneNumber("01056781234")
-//                .address(createAddress())
-//                .password("differentUser")
-//                .build();
-//        // then
-//        assertThrows(DuplicateNicknameException.class, () -> memberService.signUp(differentRequest));
-//    }
-
-//    // 로그인 테스트
-//    @Test
-//    @DisplayName("이메일, 비밀번호로 존재하는 유저 검증 성공 테스트")
-//    public void loginTestSuccess() throws Exception {
-//        //given
-//        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
-//
-//
-//        // when
-//        LoginRequest loginRequest = createLoginRequest();
-//        Long loginUserId = sessionLoginService.login(loginRequest);
-//
-//
-//        // then
-//        assertThat(userId).isEqualTo(memberRepository.findByEmail(sessionLoginService.getLoginUser()).get().getId());
-//    }
-//
-//    @Test
-//    @DisplayName("아이디 값(이메일)으로 존재하는 유저가 없어서 로그인 실패 테스트")
-//    public void loginTestFailByEmail() throws Exception {
-//        //given
-//        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
-//
-//
-//        // when
-//        LoginRequest differentUser = LoginRequest.builder()
-//                .email("uniqueEmail")
-//                .password("password").build();
-//        // then
-//        assertThrows(UserNotFoundException.class, () -> sessionLoginService.login(differentUser));
-//    }
-//
-//    @Test
-//    @DisplayName("잘못된 비밀번호 값으로 로그인 실패 테스트")
-//    public void loginTestFailByPassword() throws Exception {
-//        //given
-//        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
-//
-//        // when
-//        LoginRequest differentUser = LoginRequest.builder()
-//                .email("userEmail@email.com")
-//                .password("wrongPassword").build();
-//
-//        // then
-//        assertThrows(UserNotFoundException.class, () -> sessionLoginService.login(differentUser));
-//    }
 //
 //    // 유저 정보 조회 테스트
 //    @Test
@@ -232,12 +171,11 @@ public class MemberServiceTest {
 //    public void getUserInfoTestSuccess() throws Exception {
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //        LoginRequest loginRequest = createLoginRequest();
 //
 //        // when
-//        sessionLoginService.login(loginRequest);
-//        UserInfo userInfo = memberService.getUserInfo(memberRepository.findByEmail(sessionLoginService.getLoginUser()).get().getId());
+//        UserInfo userInfo = memberService.getUserInfo(memberRepository.findByEmail(signUpRequest.getEmail()).get().getId());
 //
 //        // then
 //        assertArrayEquals(new String[]{
@@ -257,11 +195,12 @@ public class MemberServiceTest {
 //    public void getUserInfoTestFailById() throws Exception{
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
+//        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
 //
 //
 //        // then
-//        assertThrows(NotFoundByIdException.class, () -> memberService.getUserInfo(userId + 1));
+//        assertThrows(NotFoundByIdException.class, () -> memberService.getUserInfo(member.getId() + 1));
 //    }
 //
 //    // 유저 정보 업데이트 테스트
@@ -270,14 +209,13 @@ public class MemberServiceTest {
 //    public void updateUserNicknameTestSuccess() throws Exception{
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //        LoginRequest loginRequest = createLoginRequest();
-//        sessionLoginService.login(loginRequest);
 //        UpdateUserInfo updateRequest = createUpdateRequest();
 //
 //        // when
 //        memberService.updateUserInfo(updateRequest);
-//        Optional<Member> byId = memberRepository.findById(userId);
+//        Optional<Member> byId = memberRepository.findByEmail(signUpRequest.getEmail());
 //        // then
 //        assertThat(updateRequest.getNickname()).isEqualTo(byId.get().getNickname());
 //    }
@@ -288,9 +226,8 @@ public class MemberServiceTest {
 //    public void updateUserNicknameTestFailByNickname() throws Exception{
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //        LoginRequest loginRequest = createLoginRequest();
-//        sessionLoginService.login(loginRequest);
 //
 //        // when
 //        UpdateUserInfo updateRequest = UpdateUserInfo.builder()
@@ -306,9 +243,8 @@ public class MemberServiceTest {
 //    public void updateUserPhoneNumberTestFailByPhoneNumber() throws Exception{
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //        LoginRequest loginRequest = createLoginRequest();
-//        sessionLoginService.login(loginRequest);
 //
 //        // when
 //        UpdateUserInfo updateRequest = UpdateUserInfo.builder()
@@ -324,9 +260,8 @@ public class MemberServiceTest {
 //    public void updateUserAddressTestSuccess() throws Exception{
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //        LoginRequest loginRequest = createLoginRequest();
-//        sessionLoginService.login(loginRequest);
 //        UpdateUserInfo updateUserInfo = UpdateUserInfo.builder()
 //                .nickname("newNickname")
 //                .address(Address.builder()
@@ -339,7 +274,7 @@ public class MemberServiceTest {
 //
 //        // when
 //        memberService.updateUserInfo(updateUserInfo);
-//        Optional<Member> byId = memberRepository.findById(userId);
+//        Optional<Member> byId = memberRepository.findByEmail(signUpRequest.getEmail());
 //        // then
 //        assertThat(updateUserInfo.getAddress()).isEqualTo(byId.get().getAddress());
 //    }
@@ -349,7 +284,7 @@ public class MemberServiceTest {
 //    public void updateUserInfoTestFailById() throws Exception{
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //        UpdateUserInfo updateUserInfo = UpdateUserInfo.builder()
 //                .nickname("nickname")
 //                .address(Address.builder()
@@ -370,9 +305,8 @@ public class MemberServiceTest {
 //    public void updateUserPasswordTestSuccess() throws Exception{
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //        LoginRequest loginRequest = createLoginRequest();
-//        sessionLoginService.login(loginRequest);
 //        UpdateUserPassword updateUserPassword = UpdateUserPassword.builder()
 //                .oldPassword("password")
 //                .newPassword("newPassword")
@@ -381,9 +315,8 @@ public class MemberServiceTest {
 //
 //        // when
 //        memberService.updateUserPassword(updateUserPassword);
-//        SHA256Encryptor sha256Encryptor = new SHA256Encryptor();
 //        // then
-//        assertThat(sha256Encryptor.encrypt("newPassword")).isEqualTo(memberRepository.findById(userId).get().getPassword());
+//
 //    }
 //
 //    // 유저 비밀번호 변경 실패 테스트
@@ -392,9 +325,8 @@ public class MemberServiceTest {
 //    public void updateUserPasswordTestFailByOldPassword() throws Exception{
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //        LoginRequest loginRequest = createLoginRequest();
-//        sessionLoginService.login(loginRequest);
 //        UpdateUserPassword updateUserPassword = UpdateUserPassword.builder()
 //                .oldPassword("oldpassword")
 //                .newPassword("newPassword")
@@ -412,7 +344,7 @@ public class MemberServiceTest {
 //    public void updateUserPasswordTestFailByNonLogin() throws Exception{
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //        // when
 //        UpdateUserPassword updateUserPassword = UpdateUserPassword.builder()
 //                .oldPassword("password")
@@ -428,9 +360,9 @@ public class MemberServiceTest {
 //    public void deleteUserTestSuccess() throws Exception{
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
-//        LoginRequest loginRequest = createLoginRequest();
-//        sessionLoginService.login(loginRequest);
+//        authService.signUp(signUpRequest);
+//        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+//        Long userId = member.getId();
 //
 //        // when
 //        memberService.deleteUser();
@@ -443,7 +375,7 @@ public class MemberServiceTest {
 //    public void deleteUserTestFailById() throws Exception{
 //        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
-//        Long userId = memberService.signUp(signUpRequest);
+//        authService.signUp(signUpRequest);
 //
 //
 //        // then

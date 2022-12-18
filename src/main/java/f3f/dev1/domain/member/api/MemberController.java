@@ -12,6 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.global.common.constants.ResponseConstants.OK;
 
@@ -22,6 +26,8 @@ public class MemberController {
     private final MemberService memberService;
 
     private final MemberRepository memberRepository;
+
+    private final AuthService authService;
 
     // 유저 정보 조회
     @GetMapping(value = "/user")
@@ -49,6 +55,13 @@ public class MemberController {
     public ResponseEntity<String> updateUserPassword(@RequestBody UpdateUserPassword updateUserPassword) {
         return ResponseEntity.ok(memberService.updateUserPassword(updateUserPassword));
 
+    }
+
+    @DeleteMapping("/user/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        authService.logout(request,response);
+        return ResponseEntity.ok().build();
     }
 
     // TODO 주소 업데이트 요청 처리 경로 만들어야함, 서비스도

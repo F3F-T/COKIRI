@@ -96,10 +96,5 @@ public class MemberAuthController {
     }
 
 
-    @DeleteMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        authService.logout(request,response);
-        return ResponseEntity.ok().build();
-    }
 }
