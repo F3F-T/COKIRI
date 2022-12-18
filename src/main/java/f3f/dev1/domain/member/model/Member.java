@@ -19,12 +19,12 @@ import java.util.List;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.UpdateUserInfo;
 import static f3f.dev1.domain.member.dto.MemberDTO.UserInfo;
-import static f3f.dev1.domain.member.model.UserLevel.AUTH;
+import static f3f.dev1.domain.member.model.Authority.ROLE_USER;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Member extends UserBase {
+public class Member extends MemberBase {
 
     @Embedded
     private Address address;
@@ -66,7 +66,7 @@ public class Member extends UserBase {
 
     @Builder
     public Member(Long id, String email, String password, String username, Address address, String birthDate, String phoneNumber, String nickname, UserLoginType userLoginType) {
-        super(id, email, password, AUTH,userLoginType);
+        super(id, email, password, ROLE_USER,userLoginType);
         this.userName = username;
         this.address = address;
         this.birthDate = birthDate;

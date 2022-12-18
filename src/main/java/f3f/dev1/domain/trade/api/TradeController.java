@@ -1,7 +1,6 @@
 package f3f.dev1.domain.trade.api;
 
 import f3f.dev1.domain.trade.application.TradeService;
-import f3f.dev1.global.common.annotation.LoginCheck;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,14 +18,12 @@ public class TradeController {
     // TODO: 내뱉는 값 프론트랑 상의후 수정 예정
     // 트레이드 생성
     @PostMapping(value = "/trade")
-    @LoginCheck
     public ResponseEntity<Long> createTrade(@RequestBody CreateTradeDto createTradeDto) {
         Long trade = tradeService.createTrade(createTradeDto);
         return new ResponseEntity<>(trade, HttpStatus.CREATED);
     }
     // 트레이드 정보 조회
     @GetMapping(value = "/trade/{postId}")
-    @LoginCheck
     public ResponseEntity<TradeInfoDto> getTradeStatus(@PathVariable Long postId) {
         TradeInfoDto tradeInfo = tradeService.getTradeInfo(postId);
 
@@ -35,7 +32,6 @@ public class TradeController {
     // 거래 상태 변경
     // TODO: 프론트와 경로 상의후 수정 예정
     @PatchMapping(value = "/trade")
-    @LoginCheck
     public ResponseEntity<TradeInfoDto> updateTradeStatus(@RequestBody UpdateTradeDto updateTradeDto) {
         return new ResponseEntity<>(tradeService.updateTradeStatus(updateTradeDto), HttpStatus.OK);
 

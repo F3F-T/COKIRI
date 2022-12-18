@@ -2,12 +2,9 @@ package f3f.dev1.trade;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.domain.model.Address;
-import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.trade.api.TradeController;
 import f3f.dev1.domain.trade.application.TradeService;
-import f3f.dev1.domain.trade.dto.TradeDTO;
-import f3f.dev1.domain.user.application.UserService;
-import f3f.dev1.domain.user.dto.UserDTO;
+import f3f.dev1.domain.member.application.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,16 +16,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static f3f.dev1.domain.model.TradeStatus.*;
-import static f3f.dev1.domain.trade.dto.TradeDTO.*;
-import static f3f.dev1.domain.user.dto.UserDTO.*;
+import static f3f.dev1.domain.model.TradeStatus.TRADING;
+import static f3f.dev1.domain.trade.dto.TradeDTO.CreateTradeDto;
+import static f3f.dev1.domain.trade.dto.TradeDTO.UpdateTradeDto;
+import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
 @WebMvcTest(TradeController.class)
 @MockBean(JpaMetamodelMappingContext.class)
 public class TradeControllerTest {
     @MockBean
-    private UserService userService;
+    private MemberService memberService;
 
     @MockBean
     private TradeService tradeService;
