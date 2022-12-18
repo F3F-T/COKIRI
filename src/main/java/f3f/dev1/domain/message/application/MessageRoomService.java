@@ -23,6 +23,7 @@ import java.util.List;
 
 import static f3f.dev1.domain.message.dto.MessageDTO.*;
 import static f3f.dev1.domain.message.dto.MessageRoomDTO.*;
+import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
 
 /*
 메시지룸을 만들고 메시지 만들기
@@ -64,12 +65,23 @@ public class MessageRoomService {
     }
 
     //채팅방 클릭할 때, 조회 (채팅창은 멤버에서 관리, 포스트에서 열어볼 수 없음)
+    //아이디만 가져와야되나?
+
     @Transactional(readOnly = true)
     public List<Message> findByMessageRoom(MessageRoom messageRoom){
         if(!messageRoomRepository.existsById(messageRoom.getId())){
             throw new NoMessageRoomException();
         }
         return messageRoom.getMessages();
+    }
+    //유저 클릭하고 채팅방 조회는 유저에서 할듯?
+
+    @Transactional
+    public String deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest){
+        Member sender = memberRepository.findById(deleteMessageRoomRequest.getSenderId()).orElseThrow(NotFoundByIdException::new);
+
+       // Trade trade = tradeRepository.findById()
+    return "DELETE";
     }
 
 

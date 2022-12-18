@@ -39,4 +39,11 @@ public class MessageDTO {
 
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteMessage{
+        private Long Id;
+    }
 }

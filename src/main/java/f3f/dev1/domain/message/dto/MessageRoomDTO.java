@@ -36,9 +36,16 @@ public class MessageRoomDTO {
                     .build();
 
         }
-
-
-
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteMessageRoomRequest{
+        private Long Id;
+        private Long senderId;
+        private Post post;
+    }
+
 
 }
