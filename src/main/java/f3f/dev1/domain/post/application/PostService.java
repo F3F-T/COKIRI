@@ -54,28 +54,62 @@ public class PostService {
         title 별로 조회도 필요할까? 검색엔진이 필요한가? - 피드백 결과 일단은 제외하는 걸로.
      */
 
+    // 게시글 전체 조회
+    public List<PostInfoDto> findAllPosts() {
+        List<Post> allPosts = postRepository.findAll();
+        List<PostInfoDto> response = new ArrayList<>();
+        for (Post post : allPosts) {
+            PostInfoDto responseEach = PostInfoDto.builder()
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .tradeEachOther(post.getTradeEachOther())
+                    .authorNickname(post.getAuthor().getNickname())
+                    .wishCategory(post.getWishCategory().getName())
+                    .productCategory(post.getProductCategory().getName())
+                    .tradeStatus(post.getTrade().getTradeStatus())
+                    .build();
+            response.add(responseEach);
+        }
+        return response;
+    }
+
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     @Transactional(readOnly = true)
-    public List<FindByAuthorPostEachResponse> findPostByAuthor(Long authorId) {
+    public List<PostInfoDto> findPostByAuthor(Long authorId) {
         if(!postRepository.existsByAuthorId(authorId)) {
             throw new NotFoundPostListByAuthor("해당 작성자의 게시글이 없습니다.");
         }
-        List<FindByAuthorPostEachResponse> response = new ArrayList<>();
+        List<PostInfoDto> response = new ArrayList<>();
         List<Post> byAuthor = postRepository.findByAuthorId(authorId);
         for (Post post : byAuthor) {
-            Trade trade = tradeRepository.findByPostId(post.getId()).orElseThrow(NotFoundByIdException::new);
-            FindByAuthorPostEachResponse findByAuthorPostEachResponse = new FindByAuthorPostEachResponse(post, trade);
-            response.add(findByAuthorPostEachResponse);
+            PostInfoDto responseEach = PostInfoDto.builder()
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .tradeEachOther(post.getTradeEachOther())
+                    .authorNickname(post.getAuthor().getNickname())
+                    .wishCategory(post.getWishCategory().getName())
+                    .productCategory(post.getProductCategory().getName())
+                    .tradeStatus(post.getTrade().getTradeStatus())
+                    .build();
+            response.add(responseEach);
         }
         return response;
     }
 
     @Transactional(readOnly = true)
-    public FindByIdPostResponse findPostById(Long id) {
+    public PostInfoDto findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        // TODO 거래 가능 상태인지 확인하기
-        Trade trade = tradeRepository.findByPostId(post.getId()).orElseThrow(NotFoundByIdException::new);
-        FindByIdPostResponse response = new FindByIdPostResponse(post, trade);
+//        // TODO 거래 가능 상태인지 확인하기
+//        Trade trade = tradeRepository.findByPostId(post.getId()).orElseThrow(NotFoundByIdException::new);
+        PostInfoDto response = PostInfoDto.builder()
+                .title(post.getTitle())
+                .content(post.getContent())
+                .tradeEachOther(post.getTradeEachOther())
+                .authorNickname(post.getAuthor().getNickname())
+                .wishCategory(post.getWishCategory().getName())
+                .productCategory(post.getProductCategory().getName())
+                .tradeStatus(post.getTrade().getTradeStatus())
+                .build();
         return response;
     }
 
@@ -85,7 +119,7 @@ public class PostService {
 
     // TODO 피드백 받기 : 반환 타입을 Long (id)으로 하는 거랑 Post 객체 하나만 가지고 있는 DTO로 하는 것 중 뭐가 더 나은가
     @Transactional
-    public ResponseEntity<String> updatePost(UpdatePostRequest updatePostRequest) {
+    public PostInfoDto updatePost(UpdatePostRequest updatePostRequest) {
         Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         // 게시글 변경 정보가 기존이랑 똑같다면 (변화가 없다면) 예외를 터트리려 했는데, 그럴 필요가 없어보여서 일단은 검증하지 않겠다
         // 근데 또 예외는 던져놓고 처리를 안하는 방법도 있으니 이건 피드백을 받아 볼 예정
@@ -94,15 +128,17 @@ public class PostService {
             관련 기능이 구현되면 추가할 것이고, 지금은 유효하다고 가정하고 로직을 작성하겠음
          */
 
-        post.updatePostInfos(
-                updatePostRequest.getTitle(),
-                updatePostRequest.getContent(),
-                updatePostRequest.getPostTags(),
-                updatePostRequest.getProductCategory(),
-                updatePostRequest.getWishCategory()
-        );
-
-        return UPDATE;
+        post.updatePostInfos(updatePostRequest);
+        PostInfoDto response = PostInfoDto.builder()
+                .title(post.getTitle())
+                .content(post.getContent())
+                .tradeEachOther(post.getTradeEachOther())
+                .authorNickname(post.getAuthor().getNickname())
+                .wishCategory(post.getWishCategory().getName())
+                .productCategory(post.getProductCategory().getName())
+                .tradeStatus(post.getTrade().getTradeStatus())
+                .build();
+        return response;
     }
 
     @Transactional

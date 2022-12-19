@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     Optional<Post> findById(Long id);
+    List<Post> findAll();
     boolean existsById(Long id);
     boolean existsByAuthorId(Long authorId);
     List<Post> findByAuthorId(Long authorId);

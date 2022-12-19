@@ -37,6 +37,8 @@ public class PostDTO {
         private Category productCategory;
         private Category wishCategory;
 
+        //TODO 토큰 추가 예정
+
         public Post toEntity() {
             return Post.builder()
                     .title(this.title)
@@ -80,6 +82,7 @@ public class PostDTO {
     public static class UpdatePostRequest {
         // 태그도 수정될 수 있으니 태그 리스트를 받은 뒤 Post의 UpdatePostTags에서 수정하도록 하겠다.
         // 카테고리도 같은 맥락
+        // TODO 토큰값 추가하기
         @NotNull
         private Long id;
         @Size(min=2, max=20, message = "제목은 2글자 이상, 20자 이하로 설정해주세요")
@@ -121,7 +124,5 @@ public class PostDTO {
         private String productCategory;
 
         private TradeStatus tradeStatus;
-
-
     }
 }

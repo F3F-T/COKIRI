@@ -35,9 +35,8 @@ public class Post extends BaseTimeEntity {
     // 끼리끼리 거래 여부
     private Boolean tradeEachOther;
 
-    // TODO trade는 post에서 삭제
-//    @OneToOne(mappedBy = "post")
-//    private Trade trade;
+    @OneToOne(mappedBy = "post")
+    private Trade trade;
 
     @ManyToOne
     @JoinColumn(name = "productCategory_id")
@@ -63,12 +62,12 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
-    public void updatePostInfos(String title, String content, List<PostTag> postTags, Category productCategory, Category wishCategory) {
-        this.title = title;
-        this.content = content;
-        this.postTags = postTags;
-        this.productCategory = productCategory;
-        this.wishCategory = wishCategory;
+    public void updatePostInfos(UpdatePostRequest updatePostRequest) {
+        this.title = updatePostRequest.getTitle();
+        this.content = updatePostRequest.getContent();
+        this.postTags = updatePostRequest.getPostTags();
+        this.productCategory = updatePostRequest.getProductCategory();
+        this.wishCategory = updatePostRequest.getWishCategory();
     }
 
     @Builder
