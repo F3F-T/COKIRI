@@ -37,15 +37,15 @@ public class TradeService {
 
     // 트레이드 생성 메소드
     @Transactional
-    public Long createTrade(CreateTradeDto createTradeDto) {
+    public Long createTrade(CreateTradeDto createTradeDto, Long memberId) {
         Long sellerId = createTradeDto.getSellerId();
-        Member seller = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(NotFoundByIdException::new);
+        Member seller = memberRepository.findById(sellerId).orElseThrow(NotFoundByIdException::new);
         Member buyer = memberRepository.findById(createTradeDto.getBuyerId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(createTradeDto.getPostId()).orElseThrow(NotFoundByIdException::new);
 
 
 
-        if (!seller.getId().equals(SecurityUtil.getCurrentMemberId())) {
+        if (!seller.getId().equals(memberId)) {
             throw new NotAuthorizedException();
         }
 
@@ -60,7 +60,7 @@ public class TradeService {
 
     // 트레이드 정보 조회 메서드
     @Transactional(readOnly = true)
-    public TradeInfoDto getTradeInfo(Long postId) {
+    public TradeInfoDto getTradeInfo(Long postId, Long memberId) {
         Optional<Trade> byId = tradeRepository.findByPostId(postId);
         if (byId.isPresent()) {
             Trade trade = byId.get();
@@ -69,7 +69,7 @@ public class TradeService {
             String buyerNickname = trade.getBuyer().getNickname();
             return trade.tradeInfoDto(sellerNickname, buyerNickname);
         } else {
-            String userNickname = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(UserNotFoundException::new).getNickname();
+            String userNickname = memberRepository.findById(memberId).orElseThrow(UserNotFoundException::new).getNickname();
             return TradeInfoDto.builder()
                     .sellerNickname(userNickname)
                     .buyerNickname("none")
@@ -80,9 +80,12 @@ public class TradeService {
 
     // 거래상태 업데이트 메서드
     @Transactional
-    public TradeInfoDto updateTradeStatus(UpdateTradeDto updateTradeDto) {
+    public TradeInfoDto updateTradeStatus(UpdateTradeDto updateTradeDto, Long memberId) {
         Trade trade = tradeRepository.findById(updateTradeDto.getTradeId()).orElseThrow(NotFoundByIdException::new);
-
+        Member member = memberRepository.findById(updateTradeDto.getUserId()).orElseThrow(NotFoundByIdException::new);
+        if (!member.getId().equals(memberId)) {
+            throw new NotAuthorizedException();
+        }
         trade.updateTradeStatus(updateTradeDto.getTradeStatus());
         String sellerNickname = trade.getSeller().getNickname();
         String buyerNickname = trade.getBuyer().getNickname();

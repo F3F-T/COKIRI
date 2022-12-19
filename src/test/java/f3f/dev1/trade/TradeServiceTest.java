@@ -103,8 +103,8 @@ public class TradeServiceTest {
 
 
         // when
-        CreateTradeDto tradeDto = createTradeDto(userId1, userId2, postId);
-        Long tradeId = tradeService.createTrade(tradeDto);
+        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
+        Long tradeId = tradeService.createTrade(tradeDto, userId1);
         Optional<Trade> byId = tradeRepository.findById(tradeId);
 
         // then
