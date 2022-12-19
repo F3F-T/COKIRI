@@ -1,5 +1,6 @@
 package f3f.dev1.domain.scrap.dto;
 
+import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.member.model.Member;
@@ -9,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
+import static f3f.dev1.domain.post.dto.PostDTO.*;
 
 public class ScrapDTO {
 
@@ -22,7 +25,7 @@ public class ScrapDTO {
 
         public Scrap toEntity() {
             return Scrap.builder()
-                    .user(user).build();
+                    .member(user).build();
         }
 
     }
@@ -32,7 +35,7 @@ public class ScrapDTO {
     @NoArgsConstructor
     @Getter
     public static class GetScrapPostDTO{
-        private List<Post> scrapPosts;
+        private List<PostInfoDto> scrapPosts;
     }
 
     @Builder
@@ -54,5 +57,16 @@ public class ScrapDTO {
         private Long userId;
         private Long postId;
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class CreateScrapPostDTO{
+        private Long scrapPostId;
+
+        private String postTitle;
+    }
+
 
 }
