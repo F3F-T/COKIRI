@@ -1,8 +1,8 @@
 package f3f.dev1.scrap;
 
 import f3f.dev1.domain.category.model.Category;
+import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
-import f3f.dev1.domain.member.application.SessionLoginService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
@@ -43,14 +43,14 @@ public class ScrapServiceTest {
     ScrapService scrapService;
 
     @Autowired
+    AuthService authService;
+
+    @Autowired
     PostService postService;
 
     @Autowired
     MemberService memberService;
 
-
-    @Autowired
-    SessionLoginService sessionLoginService;
     @Autowired
     MemberRepository memberRepository;
 
@@ -101,28 +101,30 @@ public class ScrapServiceTest {
     @DisplayName("유저 생성시 스크랩 생성 확인 테스트")
     public void createScrapTest() throws Exception{
         //given
-        Long userId = memberService.signUp(createSignUpRequest());
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
 
         // when
-        Optional<Scrap> scrapByUserId = scrapRepository.findScrapByUserId(userId);
+        Optional<Scrap> scrapByUserId = scrapRepository.findScrapByUserId(member.getId());
 
         // then
-        assertThat(userId).isEqualTo(scrapByUserId.get().getUser().getId());
+        assertThat(member.getId()).isEqualTo(scrapByUserId.get().getUser().getId());
     }
 
     @Test
     @DisplayName("스크랩에 포스트 추가 성공 테스트")
     public void addPostToScrapTestSuccess() throws Exception{
         //given
-        Long userId = memberService.signUp(createSignUpRequest());
-        sessionLoginService.login(createLoginRequest());
-        Member member = memberRepository.findById(userId).get();
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member);
         Long postId = postService.savePost(postSaveRequest);
 
 
         // when
-        AddScrapPostDTO addScrapPostDTO = AddScrapPostDTO.builder().userId(userId).postId(postId).build();
+        AddScrapPostDTO addScrapPostDTO = AddScrapPostDTO.builder().userId(member.getId()).postId(postId).build();
         scrapService.addScrapPost(addScrapPostDTO);
         // then
         assertThat(true).isEqualTo(scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), postId));

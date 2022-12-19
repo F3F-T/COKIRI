@@ -41,7 +41,6 @@ public class ScrapService {
 
     private final ScrapPostRepository scrapPostRepository;
 
-    private final SessionLoginService sessionLoginService;
     private final PostRepository postRepository;
 
     // 스크랩 생성 메서드
@@ -78,8 +77,7 @@ public class ScrapService {
     // 세션에서 받아온 유저와 프론트에서 넘어온 유저가 다르면 예외 던지게 처리함
     @Transactional
     public String addScrapPost(AddScrapPostDTO addScrapPostDTO) {
-        Member user = memberRepository.findById(addScrapPostDTO.getUserId()).orElseThrow(NotFoundByIdException::new);
-        if (!user.getEmail().equals(sessionLoginService.getLoginUser())) {
+        if (!addScrapPostDTO.getUserId().equals(SecurityUtil.getCurrentMemberId())) {
             throw new NotAuthorizedException();
         }
         Scrap scrap = scrapRepository.findScrapByUserId(addScrapPostDTO.getUserId()).orElseThrow(NotFoundByIdException::new);
@@ -94,10 +92,10 @@ public class ScrapService {
     // 세션에서 받아온 유저와 프론트에서 넘어온 유저가 다르면 예외 던지게 처리할 예정
     @Transactional
     public String deleteScrapPost(DeleteScrapPostDTO deleteScrapPostDTO) {
-        Member user = memberRepository.findById(deleteScrapPostDTO.getUserId()).orElseThrow(NotFoundByIdException::new);
-        if (!user.getEmail().equals(sessionLoginService.getLoginUser())) {
+        if (!deleteScrapPostDTO.getUserId().equals(SecurityUtil.getCurrentMemberId())) {
             throw new NotAuthorizedException();
         }
+        Member user = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(deleteScrapPostDTO.getPostId()).orElseThrow(NotFoundByIdException::new);
         ScrapPost scrapPost = scrapPostRepository.findByScrapIdAndPostId(user.getScrap().getId(), post.getId()).orElseThrow(NotFoundPostInScrapException::new);
         scrapPostRepository.delete(scrapPost);
