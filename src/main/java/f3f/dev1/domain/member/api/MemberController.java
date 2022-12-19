@@ -2,7 +2,6 @@ package f3f.dev1.domain.member.api;
 
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
-import f3f.dev1.domain.member.application.UserDetailService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
@@ -17,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
-import static f3f.dev1.global.common.constants.ResponseConstants.OK;
 
 @Slf4j
 @RestController
@@ -40,20 +38,21 @@ public class MemberController {
     // 유저 정보 수정
     @PatchMapping(value = "/user")
     public ResponseEntity<UserInfo> updateUserInfo(@RequestBody UpdateUserInfo updateUserInfo) {
-
-        return ResponseEntity.ok(memberService.updateUserInfo(updateUserInfo));
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.updateUserInfo(updateUserInfo, currentMemberId));
     }
     // 유저 삭제
     @DeleteMapping(value = "/user")
     public ResponseEntity<String> deleteUser() {
-
-        return ResponseEntity.ok(memberService.deleteUser());
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.deleteUser(currentMemberId));
 
     }
     // 유저 비밀번호 변경
     @PatchMapping(value = "/user/password")
     public ResponseEntity<String> updateUserPassword(@RequestBody UpdateUserPassword updateUserPassword) {
-        return ResponseEntity.ok(memberService.updateUserPassword(updateUserPassword));
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.updateUserPassword(updateUserPassword, currentMemberId));
 
     }
 

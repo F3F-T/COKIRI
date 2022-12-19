@@ -8,15 +8,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.token.dto.TokenDTO.TokenRequestDTO;
-import static f3f.dev1.global.common.constants.JwtConstants.REFRESH_TOKEN;
 
 @Slf4j
 @RestController

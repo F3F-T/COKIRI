@@ -1,20 +1,17 @@
 package f3f.dev1.domain.member.application;
 
-import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.*;
+import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
-import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.Random;
 
-import static f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.global.common.constants.RandomCharacter.RandomCharacters;
 
@@ -64,8 +61,8 @@ public class MemberService {
     // 유저 정보 업데이트 처리 메소드
     // TODO: 유저 닉네임 중복 검사 추가
     @Transactional
-    public UserInfo updateUserInfo(UpdateUserInfo updateUserInfo) {
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(NotFoundByIdException::new);
+    public UserInfo updateUserInfo(UpdateUserInfo updateUserInfo, Long currentMemberId) {
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         if (!member.getNickname().equals(updateUserInfo.getNickname()) && memberRepository.existsByNickname(updateUserInfo.getNickname())) {
             throw new DuplicateNicknameException();
         }
@@ -78,9 +75,9 @@ public class MemberService {
 
     // 유저 비밀번호 업데이트 처리 메소드
     @Transactional
-    public String updateUserPassword(UpdateUserPassword updateUserPassword) {
+    public String updateUserPassword(UpdateUserPassword updateUserPassword, Long currentMemberId) {
 
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(NotFoundByIdException::new);
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         if (!passwordEncoder.matches(updateUserPassword.getOldPassword(), member.getPassword())) {
             throw new InvalidPasswordException();
         }
@@ -91,8 +88,8 @@ public class MemberService {
 
     // 유저 삭제 메소드
     @Transactional
-    public String deleteUser() {
-        Member member = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(NotFoundByIdException::new);
+    public String deleteUser(Long currentMemberId) {
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         memberRepository.delete(member);
         return "DELETE";
     }
