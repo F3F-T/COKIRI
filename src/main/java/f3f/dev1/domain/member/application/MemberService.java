@@ -1,18 +1,17 @@
 package f3f.dev1.domain.member.application;
 
-import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.*;
+import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.Random;
 
-import static f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.global.common.constants.RandomCharacter.RandomCharacters;
 
@@ -25,7 +24,9 @@ public class MemberService {
 
     private final ScrapService scrapService;
 
-    private final SessionLoginService sessionLoginService;
+    private final PasswordEncoder passwordEncoder;
+
+
 
 
     @Transactional(readOnly = true)
@@ -44,41 +45,6 @@ public class MemberService {
 
 
 
-    // authentication에 쓰이는 메소드, 이메일로 유저객체 리턴
-    @Transactional(readOnly = true)
-    public Member findUserInfoByEmail(String email) {
-
-        return memberRepository.findByEmail(email).orElseThrow(UserNotFoundByEmailException::new);
-
-    }
-
-
-    // 회원가입 요청 처리 메소드, 유저 생성
-    // signUpRequest로 넘어오는 값 검증은 컨트롤러에서 진행하게 구현 예정
-    @Transactional
-    public Long signUp(SignUpRequest signUpRequest) {
-        if (memberRepository.existsByEmail(signUpRequest.getEmail())) {
-            throw new DuplicateEmailException();
-        }
-        if (memberRepository.existsByPhoneNumber(signUpRequest.getPhoneNumber())) {
-            throw new DuplicatePhoneNumberExepction();
-        }
-        // TODO: 닉네임 중복 검사 추가
-        if (memberRepository.existsByNickname(signUpRequest.getNickname())) {
-            throw new DuplicateNicknameException();
-        }
-
-
-        signUpRequest.encrypt();
-
-        Member member = signUpRequest.toEntity();
-
-        memberRepository.save(member);
-        CreateScrapDTO userScrap = CreateScrapDTO.builder().user(member).build();
-        scrapService.createScrap(userScrap);
-        return member.getId();
-    }
-
 
     // 조회 메소드
     // 아이디로 유저 정보 조회
@@ -95,8 +61,8 @@ public class MemberService {
     // 유저 정보 업데이트 처리 메소드
     // TODO: 유저 닉네임 중복 검사 추가
     @Transactional
-    public UserInfo updateUserInfo(UpdateUserInfo updateUserInfo) {
-        Member member = memberRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
+    public UserInfo updateUserInfo(UpdateUserInfo updateUserInfo, Long currentMemberId) {
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         if (!member.getNickname().equals(updateUserInfo.getNickname()) && memberRepository.existsByNickname(updateUserInfo.getNickname())) {
             throw new DuplicateNicknameException();
         }
@@ -109,24 +75,22 @@ public class MemberService {
 
     // 유저 비밀번호 업데이트 처리 메소드
     @Transactional
-    public String updateUserPassword(UpdateUserPassword updateUserPassword) {
+    public String updateUserPassword(UpdateUserPassword updateUserPassword, Long currentMemberId) {
 
-        Member member = memberRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
-        updateUserPassword.encrypt();
-
-        if (!Objects.equals(member.getPassword(), updateUserPassword.getOldPassword())) {
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+        if (!passwordEncoder.matches(updateUserPassword.getOldPassword(), member.getPassword())) {
             throw new InvalidPasswordException();
         }
+        updateUserPassword.encrypt(passwordEncoder);
         member.updateUserPassword(updateUserPassword);
         return "UPDATE";
     }
 
     // 유저 삭제 메소드
     @Transactional
-    public String deleteUser() {
-        Member member = memberRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundByEmailException::new);
+    public String deleteUser(Long currentMemberId) {
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         memberRepository.delete(member);
-        sessionLoginService.logout();
         return "DELETE";
     }
     // 이메일 찾기 메소드
@@ -150,7 +114,7 @@ public class MemberService {
         UpdateUserPassword updateUserPassword = UpdateUserPassword.builder()
                 .newPassword(newPassword)
                 .oldPassword("resetPassword").build();
-        updateUserPassword.encrypt();
+        updateUserPassword.encrypt(passwordEncoder);
         member.updateUserPassword(updateUserPassword);
         return ReturnPasswordDto.builder().password(newPassword).build();
     }

@@ -1,6 +1,5 @@
 package f3f.dev1.domain.scrap.application;
 
-import f3f.dev1.domain.member.application.SessionLoginService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.exception.UserNotFoundByEmailException;
@@ -18,6 +17,7 @@ import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
+import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -58,8 +58,8 @@ public class ScrapService {
 
     // 스크랩에 있는 포스트조회 메서드
     @Transactional(readOnly = true)
-    public GetScrapPostDTO getUserScrapPosts(String email) {
-        Member user = memberRepository.findByEmail(email).orElseThrow(UserNotFoundByEmailException::new);
+    public GetScrapPostDTO getUserScrapPosts(Long memberId) {
+        Member user = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
 
         Scrap scrapByUserId = scrapRepository.findScrapByUserId(user.getId()).orElseThrow(NotFoundByIdException::new);
         List<ScrapPost> scrapPosts = scrapByUserId.getScrapPosts();

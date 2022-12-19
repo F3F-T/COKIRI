@@ -1,6 +1,5 @@
 package f3f.dev1.domain.trade.application;
 
-import f3f.dev1.domain.member.application.SessionLoginService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.exception.UserNotFoundException;
@@ -13,6 +12,7 @@ import f3f.dev1.domain.trade.dto.TradeDTO.TradeInfoDto;
 import f3f.dev1.domain.trade.exception.InvalidSellerIdException;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
+import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,19 +34,18 @@ public class TradeService {
 
     private final PostRepository postRepository;
 
-    private final SessionLoginService sessionLoginService;
 
     // 트레이드 생성 메소드
     @Transactional
     public Long createTrade(CreateTradeDto createTradeDto) {
         Long sellerId = createTradeDto.getSellerId();
-        Member seller = memberRepository.findById(createTradeDto.getSellerId()).orElseThrow(NotFoundByIdException::new);
+        Member seller = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(NotFoundByIdException::new);
         Member buyer = memberRepository.findById(createTradeDto.getBuyerId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(createTradeDto.getPostId()).orElseThrow(NotFoundByIdException::new);
 
 
 
-        if (!seller.getEmail().equals(sessionLoginService.getLoginUser())) {
+        if (!seller.getId().equals(SecurityUtil.getCurrentMemberId())) {
             throw new NotAuthorizedException();
         }
 
@@ -70,7 +69,7 @@ public class TradeService {
             String buyerNickname = trade.getBuyer().getNickname();
             return trade.tradeInfoDto(sellerNickname, buyerNickname);
         } else {
-            String userNickname = memberRepository.findByEmail(sessionLoginService.getLoginUser()).orElseThrow(UserNotFoundException::new).getNickname();
+            String userNickname = memberRepository.findById(SecurityUtil.getCurrentMemberId()).orElseThrow(UserNotFoundException::new).getNickname();
             return TradeInfoDto.builder()
                     .sellerNickname(userNickname)
                     .buyerNickname("none")

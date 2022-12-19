@@ -56,9 +56,9 @@ public class MessageService {
 
 
         //포스트에 메시지를 보낼 수 있는 상태인지 확인. (거래중이거나 완료이면 메시지를 보내짐 못함.)
-        if(post.getTrade().getTradeStatus() != TradeStatus.TRADABLE){
-            throw new CanNotSendMessageByTradeStatus();
-        }
+//        if(post.getTrade().getTradeStatus() != TradeStatus.TRADABLE){
+//            throw new CanNotSendMessageByTradeStatus();
+//        }
 
         Message message = saveRequest.toEntity();
         messageRoom.getMessages().add(message);
