@@ -2,6 +2,7 @@ package f3f.dev1.domain.message.application;
 
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.message.dao.MessageRepository;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.dto.MessageDTO;
 import f3f.dev1.domain.message.dto.MessageRoomDTO;
@@ -41,6 +42,8 @@ public class MessageRoomService {
     private final PostRepository postRepository;
     private final TradeRepository tradeRepository;
     private final MessageRoomRepository messageRoomRepository;
+    private final MessageRepository messageRepository;
+    private final MessageService messageService;
 
     public Long createMessageRoom(MessageRoomSaveRequest saveRequest){
         Post post = postRepository.findById(saveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
@@ -49,7 +52,7 @@ public class MessageRoomService {
         //메시지를 보내는 사람은 물건을 사고자하는 사람.
         Member buyer = memberRepository.findById(saveRequest.getBuyer().getId()).orElseThrow(NotFoundByIdException::new);
         //거래 상태 확인을 위해 포스트에 있는 트레이드 아이디로 가져옴.
-        Trade trade = tradeRepository.findById(saveRequest.getPost().getTrade().getId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(saveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
 
         //거래 상태 확인하고 메시지 룸 만들기
         //바로 위에서 초기화하고 트레이드를 쓰는 게 나은지 아니면 그냥 포스트에서 타고 가는게 나은지지(post.getTrade().getTradeStatus()
@@ -59,28 +62,57 @@ public class MessageRoomService {
 
         MessageRoom messageRoom = saveRequest.toEntity();
         messageRoomRepository.save(messageRoom);
-        post.getMessageRooms().add(messageRoom);
+        //두명의 유저 채팅 리스트에 추가.
+        seller.getSellingRooms().add(messageRoom);
+        buyer.getBuyingRooms().add(messageRoom);
 
         return messageRoom.getId();
     }
 
     //채팅방 클릭할 때, 조회 (채팅창은 멤버에서 관리, 포스트에서 열어볼 수 없음)
-    //아이디만 가져와야되나?
-
+    //아이디만 가져와야되나?0 이거 메시지에 들어가야되나? 싹 다 갈아
+//    @Transactional(readOnly = true)
+//    public List<Message> ReadMessageRoomByMessageRoomId(MessageRoom messageRoom){
+//        if(!messageRoomRepository.existsById(messageRoom.getId())){
+//            throw new NoMessageRoomException();
+//        }
+//        //findById
+//        return messageRoom.getMessages();
+//    }
     @Transactional(readOnly = true)
-    public List<Message> findByMessageRoom(MessageRoom messageRoom){
+    public List<Message> ReadMessageRoomByMessageRoomId(MessageRoom messageRoom){
         if(!messageRoomRepository.existsById(messageRoom.getId())){
             throw new NoMessageRoomException();
         }
+        //findById
         return messageRoom.getMessages();
     }
     //유저 클릭하고 채팅방 조회는 유저에서 할듯?
-
+//    public List<MessageRoom> ReadMessageRoomsBySenderId(Long s){
+//        if(!)
+//    }
+    //TODO 양쪽에서 따로 해야 할듯 메시지와 마찬가지로
     @Transactional
     public String deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest){
-        Member sender = memberRepository.findById(deleteMessageRoomRequest.getSenderId()).orElseThrow(NotFoundByIdException::new);
+        MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRoomRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        //seller는 메시지를 보낸 사람.
+        Member seller = memberRepository.findById(deleteMessageRoomRequest.getSellerId()).orElseThrow(NotFoundByIdException::new);
+        //buyer는 메시지를 받은 사람.
+        Member buyer = memberRepository.findById(deleteMessageRoomRequest.getBuyerId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
 
-       // Trade trade = tradeRepository.findById()
+        //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정 -> 레포지토리에서 지우면 안되나?
+        if(trade.getTradeStatus() == TradeStatus.TRADED){
+           if(messageRoom.getMessages().isEmpty()){
+               //TODO 리시버, 센더 따로 해서 지워야되나?-> 테스트코드로 확인해보셈
+               memberRepository.deleteById(messageRoom.getId());
+               //messageRoomRepository.delete(messageRoom);
+           }
+           else{
+               //이거 어떻게 해?
+//               messageService.deleteMessage();
+           }
+        }
     return "DELETE";
     }
 

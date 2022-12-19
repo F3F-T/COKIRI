@@ -46,4 +46,14 @@ public class MessageDTO {
     public static class DeleteMessage{
         private Long Id;
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteMessageRequest{
+        private Long id;
+        private Long senderId;
+        private MessageRoom messageRoom;
+
+    }
 }
