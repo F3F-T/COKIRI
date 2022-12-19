@@ -1,5 +1,6 @@
 package f3f.dev1.trade;
 
+import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.application.PostService;
@@ -34,6 +35,9 @@ public class TradeServiceTest {
 
     @Autowired
     MemberService memberService;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     PostService postService;
@@ -73,7 +77,7 @@ public class TradeServiceTest {
     // 포스트 생성 DTO 생성 메소드
     public PostSaveRequest createPostSaveRequest(Member author) {
 
-        return new PostSaveRequest(1L, "title", "content", false, author, null, null, new Trade());
+        return new PostSaveRequest(1L, "title", "content", false, author, null, null);
     }
 
     // 트레이드 생성 DTO 생성 메소드
@@ -89,8 +93,10 @@ public class TradeServiceTest {
         //given
         SignUpRequest signUpRequest1 = createSignUpRequest("testuser1@email.com", "01012345678");
         SignUpRequest signUpRequest2 = createSignUpRequest("testuser2@email.com", "01056781234");
-        Long userId1 = memberService.signUp(signUpRequest1);
-        Long userId2 = memberService.signUp(signUpRequest2);
+        authService.signUp(signUpRequest1);
+        authService.signUp(signUpRequest2);
+        Long userId1 = memberRepository.findByEmail("testuser1@email.com").get().getId();
+        Long userId2 = memberRepository.findByEmail("testuser2@email.com").get().getId();
         PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
         System.out.println(memberRepository.findById(userId1).get().getNickname());;
         Long postId = postService.savePost(postSaveRequest);
