@@ -80,6 +80,12 @@ public class MessageRoomService {
 //        return messageRoom.getMessages();
 //    }
     @Transactional(readOnly = true)
+    public List<Message> ReadMessageRoomByMessageRoomId(Long id){
+       MessageRoom messageRoom = messageRoomRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        return messageRoom.getMessages();
+    }
+
+    @Transactional(readOnly = true)
     public List<Message> ReadMessageRoomByMessageRoomId(MessageRoom messageRoom){
         if(!messageRoomRepository.existsById(messageRoom.getId())){
             throw new NoMessageRoomException();
@@ -91,30 +97,32 @@ public class MessageRoomService {
 //    public List<MessageRoom> ReadMessageRoomsBySenderId(Long s){
 //        if(!)
 //    }
-    //TODO 양쪽에서 따로 해야 할듯 메시지와 마찬가지로
-    @Transactional
-    public String deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest){
-        MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRoomRequest.getId()).orElseThrow(NotFoundByIdException::new);
-        //seller는 메시지를 보낸 사람.
-        Member seller = memberRepository.findById(deleteMessageRoomRequest.getSellerId()).orElseThrow(NotFoundByIdException::new);
-        //buyer는 메시지를 받은 사람.
-        Member buyer = memberRepository.findById(deleteMessageRoomRequest.getBuyerId()).orElseThrow(NotFoundByIdException::new);
-        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
 
-        //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정 -> 레포지토리에서 지우면 안되나?
-        if(trade.getTradeStatus() == TradeStatus.TRADED){
-           if(messageRoom.getMessages().isEmpty()){
-               //TODO 리시버, 센더 따로 해서 지워야되나?-> 테스트코드로 확인해보셈
-               memberRepository.deleteById(messageRoom.getId());
-               //messageRoomRepository.delete(messageRoom);
-           }
-           else{
-               //이거 어떻게 해?
-//               messageService.deleteMessage();
-           }
-        }
-    return "DELETE";
-    }
+    //지우는 건 없애기
+    //TODO 양쪽에서 따로 해야 할듯 메시지와 마찬가지로
+//    @Transactional
+//    public String deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest){
+//        MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRoomRequest.getId()).orElseThrow(NotFoundByIdException::new);
+//        //seller는 메시지를 보낸 사람.
+//        Member seller = memberRepository.findById(deleteMessageRoomRequest.getSellerId()).orElseThrow(NotFoundByIdException::new);
+//        //buyer는 메시지를 받은 사람.
+//        Member buyer = memberRepository.findById(deleteMessageRoomRequest.getBuyerId()).orElseThrow(NotFoundByIdException::new);
+//        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+//
+//        //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정 -> 레포지토리에서 지우면 안되나?
+//        if(trade.getTradeStatus() == TradeStatus.TRADED){
+//           if(messageRoom.getMessages().isEmpty()){
+//               //TODO 리시버, 센더 따로 해서 지워야되나?-> 테스트코드로 확인해보셈
+//               memberRepository.deleteById(messageRoom.getId());
+//               //messageRoomRepository.delete(messageRoom);
+//           }
+//           else{
+//               //이거 어떻게 해?
+////               messageService.deleteMessage();
+//           }
+//        }
+//    return "DELETE";
+//    }
 
 
 
