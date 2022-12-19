@@ -59,13 +59,15 @@
     width: 100%;
     height: 72px;
     position: fixed;
+    background-color: white;
     z-index: 999;
+    border-bottom-color: #e5e8eb;
 }
 .navBar {
-    /*border: 1px solid red;*/
-    position: fixed;
+    border-bottom : 1px solid lightgray;
     width: 100%;
-    height: 72px;
+    height: 74px;
+
 }
 .meauto {
     /*border: 1px solid red;*/
