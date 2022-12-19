@@ -9,10 +9,10 @@ import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.dto.TradeDTO.TradeInfoDto;
+import f3f.dev1.domain.trade.exception.DuplicateTradeException;
 import f3f.dev1.domain.trade.exception.InvalidSellerIdException;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
-import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -44,6 +44,9 @@ public class TradeService {
         Post post = postRepository.findById(createTradeDto.getPostId()).orElseThrow(NotFoundByIdException::new);
 
 
+        if (tradeRepository.existsByPostId(post.getId())) {
+            throw new DuplicateTradeException();
+        }
 
         if (!seller.getId().equals(memberId)) {
             throw new NotAuthorizedException();
@@ -82,9 +85,11 @@ public class TradeService {
     @Transactional
     public TradeInfoDto updateTradeStatus(UpdateTradeDto updateTradeDto, Long memberId) {
         Trade trade = tradeRepository.findById(updateTradeDto.getTradeId()).orElseThrow(NotFoundByIdException::new);
-        Member member = memberRepository.findById(updateTradeDto.getUserId()).orElseThrow(NotFoundByIdException::new);
-        if (!member.getId().equals(memberId)) {
+        if (!updateTradeDto.getUserId().equals(memberId)) {
             throw new NotAuthorizedException();
+        }
+        if (!updateTradeDto.getUserId().equals(trade.getSeller().getId())) {
+            throw new InvalidSellerIdException();
         }
         trade.updateTradeStatus(updateTradeDto.getTradeStatus());
         String sellerNickname = trade.getSeller().getNickname();
