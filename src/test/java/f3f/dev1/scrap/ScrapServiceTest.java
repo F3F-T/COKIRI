@@ -6,6 +6,8 @@ import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,4 +57,16 @@ public class ScrapServiceTest {
                 .password("password").build();
     }
 
+
+    @Test
+    @DisplayName("유저 생성시 스크랩 생성 확인 테스트")
+    public void createScrapTest() throws Exception{
+        //given
+        Long signUp = memberService.signUp(createSignUpRequest());
+
+        // when
+
+
+        // then
+    }
 }

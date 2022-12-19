@@ -101,4 +101,27 @@ public class PostDTO {
         @NotNull
         private Member requester;
     }
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostInfoDto{
+
+        private Long id;
+        private String title;
+
+        private String content;
+
+        private Boolean tradeEachOther;
+
+        private String authorNickname;
+
+        private String wishCategory;
+
+        private String productCategory;
+
+        private TradeStatus tradeStatus;
+
+
+    }
 }
