@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 public class TokenDTO {
-
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
@@ -19,14 +18,27 @@ public class TokenDTO {
         private Long accessTokenExpiresIn;
 
         private String refreshToken;
+
+        public TokenIssueDTO toTokenReissueDTO() {
+            return TokenIssueDTO.builder()
+                    .accessToken(accessToken)
+                    .accessTokenExpiresIn(accessTokenExpiresIn)
+                    .grantType(grantType).build();
+        }
+
+
     }
 
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
-    public static class TokenRequestDTO{
+    public static class TokenIssueDTO {
         private String accessToken;
-        private String refreshToken;
+
+        private String grantType;
+
+        private Long accessTokenExpiresIn;
+
     }
 }

@@ -7,8 +7,7 @@ import f3f.dev1.domain.scrap.dto.ScrapDTO;
 import f3f.dev1.domain.token.dao.RefreshTokenRepository;
 import f3f.dev1.domain.token.exception.InvalidRefreshTokenException;
 import f3f.dev1.domain.token.exception.LogoutUserException;
-import f3f.dev1.domain.token.model.RefreshToken;
-import f3f.dev1.global.common.constants.SecurityConstants;
+import f3f.dev1.global.error.exception.NotFoundByIdException;
 import f3f.dev1.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
@@ -25,13 +24,12 @@ import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
 
-import static f3f.dev1.domain.member.dto.MemberDTO.LoginRequest;
-import static f3f.dev1.domain.member.dto.MemberDTO.SignUpRequest;
+import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.token.dto.TokenDTO.TokenInfoDTO;
-import static f3f.dev1.domain.token.dto.TokenDTO.TokenRequestDTO;
+import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 import static f3f.dev1.global.common.constants.JwtConstants.*;
-import static f3f.dev1.global.common.constants.SecurityConstants.*;
 import static f3f.dev1.global.common.constants.SecurityConstants.JSESSIONID;
+import static f3f.dev1.global.common.constants.SecurityConstants.REMEMBER_ME;
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +57,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenInfoDTO login(LoginRequest loginRequest, HttpServletResponse response) {
+    public UserLoginDto login(LoginRequest loginRequest, HttpServletResponse response) {
         // 1. 이메일, 비밀번호 기반으로 토큰 생성
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = loginRequest.toAuthentication();
         // 2. 실제로 검증이 이뤄지는 부분,
@@ -80,18 +78,20 @@ public class AuthService {
         saveRefreshTokenInStorage(refreshToken); // 추후 DB 나 어딘가 저장 예정
         setRefreshTokenInCookie(response, refreshToken); // 리프레시 토큰 쿠키에 저장
         // 5. 토큰 발급
-        return tokenInfoDTO;
+        Member member = memberRepository.findById(Long.parseLong(authenticate.getName())).orElseThrow(NotFoundByIdException::new);
+        UserLoginDto loginDto = UserLoginDto.builder().userInfo(member.toUserInfo()).tokenInfo(tokenInfoDTO.toTokenReissueDTO()).build();
+        return loginDto;
     }
 
     @Transactional
-    public TokenInfoDTO reissue(TokenRequestDTO tokenRequestDTO,HttpServletResponse response) {
+    public TokenInfoDTO reissue(TokenIssueDTO tokenReissueDTO, HttpServletResponse response, String cookieRefreshToken) {
         // 1. refresh token 검증
-        if (!jwtTokenProvider.validateToken(tokenRequestDTO.getRefreshToken())) {
+        if (!jwtTokenProvider.validateToken(cookieRefreshToken)) {
             throw new InvalidRefreshTokenException();
         }
 
         // 2. Access Token에서 멤버 아이디 가져오기
-        Authentication authentication = jwtTokenProvider.getAuthentication(tokenRequestDTO.getAccessToken());
+        Authentication authentication = jwtTokenProvider.getAuthentication(tokenReissueDTO.getAccessToken());
 
         // 3. 저장소에서 member id를 기반으로 refresh token 값 가져옴
 //        RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName()).orElseThrow(LogoutUserException::new);
@@ -101,7 +101,7 @@ public class AuthService {
         }
 
         // 4. refresh token이 일치하는지 검사,
-        if (!refreshToken.equals(tokenRequestDTO.getRefreshToken())) {
+        if (!refreshToken.equals(cookieRefreshToken)) {
             throw new IllegalArgumentException("토큰의 유저 정보가 일치하지 않습니다");
         }
 
