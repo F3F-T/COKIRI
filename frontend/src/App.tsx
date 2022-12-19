@@ -16,6 +16,7 @@ import EmailCheck from "./routes/EmailCheck";
 
 import styles from "./styles/App.module.css";
 import EmailCheckOK from "./routes/EmailCheckOK";
+import PostDetail from "./routes/PostDetail";
 function App() {
     return (
         <div className="App">
@@ -32,6 +33,8 @@ function App() {
                 <Route path="/mypage" element={<MyPage/>} />
                 <Route path="/signup/emailcheck" element={<EmailCheck/>}/>
                 <Route path="/signup/emailcheck/ok" element={<EmailCheckOK/>}/>
+                <Route path="/post" element={<PostDetail/>}/>
+
             </Routes>
         </div>
         </div>

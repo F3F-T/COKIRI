@@ -1,0 +1,41 @@
+.post{
+    width: 700px;
+    margin: auto;
+    border: #17191D 1px solid;
+}
+
+.postTop{
+    display : flex;
+    flex-direction: row;
+}
+
+.postTopProfileImg{
+    width: 4rem;
+    height: 4rem;
+}
+
+.postTopProfileInfo{
+    flex-direction: column;
+    display: inline-block;
+
+}
+
+.postTopNickname{
+    font-size: 1rem;
+    font-width: 700;
+
+}
+
+.postTopAddress{
+    font-size: 0.5rem;
+}
+
+
+.postTopReport{
+    position: relative;
+    display: inline;
+    margin-left: auto;
+    align-self: center; /*텍스트를 중앙으로 놓는다*/
+    margin-right: 3rem;
+    font-size: 0.8rem;
+}

@@ -8,9 +8,13 @@ import myImage from "../../img/cokkiriLogo.png"
 
 // ㅂㅅ
 const PostContainer = () => {
-    return (
+
+        let navigate = useNavigate();
+
+
+        return (
         <div className={styles.postContainer}>
-            <div className={styles.postItem}><img className={styles.postImage} src = {myImage}/></div>
+            <div className={styles.postItem}><img className={styles.postImage} src = {myImage} onClick={()=>navigate('/post')}/></div>
             <div className={styles.postItem}><img className={styles.postImage} src = {myImage}/></div>
             <div className={styles.postItem}><img className={styles.postImage} src = {myImage}/></div>
             <div className={styles.postItem}><img className={styles.postImage} src = {myImage}/></div>
