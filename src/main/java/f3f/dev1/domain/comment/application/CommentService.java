@@ -101,7 +101,7 @@ public class CommentService {
      */
 
     @Transactional
-    public ResponseEntity<String> updateComment(UpdateCommentRequest updateCommentRequest) {
+    public CommentInfoDto updateComment(UpdateCommentRequest updateCommentRequest) {
         Post post = postRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
@@ -109,11 +109,17 @@ public class CommentService {
             throw new NotMatchingCommentException("요청한 게시글에 수정하려는 댓글이 없습니다.");
         }
         commentInPost.updateContent(updateCommentRequest.getContent());
-        return UPDATE;
+        CommentInfoDto commentInfoDto = CommentInfoDto.builder()
+                .postId(comment.getPost().getId())
+                .memberId(comment.getAuthor().getId())
+                .content(comment.getContent())
+                .depth(comment.getDepth())
+                .build();
+        return commentInfoDto;
     }
 
     @Transactional
-    public ResponseEntity<String> deleteComment(DeleteCommentRequest deleteCommentRequest) {
+    public String deleteComment(DeleteCommentRequest deleteCommentRequest) {
         Post post = postRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Member user = memberRepository.findById(deleteCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
@@ -125,6 +131,6 @@ public class CommentService {
             throw new NotMatchingAuthorException("댓글 작성자가 아닙니다");
         }
         commentRepository.delete(commentInPost);
-        return DELETE;
+        return "DELETE";
     }
 }

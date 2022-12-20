@@ -151,5 +151,6 @@ public class CommentDTO {
         private Long memberId;
         private String content;
         private Long depth;
+        private Long parentCommentId;
     }
 }
