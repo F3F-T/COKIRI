@@ -18,6 +18,7 @@ import Zzim from "./routes/Zzim";
 
 import styles from "./styles/App.module.css";
 import EmailCheckOK from "./routes/EmailCheckOK";
+import PostDetail from "./routes/PostDetail";
 function App() {
     return (
         <div className="App">
@@ -36,6 +37,7 @@ function App() {
                 <Route path="/signup/emailcheck" element={<EmailCheck/>}/>
                 <Route path="/signup/emailcheck/ok" element={<EmailCheckOK/>}/>
                 <Route path="/postupload" element={<PostUpload/>}/>
+                <Route path="/post" element={<PostDetail/>}/>
 
             </Routes>
         </div>

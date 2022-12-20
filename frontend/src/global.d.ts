@@ -3,5 +3,7 @@ declare module "*.css" {
     const content: { [className: string]: string };
     export = content;
 }
+
+declare module '*.scss'
 declare module '*.png';
 declare module '*.jpeg';

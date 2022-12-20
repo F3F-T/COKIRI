@@ -2,7 +2,7 @@ import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/post/PostDetail.module.css"
 import profileImg from "../img/profileImg.png"
 import spamImg from "../img/spam.png"
-import ProfileInfoTop from "../component/ProfileInfo/ProfileInfoTop";
+import ProfileInfoTop from "../component/comments/Comments";
 
 const PostDetail = () => {
     return (

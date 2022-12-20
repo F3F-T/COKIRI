@@ -1,9 +1,12 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../../styles/profileInfo/ProfileInfoTop.module.css";
+import styles from "../../styles/profileInfo/Comments.module.scss";
 import profileImg from "../../img/profileImg.png";
 
 
-const ProfileInfoTop = () => {
+const Comments = () => {
+
+
+
     return (
         <div>
             <div className={styles.Profile}>
@@ -29,4 +32,4 @@ const ProfileInfoTop = () => {
     );
 }
 
-export default ProfileInfoTop;
+export default Comments;
