@@ -65,7 +65,7 @@ public class ScrapService {
         List<PostDTO.PostInfoDto> posts = new ArrayList<>();
         for (ScrapPost scrapPost : scrapPosts) {
             Trade trade = tradeRepository.findByPostId(scrapPost.getPost().getId()).orElseThrow(NotFoundByIdException::new);
-            posts.add(scrapPost.getPost().toInfoDto(trade.getTradeStatus()));
+            posts.add(scrapPost.getPost().toInfoDto());
         }
 
 
