@@ -1,7 +1,11 @@
-.post{
+.postDetail{
     width: 800px;
     margin: auto;
 }
+/*.post{*/
+/*    width: 800px;*/
+/*    margin: auto;*/
+/*}*/
 
 .postTop{
     display : flex;
@@ -51,45 +55,46 @@
     height : 22rem;
 }
 
-.postDetail{
+.postDetailInfo{
     margin-left: 2rem;
     margin-right: 1rem;
 
 }
 
-.postDetail .postDetailTitle{
+.postDetailInfo .postDetailTitle{
     margin-top: 1rem;
     font-size: 1.5rem;
 }
 
-.postDetail .postDetailCategory{
+.postDetailInfo .postDetailCategory{
     font-size: 1.2rem;
     color: gray;
 }
 
-.postDetail .postDetailPrice{
+.postDetailInfo .postDetailPrice{
     font-size: 1rem;
 }
 
-.postDetail .postDetailContent{
+.postDetailInfo .postDetailContent{
     margin-top: 1rem;
     font-size: 0.85rem;
     margin-right: 3rem;
     font-weight: 550;
 }
 
-.postDetail .postDetailTag{
+.postDetailInfo .postDetailTag{
     color: blue;
     margin-top: 2rem;
 }
 
-.postDetail .postDetailSwapCategory{
+.postDetailInfo .postDetailSwapCategory{
     font-size: 1.2rem;
     margin-top: 5rem;
 }
 
 .postBottom{
     padding: 0.5rem 0rem;
+    padding-bottom: 3rem;
 }
 
 .postBottom span{
@@ -100,3 +105,6 @@
     float: right;
 }
 
+.comments{
+
+}

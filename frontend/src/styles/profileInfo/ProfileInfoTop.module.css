@@ -1,0 +1,40 @@
+.Profile{
+    display : flex;
+
+}
+
+.ProfileImg{
+    width: 2rem;
+    height: 2rem;
+}
+
+.ProfileInfo{
+    display: inline-block;
+    font-size: 0.8rem;
+    font-width: 700;
+    margin-left: 0.3rem;
+    vertical-align: center;
+
+}
+
+.ProfileActionList{
+    margin-left: auto;
+    list-style:none;
+}
+
+.ProfileActionList li{
+    float: left;
+    margin-left: 0.5rem;
+    font-size: 0.5rem;
+}
+
+.comments{
+    margin-left: 0.3rem;
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+}
+
+.time{
+    margin-top: 0.3rem;
+    font-size: 0.5rem;
+}
