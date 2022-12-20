@@ -123,14 +123,6 @@ public class CommentDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FindByPostIdCommentListResponse {
-        @NotNull
-        private List<Comment> results;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class DeleteCommentRequest {
         @NotNull
         private Long id;
@@ -138,7 +130,6 @@ public class CommentDTO {
         private Member author;
         @NotNull
         private Post post;
-        // TODO 로그인 (토큰) 정보?
     }
 
     @Getter
