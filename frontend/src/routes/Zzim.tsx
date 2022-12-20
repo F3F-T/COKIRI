@@ -20,6 +20,7 @@ const MyPage = () =>  {
 
     function setDealTab(tab){
         setTab(tab)
+        console.log("zzim 페이지")
         console.log(tab1)
         // return tab
     }
@@ -47,11 +48,10 @@ const MyPage = () =>  {
     return (
         <>
             <div className={styles.MyPage}>
-            <MyPageSet/>
-            <div className={styles.po}>여기는 게시글 자리야</div>
+                <MyPageSet/>
+                <div className={styles.ZZ}>여기는 찜 자리야 </div>
             </div>
         </>
-
     );
 }
 

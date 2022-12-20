@@ -17,7 +17,10 @@ import PostUpload from "./routes/PostUpload";
 
 import styles from "./styles/App.module.css";
 import EmailCheckOK from "./routes/EmailCheckOK";
+import Zzim from "./routes/Zzim";
+
 function App() {
+
     return (
         <div className="App">
             <Nav />
@@ -31,6 +34,7 @@ function App() {
                 <Route path="/signup" element={<SignUp/>}/>
                 <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
                 <Route path="/mypage" element={<MyPage/>} />
+                <Route path="/mypage/zzim" element={<Zzim/>} />
                 <Route path="/signup/emailcheck" element={<EmailCheck/>}/>
                 <Route path="/signup/emailcheck/ok" element={<EmailCheckOK/>}/>
                 <Route path="/postupload" element={<PostUpload/>}/>
