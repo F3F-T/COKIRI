@@ -1,7 +1,7 @@
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import myImage from "../img/cokkiriLogo.png"
-import styles from "../styles/home/Home.module.css"
+import myImage from "../../img/cokkiriLogo.png"
+import styles from "../../styles/home/Home.module.css"
 function MulMulCardView() {
     return (
         <Card className={styles.mulmulCardView}>

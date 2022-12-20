@@ -19,12 +19,12 @@ import java.util.List;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.UpdateUserInfo;
 import static f3f.dev1.domain.member.dto.MemberDTO.UserInfo;
-import static f3f.dev1.domain.member.model.UserLevel.AUTH;
+import static f3f.dev1.domain.member.model.Authority.ROLE_USER;
 
 @Entity
 @Getter
 @NoArgsConstructor
-public class Member extends UserBase {
+public class Member extends MemberBase {
 
     @Embedded
     private Address address;
@@ -43,7 +43,7 @@ public class Member extends UserBase {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
     private Scrap scrap;
 
     @OneToMany(mappedBy = "seller", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -66,7 +66,7 @@ public class Member extends UserBase {
 
     @Builder
     public Member(Long id, String email, String password, String username, Address address, String birthDate, String phoneNumber, String nickname, UserLoginType userLoginType) {
-        super(id, email, password, AUTH,userLoginType);
+        super(id, email, password, ROLE_USER,userLoginType);
         this.userName = username;
         this.address = address;
         this.birthDate = birthDate;
@@ -82,6 +82,7 @@ public class Member extends UserBase {
                 .phoneNumber(this.phoneNumber)
                 .nickname(this.nickname)
                 .loginType(this.getUserLoginType())
+                .id(this.getId())
                 .build();
     }
 
@@ -94,6 +95,10 @@ public class Member extends UserBase {
 
     public void updateUserPassword(UpdateUserPassword updateUserPassword) {
         super.updatePassword(updateUserPassword.getNewPassword());
+    }
+
+    public void updateAddress(Address address) {
+        this.address = address;
     }
 
     public EncryptEmailDto encryptEmail() {

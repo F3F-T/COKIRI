@@ -38,6 +38,8 @@ public class TradeDTO {
     public static class UpdateTradeDto {
         private Long tradeId;
 
+        private Long userId;
+
         private TradeStatus tradeStatus;
     }
 
