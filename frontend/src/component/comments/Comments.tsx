@@ -1,18 +1,57 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../../styles/profileInfo/Comments.module.scss";
 import profileImg from "../../img/profileImg.png";
+import classNames from "classnames/bind";
 
+//classNames로 styles를 bind해서 styles에 쉽게 접근하고 css 조건문을 쉽게 달수있게 돕는 API
+const cx = classNames.bind(styles)
 
-const Comments = () => {
+//CommentTypes를 기본 댓글인지, 대댓글인지를 선언하여 UI와 구성되는 데이터를 달리한다.
+type CommentTypes = "primary" | "secondary";
 
+//props에서 받을 Comment data의 형식들을 미리 선언(typescript)
+interface CommentProps {
+    //className은 PrimaryComment, SecondaryComment에도 넘겨줄 것이기 때문에 className을 optional로 설정
+    className?: CommentTypes;
+    userID: string;
 
+    //userProfileImg : string; (url, string형식?)
+    content: string;
+    time: string;
+}
 
-    return (
-        <div>
-            <div className={styles.Profile}>
-                <img className={styles.ProfileImg} src={profileImg}></img>
+const PrimaryComment = (commentInfo: CommentProps) => {
+   return(
+       <>
+        <div className={cx('Profile')}>
+            <img className={cx('ProfileImg')} src={profileImg}></img>
+            <div className={styles.ProfileInfo}>
+                {commentInfo.userID}
+            </div>
+            <ul className={styles.ProfileActionList}>
+                <li>대댓글</li>
+                <li>공감</li>
+                <li>쪽지</li>
+                <li>신고</li>
+            </ul>
+        </div>
+        <div className={styles.comments}>
+            {commentInfo.content}
+        </div>
+        <div className={styles.time}>
+            {commentInfo.time}
+        </div>
+       </>
+);
+}
+
+const SecondaryComment = (commentInfo: CommentProps) => {
+    return(
+        <>
+            <div className={cx('Profile')}>
+                <img className={cx('ProfileImg')} src={profileImg}></img>
                 <div className={styles.ProfileInfo}>
-                    상도동파티피플
+                    {commentInfo.userID}
                 </div>
                 <ul className={styles.ProfileActionList}>
                     <li>대댓글</li>
@@ -22,12 +61,32 @@ const Comments = () => {
                 </ul>
             </div>
             <div className={styles.comments}>
-                혹시 칼로리 몇인지 알 수 있을까요?
+                {commentInfo.content}
             </div>
             <div className={styles.time}>
-                12/20 17: 05
+                {commentInfo.time}
             </div>
-        </div>
+        </>
+    );
+}
+
+
+const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps임을 알려준다.
+
+    return (
+        <>
+            {commentInfo.className === "primary" &&
+                <div className={cx(commentInfo.className)}>
+                    <PrimaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}/>
+                </div>
+            }
+
+            {commentInfo.className === "secondary" &&
+                <div className={cx(commentInfo.className)}>
+                    <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}/>
+                </div>
+            }
+        </>
 
     );
 }
