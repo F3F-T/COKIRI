@@ -1,0 +1,61 @@
+/************************************************************************
+ 물물교환 Component
+ ************************************************************************/
+
+/*물물교환 전체*/
+.mulmulTrade{
+    width : 75%;
+    margin: auto; /* content를 중앙으로 보낸다*/
+    height: var( --mulmul-height);
+    max-height: var( --mulmul-height);
+}
+/*물물교환 h2(우리 동네 인기 물물교환)*/
+.mulmulTrade h2{
+    text-align: center;
+}
+
+
+/*물물교환 Carousel 안에 있는 cardView 전체*/
+/*TODO: 물물교환 MulMulcardView안에 있는 css, 현재는 home module에 있지만
+추후엔 MulMulcardView module을 따로 빼서 넣어야 함*/
+
+.mulmulCardView{
+    display: flex;
+    width:95%;
+    margin-left: 1rem;
+    font-size: 1rem;
+    max-height: var( --mulmul-height);
+}
+
+/*MulMulCardView 안에 있는 이미지*/
+.mulmulCardImg{
+    width: 10rem;
+    height: 13rem;
+
+}
+
+/*MulMulCardView 안에 있는 디테일(title, content, bottomdetail을 포함한다*/
+.mulmulCardDetail{
+    padding-left: 0.5rem;
+}
+
+/*MulMulCardView 안에 있는 title*/
+.mulmulCardViewTitle{
+    font-size: 1rem;
+    color: black;
+}
+
+/*MulMulCardView 안에 있는 content(본문)*/
+.mulmulCardViewContent{
+    font-size: 0.7rem;
+    margin-top: 0.2rem;
+    color: grey;
+}
+
+/*MulMulCardView 안에 있는 좋아요, 댓글, 교환할 물건*/
+.mulmulCardViewBottomDetail li{
+    margin-top: 0.2rem;
+    display: flex;
+    font-size: 0.1rem;
+
+}

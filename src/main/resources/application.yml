@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/f3f_dev1?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: djkim
-    password: rlaehdwns99
+    url: ${DB_PATH}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
 
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect

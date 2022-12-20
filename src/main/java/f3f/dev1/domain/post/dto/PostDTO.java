@@ -2,6 +2,7 @@ package f3f.dev1.domain.post.dto;
 
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
@@ -19,6 +20,7 @@ public class PostDTO {
     // C : Create 담당 DTO
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class PostSaveRequest {
@@ -35,8 +37,7 @@ public class PostDTO {
         private Category productCategory;
         private Category wishCategory;
 
-        @NotNull
-        private Trade trade;
+        //TODO 토큰 추가 예정
 
         public Post toEntity() {
             return Post.builder()
@@ -46,7 +47,6 @@ public class PostDTO {
                     .author(this.author)
                     .productCategory(this.productCategory)
                     .wishCategory(this.wishCategory)
-                    .trade(this.trade)
                     .build();
         }
     }
@@ -58,8 +58,10 @@ public class PostDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class FindByAuthorPostListResponse {
-        private List<Post> postList;
+    public static class FindByAuthorPostEachResponse {
+        private Post postEach;
+        private Trade tradeEach;
+//        private List<TradeStatus> tradeStatuses;
     }
 
     @Getter
@@ -67,16 +69,20 @@ public class PostDTO {
     @AllArgsConstructor
     public static class FindByIdPostResponse {
         private Post byIdPost;
+        private Trade trade;
+//        private TradeStatus tradeStatus;
     }
 
     // U : Update 담당 DTO들
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdatePostRequest {
         // 태그도 수정될 수 있으니 태그 리스트를 받은 뒤 Post의 UpdatePostTags에서 수정하도록 하겠다.
         // 카테고리도 같은 맥락
+        // TODO 토큰값 추가하기
         @NotNull
         private Long id;
         @Size(min=2, max=20, message = "제목은 2글자 이상, 20자 이하로 설정해주세요")
@@ -89,6 +95,7 @@ public class PostDTO {
     }
 
     @Getter
+    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DeletePostRequest {
@@ -96,5 +103,26 @@ public class PostDTO {
         private Long id;
         @NotNull
         private Member requester;
+    }
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostInfoDto{
+
+        private Long id;
+        private String title;
+
+        private String content;
+
+        private Boolean tradeEachOther;
+
+        private String authorNickname;
+
+        private String wishCategory;
+
+        private String productCategory;
+
+        private TradeStatus tradeStatus;
     }
 }
