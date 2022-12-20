@@ -47,7 +47,7 @@
 | 게시글 정보 조회 | GET | /post/{post_id} |  |                                      | {title:~~,content: ~~, …} |
 | 게시글 정보 조회 - 작성자로 | GET | /post/{memberId} |  |                                      | {title:~~,content: ~~, …} |
 | 게시글 정보 수정 | PATCH | /post |  | {content:~~, token: ~~, …}           | {title:~~, content: ~~,…}    |
-| 게시글 삭제 | DELETE | /post/{post_id} |  | {token:~~,… }                        | {removed_post:~~}         |
+| 게시글 삭제 | DELETE | /post/{postId} |  | {token:~~,… }                        | {removed_post:~~}         |
 
 ## Comment
 

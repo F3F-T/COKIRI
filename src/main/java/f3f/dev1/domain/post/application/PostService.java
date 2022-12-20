@@ -142,7 +142,7 @@ public class PostService {
     }
 
     @Transactional
-    public ResponseEntity<String> deletePost(DeletePostRequest deletePostRequest) {
+    public String deletePost(DeletePostRequest deletePostRequest) {
         // 먼저 해당 게시글이 존재하는지 검증
         Post post = postRepository.findById(deletePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         // 그 후 작성자가 요청자와 동일인물인지 검증
@@ -152,7 +152,7 @@ public class PostService {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
         }
         postRepository.deleteById(deletePostRequest.getId());
-        return DELETE;
+        return "DELETE";
     }
 
 }
