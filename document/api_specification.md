@@ -45,7 +45,8 @@
 | 게시글 전체 조회 | GET | /post | category, tag |                                      | {posts:[~~]}              |
 | 게시글 작성 | POST | /post |  | {title:~~,content: ~~,token: ~~~, …} | {title:~~, content: ~~,…} |
 | 게시글 정보 조회 | GET | /post/{post_id} |  |                                      | {title:~~,content: ~~, …} |
-| 게시글 정보 수정 | PATCH | /post/{post_id} |  | {content:~~, token: ~~, …}           | {content:~~}              |
+| 게시글 정보 조회 - 작성자로 | GET | /post/{memberId} |  |                                      | {title:~~,content: ~~, …} |
+| 게시글 정보 수정 | PATCH | /post |  | {content:~~, token: ~~, …}           | {title:~~, content: ~~,…}    |
 | 게시글 삭제 | DELETE | /post/{post_id} |  | {token:~~,… }                        | {removed_post:~~}         |
 
 ## Comment
