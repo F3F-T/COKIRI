@@ -5,13 +5,13 @@ import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.dao.ScrapPostRepository;
 import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
-import f3f.dev1.domain.scrap.dto.ScrapDTO;
 import f3f.dev1.domain.scrap.dto.ScrapDTO.DeleteScrapPostDTO;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
@@ -78,6 +78,7 @@ public class ScrapServiceTest {
                 .birthDate("990128")
                 .address(createAddress())
                 .password("password")
+                .userLoginType(UserLoginType.EMAIL)
                 .build();
     }
 
