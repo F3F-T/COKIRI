@@ -1,0 +1,92 @@
+.MyPage{
+    padding-top: 5rem;
+    width : 700px;
+    height: 1000px;
+    text-align: left;
+    /*border: 1px solid red;*/
+    margin : auto; /*가운데 정렬*/
+}
+.profile{
+    display: flex;
+    justify-content: space-evenly;
+
+}
+.profileImage{
+
+}
+.Image{
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    /*창 크기에 영향X*/
+}
+.userInfo{
+    display: grid;
+    gap: 10px;
+
+}
+.nickName{
+    border: none;
+
+}
+.intro{
+    border-left:none;
+    border-right:none;
+    border-top:none;
+    border-bottom: 2px solid rgba(150, 150, 150, 0.2);
+}
+.intro2{
+    display: flex;
+    justify-content: left;
+    gap: 1.5rem;
+}
+.i1{
+    display: flex;
+}
+.postNum{
+    margin-left: 0.5rem;
+}
+.tradeNum{
+    margin-left: 0.5rem;
+}
+
+.menu{
+    margin-top: 2rem;
+    border-top: 2px solid rgba(150, 150, 150, 0.2);
+    display: flex;
+    justify-content: center;
+}
+.post{
+    border-left:none;
+    border-right:none;
+    border-top:none;
+    background-color: transparent;
+    font-size: 0.9rem;
+    font-weight: bolder;
+    border-bottom: 2px solid rgba(150, 150, 150, 0.2);
+
+}
+.postactive {
+    border: none;
+    font-size: 0.9rem;
+    background: transparent;
+    font-weight: bolder;
+
+}
+.zzim{
+    border-left:none;
+    border-right:none;
+    border-top:none;
+    background-color: transparent;
+    font-size: 0.9rem;
+    font-weight: bolder;
+    border-bottom: 2px solid rgba(150, 150, 150, 0.2);
+
+}
+.zzimactive {
+    border: none;
+    font-size: 0.9rem;
+    background: transparent;
+    font-weight: bolder;
+
+}

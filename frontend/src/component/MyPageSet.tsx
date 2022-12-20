@@ -7,14 +7,13 @@ import photo from "../img/photoSelect.png"
 import PriceBox from "../component/trade/PriceBox";
 import profile from "../img/profile.jpeg"
 import PostContainer from "../component/trade/PostContainer";
-import MyPageSet from "../component/MyPageSet";
 
 // interface TextInputProps {
 //     init: string;
 // }
 
 const MyPage = () =>  {
-    const [tab1, setTab] = useState('curr');
+    const [tab1, setTab] = useState<string>('curr');
 
     const navigate = useNavigate();
 
@@ -45,13 +44,30 @@ const MyPage = () =>  {
     // });
 
     return (
-        <>
-            <div className={styles.MyPage}>
-            <MyPageSet/>
-            <div className={styles.po}>여기는 게시글 자리야</div>
-            </div>
-        </>
+            <>
+            <div className={styles.profile}>
+                <div className={styles.profileImage}>
+                    <img className={styles.Image} src={profile}/>
+                </div>
+                <div className={styles.userInfo}>
+                    <input className={styles.nickName} placeholder={"닉네임"}></input>
+                    <input className={styles.intro} placeholder={"한 줄 소개를 입력하세요."}></input>
+                    <div className={styles.intro2}>
+                        <div className={styles.i1}>
+                            <p>게시글</p> <p className={styles.postNum}>5</p>
+                        </div>
+                        <div className={styles.i1}>
+                            <p>상품 거래</p> <p className={styles.tradeNum}>8</p>
+                        </div>
+                    </div>
 
+                </div>
+            </div>
+            <div className={styles.menu}>
+                <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>
+                <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>관심 상품</button>
+            </div>
+            </>
     );
 }
 

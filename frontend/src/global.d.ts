@@ -4,3 +4,4 @@ declare module "*.css" {
     export = content;
 }
 declare module '*.png';
+declare module '*.jpeg';
