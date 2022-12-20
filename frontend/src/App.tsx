@@ -14,6 +14,7 @@ import Login from "./routes/Login";
 import SignUp from "./routes/SignUp";
 import EmailCheck from "./routes/EmailCheck";
 import PostUpload from "./routes/PostUpload";
+import Zzim from "./routes/Zzim";
 
 import styles from "./styles/App.module.css";
 import EmailCheckOK from "./routes/EmailCheckOK";
