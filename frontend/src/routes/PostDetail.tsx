@@ -27,11 +27,19 @@ const PostDetail = () => {
                     <h2 className={styles.postDetailTitle}>스팸 클래식 중간크기</h2>
                     <div className={styles.postDetailCategory}>식품 </div>
                     <div className={styles.postDetailPrice}>4500원</div>
-                    <div className={styles.postDetailContent}>글 본문</div>
-                    <div className={styles.postDetailTag}>해시태그</div>
-                    <div className={styles.postDetailTag}>해시태그</div>
-
+                    <div className={styles.postDetailContent}>3개월 전에 산 스팸 클래식 중간크기에요.<br/>
+                    다른 통조림 류랑 교환하실분 !! 꼭 식품이 아니더라도 관심있으신 분 연락주세요 ㅎㅎ  </div>
+                    <div className={styles.postDetailTag}>#스팸 #통조림 #고기 #스팸클래식 </div>
+                    <div className={styles.postDetailSwapCategory}> ⇌식품</div>
                 </div>
+
+            </section>
+            <section className={styles.postBottom}>
+                <span>좋아요 13</span>
+                <span>     27분전</span>
+                <span>   쪽지 수 3</span>
+                <button>코끼리톡으로 교환하기</button>
+
             </section>
         </article>
         </>

@@ -1,7 +1,6 @@
 .post{
     width: 800px;
     margin: auto;
-    border: #17191D 1px solid;
 }
 
 .postTop{
@@ -42,7 +41,9 @@
 
 .postBody{
     display: flex;
-    /*flex-direction: row;*/
+    padding-bottom: 2rem;
+    border-bottom: 1px solid gray;
+
 }
 
 .postBodyImg{
@@ -53,10 +54,11 @@
 .postDetail{
     margin-left: 2rem;
     margin-right: 1rem;
-    flex-direction: column;
+
 }
 
 .postDetail .postDetailTitle{
+    margin-top: 1rem;
     font-size: 1.5rem;
 }
 
@@ -66,5 +68,35 @@
 }
 
 .postDetail .postDetailPrice{
-    font-size: 1.2rem;
+    font-size: 1rem;
 }
+
+.postDetail .postDetailContent{
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    margin-right: 3rem;
+    font-weight: 550;
+}
+
+.postDetail .postDetailTag{
+    color: blue;
+    margin-top: 2rem;
+}
+
+.postDetail .postDetailSwapCategory{
+    font-size: 1.2rem;
+    margin-top: 5rem;
+}
+
+.postBottom{
+    padding: 0.5rem 0rem;
+}
+
+.postBottom span{
+    font-size: 0.8rem;
+}
+
+.postBottom button{
+    float: right;
+}
+
