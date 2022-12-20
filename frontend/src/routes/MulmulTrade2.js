@@ -1,16 +1,15 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/trade/Trade.module.css"
-
 import {useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import myImage from "../img/cokkiriLogo.png"
+import myImage from "../img/cokkiriLogo.png";
+import TradeCategory from "../component/trade/TradeCategory";
 import PriceBox from "../component/trade/PriceBox";
 import PostContainer from "../component/trade/PostContainer";
-import TradeCategory from "../component/trade/TradeCategory";
 
-// ㅂㅅ
-const MulmulTrade = () => {
+
+const MulmulTrade2 = () => {
     let navigate = useNavigate();
     return (
             <div className={styles.mulmulTrade}>
@@ -18,12 +17,12 @@ const MulmulTrade = () => {
                     <div className={styles.categoryBox}>
                         <div className={styles.forWho}>
                             <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade')}>이런 물건이 올라왔어요.</button>
-                            <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade/mulmultrade2')}>이런 물건을 원해요.</button>
+                            <button className={styles.forWho_2} onClick={()=>navigate('/mulmultrade/mulmultrade2')}>이런 물건을 원해요.</button>
                         </div>
                         <TradeCategory/>
                         <PriceBox/>
                     </div>
-                    <div className={styles.navPostOrWant}>도서를 올린 사람들이에요</div>
+                    <div className={styles.navPostOrWant}>도서를 원하는 사람들이에요.</div>
                     <div className={styles.popularOrNewest}>
                         <div className={styles.pupularBtn}>인기도순</div>
                         <div className={styles.slash}>|</div>
@@ -35,4 +34,4 @@ const MulmulTrade = () => {
     );
 }
 
-export default MulmulTrade;
+export default MulmulTrade2;

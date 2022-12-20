@@ -1,6 +1,7 @@
 package f3f.dev1.global.jwt;
 
 import f3f.dev1.domain.token.dto.TokenDTO;
+import f3f.dev1.domain.token.dto.TokenDTO.TokenInfoDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -32,7 +33,7 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenDTO.TokenInfoDTO generateTokenDto(Authentication authentication) {
+    public TokenInfoDTO generateTokenDto(Authentication authentication) {
         // 권한들 가져오기
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -55,7 +56,7 @@ public class JwtTokenProvider {
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
-        return TokenDTO.TokenInfoDTO.builder()
+        return TokenInfoDTO.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())

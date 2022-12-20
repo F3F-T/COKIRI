@@ -25,7 +25,7 @@ public class ScrapDTO {
 
         public Scrap toEntity() {
             return Scrap.builder()
-                    .user(user).build();
+                    .member(user).build();
         }
 
     }
@@ -57,5 +57,16 @@ public class ScrapDTO {
         private Long userId;
         private Long postId;
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class CreateScrapPostDTO{
+        private Long scrapPostId;
+
+        private String postTitle;
+    }
+
 
 }

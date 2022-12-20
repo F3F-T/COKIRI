@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/home/Home.module.css"
-import MulMulCardView from "../component/MulMulCardView";
+import MulMulCardView from "../component/home/MulMulCardView";
 import Carousel from 'react-bootstrap/Carousel';
-import KiriKiriCategoryRoundImage from "../component/KiriKiriCategoryRoundImage";
+import KiriKiriCategoryRoundImage from "../component/home/KiriKiriCategoryRoundImage";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import book from "../img/book.png"

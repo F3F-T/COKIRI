@@ -3,20 +3,18 @@ package f3f.dev1.domain.member.api;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.EmailCertificationService;
 import f3f.dev1.domain.member.application.MemberService;
+import f3f.dev1.domain.token.dto.TokenDTO;
 import f3f.dev1.domain.token.dto.TokenDTO.TokenInfoDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
-import static f3f.dev1.domain.token.dto.TokenDTO.TokenRequestDTO;
+import static f3f.dev1.global.common.constants.JwtConstants.REFRESH_TOKEN;
 
 @Slf4j
 @RestController
@@ -85,14 +83,14 @@ public class MemberAuthController {
 
     // 로그인
     @PostMapping(value = "/login")
-    public ResponseEntity<TokenInfoDTO> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+    public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         return ResponseEntity.ok(authService.login(loginRequest, response));
     }
 
     // 재발급
     @PostMapping(value = "/reissue")
-    public ResponseEntity<TokenInfoDTO> reissue(@RequestBody TokenRequestDTO tokenRequestDTO,HttpServletResponse response) {
-        return ResponseEntity.ok(authService.reissue(tokenRequestDTO, response));
+    public ResponseEntity<TokenInfoDTO> reissue(@RequestBody TokenDTO.TokenIssueDTO tokenReissueDTO, HttpServletResponse response, @CookieValue(name = REFRESH_TOKEN) String refreshToken) {
+        return ResponseEntity.ok(authService.reissue(tokenReissueDTO, response, refreshToken));
     }
 
 

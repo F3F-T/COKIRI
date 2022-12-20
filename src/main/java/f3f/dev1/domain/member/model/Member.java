@@ -43,7 +43,7 @@ public class Member extends MemberBase {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE)
     private Scrap scrap;
 
     @OneToMany(mappedBy = "seller", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
@@ -82,6 +82,7 @@ public class Member extends MemberBase {
                 .phoneNumber(this.phoneNumber)
                 .nickname(this.nickname)
                 .loginType(this.getUserLoginType())
+                .id(this.getId())
                 .build();
     }
 
@@ -94,6 +95,10 @@ public class Member extends MemberBase {
 
     public void updateUserPassword(UpdateUserPassword updateUserPassword) {
         super.updatePassword(updateUserPassword.getNewPassword());
+    }
+
+    public void updateAddress(Address address) {
+        this.address = address;
     }
 
     public EncryptEmailDto encryptEmail() {

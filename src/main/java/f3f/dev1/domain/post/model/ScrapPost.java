@@ -1,5 +1,7 @@
 package f3f.dev1.domain.post.model;
 
+import f3f.dev1.domain.scrap.dto.ScrapDTO;
+import f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapPostDTO;
 import f3f.dev1.domain.scrap.model.Scrap;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,5 +30,9 @@ public class ScrapPost {
     public ScrapPost(Scrap scrap, Post post) {
         this.scrap = scrap;
         this.post = post;
+    }
+
+    public CreateScrapPostDTO toCreateScrapPostDTO() {
+        return CreateScrapPostDTO.builder().scrapPostId(id).postTitle(post.getTitle()).build();
     }
 }

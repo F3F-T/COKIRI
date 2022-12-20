@@ -20,14 +20,14 @@ public class Scrap {
 
     @OneToOne
     @JoinColumn(name = "member_id")
-    private Member user;
+    private Member member;
 
     @OneToMany(mappedBy = "scrap", fetch = FetchType.LAZY)
     private List<ScrapPost> scrapPosts = new ArrayList<>();
 
     @Builder
-    public Scrap(Long id, Member user) {
+    public Scrap(Long id, Member member) {
         this.id = id;
-        this.user = user;
+        this.member = member;
     }
 }

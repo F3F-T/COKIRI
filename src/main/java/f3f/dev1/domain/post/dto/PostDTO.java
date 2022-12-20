@@ -16,7 +16,6 @@ import java.util.List;
 
 // TODO Builder가 필요없어보여서 포함하지 않았다
 public class PostDTO {
-
     // C : Create 담당 DTO
 
     @Getter
