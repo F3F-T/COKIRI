@@ -1,18 +1,25 @@
 package f3f.dev1.domain.member.dto;
 
-import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
-import f3f.dev1.global.config.EncryptionService;
-import f3f.dev1.global.config.SHA256Encryptor;
+import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.model.TradeStatus;
+import f3f.dev1.domain.post.dto.PostDTO;
+import f3f.dev1.domain.token.dto.TokenDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.List;
+
+import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static f3f.dev1.domain.token.dto.TokenDTO.*;
 
 public class MemberDTO {
 
-    static EncryptionService encryptionService = new SHA256Encryptor();
 
     @Builder
     @AllArgsConstructor
@@ -37,8 +44,8 @@ public class MemberDTO {
 
         private UserLoginType userLoginType;
 
-        public void encrypt(){
-            password = encryptionService.encrypt(password);
+        public void encrypt(PasswordEncoder passwordEncoder){
+            this.password = passwordEncoder.encode(password);
         }
 
         public Member toEntity() {
@@ -66,8 +73,12 @@ public class MemberDTO {
         private String password;
 
 
-        public void encrypt(){
-            password = encryptionService.encrypt(password);
+        public void encrypt(PasswordEncoder passwordEncoder){
+            this.password = passwordEncoder.encode(password);
+        }
+
+        public UsernamePasswordAuthenticationToken toAuthentication() {
+            return new UsernamePasswordAuthenticationToken(email, password);
         }
 
     }
@@ -77,6 +88,8 @@ public class MemberDTO {
     @NoArgsConstructor
     @Getter
     public static class UserInfo {
+
+        private Long id;
         private String userName;
 
         private String nickname;
@@ -114,9 +127,9 @@ public class MemberDTO {
 
         private String newPassword;
 
-        public void encrypt(){
-            oldPassword = encryptionService.encrypt(oldPassword);
-            newPassword = encryptionService.encrypt(newPassword);
+        public void encrypt(PasswordEncoder passwordEncoder){
+            this.oldPassword = passwordEncoder.encode(oldPassword);
+            this.newPassword = passwordEncoder.encode(newPassword);
         }
     }
 
@@ -197,6 +210,37 @@ public class MemberDTO {
     @Getter
     public static class CheckPhoneNumberDto {
         private String phoneNumber;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UserLoginDto {
+        private UserInfo userInfo;
+
+        private TokenIssueDTO tokenInfo;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class GetUserPostDto {
+        List<PostInfoDto> userPosts;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class GetUserMessageRoomDto {
+        private Long messageRoomId;
+
+        private Long postId;
+
+        private String opponentNickname;
+
     }
 
 

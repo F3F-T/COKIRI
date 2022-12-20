@@ -19,7 +19,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     boolean existsByPhoneNumber(String phoneNumber);
 
-    boolean existsByEmailAndPassword(String email, String password);
+    boolean existsByIdAndPassword(Long id, String password);
 
     boolean existsByNickname(String nickname);
 }
