@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/post/PostDetail.module.css"
 import profileImg from "../img/profileImg.png"
+import spamImg from "../img/spam.png"
 
 const PostDetail = () => {
     return (
@@ -18,13 +19,14 @@ const PostDetail = () => {
             </section>
             <section className={styles.postBody}>
                 <div className={styles.postImg}>
-                    <button>왼쪽으로 가기</button>
-                    <button>오른쪽으로 가기</button>
+                    <img className={styles.postBodyImg} src={spamImg}></img>
+                    {/*<button></button>*/}
+                    {/*<button>오른쪽으로 가기</button>*/}
                 </div>
                 <div className={styles.postDetail}>
-                    <h2 className={styles.postDetailTitle}>글 제목</h2>
-                    <div className={styles.postDetailCategory}>물건 카테고리</div>
-                    <div className={styles.postDetailPrice}>물건 가격</div>
+                    <h2 className={styles.postDetailTitle}>스팸 클래식 중간크기</h2>
+                    <div className={styles.postDetailCategory}>식품 </div>
+                    <div className={styles.postDetailPrice}>4500원</div>
                     <div className={styles.postDetailContent}>글 본문</div>
                     <div className={styles.postDetailTag}>해시태그</div>
                     <div className={styles.postDetailTag}>해시태그</div>

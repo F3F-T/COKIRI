@@ -1,5 +1,5 @@
 .post{
-    width: 700px;
+    width: 800px;
     margin: auto;
     border: #17191D 1px solid;
 }
@@ -38,4 +38,33 @@
     align-self: center; /*텍스트를 중앙으로 놓는다*/
     margin-right: 3rem;
     font-size: 0.8rem;
+}
+
+.postBody{
+    display: flex;
+    /*flex-direction: row;*/
+}
+
+.postBodyImg{
+    width: 22rem;
+    height : 22rem;
+}
+
+.postDetail{
+    margin-left: 2rem;
+    margin-right: 1rem;
+    flex-direction: column;
+}
+
+.postDetail .postDetailTitle{
+    font-size: 1.5rem;
+}
+
+.postDetail .postDetailCategory{
+    font-size: 1.2rem;
+    color: gray;
+}
+
+.postDetail .postDetailPrice{
+    font-size: 1.2rem;
 }
