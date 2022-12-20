@@ -140,4 +140,16 @@ public class CommentDTO {
         private Post post;
         // TODO 로그인 (토큰) 정보?
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CommentInfoDto{
+        private Long id;
+        private Long postId;
+        private Long memberId;
+        private String content;
+        private Long depth;
+    }
 }

@@ -71,12 +71,19 @@ public class CommentService {
 
     // id로 조회
     @Transactional(readOnly = true)
-    public FindByIdCommentResponse findCommentById(Long id) {
+    public CommentInfoDto findCommentById(Long id) {
         Comment comment = commentRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        FindByIdCommentResponse response = new FindByIdCommentResponse(comment);
-        return response;
+//        FindByIdCommentResponse response = new FindByIdCommentResponse(comment);
+        CommentInfoDto commentInfoDto = CommentInfoDto.builder()
+                .postId(id)
+                .memberId(comment.getAuthor().getId())
+                .content(comment.getContent())
+                .depth(comment.getDepth())
+                .build();
+        return commentInfoDto;
     }
 
+    // DTO의 리스트로 수정하기
     // post로 조회
     @Transactional(readOnly = true)
     public FindByPostIdCommentListResponse findCommentsByPostId(Long postId) {
