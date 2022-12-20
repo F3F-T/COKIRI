@@ -3,7 +3,12 @@ import styles from "../styles/loginAndSignup/Login.module.css"
 import loginImg from "../img/cokkiriLogo.png"
 import {useNavigate} from "react-router-dom";
 
+
+
 const Login = () => {
+
+    const [email,setEmail] = useState('');
+
 
     const navigate = useNavigate();
 
@@ -11,6 +16,13 @@ const Login = () => {
     const signInClick = () => {
         navigate(`/signup`)
     }
+
+    const onChangeEmail = (e) => {
+        console.log(e.target.value);
+        setEmail(e.target.value);
+    }
+
+
 
     return (
         <>
@@ -28,7 +40,7 @@ const Login = () => {
                         <fieldset>
                             <div className={styles.idAndPassword}>
                             <div className={styles.id}>
-                                <input type="text" className={styles.idInput} placeholder="코끼리 ID(이메일)을 입력해주세요."/>
+                                <input type="text" className={styles.idInput} placeholder="코끼리 ID(이메일)을 입력해주세요." onChange={onChangeEmail}/>
                             </div>
                             <div className={styles.password}>
                                 <input type="text" className={styles.passwordInput} placeholder="비밀번호를 입력해주세요."/>
