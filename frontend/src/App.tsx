@@ -13,6 +13,7 @@ import NotFound from "./component/NotFound";
 import Login from "./routes/Login";
 import SignUp from "./routes/SignUp";
 import EmailCheck from "./routes/EmailCheck";
+import PostUpload from "./routes/PostUpload";
 
 import styles from "./styles/App.module.css";
 import EmailCheckOK from "./routes/EmailCheckOK";
@@ -34,6 +35,8 @@ function App() {
                 <Route path="/signup/emailcheck" element={<EmailCheck/>}/>
                 <Route path="/signup/emailcheck/ok" element={<EmailCheckOK/>}/>
                 <Route path="/post" element={<PostDetail/>}/>
+
+                <Route path="/postupload" element={<PostUpload/>}/>
 
             </Routes>
         </div>
