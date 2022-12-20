@@ -17,7 +17,7 @@ public class MessageRoomDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    public static class SaveRequest{
+    public static class MessageRoomSaveRequest{
 
         @NonNull
         private Post post;
@@ -36,9 +36,16 @@ public class MessageRoomDTO {
                     .build();
 
         }
-
-
-
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class DeleteMessageRoomRequest{
+        private Long Id;
+        private Long senderId;
+        private Post post;
+    }
+
 
 }
