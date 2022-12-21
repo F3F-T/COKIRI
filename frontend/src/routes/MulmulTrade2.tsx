@@ -14,14 +14,14 @@ const MulmulTrade2 = () => {
     return (
             <div className={styles.mulmulTrade}>
                 <div className={styles.mulmulTradeContent}>
-                    <div className={styles.categoryBox}>
-                        <div className={styles.forWho}>
-                            <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade')}>이런 물건이 올라왔어요.</button>
-                            <button className={styles.forWho_2} onClick={()=>navigate('/mulmultrade/mulmultrade2')}>이런 물건을 원해요.</button>
-                        </div>
-                        <TradeCategory/>
-                        <PriceBox/>
-                    </div>
+                    {/*<div className={styles.categoryBox}>*/}
+                    {/*    /!*<div className={styles.forWho}>*!/*/}
+                    {/*    /!*    <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade')}>이런 물건이 올라왔어요.</button>*!/*/}
+                    {/*    /!*    <button className={styles.forWho_2} onClick={()=>navigate('/mulmultrade/mulmultrade2')}>이런 물건을 원해요.</button>*!/*/}
+                    {/*    /!*</div>*!/*/}
+                    {/*    /!*<TradeCategory/>*!/*/}
+                    {/*    /!*<PriceBox/>*!/*/}
+                    {/*</div>*/}
                     <div className={styles.navPostOrWant}>도서를 원하는 사람들이에요.</div>
                     <div className={styles.popularOrNewest}>
                         <div className={styles.pupularBtn}>인기도순</div>

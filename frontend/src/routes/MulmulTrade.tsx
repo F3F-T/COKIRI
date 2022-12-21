@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/trade/Trade.module.css"
 
-import {useNavigate} from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import myImage from "../img/cokkiriLogo.png"
@@ -9,7 +9,7 @@ import PriceBox from "../component/trade/PriceBox";
 import PostContainer from "../component/trade/PostContainer";
 import TradeCategory from "../component/trade/TradeCategory";
 
-// ㅂㅅ
+
 const MulmulTrade = () => {
     let navigate = useNavigate();
     return (
@@ -23,13 +23,9 @@ const MulmulTrade = () => {
                         <TradeCategory/>
                         <PriceBox/>
                     </div>
-                    <div className={styles.navPostOrWant}>도서를 올린 사람들이에요</div>
-                    <div className={styles.popularOrNewest}>
-                        <div className={styles.pupularBtn}>인기도순</div>
-                        <div className={styles.slash}>|</div>
-                        <div className={styles.newsetBtn}>누적도순</div>
-                    </div>
-                    <PostContainer/>
+
+                    {/*부모 라우터인 mulmultrade2가 랜더링 될 부분을 outlet으로 지정해준다.*/}
+                    <Outlet/>
                 </div>
             </div>
     );

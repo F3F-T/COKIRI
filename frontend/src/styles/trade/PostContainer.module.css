@@ -4,7 +4,7 @@
     width: 94.6%;
     margin: auto;
     border-radius: 10px;
-    border: 0.5px solid red;
+    /*border: 0.5px solid red;*/
     display: grid;
     grid-template-columns: repeat(4,1fr);
     gap: 7%;

@@ -2,13 +2,13 @@
 .priceBox {
     display: flex; /*내용물 가로 정렬*/
     flex-direction: row;
-    border: 0.5px solid red;
+    /*border: 0.5px solid red;*/
     width: 100%;
     height : 20%; /*64px*/
 }
 .priceList {
     width: 70%;
-    border: 0.5px solid red;
+    /*border: 0.5px solid red;*/
 
 }
 .priceI{
@@ -20,7 +20,7 @@
     flex-direction: row;
     justify-content: space-evenly;
     width: 30%;
-    border: 0.5px solid red;
+    /*border: 0.5px solid red;*/
     align-items: center;
     /*flex로 가로정렬 후 space-evenly로 가로 위치 잡고 alogn-items로 세로 가운데에 위치*/
 }

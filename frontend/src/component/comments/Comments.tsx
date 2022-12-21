@@ -7,6 +7,12 @@ import classNames from "classnames/bind";
  * Props 부모 : PostDetail.tsx
  * PostDetail.tsx에서 받은 props를 통해 댓글을 생성하는 component
  *  CommentProps에 댓글과 대댓글의 UI를 선택해주는 CommentTypes를 지정해주었다.
+ *
+ *
+ *  classNames 공부하며 익히기
+ *  typescript 공부
+ *  sass 적용해보기
+ *
 **/
 
 //classNames로 styles를 bind해서 styles에 쉽게 접근하고 css 조건문을 쉽게 달수있게 돕는 API
@@ -92,6 +98,7 @@ const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps
                     <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}/>
                 </div>
             }
+
         </>
 
     );
