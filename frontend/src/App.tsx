@@ -26,26 +26,27 @@ function App() {
             <Nav />
             <div className={styles.content}>
             <Routes>
-                <Route path='*' element={<NotFound />}/>
                 <Route path="/" element={<Home/>} />
-                {/*<Route path="/mulmultrade" element={ <MulmulTrade/>}/>*/}
-                {/*<Route path="/mulmultrade/mulmultrade2" element={<MulmulTrade2/>} />*/}
                 <Route path="/login" element={<Login/>}/>
+
                 <Route path="/signup" element={<SignUp/>}/>
-                <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
-                <Route path="/mypage" element={<MyPage/>} />
-                <Route path="/mypage/zzim" element={<Zzim/>} />
                 <Route path="/signup/emailcheck" element={<EmailCheck/>}/>
                 <Route path="/signup/emailcheck/ok" element={<EmailCheckOK/>}/>
-                <Route path="/postupload" element={<PostUpload/>}/>
-                <Route path="/post" element={<PostDetail/>}/>
 
-                /*nested routes*/
                 <Route path="/mulmultrade" element={ <MulmulTrade/>}>
                     <Route path="" element={<MulmulTrade1/>}/>
                     <Route path="mulmultrade2" element={<MulmulTrade2/>}/>
                 </Route>
 
+                <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
+
+                <Route path="/mypage" element={<MyPage/>} />
+                <Route path="/mypage/zzim" element={<Zzim/>} />
+
+                <Route path="/post" element={<PostDetail/>}/>
+                <Route path="/postupload" element={<PostUpload/>}/>
+
+                <Route path='*' element={<NotFound />}/>
             </Routes>
 
         </div>
