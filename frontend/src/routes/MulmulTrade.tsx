@@ -8,6 +8,8 @@ import myImage from "../img/cokkiriLogo.png"
 import PriceBox from "../component/trade/PriceBox";
 import PostContainer from "../component/trade/PostContainer";
 import TradeCategory from "../component/trade/TradeCategory";
+import {useOutletContext} from "react-router-dom";
+
 
 
 const MulmulTrade = () => {
