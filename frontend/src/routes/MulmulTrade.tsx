@@ -11,7 +11,7 @@ import TradeCategory from "../component/trade/TradeCategory";
 import {useOutletContext} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
-import {decrease, increase, increaseByAmount} from "../store/storeReducer";
+import {resetCategory} from "../store/categoryReducer";
 
 
 
@@ -22,6 +22,16 @@ const MulmulTrade = () => {
     const store = useSelector((state:Rootstate) => state);
     //action을 사용하기 위해 dispatch를 선언한다.
     const dispatch = useDispatch();
+
+    /**
+    * 랜더링될때 category를 도서로 다시 초기화시킨다.
+     * 이는 끼리끼리, 물물교환으로 페이지를 이동할때 도서로 초기화 시키는 역할을 함
+    * */
+    useEffect(()=>{
+        return() =>{
+            dispatch(resetCategory());
+        };
+    },[]);
 
     return (
             <div className={styles.mulmulTrade}>

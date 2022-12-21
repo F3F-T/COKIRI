@@ -5,10 +5,9 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
 import {Rootstate} from "../../index";
-import {increase,decrease,increaseByAmount} from "../../store/storeReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {Root} from "react-dom/client";
-import {storeCategory} from "../../store/categoryReducer";
+import {resetCategory, storeCategory} from "../../store/categoryReducer";
 
 //TODO: REFACTORING) categories를 배열로 미리 만들고 map함수로 생성
 const TradeCategory = () => {
