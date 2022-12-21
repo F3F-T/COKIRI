@@ -87,6 +87,8 @@ public class MemberDTO {
     public static class UserInfo {
 
         private Long id;
+
+        private Long scrapId;
         private String userName;
 
         private String nickname;

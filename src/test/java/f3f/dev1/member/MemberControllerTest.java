@@ -226,6 +226,68 @@ public class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("회원 정보 조회 성공 테스트")
+    @WithMockCustomUser
+    public void getUserInfoTestSuccess() throws Exception{
+        //given
+        UserInfo userInfo = UserInfo.builder()
+                .id(1L)
+                .loginType(EMAIL)
+                .scrapId(2L)
+                .userName("userName")
+                .address(createAddress())
+                .email("email")
+                .nickname("nickname")
+                .phoneNumber("01012345678").build();
+
+
+        // when
+        doReturn(userInfo).when(memberService).getUserInfo(any());
+        // then
+        mockMvc.perform(get("/user"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("user/get-info/success", responseFields(
+                        fieldWithPath("id").description("Id of user"),
+                        fieldWithPath("loginType").description("login type of user"),
+                        fieldWithPath("userName").description("name of user"),
+                        fieldWithPath("scrapId").description("Id of scrap"),
+                        fieldWithPath("email").description("email of user"),
+                        fieldWithPath("address").description("The user's address class"),
+                        fieldWithPath("address.addressName").description("The user's address name"),
+                        fieldWithPath("address.postalAddress").description("The user's postal address"),
+                        fieldWithPath("address.latitude").description("latitude of user address"),
+                        fieldWithPath("address.longitude").description("longitude of user address"),
+                        fieldWithPath("nickname").description("The user's nickname"),
+                        fieldWithPath("phoneNumber").description("The user's phoneNumber")
+                )));
+    }
+
+    @Test
+    @DisplayName("로그인하지 않아서 유저 정보 조회 실패 테스트")
+    public void getUserInfoTestFailByNonLogin() throws Exception{
+        //given
+        UserInfo userInfo = UserInfo.builder()
+                .id(1L)
+                .loginType(EMAIL)
+                .scrapId(2L)
+                .userName("userName")
+                .address(createAddress())
+                .email("email")
+                .nickname("nickname")
+                .phoneNumber("01012345678").build();
+
+        // then
+        mockMvc.perform(get("/user"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andDo(document("user/get-info/fail/non-login", responseFields(
+                        fieldWithPath("status").description("status of http response"),
+                        fieldWithPath("message").description("description of error message")
+                )));
+    }
+
+    @Test
     @DisplayName("유저 정보 업데이트 성공 테스트")
     @WithMockCustomUser
     public void updateUserInfoTestSuccess() throws Exception{

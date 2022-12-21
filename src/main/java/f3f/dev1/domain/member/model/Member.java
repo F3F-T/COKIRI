@@ -83,6 +83,7 @@ public class Member extends MemberBase {
                 .nickname(this.nickname)
                 .loginType(this.getUserLoginType())
                 .id(this.getId())
+                .scrapId(this.getScrap().getId())
                 .build();
     }
 

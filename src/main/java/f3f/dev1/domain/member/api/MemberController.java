@@ -33,8 +33,7 @@ public class MemberController {
     @GetMapping(value = "/user")
     public ResponseEntity<UserInfo> getUserInfo() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-        return ResponseEntity.ok(member.toUserInfo());
+        return ResponseEntity.ok(memberService.getUserInfo(currentMemberId));
 
     }
 
