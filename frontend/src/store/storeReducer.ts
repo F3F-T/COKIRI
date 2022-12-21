@@ -5,6 +5,7 @@
  */
 
 import {createSlice,PayloadAction} from "@reduxjs/toolkit";
+import {create} from "domain";
 
 interface InitialState{
     count : number
@@ -28,6 +29,26 @@ const counterSlice = createSlice({
         },
         increaseByAmount(state, action : PayloadAction<number>){
             state.count += action.payload
+        }
+    }
+})
+
+/**
+ * category버튼을 클릭했을때 state를 저장하는 slice
+ */
+
+interface InitialCategoryState{
+    category : string
+}
+
+const initialCategoryState : InitialCategoryState = {category : "도서"}
+
+const CategorySlice = createSlice({
+    name: "category",
+    initialState : initialCategoryState,
+    reducers : {
+        storeCategory(state){
+            state.category = state.category;
         }
     }
 })

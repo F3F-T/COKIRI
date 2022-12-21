@@ -10,9 +10,6 @@ import book from "../img/book.png";
 import fashion from "../img/fashion.png";
 import ticket from "../img/ticket.png";
 import young from "../img/young.png";
-import {decrease, increase, increaseByAmount} from "../store/counterReducer";
-import {useDispatch, useSelector} from "react-redux";
-import {Rootstate} from "../index";
 
 
 const HomeStart = () => {
@@ -133,18 +130,8 @@ const HomeKirikiriTrade = () => {
 }
 
 const Home = () => {
-    //index에서 선언해준 Rootstate를 state로 받는다, store에 저장한다.
-    const store = useSelector((state:Rootstate) => state);
-    //action을 사용하기 위해 dispatch를 선언한다.
-    const dispatch = useDispatch();
-
     return (
         <div className={styles.home}>
-
-            <p>mulmultrade{store.counter.count}</p>
-            <button onClick = {()=> {dispatch(increase())}}>Up</button>
-            <button onClick = {()=> {dispatch(decrease())}}>down</button>
-            <button onClick = {()=> {dispatch(increaseByAmount())}}>amount</button>
         <HomeStart/>
         <HomeMulmulTrade/>
         <HomeKirikiriTrade/>
