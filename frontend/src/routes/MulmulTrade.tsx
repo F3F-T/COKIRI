@@ -35,7 +35,7 @@ const MulmulTrade = () => {
                         <PriceBox/>
                     </div>
 
-                    {/*부모 라우터인 mulmultrade2가 랜더링 될 부분을 outlet으로 지정해준다.*/}
+                    {/*자식 라우터인 mulmultrade1, mulmultrade2가 랜더링 될 부분을 outlet으로 지정해준다.*/}
                     <Outlet/>
                 </div>
             </div>

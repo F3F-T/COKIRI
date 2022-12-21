@@ -51,4 +51,8 @@ const MulmulTrade2 = () => {
     );
 }
 
+const ItemList = () => {
+
+}
+
 export default MulmulTrade1;
