@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static f3f.dev1.domain.category.dto.CategoryDTO.*;
 
 @Service
@@ -24,6 +26,7 @@ public class CategoryService {
 
     //멤버 중 어드민만 카테고리를 CRUD할 수 있다.
     //카테고리
+    //TODO 위시, 프로덕트 카테고리  구분해서 만들기(뎁스 3)
     @Transactional
     public Long createCategory(CategorySaveRequest categorySaveRequest){
         Member admin = memberRepository.findById(categorySaveRequest.getMember().getId()).orElseThrow(NotFoundByIdException::new);
@@ -71,6 +74,28 @@ public class CategoryService {
         categoryRepository.save(category);
         return category.getId();
     }
+
+
+    //TODO)각각 조회말고 전체 조회 해야함.
+    //이건 카테고리를 클릭하면 해당 카테고리 리스트만 나오는거.
+    @Transactional(readOnly = true)
+    public List<Category> readCategoryByCategory(Long id){
+        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+//        if(category.getDepth() == 1){
+//
+//        }
+        return category.getChild();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Post> readPostByCategory(Long id){
+        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+
+        return category.getProducts();
+    }
+
+
+
 
 
 }
