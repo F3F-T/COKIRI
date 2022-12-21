@@ -39,18 +39,18 @@ public class MemberService {
 
 
     @Transactional(readOnly = true)
-    public Boolean existsByEmail(String email) {
-        return memberRepository.existsByEmail(email);
+    public RedunCheckDto existsByEmail(String email) {
+        return new RedunCheckDto(memberRepository.existsByEmail(email));
     }
 
     @Transactional(readOnly = true)
-    public Boolean existsByNickname(String nickname) {
-        return memberRepository.existsByNickname(nickname);
+    public RedunCheckDto existsByNickname(String nickname) {
+        return new RedunCheckDto(memberRepository.existsByNickname(nickname));
     }
 
     @Transactional(readOnly = true)
-    public Boolean existsByPhoneNumber(String phoneNumber) {
-        return memberRepository.existsByPhoneNumber(phoneNumber);
+    public RedunCheckDto existsByPhoneNumber(String phoneNumber) {
+        return new RedunCheckDto(memberRepository.existsByPhoneNumber(phoneNumber));
     }
 
 

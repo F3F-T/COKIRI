@@ -30,19 +30,19 @@ public class MemberAuthController {
 
     // 이메일 중복 확인
     @PostMapping(value = "/check-email")
-    public ResponseEntity<Boolean> emailDuplicateCheck(@RequestBody CheckEmailDto checkEmailDto) {
+    public ResponseEntity<RedunCheckDto> emailDuplicateCheck(@RequestBody CheckEmailDto checkEmailDto) {
         return ResponseEntity.ok(memberService.existsByEmail(checkEmailDto.getEmail()));
     }
 
     // 닉네임 중복 확인
     @PostMapping(value = "/check-nickname")
-    public ResponseEntity<Boolean> nicknameDuplicateCheck(@RequestBody CheckNicknameDto checkNicknameDto) {
+    public ResponseEntity<RedunCheckDto> nicknameDuplicateCheck(@RequestBody CheckNicknameDto checkNicknameDto) {
         return ResponseEntity.ok(memberService.existsByNickname(checkNicknameDto.getNickname()));
     }
 
     // 전화번호 중복 확인
-    @PostMapping(value = "/auth/check-phone")
-    public ResponseEntity<Boolean> phoneNumberDuplicateCheck(@RequestBody CheckPhoneNumberDto checkPhoneNumberDto) {
+    @PostMapping(value = "/check-phone")
+    public ResponseEntity<RedunCheckDto> phoneNumberDuplicateCheck(@RequestBody CheckPhoneNumberDto checkPhoneNumberDto) {
         return ResponseEntity.ok(memberService.existsByPhoneNumber(checkPhoneNumberDto.getPhoneNumber()));
 
     }

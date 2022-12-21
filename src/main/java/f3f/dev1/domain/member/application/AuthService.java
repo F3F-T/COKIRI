@@ -79,8 +79,7 @@ public class AuthService {
         setRefreshTokenInCookie(response, refreshToken); // 리프레시 토큰 쿠키에 저장
         // 5. 토큰 발급
         Member member = memberRepository.findById(Long.parseLong(authenticate.getName())).orElseThrow(NotFoundByIdException::new);
-        UserLoginDto loginDto = UserLoginDto.builder().userInfo(member.toUserInfo()).tokenInfo(tokenInfoDTO.toTokenReissueDTO()).build();
-        return loginDto;
+        return UserLoginDto.builder().userInfo(member.toUserInfo()).tokenInfo(tokenInfoDTO.toTokenReissueDTO()).build();
     }
 
     @Transactional

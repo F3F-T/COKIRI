@@ -3,9 +3,6 @@ package f3f.dev1.domain.member.dto;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.domain.model.Address;
-import f3f.dev1.domain.model.TradeStatus;
-import f3f.dev1.domain.post.dto.PostDTO;
-import f3f.dev1.domain.token.dto.TokenDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,8 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
-import static f3f.dev1.domain.post.dto.PostDTO.*;
-import static f3f.dev1.domain.token.dto.TokenDTO.*;
+import static f3f.dev1.domain.post.dto.PostDTO.PostInfoDto;
+import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 
 public class MemberDTO {
 
@@ -242,6 +239,16 @@ public class MemberDTO {
         private String opponentNickname;
 
     }
+
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class RedunCheckDto {
+        private Boolean exists;
+    }
+
 
 
 
