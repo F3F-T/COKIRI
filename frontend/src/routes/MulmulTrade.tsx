@@ -9,13 +9,26 @@ import PriceBox from "../component/trade/PriceBox";
 import PostContainer from "../component/trade/PostContainer";
 import TradeCategory from "../component/trade/TradeCategory";
 import {useOutletContext} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {Rootstate} from "../index";
+import {decrease, increase, increaseByAmount} from "../store/counterReducer";
 
 
 
 const MulmulTrade = () => {
     let navigate = useNavigate();
+
+    //index에서 선언해준 Rootstate를 state로 받는다, store에 저장한다.
+    const store = useSelector((state:Rootstate) => state);
+    //action을 사용하기 위해 dispatch를 선언한다.
+    const dispatch = useDispatch();
+
     return (
             <div className={styles.mulmulTrade}>
+                <p>mulmultrade{store.counter.count}</p>
+                <button onClick = {()=> {dispatch(increase())}}>Up</button>
+                <button onClick = {()=> {dispatch(decrease())}}>down</button>
+                <button onClick = {()=> {dispatch(increaseByAmount())}}>amount</button>
                 <div className={styles.mulmulTradeContent}>
                     <div className={styles.categoryBox}>
                         <div className={styles.forWho}>
