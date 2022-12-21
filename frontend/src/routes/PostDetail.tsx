@@ -2,7 +2,6 @@ import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/post/PostDetail.module.css"
 import profileImg from "../img/profileImg.png"
 import spamImg from "../img/spam.png"
-import ProfileInfoTop from "../component/comments/Comments";
 import Comments from "../component/comments/Comments";
 
 const PostDetail = () => {
@@ -47,8 +46,12 @@ const PostDetail = () => {
             <section className={styles.comments}>
                 <h6>댓글</h6>
                 <Comments className={"primary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
+                <Comments className={"secondary"}  userID={"함민혁"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
                 <Comments className={"secondary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
-
+                <Comments className={"secondary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
+                <Comments className={"secondary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
+                <Comments className={"primary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
+                <Comments className={"primary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
             </section>
         </div>
     );

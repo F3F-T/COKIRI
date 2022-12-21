@@ -1,7 +1,13 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../../styles/profileInfo/Comments.module.scss";
+import styles from "../../styles/comments/Comments.module.scss";
 import profileImg from "../../img/profileImg.png";
 import classNames from "classnames/bind";
+
+/**
+ * Props 부모 : PostDetail.tsx
+ * PostDetail.tsx에서 받은 props를 통해 댓글을 생성하는 component
+ *  CommentProps에 댓글과 대댓글의 UI를 선택해주는 CommentTypes를 지정해주었다.
+**/
 
 //classNames로 styles를 bind해서 styles에 쉽게 접근하고 css 조건문을 쉽게 달수있게 돕는 API
 const cx = classNames.bind(styles)
