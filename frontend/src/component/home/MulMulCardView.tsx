@@ -1,12 +1,14 @@
+import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import myImage from "../../img/cokkiriLogo.png"
-import styles from "../../styles/home/Home.module.css"
+import styles from "../../styles/home/Home.module.scss"
+
 function MulMulCardView() {
     return (
-        <Card className={styles.mulmulCardView}>
+        <Card className={styles.cardViewPlease}>
             <Card.Img className={styles.mulmulCardImg}
-                variant="top" src={myImage} />
+                variant="top" src={myImage}/>
             <Card.Body>
                 <div className={styles.mulmulCardDetail}>
                 <div className={styles.mulmulCardViewTitle}>스팸 다른 식품이랑 바꾸실분</div>

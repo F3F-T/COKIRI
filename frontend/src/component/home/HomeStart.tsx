@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-// import styles from "../../styles/home/Home.module.css";
+// import styles from "../../styles/home/Home.module.scss";
 import styles from "../../styles/home/HomeStart.module.css"
 import { useNavigate } from 'react-router-dom';
 

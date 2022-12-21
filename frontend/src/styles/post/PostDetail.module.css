@@ -1,0 +1,110 @@
+.postDetail{
+    width: 800px;
+    margin: auto;
+}
+/*.post{*/
+/*    width: 800px;*/
+/*    margin: auto;*/
+/*}*/
+
+.postTop{
+    display : flex;
+    flex-direction: row;
+}
+
+.postTopProfileImg{
+    width: 4rem;
+    height: 4rem;
+}
+
+.postTopProfileInfo{
+    flex-direction: column;
+    display: inline-block;
+
+}
+
+.postTopNickname{
+    font-size: 1rem;
+    font-width: 700;
+
+}
+
+.postTopAddress{
+    font-size: 0.5rem;
+}
+
+
+.postTopReport{
+    position: relative;
+    display: inline;
+    margin-left: auto;
+    align-self: center; /*텍스트를 중앙으로 놓는다*/
+    margin-right: 3rem;
+    font-size: 0.8rem;
+}
+
+.postBody{
+    display: flex;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid gray;
+
+}
+
+.postBodyImg{
+    width: 22rem;
+    height : 22rem;
+}
+
+.postDetailInfo{
+    margin-left: 2rem;
+    margin-right: 1rem;
+
+}
+
+.postDetailInfo .postDetailTitle{
+    margin-top: 1rem;
+    font-size: 1.5rem;
+}
+
+.postDetailInfo .postDetailCategory{
+    font-size: 1.2rem;
+    color: gray;
+}
+
+.postDetailInfo .postDetailPrice{
+    font-size: 1rem;
+}
+
+.postDetailInfo .postDetailContent{
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    margin-right: 3rem;
+    font-weight: 550;
+}
+
+.postDetailInfo .postDetailTag{
+    color: blue;
+    margin-top: 2rem;
+}
+
+.postDetailInfo .postDetailSwapCategory{
+    font-size: 1.2rem;
+    margin-top: 5rem;
+}
+
+.postBottom{
+    padding: 0.5rem 0rem;
+    padding-bottom: 3rem;
+}
+
+.postBottom span{
+    font-size: 0.8rem;
+}
+
+.postBottom button{
+    float: right;
+}
+
+.comments{
+
+}

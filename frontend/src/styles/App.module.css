@@ -1,7 +1,9 @@
 .content{
-    padding-top: 72px;
+    position: relative;
+    top : 72px;
+    /*padding-top: 72px;*/
 }
 
 body{
-    background-color: red;
+    /*background-color: red;*/
 }
