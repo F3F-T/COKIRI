@@ -3,6 +3,7 @@ import styles from "../styles/loginAndSignup/Login.module.css"
 import loginImg from "../img/cokkiriLogo.png"
 import {useNavigate} from "react-router-dom";
 import TextInput from "../component/common/TextInput";
+import Button from "../component/common/Button";
 
 
 
@@ -11,7 +12,6 @@ const Login = () => {
     const [email,setEmail] = useState('');
 
     const navigate = useNavigate();
-
 
     const signInClick = () => {
         navigate(`/signup`)
@@ -25,6 +25,11 @@ const Login = () => {
     const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
         const newValue = e.currentTarget.value;
         console.log(newValue);
+    }
+
+    const handleClick= (e: React.MouseEvent<HTMLButtonElement,MouseEvent>) => {
+        console.log(e.target);
+        console.log(e.currentTarget);
     }
 
 
@@ -49,7 +54,7 @@ const Login = () => {
                             <div className={styles.savedIdCheck}>
                                 <label><input type="checkbox"/>  로그인 상태 유지</label>
                             </div>
-                                <button className={styles.btnLogin} type={"button"}>코끼리 로그인</button>
+                                <Button className={"black"} onClick={handleClick} content={"코끼리 로그인"}/>
                         </fieldset>
                     </div>
                     <div className={styles.loginMenu}>
@@ -58,9 +63,7 @@ const Login = () => {
                         <span>비밀번호 찾기</span>
                     </div>
                 </section>
-                <section className={styles.footer}></section>
-
-                <button className={styles.btnGoogle} type={"button"}>구글 로그인</button>
+                <Button className={"white"} onClick={handleClick} content={"구글 로그인"}/>
             </div>
         </>
     );
