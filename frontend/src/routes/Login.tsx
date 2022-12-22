@@ -40,12 +40,12 @@ const Login = () => {
                 <section className={styles.contents}>
                     <div className={styles.loginContents}>
                         <fieldset>
-
                             <div className={styles.idAndPassword}>
                                 <TextInput placeholder={"코끼리 ID(이메일)을 입력해주세요."} onChange={handleChange}/>
                             <div className={styles.password}>
                                 <TextInput placeholder={"비밀번호를 입력해주세요."}/>
                             </div>
+
                             </div>
                             <div className={styles.savedIdCheck}>
                                 <label><input type="checkbox"/>  로그인 상태 유지</label>
