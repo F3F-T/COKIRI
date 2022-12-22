@@ -116,10 +116,10 @@ public class MemberServiceTest {
         // when
         authService.signUp(signUpRequest);
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
-//        Optional<Scrap> scrapByUserId = scrapRepository.findScrapByUserId(member.getId());
-//
-//        // then
-//        assertThat(member.getId()).isEqualTo(scrapByUserId.get().getUser().getId());
+        Optional<Scrap> scrapByUserId = scrapRepository.findScrapByMemberId(member.getId());
+
+        // then
+        assertThat(member.getId()).isEqualTo(scrapByUserId.get().getMember().getId());
     }
 
 
@@ -135,10 +135,10 @@ public class MemberServiceTest {
         //given
         SignUpRequest signUpRequest = createSignUpRequest();
         authService.signUp(signUpRequest);
-        LoginRequest loginRequest = createLoginRequest();
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
 
         // when
-        UserInfo userInfo = memberService.getUserInfo(memberRepository.findByEmail(signUpRequest.getEmail()).get().getId());
+        UserInfo userInfo = memberService.getUserInfo(member.getId());
 
         // then
         assertArrayEquals(new String[]{

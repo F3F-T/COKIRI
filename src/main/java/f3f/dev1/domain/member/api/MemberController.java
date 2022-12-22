@@ -68,6 +68,7 @@ public class MemberController {
         return ResponseEntity.ok(address);
     }
 
+    // 로그아웃
     @DeleteMapping("/user/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -76,13 +77,13 @@ public class MemberController {
     }
 
     // TODO 주소 업데이트 요청 처리 경로 만들어야함, 서비스도
-
+    // 마이페이지용 조회 - 유저가 작성한 게시글 리스트 리턴
     @GetMapping("/user/posts")
     public ResponseEntity<GetUserPostDto> getUserPosts() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(memberService.getUserPostDto(currentMemberId));
     }
-
+    // 유저가 속한 채팅방 리스트 리턴
     @GetMapping("/user/messagerooms")
     public ResponseEntity<GetUserMessageRoomDto> getUserMessageRooms() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();

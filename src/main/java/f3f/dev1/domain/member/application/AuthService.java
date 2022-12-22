@@ -3,7 +3,10 @@ package f3f.dev1.domain.member.application;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.scrap.application.ScrapService;
+import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.dto.ScrapDTO;
+import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
+import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.token.dao.RefreshTokenRepository;
 import f3f.dev1.domain.token.exception.InvalidRefreshTokenException;
 import f3f.dev1.domain.token.exception.LogoutUserException;
@@ -38,6 +41,8 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final ScrapRepository scrapRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
     private final ScrapService scrapService;
@@ -79,7 +84,9 @@ public class AuthService {
         setRefreshTokenInCookie(response, refreshToken); // 리프레시 토큰 쿠키에 저장
         // 5. 토큰 발급
         Member member = memberRepository.findById(Long.parseLong(authenticate.getName())).orElseThrow(NotFoundByIdException::new);
-        return UserLoginDto.builder().userInfo(member.toUserInfo()).tokenInfo(tokenInfoDTO.toTokenReissueDTO()).build();
+        Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).orElseThrow(UserScrapNotFoundException::new);
+
+        return UserLoginDto.builder().userInfo(member.toUserInfo(scrap.getId())).tokenInfo(tokenInfoDTO.toTokenReissueDTO()).build();
     }
 
     @Transactional
