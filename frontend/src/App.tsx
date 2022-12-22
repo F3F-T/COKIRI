@@ -20,6 +20,8 @@ import styles from "./styles/App.module.css";
 import EmailCheckOK from "./routes/EmailCheckOK";
 import PostDetail from "./routes/PostDetail";
 import MulmulTrade1 from "./routes/MulMulTrade1";
+import KokiriTalk from "./routes/KokiriTalk";
+
 function App() {
     return (
         <div className="App">
@@ -42,6 +44,8 @@ function App() {
 
                 <Route path="/mypage" element={<MyPage/>} />
                 <Route path="/mypage/zzim" element={<Zzim/>} />
+
+                <Route path="/kokiritalk" element={<KokiriTalk/>} />
 
                 <Route path="/post" element={<PostDetail/>}/>
                 <Route path="/postupload" element={<PostUpload/>}/>
