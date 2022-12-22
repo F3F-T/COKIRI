@@ -15,6 +15,7 @@ const Message = (key: keyProps) => {
         "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
         "보낸사람 : 이거 얼마", "받은 사람 : 삼천원"
     ]
+    //
 
     const objectMessage = [{
         keys: 1,
