@@ -35,9 +35,11 @@ public class PostService {
     public Long savePost(PostSaveRequest postSaveRequest) {
 
         // 유저 객체 받아와서 포스트 리스트에 추가해줘야 함
-        // TODO Trade 객체를 어떻게 처리할지 아직 명확하지 않음
         Member member = memberRepository.findById(postSaveRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
-
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        if(!currentMemberId.equals(member.getId())) {
+            throw new NotMatchingAuthorException("현재 로그인한 사용자가 생성 요청자가 아닙니다.");
+        }
         /* TODO 카테고리 객체 받아와서 카테고리 리스트에 추가해줘야 함
             categoryRepository.findById(productCategory.getId()) ~
             해당 부분이 구현되면 추가하겠음
@@ -118,7 +120,6 @@ public class PostService {
         U : 게시글 업데이트
      */
 
-    // TODO 피드백 받기 : 반환 타입을 Long (id)으로 하는 거랑 Post 객체 하나만 가지고 있는 DTO로 하는 것 중 뭐가 더 나은가
     @Transactional
     public PostInfoDto updatePost(UpdatePostRequest updatePostRequest) {
         Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);

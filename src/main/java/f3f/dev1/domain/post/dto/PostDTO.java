@@ -14,7 +14,6 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 
-// TODO Builder가 필요없어보여서 포함하지 않았다
 public class PostDTO {
     // C : Create 담당 DTO
 
@@ -29,10 +28,12 @@ public class PostDTO {
         @NotBlank(message = "내용문을 작성해주세요")
         private String content;
         private Boolean tradeEachOther;
+        // TODO author Id로 변경 예정
         @NotNull
         private Member author;
         private Category productCategory;
         private Category wishCategory;
+
 
         public Post toEntity() {
             return Post.builder()
