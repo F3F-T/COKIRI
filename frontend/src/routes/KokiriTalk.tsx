@@ -54,16 +54,63 @@ const KokiriTalk = () => {
         setKey(3);
     }
 
+    const onClickTotalTalkList = (key) => {
+        return (event: React.MouseEvent) => {
+            setKey(key);
+            event.preventDefault();
+        }
+    }
+
+
+    const objectMessage = [{
+        keys: 1,
+        partner : "함민혁",
+        lastContent : "주무시나요1",
+        date : "1234",
+        message: ["111111보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+            "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+            "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+            "보낸사람 : 이거 얼마", "받은 사람 : 삼천원"
+        ]
+    },
+        {
+            keys: 2,
+            partner : "홍의성",
+            lastContent : "주무시나요2",
+            date : "1234",
+            message: ["22222보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원"
+            ]
+        },
+        {
+            keys: 3,
+            partner : "김희찬",
+            lastContent : "주무시나요3",
+            date : "1234",
+            message: ["3333333보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원"
+            ]
+        },
+    ]
+
 //
     return (
         <div className={styles.kokiritalk}>
             <div className={styles.left}>
                 <div className={styles.leftHeader}>코끼리톡</div>
                 <div className={styles.talkContainer}>
+                 {/*<TalkList keys={1} partner={"함민혁"} lastContent={"주무시나요"} date={"몰라"} onClick = {onClickTalkList} />*/}
+                 {/*<TalkList keys={2} partner={"홍의성"} lastContent={"주무시나요2"} date={"몰라"} onClick = {onClickTalkList2} />*/}
+                 {/*<TalkList keys={3} partner={"함민혁"} lastContent={"주무시나요3"} date={"몰라"} onClick = {onClickTalkList3} />*/}
 
-                 <TalkList keys={1} partner={"함민혁"} lastContent={"주무시나요"} date={"몰라"} onClick = {onClickTalkList} />
-                 <TalkList keys={2} partner={"홍의성"} lastContent={"주무시나요2"} date={"몰라"} onClick = {onClickTalkList2} />
-                 <TalkList keys={3} partner={"함민혁"} lastContent={"주무시나요3"} date={"몰라"} onClick = {onClickTalkList3} />
+                    {objectMessage.map((SingleObject:object) => (
+                        <TalkList keys={SingleObject["keys"]} partner={SingleObject["partner"]} lastContent={SingleObject["lastContent"]} date={SingleObject["date"]}
+                                  onClick = {onClickTotalTalkList(SingleObject["keys"])} />
+                    ))}
                 </div>
             </div>
 

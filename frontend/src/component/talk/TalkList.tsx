@@ -12,7 +12,7 @@ import Message from "./Message";
 // type clickOrNot = true | false ;
 const tl = classNames.bind(styles)
 interface props{
-    onClick?: (e : React.MouseEvent<HTMLButtonElement,MouseEvent>) => void;
+    onClick?: (e : React.MouseEvent<HTMLButtonElement,MouseEvent>) => any;
     partner : string;
     lastContent : string;
     date : string;
