@@ -35,7 +35,7 @@ public class PostService {
     public Long savePost(PostSaveRequest postSaveRequest) {
 
         // 유저 객체 받아와서 포스트 리스트에 추가해줘야 함
-        Member member = memberRepository.findById(postSaveRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+        Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         if(!currentMemberId.equals(member.getId())) {
             throw new NotMatchingAuthorException("현재 로그인한 사용자가 생성 요청자가 아닙니다.");
@@ -45,7 +45,7 @@ public class PostService {
             해당 부분이 구현되면 추가하겠음
          */
 
-        Post post = postSaveRequest.toEntity();
+        Post post = postSaveRequest.toEntity(member);
         member.getPosts().add(post);
         postRepository.save(post);
         return post.getId();

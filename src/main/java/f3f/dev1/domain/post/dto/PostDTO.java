@@ -28,19 +28,18 @@ public class PostDTO {
         @NotBlank(message = "내용문을 작성해주세요")
         private String content;
         private Boolean tradeEachOther;
-        // TODO author Id로 변경 예정
         @NotNull
-        private Member author;
+        private Long authorId;
         private Category productCategory;
         private Category wishCategory;
 
 
-        public Post toEntity() {
+        public Post toEntity(Member author) {
             return Post.builder()
                     .title(this.title)
                     .content(this.content)
                     .tradeEachOther(tradeEachOther)
-                    .author(this.author)
+                    .author(author)
                     .productCategory(this.productCategory)
                     .wishCategory(this.wishCategory)
                     .build();

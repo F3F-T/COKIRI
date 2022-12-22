@@ -113,9 +113,9 @@ public class PostControllerTest {
                 .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
                 .title("3년 신은 양말 거래 희망합니다")
                 .tradeEachOther(tradeEachOther)
+                .authorId(author.getId())
                 .productCategory(null)
                 .wishCategory(null)
-                .author(author)
                 .build();
     }
 
@@ -133,6 +133,7 @@ public class PostControllerTest {
         Long postId = postService.savePost(postSaveRequest);
 
         //then
+        // TODO rest docs 매개변수 수정하기
         mockMvc.perform(post("/post")
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(postSaveRequest)))
@@ -143,32 +144,7 @@ public class PostControllerTest {
                         fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
                         fieldWithPath("wishCategory").description("wishCategory value of post"),
                         fieldWithPath("content").description("content value of post"),
-                        fieldWithPath("author").description("author value of post"),
-                        fieldWithPath("author.createDate").description("author's create date value of post"),
-                        fieldWithPath("author.modifiedDate").description("author's modified date value of post"),
-                        fieldWithPath("author.id").description("author's id value of post"),
-                        fieldWithPath("author.email").description("author's email value of post"),
-                        fieldWithPath("author.password").description("author's password value of post"),
-                        fieldWithPath("author.authority").description("author's authority value of post"),
-                        fieldWithPath("author.userLoginType").description("author's userLoginType value of post"),
-                        fieldWithPath("author.address").description("author's address value of post"),
-                        fieldWithPath("author.address.addressName").description("user address's addressName value"),
-                        fieldWithPath("author.address.postalAddress").description("user address's postalAddress value"),
-                        fieldWithPath("author.address.latitude").description("user address's latitude value"),
-                        fieldWithPath("author.address.longitude").description("user address's longitude value"),
-                        fieldWithPath("author.userName").description("author's name value of post"),
-                        fieldWithPath("author.birthDate").description("author's birthDate value of post"),
-                        fieldWithPath("author.phoneNumber").description("author's phoneNumber value of post"),
-                        fieldWithPath("author.nickname").description("author's nickname value of post"),
-                        fieldWithPath("author.posts").description("author's post list value of post"),
-                        fieldWithPath("author.comments").description("author's comment list value of post"),
-                        fieldWithPath("author.scrap").description("author's scrap list value of post"),
-                        fieldWithPath("author.sellingRooms").description("author's sellingRoom list value of post"),
-                        fieldWithPath("author.buyingRooms").description("author's buyingRoom list value of post"),
-                        fieldWithPath("author.sendMessages").description("author's sendMessages value of post"),
-                        fieldWithPath("author.receivedMessages").description("author's receivedMessages value of post"),
-                        fieldWithPath("author.buyingTrades").description("author's buyingTrade list value of post"),
-                        fieldWithPath("author.sellingTrades").description("author's sellingTrade list value of post"),
+                        fieldWithPath("authorId").description("author id value of post"),
                         fieldWithPath("title").description("title value of post")
                 )));
     }
