@@ -5,6 +5,8 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import myImage from "../img/cokkiriLogo.png"
 import PriceBox from "../component/trade/PriceBox";
+import TextInput from "../component/common/TextInput";
+import Button from "../component/common/Button";
 
 
 const SignUp = () => {
@@ -23,32 +25,21 @@ const SignUp = () => {
 
             </div>
             <div className={styles.userInfo}>
-                <div className={styles.userID}>
-                    <input type="text" className={styles.userID_2} placeholder="이메일"/>
-                </div>
-                <div className={styles.userPW}>
-                    <input type="text" className={styles.userID_2} placeholder="비밀번호"/>
-                </div>
-                <div className={styles.userPWC}>
-                    <input type="text" className={styles.userID_2} placeholder="비밀번호 확인"/>
-                </div>
+                <TextInput placeholder={"이메일"}/>
+                <TextInput placeholder={"비밀번호"}/>
+                <TextInput placeholder={"비밀번호 확인"}/>
+
                 <div className={styles.userNameBirth}>
-                    <div className={styles.userName}>
-                        <input type="text" className={styles.userID_3} placeholder="이름"/>
-                    </div>
-                    <div className={styles.userBirth}>
-                        <input type="text" className={styles.userID_3} placeholder="생일"/>
-                    </div>
+                    <TextInput placeholder={"이름"}/>
+                    <TextInput placeholder={"생일"}/>
                 </div>
-                <div className={styles.userNick}>
-                    <input type="text" className={styles.userID_2} placeholder="닉네임"/>
-                </div>
-                <div className={styles.userPN}>
-                    <input type="text" className={styles.userID_2} placeholder="전화번호"/>
-                </div>
+
+                <TextInput placeholder={"닉네임"}/>
+                <TextInput placeholder={"전화번호"}/>
             </div>
+
             <div className={styles.btnPlace}>
-                <button className={styles.btn} onClick={signUpButtonClick}>회원가입</button>
+                <Button content={"회원가입"} className={"black"} onClick={signUpButtonClick}/>
             </div>
 
         </div>
