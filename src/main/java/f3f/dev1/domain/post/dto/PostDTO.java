@@ -24,8 +24,6 @@ public class PostDTO {
     @AllArgsConstructor
     public static class PostSaveRequest {
 
-        @NotNull
-        private Long id;
         @Size(min=2, max=20, message = "제목은 2글자 이상, 20자 이하로 설정해주세요")
         private String title;
         @NotBlank(message = "내용문을 작성해주세요")
@@ -35,8 +33,6 @@ public class PostDTO {
         private Member author;
         private Category productCategory;
         private Category wishCategory;
-
-        //TODO 토큰 추가 예정
 
         public Post toEntity() {
             return Post.builder()

@@ -9,6 +9,7 @@ import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
+import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -150,6 +151,11 @@ public class PostService {
         // TODO Id로만 비교하는게 좀 걸린다. 그렇다고 비밀번호 검증은 너무 투머치 같기도 하다
         if(!author.getId().equals(deletePostRequest.getRequester().getId())) {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
+        }
+        // 로그인한 사용자가 맞는지 확인
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        if(!currentMemberId.equals(deletePostRequest.getRequester().getId())) {
+            throw new NotMatchingAuthorException("현재 로그인한 사용자가 삭제 요청자가 아닙니다.");
         }
         postRepository.deleteById(deletePostRequest.getId());
         return "DELETE";
