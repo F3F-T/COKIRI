@@ -19,6 +19,8 @@ interface ButtonProps {
     onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     content: string;
     color? : string;
+    hover? : boolean;
+    size? : string;
 }
 
 /***
@@ -28,7 +30,7 @@ const Button = (buttonProps: ButtonProps) => {
     return (
         <>
             {buttonProps.className === undefined &&
-                <button className = {cx(buttonProps.color)} type={"button"}
+                <button type={"button"}
                         onClick={buttonProps.onClick}>{buttonProps.content}
                 </button>
             }
@@ -45,7 +47,10 @@ const Button = (buttonProps: ButtonProps) => {
             }
 
             {buttonProps.className === "lightblue" &&
-                <button className={cx('btnLightBlue')} type={"button"}
+                <button className={cx('btnLightBlue',
+                buttonProps.hover ? 'hoverLightBlueEnable' : '',
+                    buttonProps.size
+                )} type={"button"}
                         onClick={buttonProps.onClick}>{buttonProps.content}
                 </button>
             }

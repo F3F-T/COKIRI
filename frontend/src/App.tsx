@@ -44,7 +44,7 @@ function App() {
                 <Route path="/mypage/zzim" element={<Zzim/>} />
 
                 <Route path="/post" element={<PostDetail/>}/>
-                <Route path="/postupload" element={<PostUpload/>}/>
+                <Route path="/upload" element={<PostUpload/>}/>
 
                 <Route path='*' element={<NotFound />}/>
             </Routes>

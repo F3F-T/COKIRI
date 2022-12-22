@@ -20,6 +20,10 @@ const HomeStart = () => {
     const onClickStart = () => {
         navigate(`/login`)
     }
+
+    const onClickUpload = () => {
+        navigate(`/upload`)
+    }
     return (
         <section className={styles.start}>
             <div className={styles.startLeft}>CO끼리</div>
@@ -28,11 +32,10 @@ const HomeStart = () => {
                     중고 거래부터 동네 인증까지, 코끼리와 함께해요.<br/>
                     가볍고 따뜻한 코끼리를 만들어요.</div>
                 <div className={styles.startRight2}>
-                    <Button className={"lightblue"} content={"시작하기"} onClick={onClickStart}  />
-                    <Button className={"lightblue"} content={"내 물건 올리기"} />
-                    {/*<button onClick={onClickStart}>시작하기</button>*/}
-                    {/*<Button content={"내 물건 올리기"} />*/}
-                    {/*<button>내 물건 올리기</button>*/}
+
+                    <Button className={"lightblue"} content={"시작하기"} onClick={onClickStart} color={"black"} hover={true} size={"medium"}/>
+                    <Button className={"lightblue"} content={"내 물건 올리기"} onClick={onClickUpload} color={"black"} hover={true} size={"medium"}/>
+
                 </div>
             </div>
         </section>
