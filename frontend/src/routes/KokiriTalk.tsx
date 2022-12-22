@@ -6,36 +6,111 @@ import Comments from "../component/comments/Comments";
 import Card from "../component/tradeCard/Card";
 import TalkList from "../component/talk/TalkList";
 import {useNavigate} from "react-router-dom";
+import Message from "../component/talk/Message";
 
 
 
+interface props{
 
+}
+const OnClickTalkList = (props3:props) => {
+    return(
+        <>
+            <div className={styles.send}>
+                <div className={styles.sendTitle}>받은 쪽지</div>
+                <input className={styles.sendContent} type={"text"} />
+            </div>
+            <div className={styles.receive}>
+                <div className={styles.receiveTitle}>보낸 쪽지</div>
+                <input className={styles.receiveContent} type={"text"} />
+            </div>
+            <div className={styles.receive}>
+                <div className={styles.receiveTitle}>보낸 쪽지</div>
+                <input className={styles.receiveContent} type={"text"} />
+            </div>
+        </>
+    )
 
-const PostDetail = () => {
+}
+
+const KokiriTalk = () => {
     const navigate = useNavigate();
     const [ click, setClick ] = useState(false)
+    const [key,setKey] = useState<number>(1)
 
-    const onClickTalkList = (e) => {
-        console.log("1번 클릭 이벤트");
+
+    const onClickTalkList = () => {
+        setKey(1);
     }
 
     const onClickTalkList2 = () => {
         console.log("2번 클릭 이벤트");
+        setKey(2);
+
     }
 
     const onClickTalkList3 = () => {
         console.log("3번 클릭 이벤트")
+        setKey(3);
     }
 
+    const onClickTotalTalkList = (key) => {
+        return (event: React.MouseEvent) => {
+            setKey(key);
+            event.preventDefault();
+        }
+    }
+
+
+    const objectMessage = [{
+        keys: 1,
+        partner : "함민혁",
+        lastContent : "주무시나요1",
+        date : "1234",
+        message: ["111111보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+            "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+            "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+            "보낸사람 : 이거 얼마", "받은 사람 : 삼천원"
+        ]
+    },
+        {
+            keys: 2,
+            partner : "홍의성",
+            lastContent : "주무시나요2",
+            date : "1234",
+            message: ["22222보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원"
+            ]
+        },
+        {
+            keys: 3,
+            partner : "김희찬",
+            lastContent : "주무시나요3",
+            date : "1234",
+            message: ["3333333보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
+                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원"
+            ]
+        },
+    ]
+
+//
     return (
         <div className={styles.kokiritalk}>
             <div className={styles.left}>
                 <div className={styles.leftHeader}>코끼리톡</div>
                 <div className={styles.talkContainer}>
+                 {/*<TalkList keys={1} partner={"함민혁"} lastContent={"주무시나요"} date={"몰라"} onClick = {onClickTalkList} />*/}
+                 {/*<TalkList keys={2} partner={"홍의성"} lastContent={"주무시나요2"} date={"몰라"} onClick = {onClickTalkList2} />*/}
+                 {/*<TalkList keys={3} partner={"함민혁"} lastContent={"주무시나요3"} date={"몰라"} onClick = {onClickTalkList3} />*/}
 
-                 <TalkList partner={"함민혁"} lastContent={"주무시나요"} date={"몰라"} onClick = {onClickTalkList} />
-                 <TalkList partner={"홍의성"} lastContent={"주무시나요2"} date={"몰라"} onClick = {onClickTalkList2} />
-                 <TalkList partner={"함민혁"} lastContent={"주무시나요3"} date={"몰라"} onClick = {onClickTalkList3} />
+                    {objectMessage.map((SingleObject:object) => (
+                        <TalkList keys={SingleObject["keys"]} partner={SingleObject["partner"]} lastContent={SingleObject["lastContent"]} date={SingleObject["date"]}
+                                  onClick = {onClickTotalTalkList(SingleObject["keys"])} />
+                    ))}
                 </div>
             </div>
 
@@ -51,7 +126,7 @@ const PostDetail = () => {
                     </div>
                 </div>
                 <div className={styles.talkContainer2}>
-
+                    <Message keys={key}/>
                 </div>
             </div>
         </div>
@@ -59,4 +134,4 @@ const PostDetail = () => {
 }
 
 
-export default PostDetail;
+export default KokiriTalk;

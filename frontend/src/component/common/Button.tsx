@@ -13,15 +13,15 @@ const cx = classNames.bind(styles)
 
 type ButtonTypes = 'black' | 'white' | 'lightblue'
 type ButtonColor = "white" | "black"
-type ButtonSize = "large" | "medium" |"small";
+type ButtonSize = "large" | "medium" | "small";
 
 interface ButtonProps {
     className?: ButtonTypes;
     onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     content: string;
-    color? : string;
-    hover? : boolean;
-    size? : string;
+    color?: string;
+    hover?: boolean;
+    size?: string;
 }
 
 /***
@@ -35,6 +35,7 @@ const Button = (buttonProps: ButtonProps) => {
                         onClick={buttonProps.onClick}>{buttonProps.content}
                 </button>
             }
+
             {buttonProps.className === "black" &&
                 <button className={cx('btnBlack')} type={"button"}
                         onClick={buttonProps.onClick}>{buttonProps.content}
@@ -49,7 +50,7 @@ const Button = (buttonProps: ButtonProps) => {
 
             {buttonProps.className === "lightblue" &&
                 <button className={cx('btnLightBlue',
-                buttonProps.hover ? 'hoverLightBlueEnable' : '',
+                    buttonProps.hover ? 'hoverLightBlueEnable' : '',
                     buttonProps.size
                 )} type={"button"}
                         onClick={buttonProps.onClick}>{buttonProps.content}
