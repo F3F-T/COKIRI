@@ -1,7 +1,8 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../styles/loginAndSignup/EmailCheckOK.module.css";
-import loginImg from "../img/cokkiriLogo.png";
+import styles from "../../styles/loginAndSignup/EmailCheckOK.module.css";
+import loginImg from "../../img/cokkiriLogo.png";
 import {useNavigate} from "react-router-dom";
+import Button from "../../component/common/Button";
 
 const EmailCheckOK = () => {
 
@@ -19,7 +20,7 @@ const EmailCheckOK = () => {
                     <h2>동네 주민들과 물물교환을 시작해보세요!</h2>
                 </section>
                 <section className={styles.contents}>
-                    <button onClick={startCokiri} className={styles.btn} type={"button"}>코끼리 시작하기</button>
+                    <Button content={"코끼리 시작하기"} className={"black"} onClick={startCokiri}/>
                 </section>
             </div>
         </>

@@ -12,25 +12,25 @@ import {Rootstate} from "../index";
 import {resetCategory} from "../store/categoryReducer";
 
 
-const MulmulTrade2 = () => {
-    let navigate = useNavigate();
+const MulmulTrade1 = () => {
 
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
 
+    let navigate = useNavigate();
     return (
-            <div className={styles.mulmulTrade}>
-                <div className={styles.mulmulTradeContent}>
-                    <div className={styles.navPostOrWant}>{store.categoryReducer.category}를 원하는 사람들이에요.</div>
-                    <div className={styles.popularOrNewest}>
-                        <div className={styles.pupularBtn}>인기도순</div>
-                        <div className={styles.slash}>|</div>
-                        <div className={styles.newsetBtn}>누적도순</div>
-                    </div>
-                    <PostContainer/>
+        <div className={styles.mulmulTrade}>
+            <div className={styles.mulmulTradeContent}>
+                <div className={styles.navPostOrWant}>{store.categoryReducer.category}를 올린 사람들이에요</div>
+                <div className={styles.popularOrNewest}>
+                    <div className={styles.pupularBtn}>인기도순</div>
+                    <div className={styles.slash}>|</div>
+                    <div className={styles.newsetBtn}>누적도순</div>
                 </div>
+                <PostContainer/>
             </div>
+        </div>
     );
 }
 
-export default MulmulTrade2;
+export default MulmulTrade1;

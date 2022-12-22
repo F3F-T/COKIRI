@@ -1,0 +1,64 @@
+//받은 쪽지 보낸 쪽지 앞전의 방식이랑 동일한 방법으로 컴포넌트화
+//프롭스로 받을 데이터는 receiveContent하나
+
+//talkContent도 컴포넌트화해서 대화상대랑 마지막대화내용
+//프롭스로 전달
+
+//right_header1이 그 사진이랑 사진타이틀인데 이거도 프롭스로 전달해야됨
+//
+
+
+//왼쪽 talkContent에서 onClick정보 받아와서 클릭된
+// talkContent의 대화 내용을 띄워줘야돼
+
+//message컴포넌트 하나 send와 receive분리
+//card컴퍼넌트를 forTalk으로 유니온하나 추가
+//talklist에 있는 애들도 컴포넌트화 props로 값 넘겨야되니까
+
+.kokiritalk{
+  width: 1200px;
+  height: 600px;
+  display: flex;
+  margin: auto;
+  justify-content: left;
+}
+
+.left {
+  width: 25%;
+  border: 0.5px solid rgba(0, 255, 5);
+}
+
+.right {
+  width: 75%;
+  border: 0.5px solid rgba(0, 255, 5);
+}
+
+
+
+.talkContainer{
+  display: grid;
+
+}
+
+
+
+.right_header{
+  display: flex;
+  justify-content: space-between;
+
+}
+
+.right_header1{
+  display: flex;
+  border: 0.5px solid rgba(0, 255, 5);
+  justify-content: left;
+}
+
+.right_header2{
+  display: flex;
+}
+
+.talkContainer2{
+  height: 75%;
+  border: 0.5px solid rgba(0, 255, 5);
+}

@@ -1,37 +1,58 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/trade/Trade.module.css"
 
-import {useNavigate} from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import myImage from "../img/cokkiriLogo.png"
 import PriceBox from "../component/trade/PriceBox";
 import PostContainer from "../component/trade/PostContainer";
 import TradeCategory from "../component/trade/TradeCategory";
+import {useOutletContext} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {Rootstate} from "../index";
+import {resetCategory} from "../store/categoryReducer";
+import Button from "../component/common/Button";
 
-// ㅂㅅ
+
 const MulmulTrade = () => {
     let navigate = useNavigate();
+
+    //index에서 선언해준 Rootstate를 state로 받는다, store에 저장한다.
+    const store = useSelector((state: Rootstate) => state);
+    //action을 사용하기 위해 dispatch를 선언한다.
+    const dispatch = useDispatch();
+
+    /**
+     * 랜더링될때 category를 도서로 다시 초기화시킨다.
+     * 이는 끼리끼리, 물물교환으로 페이지를 이동할때 도서로 초기화 시키는 역할을 함
+     * */
+    useEffect(() => {
+        return () => {
+            dispatch(resetCategory());
+        };
+    }, []);
+
     return (
-            <div className={styles.mulmulTrade}>
-                <div className={styles.mulmulTradeContent}>
-                    <div className={styles.categoryBox}>
-                        <div className={styles.forWho}>
-                            <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade')}>이런 물건이 올라왔어요.</button>
-                            <button className={styles.forWho_1} onClick={()=>navigate('/mulmultrade/mulmultrade2')}>이런 물건을 원해요.</button>
+        <div className={styles.mulmulTrade}>
+            <div className={styles.mulmulTradeContent}>
+                <div className={styles.categoryBox}>
+                    <div className={styles.forWho}>
+                        <div className={styles.buttonMargin}>
+                            <Button className={"lightblue"} content={"이런 물건이 올라왔어요"}
+                                    onClick={() => navigate('/mulmultrade')} hover={true} size={"small"}/>
                         </div>
-                        <TradeCategory/>
-                        <PriceBox/>
+                        <Button className={"lightblue"} content={"이런 물건을 원해요"}
+                                onClick={() => navigate('/mulmultrade/mulmultrade2')} hover={true} size={"small"}/>
                     </div>
-                    <div className={styles.navPostOrWant}>도서를 올린 사람들이에요</div>
-                    <div className={styles.popularOrNewest}>
-                        <div className={styles.pupularBtn}>인기도순</div>
-                        <div className={styles.slash}>|</div>
-                        <div className={styles.newsetBtn}>누적도순</div>
-                    </div>
-                    <PostContainer/>
+                    <TradeCategory/>
+                    <PriceBox/>
                 </div>
+
+                {/*자식 라우터인 mulmultrade1, mulmultrade2가 랜더링 될 부분을 outlet으로 지정해준다.*/}
+                <Outlet/>
             </div>
+        </div>
     );
 }
 

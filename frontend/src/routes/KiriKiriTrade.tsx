@@ -7,9 +7,26 @@ import myImage from "../img/cokkiriLogo.png"
 import TradeCategory from "../component/trade/TradeCategory";
 import PriceBox from "../component/trade/PriceBox";
 import PostContainer from "../component/trade/PostContainer";
+import {useDispatch, useSelector} from "react-redux";
+import {Rootstate} from "../index";
+import {resetCategory} from "../store/categoryReducer";
 
 
 const KiriKiriTrade = () => {
+
+    const store = useSelector((state:Rootstate) => state);
+    const dispatch = useDispatch();
+
+    /**
+     * 랜더링될때 category를 도서로 다시 초기화시킨다.
+     * 이는 끼리끼리, 물물교환으로 페이지를 이동할때 도서로 초기화 시키는 역할을 함
+     * */
+    useEffect(()=>{
+        return() =>{
+            dispatch(resetCategory());
+        };
+    },[]);
+
     return (
         <div className={styles.mulmulTrade}>
             <div className={styles.mulmulTradeContent}>
@@ -20,7 +37,7 @@ const KiriKiriTrade = () => {
                     <TradeCategory/>
                     <PriceBox/>
                 </div>
-                <div className={styles.navPostOrWant}>도서끼리 교환해요</div>
+                <div className={styles.navPostOrWant}>{store.categoryReducer.category}끼리 교환해요</div>
                 <div className={styles.popularOrNewest}>
                     <div className={styles.pupularBtn}>인기도순</div>
                     <div className={styles.slash}>|</div>

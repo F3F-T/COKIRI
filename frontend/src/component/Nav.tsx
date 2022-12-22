@@ -28,7 +28,7 @@ const Nav1 = () => {
                 </div>
                 <div>
                     <img className={styles.mypageI} onClick={()=>navigate('/')}  src = {talk}/>
-                    <button className={styles.signBtn3} onClick={()=>navigate('/')}>코끼리 톡</button>
+                    <button className={styles.signBtn3} onClick={()=>navigate('/kokiritalk')}>코끼리 톡</button>
                 </div>
             </Nav>
 
