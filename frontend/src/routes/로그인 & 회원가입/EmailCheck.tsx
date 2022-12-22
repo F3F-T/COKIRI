@@ -1,7 +1,8 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../styles/loginAndSignup/EmailCheck.module.css";
-import loginImg from "../img/cokkiriLogo.png";
+import styles from "../../styles/loginAndSignup/EmailCheck.module.css";
+import loginImg from "../../img/cokkiriLogo.png";
 import {useNavigate} from "react-router-dom";
+import Button from "../../component/common/Button";
 
 const EmailCheck = () => {
 
@@ -21,7 +22,7 @@ const EmailCheck = () => {
                 </section>
                 <section className={styles.contents}>
                     <input type={"text"} className={styles.passwordInput} />
-                    <button onClick={emailCheckClick}className={styles.btnLogin} type={"button"}>이메일 인증하기</button>
+                    <Button className={"black"} content={"이메일 인증하기"} onClick={emailCheckClick} />
                 </section>
             </div>
         </>

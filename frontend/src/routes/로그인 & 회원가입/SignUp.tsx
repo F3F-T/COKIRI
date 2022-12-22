@@ -1,12 +1,12 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../styles/trade/Signup.module.css"
+import styles from "../../styles/trade/Signup.module.css"
 import {useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import myImage from "../img/cokkiriLogo.png"
-import PriceBox from "../component/trade/PriceBox";
-import TextInput from "../component/common/TextInput";
-import Button from "../component/common/Button";
+import myImage from "../../img/cokkiriLogo.png"
+import PriceBox from "../../component/trade/PriceBox";
+import TextInput from "../../component/common/TextInput";
+import Button from "../../component/common/Button";
 
 
 const SignUp = () => {

@@ -1,9 +1,9 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../styles/loginAndSignup/Login.module.css"
-import loginImg from "../img/cokkiriLogo.png"
+import styles from "../../styles/loginAndSignup/Login.module.css"
+import loginImg from "../../img/cokkiriLogo.png"
 import {useNavigate} from "react-router-dom";
-import TextInput from "../component/common/TextInput";
-import Button from "../component/common/Button";
+import TextInput from "../../component/common/TextInput";
+import Button from "../../component/common/Button";
 
 
 
