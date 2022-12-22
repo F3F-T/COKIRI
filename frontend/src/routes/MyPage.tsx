@@ -8,6 +8,7 @@ import PriceBox from "../component/trade/PriceBox";
 import profile from "../img/profile.jpeg"
 import PostContainer from "../component/trade/PostContainer";
 import MyPageSet from "../component/MyPageSet";
+import Card from "../component/tradeCard/Card";
 
 // interface TextInputProps {
 //     init: string;
@@ -48,7 +49,18 @@ const MyPage = () =>  {
         <>
             <div className={styles.MyPage}>
             <MyPageSet/>
-            <div className={styles.po}>여기는 게시글 자리야</div>
+              <div className={styles.container}>
+                  <Card className={"forMypage"} postTitle={"스팸아"} postContent={"아직 미완성 디자인"} like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"고추참치"} postContent={"스패애애ㅐㅇㅁ"} like={4} comment={8} category={"음식"} />
+                  <Card className={"forMypage"} postTitle={"홍"} postContent={"스패애애ㅐㅇㅁ"} like={7} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"홍라면"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"김치찌개"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"그만"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"그만"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"아직"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />
+
+              </div>
+
             </div>
         </>
 

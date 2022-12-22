@@ -90,3 +90,10 @@
     font-weight: bolder;
 
 }
+.container{
+    grid-template-columns: repeat(4,1fr);
+    border-radius: 10px;
+    margin: auto;
+    gap: 0.5rem;
+    display: grid;
+}

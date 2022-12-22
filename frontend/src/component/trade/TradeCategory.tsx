@@ -24,7 +24,6 @@ const TradeCategory = () => {
 
     const onClickCategoryButton = (category)  => {
         dispatch(storeCategory(category))
-
         //확인하고 싶을때 : console.log(store.categoryReducer.category)
         //store : index.tsx에 있는 store
         //categoryReducer : store ->  reducer안에 선언한 categoryReducer, 이는 categoryReducer.ts를 참조한다.
