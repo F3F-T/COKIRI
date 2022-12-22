@@ -10,6 +10,7 @@ import book from "../img/book.png";
 import fashion from "../img/fashion.png";
 import ticket from "../img/ticket.png";
 import young from "../img/young.png";
+import Button from "../component/common/Button";
 
 
 const HomeStart = () => {
@@ -27,8 +28,11 @@ const HomeStart = () => {
                     중고 거래부터 동네 인증까지, 코끼리와 함께해요.<br/>
                     가볍고 따뜻한 코끼리를 만들어요.</div>
                 <div className={styles.startRight2}>
-                    <button onClick={onClickStart}>시작하기</button>
-                    <button>내 물건 올리기</button>
+                    <Button className={"lightblue"} content={"시작하기"} onClick={onClickStart}  />
+                    <Button className={"lightblue"} content={"내 물건 올리기"} />
+                    {/*<button onClick={onClickStart}>시작하기</button>*/}
+                    {/*<Button content={"내 물건 올리기"} />*/}
+                    {/*<button>내 물건 올리기</button>*/}
                 </div>
             </div>
         </section>

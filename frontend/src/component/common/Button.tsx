@@ -10,12 +10,15 @@ import classNames from "classnames/bind";
 const cx = classNames.bind(styles)
 
 
-type ButtonTypes = "black" | "white"
+type ButtonTypes = 'black' | 'white' | 'lightblue'
+type ButtonColor = "white" | "black"
+type ButtonSize = "large" | "medium" |"small";
 
 interface ButtonProps {
     className?: ButtonTypes;
     onClick?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     content: string;
+    color? : string;
 }
 
 /***
@@ -24,7 +27,11 @@ interface ButtonProps {
 const Button = (buttonProps: ButtonProps) => {
     return (
         <>
-
+            {buttonProps.className === undefined &&
+                <button className = {cx(buttonProps.color)} type={"button"}
+                        onClick={buttonProps.onClick}>{buttonProps.content}
+                </button>
+            }
             {buttonProps.className === "black" &&
                 <button className={cx('btnBlack')} type={"button"}
                         onClick={buttonProps.onClick}>{buttonProps.content}
@@ -33,6 +40,12 @@ const Button = (buttonProps: ButtonProps) => {
 
             {buttonProps.className === "white" &&
                 <button className={cx('btnWhite')} type={"button"}
+                        onClick={buttonProps.onClick}>{buttonProps.content}
+                </button>
+            }
+
+            {buttonProps.className === "lightblue" &&
+                <button className={cx('btnLightBlue')} type={"button"}
                         onClick={buttonProps.onClick}>{buttonProps.content}
                 </button>
             }
