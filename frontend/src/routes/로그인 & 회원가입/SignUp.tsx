@@ -10,10 +10,30 @@ import Button from "../../component/common/Button";
 
 
 const SignUp = () => {
+
+    interface UserInfo {
+        email : string;
+        password : string;
+        name : string;
+        birth : number;
+        nickname : string;
+        phonenumber : number;
+    }
+
+    const [userInfo,setuserInfo] = useState<UserInfo>(null);
+
     const navigate = useNavigate();
 
     const signUpButtonClick = () => {
         navigate(`/signup/emailcheck`)
+    }
+
+    const onChangeEmail = (e) => {
+        console.log(e.target.value);
+        setuserInfo((prevState) => {
+            return {...prevState, email: e.target.value}
+        })
+        console.log(userInfo);
     }
 
     return (
@@ -25,7 +45,7 @@ const SignUp = () => {
 
             </div>
             <div className={styles.userInfo}>
-                <TextInput placeholder={"이메일"}/>
+                <TextInput placeholder={"이메일"} onChange={onChangeEmail}/>
                 <TextInput placeholder={"비밀번호"}/>
                 <TextInput placeholder={"비밀번호 확인"}/>
 

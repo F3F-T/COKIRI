@@ -3,19 +3,20 @@ import styles from "../../styles/trade/PriceBox.module.css"
 import {useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import Button from "../common/Button";
 
 const PriceBox = () => {
     return ( //
         <div className={styles.priceBox}>
             <div className={styles.priceList}>
-                <button className={styles.priceI}>5천원~1만원</button>
-                <button className={styles.priceI}>1만원~3만원</button>
-                <button className={styles.priceI}>3만원~10만원</button>
-                <button className={styles.priceI}>10만원~20만원</button>
-                <button className={styles.priceI}>20만원~30만원</button>
-                <button className={styles.priceI}>30만원~50만원</button>
-                <button className={styles.priceI}>50만원~100만원</button>
-                <button className={styles.priceI}>100만원~</button>
+                <Button content={"5천원~1만원"}/>
+                <Button content={"1만원~3만원"}/>
+                <Button content={"3만원~10만원"}/>
+                <Button content={"10만원~20만원"}/>
+                <Button content={"20만원~30만원"}/>
+                <Button content={"30만원~50만원"}/>
+                <Button content={"50만원~100만원"}/>
+                <Button content={"100만원~"}/>
             </div>
             <div className={styles.priceSet}>
                 <input type="text" className={styles.setBox1}></input>

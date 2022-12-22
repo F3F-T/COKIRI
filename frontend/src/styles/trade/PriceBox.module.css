@@ -3,11 +3,8 @@
     display: flex; /*내용물 가로 정렬*/
     flex-direction: row;
     /*border: 0.5px solid red;*/
-    width: 100%;
-    height : 20%; /*64px*/
 }
 .priceList {
-    width: 70%;
     /*border: 0.5px solid red;*/
 
 }

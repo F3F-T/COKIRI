@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useMemo, useCallback, FC} from 'react';
 import styles from "../../styles/common/Button.module.scss"
 import classNames from "classnames/bind";
+import exp from "constants";
 
 /**
  * 예시
@@ -30,7 +31,7 @@ const Button = (buttonProps: ButtonProps) => {
     return (
         <>
             {buttonProps.className === undefined &&
-                <button type={"button"}
+                <button className={cx('defaultButton')} type={"button"}
                         onClick={buttonProps.onClick}>{buttonProps.content}
                 </button>
             }
