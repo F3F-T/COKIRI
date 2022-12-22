@@ -11,6 +11,7 @@ import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.trade.api.TradeController;
 import f3f.dev1.domain.trade.application.TradeService;
 import f3f.dev1.domain.member.application.MemberService;
+import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.dto.TradeDTO;
 import f3f.dev1.domain.trade.exception.DuplicateTradeException;
 import f3f.dev1.domain.trade.exception.InvalidSellerIdException;
@@ -72,6 +73,9 @@ public class TradeControllerTest {
 
     @MockBean
     private PostRepository postRepository;
+
+    @MockBean
+    private TradeRepository tradeRepository;
 
 
     @BeforeEach
@@ -141,9 +145,9 @@ public class TradeControllerTest {
                 .build();
     }
 
-    public UpdateTradeDto createUpdateTradeDto(Long tradeId) {
+    public UpdateTradeDto createUpdateTradeDto(Long postId) {
         return UpdateTradeDto.builder()
-                .tradeId(tradeId)
+                .postId(postId)
                 .tradeStatus(TRADING).build();
     }
 
@@ -250,7 +254,7 @@ public class TradeControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("trade/update/successful", requestFields(
-                        fieldWithPath("tradeId").description("Id value of trade"),
+                        fieldWithPath("postId").description("Id value of trade"),
                         fieldWithPath("userId").description("Id value of user"),
                         fieldWithPath("tradeStatus").description("TradeStatus to update")
                 ), responseFields(
@@ -274,7 +278,7 @@ public class TradeControllerTest {
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andDo(document("trade/update/fail/invalid-seller", requestFields(
-                        fieldWithPath("tradeId").description("Id value of trade"),
+                        fieldWithPath("postId").description("Id value of trade"),
                         fieldWithPath("userId").description("Id value of user"),
                         fieldWithPath("tradeStatus").description("TradeStatus to update")
                 ), responseFields(
@@ -294,7 +298,7 @@ public class TradeControllerTest {
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andDo(document("trade/update/fail/invalid-seller", requestFields(
-                        fieldWithPath("tradeId").description("Id value of trade"),
+                        fieldWithPath("postId").description("Id value of trade"),
                         fieldWithPath("userId").description("Id value of user"),
                         fieldWithPath("tradeStatus").description("TradeStatus to update")
                 ), responseFields(
@@ -310,13 +314,102 @@ public class TradeControllerTest {
         doReturn(TradeInfoDto.builder()
                 .sellerNickname("userNickname")
                 .buyerNickname("none")
-                .tradeStatus(TradeStatus.TRADABLE).build()).when(tradeService).getTradeInfo(any(), any());
+                .tradeStatus(TradeStatus.TRADABLE).build()).when(tradeService).getTradeInfo(any());
         // then
         mockMvc.perform(get("/trade/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString("")))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(document("trade/get-trade/success",responseFields(
+                        fieldWithPath("sellerNickname").description("Nickname of seller"),
+                        fieldWithPath("buyerNickname").description("Nickname of buyer"),
+                        fieldWithPath("tradeStatus").description("TradeStatus of trade")
+                )));
 
+    }
+    @Test
+    @DisplayName("거래 삭제 성공 테스트")
+    @WithMockCustomUser
+    public void deleteTradeTestSuccess() throws Exception{
+        //given
+        DeleteTradeDto deleteTradeDto = DeleteTradeDto.builder()
+                .userId(1L)
+                .postId(1L)
+                .build();
+
+        // when
+        doReturn(TradeInfoDto.builder()
+                .sellerNickname("userNickname")
+                .buyerNickname("none")
+                .tradeStatus(TradeStatus.TRADABLE).build()).when(tradeService).deleteTrade(any(), any());
+
+        // then
+        mockMvc.perform(delete("/trade")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(deleteTradeDto)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("trade/delete/success",requestFields(
+                        fieldWithPath("postId").description("Id of post"),
+                        fieldWithPath("userId").description("Id of user")
+                ), responseFields(
+                        fieldWithPath("sellerNickname").description("Nickname of seller"),
+                        fieldWithPath("buyerNickname").description("Nickname of buyer"),
+                        fieldWithPath("tradeStatus").description("TradeStatus of trade")
+                )));
+    }
+    @Test
+    @DisplayName("로그인하지 않은 상태에서 거래 삭제 실패 테스트")
+    public void deleteTradeTestFailByNonLogin() throws Exception{
+        //given
+        DeleteTradeDto deleteTradeDto = DeleteTradeDto.builder()
+                .userId(1L)
+                .postId(1L)
+                .build();
+
+
+
+        // then
+        mockMvc.perform(delete("/trade")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(deleteTradeDto)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andDo(document("trade/delete/fail/non-login",requestFields(
+                        fieldWithPath("postId").description("Id of post"),
+                        fieldWithPath("userId").description("Id of user")
+                ), responseFields(
+                        fieldWithPath("status").description("HttpStatus of response"),
+                        fieldWithPath("message").description("description of error")
+                )));
+    }
+
+    @Test
+    @DisplayName("잘못된 판매자로 인한 거래 삭제 실패 테스트")
+    @WithMockCustomUser
+    public void deleteTradeTestFailByInvalidSeller() throws Exception{
+        //given
+        DeleteTradeDto deleteTradeDto = DeleteTradeDto.builder()
+                .userId(1L)
+                .postId(1L)
+                .build();
+
+        // when
+        doThrow(InvalidSellerIdException.class).when(tradeService).deleteTrade(any(), any());
+
+        // then
+        mockMvc.perform(delete("/trade")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(deleteTradeDto)))
+                .andDo(print())
+                .andExpect(status().isConflict())
+                .andDo(document("trade/delete/fail/invalid-seller",requestFields(
+                        fieldWithPath("postId").description("Id of post"),
+                        fieldWithPath("userId").description("Id of user")
+                ), responseFields(
+                        fieldWithPath("status").description("HttpStatus of response"),
+                        fieldWithPath("message").description("description of error")
+                )));
     }
 }
