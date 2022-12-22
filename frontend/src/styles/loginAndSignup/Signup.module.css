@@ -35,9 +35,13 @@
     /*border: 1px solid red;*/
     border-radius: 10px;
     width: 100%;
-    display: grid;
-    grid-template-rows: repeat(6,1fr);
-    gap: 10px;
+    /*display: grid;*/
+    /*grid-template-rows: repeat(6,1fr);*/
+    /*gap: 10px;*/
+}
+
+.userInfo div{
+    margin-bottom: 1rem;
 }
 
 

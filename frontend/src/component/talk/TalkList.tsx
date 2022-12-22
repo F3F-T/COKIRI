@@ -13,7 +13,6 @@ const tl = classNames.bind(styles)
 interface props{
     // Clickable(): clickOrNot;
     click? : boolean | undefined;
-
     onClick?: (e : React.MouseEvent<HTMLButtonElement,MouseEvent>) => void;
     partner : string;
     lastContent : string;

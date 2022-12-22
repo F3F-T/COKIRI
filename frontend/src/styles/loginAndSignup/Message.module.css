@@ -1,0 +1,13 @@
+.errorMessage{
+    position: relative;
+    top: -2rem;
+    color: red;
+    padding: 0px;
+    margin: 0px;
+    font-size: 0.3rem;
+}
+
+.successMessage{
+    color: blue;
+}
+

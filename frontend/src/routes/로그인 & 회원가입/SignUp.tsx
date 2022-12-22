@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../../styles/trade/Signup.module.css"
+import styles from "../../styles/loginAndSignup/Signup.module.css"
 import {useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -7,20 +7,23 @@ import myImage from "../../img/cokkiriLogo.png"
 import PriceBox from "../../component/trade/PriceBox";
 import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
+import Message from "../../component/로그인 & 회원가입/Message";
 
 
 const SignUp = () => {
 
     interface UserInfo {
-        email : string;
-        password : string;
-        name : string;
-        birth : number;
-        nickname : string;
-        phonenumber : number;
+        email: string;
+        password: string;
+        name: string;
+        birth: number;
+        nickname: string;
+        phonenumber: number;
     }
 
-    const [userInfo,setuserInfo] = useState<UserInfo>(null);
+    const [passwordCheck, setpasswordCheck] = useState<boolean>(undefined);
+
+    const [userInfo, setuserInfo] = useState<UserInfo>(null);
 
     const navigate = useNavigate();
 
@@ -29,11 +32,25 @@ const SignUp = () => {
     }
 
     const onChangeEmail = (e) => {
-        console.log(e.target.value);
         setuserInfo((prevState) => {
             return {...prevState, email: e.target.value}
         })
-        console.log(userInfo);
+    }
+
+    const onChangePassword = (e) => {
+        setuserInfo((prevState) => {
+            return {...prevState, password: e.target.value}
+        })
+    }
+
+    const onChangeCheckPassword = (e) => {
+        if (userInfo.password === e.target.value) {
+            setpasswordCheck(true);
+            console.log("OK")
+        } else {
+            setpasswordCheck(false);
+            console.log("비밀번호 일치하지 않음")
+        }
     }
 
     return (
@@ -45,9 +62,17 @@ const SignUp = () => {
 
             </div>
             <div className={styles.userInfo}>
-                <TextInput placeholder={"이메일"} onChange={onChangeEmail}/>
-                <TextInput placeholder={"비밀번호"}/>
-                <TextInput placeholder={"비밀번호 확인"}/>
+
+                <TextInput placeholder={"이메일"} onBlur={onChangeEmail}/>
+                <TextInput placeholder={"비밀번호"} onBlur={onChangePassword}/>
+                <TextInput placeholder={"비밀번호 확인"} onBlur={onChangeCheckPassword}/>
+                {(passwordCheck === undefined && <Message passwordCheck={passwordCheck} content={""}/>)
+                    ||
+                    (passwordCheck ?
+                        <Message passwordCheck={passwordCheck} content={"비밀번호가 일치합니다"}/>
+                        :
+                        <Message passwordCheck={passwordCheck} content={"비밀번호가 일치하지 않습니다"}/>)}
+
 
                 <div className={styles.userNameBirth}>
                     <TextInput placeholder={"이름"}/>

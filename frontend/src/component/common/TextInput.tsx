@@ -14,6 +14,7 @@ interface TextInputProps{
 
     size? : string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onBlur? :(e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const TestInput = (textInputProps : TextInputProps) => {
@@ -21,7 +22,7 @@ const TestInput = (textInputProps : TextInputProps) => {
     return (
         <>
             <div className={styles.inputText}>
-                <input type="text" className={cx('inputText')} placeholder={textInputProps.placeholder} onChange={textInputProps.onChange} />
+                <input type="text" className={cx('inputText')} placeholder={textInputProps.placeholder} onChange={textInputProps.onChange} onBlur={textInputProps.onBlur}/>
             </div>
         </>
     );
