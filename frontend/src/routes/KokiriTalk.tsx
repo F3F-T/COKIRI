@@ -9,15 +9,33 @@ import {useNavigate} from "react-router-dom";
 
 
 
+interface props{
 
+}
+const OnClickTalkList = (props3:props) => {
+    return(
+        <>
+            <div className={styles.send}>
+                <div className={styles.sendTitle}>받은 쪽지</div>
+                <input className={styles.sendContent} type={"text"} />
+            </div>
+            <div className={styles.receive}>
+                <div className={styles.receiveTitle}>보낸 쪽지</div>
+                <input className={styles.receiveContent} type={"text"} />
+            </div>
+            <div className={styles.receive}>
+                <div className={styles.receiveTitle}>보낸 쪽지</div>
+                <input className={styles.receiveContent} type={"text"} />
+            </div>
+        </>
+    )
 
-const PostDetail = () => {
+}
+
+const KokiriTalk = () => {
     const navigate = useNavigate();
     const [ click, setClick ] = useState(false)
 
-    const onClickTalkList = (e) => {
-        console.log("1번 클릭 이벤트");
-    }
 
     const onClickTalkList2 = () => {
         console.log("2번 클릭 이벤트");
@@ -27,15 +45,16 @@ const PostDetail = () => {
         console.log("3번 클릭 이벤트")
     }
 
+//
     return (
         <div className={styles.kokiritalk}>
             <div className={styles.left}>
                 <div className={styles.leftHeader}>코끼리톡</div>
                 <div className={styles.talkContainer}>
 
-                 <TalkList partner={"함민혁"} lastContent={"주무시나요"} date={"몰라"} onClick = {onClickTalkList} />
-                 <TalkList partner={"홍의성"} lastContent={"주무시나요2"} date={"몰라"} onClick = {onClickTalkList2} />
-                 <TalkList partner={"함민혁"} lastContent={"주무시나요3"} date={"몰라"} onClick = {onClickTalkList3} />
+                 <TalkList keys={1} partner={"함민혁"} lastContent={"주무시나요"} date={"몰라"} onClick = {OnClickTalkList} />
+                 <TalkList keys={2} partner={"홍의성"} lastContent={"주무시나요2"} date={"몰라"} onClick = {onClickTalkList2} />
+                 <TalkList keys={3} partner={"함민혁"} lastContent={"주무시나요3"} date={"몰라"} onClick = {onClickTalkList3} />
                 </div>
             </div>
 
@@ -51,7 +70,7 @@ const PostDetail = () => {
                     </div>
                 </div>
                 <div className={styles.talkContainer2}>
-
+                    <OnClickTalkList/>
                 </div>
             </div>
         </div>
@@ -59,4 +78,4 @@ const PostDetail = () => {
 }
 
 
-export default PostDetail;
+export default KokiriTalk;
