@@ -1,6 +1,6 @@
 package f3f.dev1.domain.trade.exception;
 
-import f3f.dev1.global.error.exception.ErrorResponse;
+import f3f.dev1.global.error.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

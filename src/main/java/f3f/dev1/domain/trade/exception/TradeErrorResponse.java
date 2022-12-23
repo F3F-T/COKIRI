@@ -1,6 +1,6 @@
 package f3f.dev1.domain.trade.exception;
 
-import f3f.dev1.global.error.exception.ErrorResponse;
+import f3f.dev1.global.error.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 

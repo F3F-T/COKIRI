@@ -25,7 +25,6 @@ import static f3f.dev1.domain.member.dto.MemberDTO.*;
 public class MemberController {
     private final MemberService memberService;
 
-    private final MemberRepository memberRepository;
 
     private final AuthService authService;
 
@@ -70,10 +69,10 @@ public class MemberController {
 
     // 로그아웃
     @DeleteMapping("/user/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        authService.logout(request, response);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity.ok(authService.logout());
     }
 
     // TODO 주소 업데이트 요청 처리 경로 만들어야함, 서비스도
