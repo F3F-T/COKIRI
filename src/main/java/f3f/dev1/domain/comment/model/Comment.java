@@ -31,12 +31,16 @@ public class Comment {
     @JoinColumn(name = "member_id")
     private Member author;
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.REMOVE)
     private List<Comment> childs = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private Comment parent;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 
     @Builder
     public Comment(Long id, Post post, String content, Long depth, Member author, Comment parent) {
