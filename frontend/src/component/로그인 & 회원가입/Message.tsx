@@ -8,7 +8,7 @@ interface MessageProps {
     passwordCheck : undefined | boolean;
     content : string;
 }
-const message = (messageProps : MessageProps) => {
+const Message = (messageProps : MessageProps) => {
     return (
         <>
             {messageProps.passwordCheck === undefined && null}
@@ -28,4 +28,4 @@ const message = (messageProps : MessageProps) => {
     );
 }
 
-export default message;
+export default Message;

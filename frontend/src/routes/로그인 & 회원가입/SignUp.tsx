@@ -28,6 +28,10 @@ const SignUp = () => {
     const navigate = useNavigate();
 
     const signUpButtonClick = () => {
+
+
+
+
         navigate(`/signup/emailcheck`)
     }
 
@@ -53,6 +57,30 @@ const SignUp = () => {
         }
     }
 
+    const onChangeName = (e) => {
+        setuserInfo((prevState) => {
+            return {...prevState, name: e.target.value}
+        })
+    }
+
+    const onChangeBirth = (e) => {
+        setuserInfo((prevState) => {
+            return {...prevState, birth: e.target.value}
+        })
+    }
+
+    const onChangeNickname = (e) => {
+        setuserInfo((prevState) => {
+            return {...prevState, nickname: e.target.value}
+        })
+    }
+
+    const onChangePhoneNumber = (e) => {
+        setuserInfo((prevState) => {
+            return {...prevState, phonenumber: e.target.value}
+        })
+    }
+
     return (
         <div className={styles.signup}>
             <div className={styles.signupHeader}>
@@ -69,18 +97,18 @@ const SignUp = () => {
                 {(passwordCheck === undefined && <Message passwordCheck={passwordCheck} content={""}/>)
                     ||
                     (passwordCheck ?
-                        <Message passwordCheck={passwordCheck} content={"비밀번호가 일치합니다"}/>
+                        <Message passwordCheck={passwordCheck} content={"✔ 비밀번호가 일치합니다"}/>
                         :
-                        <Message passwordCheck={passwordCheck} content={"비밀번호가 일치하지 않습니다"}/>)}
+                        <Message passwordCheck={passwordCheck} content={"❌ 비밀번호가 일치하지 않습니다"}/>)}
 
 
-                <div className={styles.userNameBirth}>
-                    <TextInput placeholder={"이름"}/>
-                    <TextInput placeholder={"생일"}/>
-                </div>
+                <section className={styles.userNameBirth}>
+                    <TextInput placeholder={"이름"} onBlur={onChangeName}/>
+                    <TextInput placeholder={"생일"} onBlur={onChangeBirth}/>
+                </section>
 
-                <TextInput placeholder={"닉네임"}/>
-                <TextInput placeholder={"전화번호"}/>
+                <TextInput placeholder={"닉네임"} onBlur={onChangeNickname}/>
+                <TextInput placeholder={"전화번호"} onBlur={onChangePhoneNumber}/>
             </div>
 
             <div className={styles.btnPlace}>

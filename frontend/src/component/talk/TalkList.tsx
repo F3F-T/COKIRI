@@ -1,5 +1,7 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../../styles/talk/talkList.module.scss"
+import buttonstyled from "../../styles/common/Button.module.scss"
+
 import profileImg from "../img/profileImg.png"
 import spamImg from "../img/spam.png"
 import classNames from "classnames/bind";
@@ -10,7 +12,8 @@ import Message from "./Message";
 
 
 // type clickOrNot = true | false ;
-const tl = classNames.bind(styles)
+const tl = classNames.bind(styles);
+
 interface props{
     onClick?: (e : React.MouseEvent<HTMLButtonElement,MouseEvent>) => any;
     partner : string;
