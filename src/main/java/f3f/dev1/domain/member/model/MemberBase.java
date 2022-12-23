@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
-public class UserBase extends BaseTimeEntity {
+public class MemberBase extends BaseTimeEntity {
     @Id
     @GeneratedValue
     @Column(name = "member_id")
@@ -23,7 +23,7 @@ public class UserBase extends BaseTimeEntity {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    protected UserLevel userLevel;
+    protected Authority authority;
 
     @Enumerated(EnumType.STRING)
     private UserLoginType userLoginType;
