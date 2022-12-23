@@ -68,7 +68,6 @@ public class TradeServiceTest {
                 .nickname("nickname")
                 .phoneNumber(phoneNumber)
                 .email(email)
-                .address(createAddress())
                 .password("password")
                 .build();
     }
@@ -80,10 +79,18 @@ public class TradeServiceTest {
                 .password("password").build();
     }
 
-    // 포스트 생성 DTO 생성 메소드
-    public PostSaveRequest createPostSaveRequest(Member author) {
+    // 게시글 생성 DTO 메소드
+    public PostSaveRequest createPostSaveRequest(Long authorId) {
 
-        return new PostSaveRequest(1L, "title", "content", false, author, null, null);
+        return PostSaveRequest.builder()
+                .productCategory(null)
+                .wishCategory(null)
+                .tradeEachOther(false)
+                .title("title")
+                .content("content")
+                .authorId(authorId).build();
+
+
     }
 
     // 트레이드 생성 DTO 생성 메소드
@@ -103,7 +110,8 @@ public class TradeServiceTest {
         authService.signUp(signUpRequest2);
         Long userId1 = memberRepository.findByEmail("testuser1@email.com").get().getId();
         Long userId2 = memberRepository.findByEmail("testuser2@email.com").get().getId();
-        PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
+
+        PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest);
 
 
@@ -127,7 +135,7 @@ public class TradeServiceTest {
         authService.signUp(signUpRequest2);
         Long userId1 = memberRepository.findByEmail("testuser1@email.com").get().getId();
         Long userId2 = memberRepository.findByEmail("testuser2@email.com").get().getId();
-        PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
+        PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest);
 
 
@@ -148,7 +156,7 @@ public class TradeServiceTest {
         authService.signUp(signUpRequest2);
         Long userId1 = memberRepository.findByEmail("testuser1@email.com").get().getId();
         Long userId2 = memberRepository.findByEmail("testuser2@email.com").get().getId();
-        PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
+        PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest);
 
 
@@ -168,7 +176,7 @@ public class TradeServiceTest {
         authService.signUp(signUpRequest2);
         Long userId1 = memberRepository.findByEmail("testuser1@email.com").get().getId();
         Long userId2 = memberRepository.findByEmail("testuser2@email.com").get().getId();
-        PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
+        PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest);
 
 
@@ -191,7 +199,7 @@ public class TradeServiceTest {
         authService.signUp(signUpRequest2);
         Long userId1 = memberRepository.findByEmail("testuser1@email.com").get().getId();
         Long userId2 = memberRepository.findByEmail("testuser2@email.com").get().getId();
-        PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
+        PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest);
 
         CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
@@ -215,7 +223,7 @@ public class TradeServiceTest {
         authService.signUp(signUpRequest2);
         Long userId1 = memberRepository.findByEmail("testuser1@email.com").get().getId();
         Long userId2 = memberRepository.findByEmail("testuser2@email.com").get().getId();
-        PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
+        PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest);
 
         CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
@@ -236,7 +244,7 @@ public class TradeServiceTest {
         authService.signUp(signUpRequest2);
         Long userId1 = memberRepository.findByEmail("testuser1@email.com").get().getId();
         Long userId2 = memberRepository.findByEmail("testuser2@email.com").get().getId();
-        PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
+        PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest);
 
         CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
@@ -258,7 +266,7 @@ public class TradeServiceTest {
         authService.signUp(signUpRequest2);
         Long userId1 = memberRepository.findByEmail("testuser1@email.com").get().getId();
         Long userId2 = memberRepository.findByEmail("testuser2@email.com").get().getId();
-        PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
+        PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest);
 
         CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
@@ -281,7 +289,7 @@ public class TradeServiceTest {
         authService.signUp(signUpRequest2);
         Long userId1 = memberRepository.findByEmail("testuser1@email.com").get().getId();
         Long userId2 = memberRepository.findByEmail("testuser2@email.com").get().getId();
-        PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
+        PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest);
 
         CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
@@ -302,7 +310,7 @@ public class TradeServiceTest {
         authService.signUp(signUpRequest2);
         Long userId1 = memberRepository.findByEmail("testuser1@email.com").get().getId();
         Long userId2 = memberRepository.findByEmail("testuser2@email.com").get().getId();
-        PostSaveRequest postSaveRequest = createPostSaveRequest(memberRepository.findById(userId1).get());
+        PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest);
 
         CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId1).postId(postId).build();

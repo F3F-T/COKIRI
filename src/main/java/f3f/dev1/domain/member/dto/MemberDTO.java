@@ -29,7 +29,6 @@ public class MemberDTO {
 
         private String nickname;
 
-        private Address address;
 
         private String phoneNumber;
 
@@ -50,7 +49,6 @@ public class MemberDTO {
             return Member.builder()
                     .username(userName)
                     .nickname(nickname)
-                    .address(address)
                     .phoneNumber(phoneNumber)
                     .birthDate(birthDate)
                     .email(email)

@@ -88,7 +88,6 @@ public class PostControllerTest {
                 .phoneNumber("01012345678")
                 .email("userEmail@email.com")
                 .birthDate("990128")
-                .address(createAddress())
                 .password("password")
                 .userLoginType(EMAIL)
                 .build();
@@ -101,7 +100,6 @@ public class PostControllerTest {
                 .birthDate(signUpRequest.getBirthDate())
                 .nickname(signUpRequest.getNickname())
                 .password(signUpRequest.getPassword())
-                .address(signUpRequest.getAddress())
                 .email(signUpRequest.getEmail())
                 .id(1L)
                 .build();

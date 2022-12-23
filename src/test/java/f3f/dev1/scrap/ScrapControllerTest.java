@@ -89,7 +89,6 @@ public class ScrapControllerTest {
                 .phoneNumber("01012345678")
                 .email("userEmail@email.com")
                 .birthDate("990128")
-                .address(createAddress())
                 .password("password")
                 .userLoginType(EMAIL)
                 .build();
@@ -104,9 +103,9 @@ public class ScrapControllerTest {
     }
 
     // 포스트 생성 DTO 메소드
-    public PostSaveRequest createPostSaveRequest(Member author) {
+    public PostSaveRequest createPostSaveRequest(Long authorId) {
         return PostSaveRequest.builder()
-                .author(author)
+                .authorId(authorId)
                 .title("이건 테스트 게시글 제목이야")
                 .content("이건 테스트 게시글 내용이지 하하")
                 .tradeEachOther(false)

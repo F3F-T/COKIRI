@@ -8,6 +8,7 @@ import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.dto.PostDTO;
+import f3f.dev1.domain.post.dto.PostDTO.PostSaveRequest;
 import f3f.dev1.domain.trade.api.TradeController;
 import f3f.dev1.domain.trade.application.TradeService;
 import f3f.dev1.domain.member.application.MemberService;
@@ -103,7 +104,6 @@ public class TradeControllerTest {
                 .phoneNumber("01012345678")
                 .email("userEmail@email.com")
                 .birthDate("990128")
-                .address(createAddress())
                 .password("password")
                 .userLoginType(EMAIL)
                 .build();
@@ -117,7 +117,6 @@ public class TradeControllerTest {
                 .phoneNumber("01043218765")
                 .email("buyer@email.com")
                 .birthDate("990130")
-                .address(createAddress())
                 .password("12345678")
                 .userLoginType(EMAIL)
                 .build();
@@ -125,9 +124,17 @@ public class TradeControllerTest {
     }
 
     // 게시글 생성 DTO 메소드
-    public PostDTO.PostSaveRequest createPostSaveRequest(Member author) {
+    public PostSaveRequest createPostSaveRequest(Long authorId) {
 
-        return new PostDTO.PostSaveRequest(1L, "title", "content", false, author, null, null);
+        return PostSaveRequest.builder()
+                .productCategory(null)
+                .wishCategory(null)
+                .tradeEachOther(false)
+                .title("title")
+                .content("content")
+                .authorId(authorId).build();
+
+
     }
 
     // 로그인 DTO 생성 메소드
