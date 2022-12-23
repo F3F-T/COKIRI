@@ -50,8 +50,8 @@ public class PostController {
 
     // 게시글 정보 수정
     // 기존 PathVariable 에서 RequestBody로 변경
-    @PatchMapping(value = "/post")
-    public ResponseEntity<PostInfoDto> updatePostInfo(@RequestBody @Valid UpdatePostRequest updatePostRequest) {
+    @PatchMapping(value = "/post/{postId}")
+    public ResponseEntity<PostInfoDto> updatePostInfo(@PathVariable Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
         PostInfoDto postInfoDto = postService.updatePost(updatePostRequest);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
