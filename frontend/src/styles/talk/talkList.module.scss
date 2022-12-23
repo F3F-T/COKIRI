@@ -1,3 +1,83 @@
 .talkContent{
-  border: 0.5px solid rgba(0, 255, 5);
+
+}
+.talkPartner{
+
+}
+.lastContent{
+
+}
+.date{
+
+}
+.talkBtn{
+  border-left: none;
+  border-right: none;
+  border-top: 0.5px solid rgba(200, 200, 200);
+  border-bottom: 0.5px solid rgba(200, 200, 200);
+  width: 100%;
+  background-color: transparent;
+}
+.box1{
+  display: flex;
+  justify-content: space-between;
+}
+.box1_1{
+  height: 2rem;
+  margin-top: 0.5rem;
+}
+.box1_2{
+  height: 2rem;
+  margin-top: 0.5rem;
+}
+.talkPartner{
+  height: 100%;
+  margin-bottom: 0;
+}
+.lastContent{
+  text-align: left;
+  color: gray;
+}
+.date{
+  font-size: 0.8rem;
+}
+.talkPartner{
+  font-weight: bold;
+}
+.sendTitle{
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #f7ce4d;
+  margin-left: 1rem;
+
+}
+.sendContent{
+  font-weight: bolder;
+  margin-left: 1rem;
+  margin-bottom: 0rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.9rem;
+
+}
+.receiveContent{
+  font-weight: bolder;
+  margin-left: 1rem;
+  margin-bottom: 0rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.9rem;
+
+
+}
+.receiveTitle{
+  margin-left: 1rem;
+  font-size: 0.8rem;
+  font-weight: bolder;
+  color: #4ba2ad;
+}
+.send{
+  border-bottom: 0.5px solid rgba(200, 200, 200);
+}
+.receive{
+  border-bottom: 0.5px solid rgba(200, 200, 200);
+
 }

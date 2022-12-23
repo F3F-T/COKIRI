@@ -16,21 +16,32 @@
 //talklist에 있는 애들도 컴포넌트화 props로 값 넘겨야되니까
 
 .kokiritalk{
+
   width: 1200px;
   height: 600px;
   display: flex;
+  padding-top: 2rem;
   margin: auto;
   justify-content: left;
 }
 
 .left {
   width: 25%;
-  border: 0.5px solid rgba(0, 255, 5);
+  border: 0.5px solid rgba(200, 200, 200);
+  margin-right: 1rem;
+  border-radius: 13px;
 }
-
+.leftHeader{
+  font-size: 2rem;
+  font-weight: bolder;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  margin-left: 0.8rem;
+}
 .right {
   width: 75%;
-  border: 0.5px solid rgba(0, 255, 5);
+  border-radius: 13px;
+  border: 0.5px solid rgba(200, 200, 200);
 }
 
 
@@ -50,7 +61,7 @@
 
 .right_header1{
   display: flex;
-  border: 0.5px solid rgba(0, 255, 5);
+  border: 0.5px solid rgba(200, 200, 200);
   justify-content: left;
 }
 
@@ -60,5 +71,6 @@
 
 .talkContainer2{
   height: 75%;
-  border: 0.5px solid rgba(0, 255, 5);
+  border: 0.5px solid rgba(200, 200, 200);
 }
+

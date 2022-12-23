@@ -34,11 +34,19 @@ const TalkListLeft = (props2:props)=>{
     return(
         <>
                 <div className={styles.talkContent}>
-                    <button onClick={props2.onClick}>클릭해보세용</button>
-                    <p className={styles.talkPartner}>{props2.partner}</p>
-                    <p className={styles.lastContent}>{props2.lastContent}</p>
-                    <p className={styles.date}>{props2.date}</p>
-                    <p className={styles.date}>{props2.keys}</p>
+                    <button className={styles.talkBtn} onClick={props2.onClick}>
+                        <div className={styles.box1}>
+                            <div className={styles.box1_1}>
+                                <p className={styles.talkPartner}>{props2.partner}</p>
+                            </div>
+                            <div className={styles.box1_2}>
+                                <p className={styles.date}>{props2.date}</p>
+                            </div>
+                        </div>
+                        <div className={styles.box2}>
+                            <p className={styles.lastContent}>{props2.lastContent}</p>
+                        </div>
+                    </button>
                 </div>
         </>
     )
