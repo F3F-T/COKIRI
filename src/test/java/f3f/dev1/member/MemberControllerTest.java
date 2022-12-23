@@ -182,7 +182,7 @@ public class MemberControllerTest {
         LoginRequest loginRequest = createLoginRequest();
 
         // when
-        doThrow(new UserNotFoundException()).when(authService).login(any(), any());
+        doThrow(new UserNotFoundException()).when(authService).login(any());
 
         // then
         mockMvc.perform(post("/auth/login")
@@ -205,7 +205,7 @@ public class MemberControllerTest {
         LoginRequest loginRequest = createLoginRequest();
 
         // when
-        doThrow(new UserNotFoundException()).when(authService).login(any(), any());
+        doThrow(new UserNotFoundException()).when(authService).login(any());
 
         // then
         mockMvc.perform(post("/auth/login")

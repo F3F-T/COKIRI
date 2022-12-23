@@ -1,32 +1,38 @@
 package f3f.dev1.domain.token.model;
 
+import f3f.dev1.global.common.constants.JwtConstants;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
+import org.springframework.data.redis.core.index.Indexed;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import java.util.concurrent.TimeUnit;
+
+import static f3f.dev1.global.common.constants.JwtConstants.*;
 
 @Getter
-@NoArgsConstructor
-@Entity
+@Builder
+@AllArgsConstructor
+@RedisHash(value = "refreshToken")
 public class RefreshToken {
     @Id
-    @Column(name = "token_key")
-    private String key;
+    private String userId;
 
-    @Column(name = "token_value")
-    private String value;
 
-    @Builder
-    public RefreshToken(String key, String value) {
-        this.key = key;
-        this.value = value;
+    private String refreshToken;
+
+    @Indexed
+    private String accessToken;
+    @TimeToLive(unit = TimeUnit.MILLISECONDS)
+    private Long expired;
+
+    public void update(String refreshToken) {
+        this.refreshToken = refreshToken;
+        this.expired = REFRESH_TOKEN_EXPIRE_TIME;
     }
 
-    public RefreshToken updateValue(String token) {
-        this.value = token;
-        return this;
-    }
+
 }

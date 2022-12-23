@@ -83,14 +83,14 @@ public class MemberAuthController {
 
     // 로그인
     @PostMapping(value = "/login")
-    public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        return ResponseEntity.ok(authService.login(loginRequest, response));
+    public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(authService.login(loginRequest));
     }
 
     // 재발급
     @PostMapping(value = "/reissue")
-    public ResponseEntity<TokenInfoDTO> reissue(@RequestBody TokenDTO.TokenIssueDTO tokenReissueDTO, HttpServletResponse response, @CookieValue(name = REFRESH_TOKEN) String refreshToken) {
-        return ResponseEntity.ok(authService.reissue(tokenReissueDTO, response, refreshToken));
+    public ResponseEntity<TokenInfoDTO> reissue(@RequestBody TokenDTO.AccessTokenDTO accessTokenDTO) {
+        return ResponseEntity.ok(authService.reissue(accessTokenDTO));
     }
 
 
