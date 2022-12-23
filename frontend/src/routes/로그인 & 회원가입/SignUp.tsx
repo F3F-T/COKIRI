@@ -9,6 +9,8 @@ import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
 import Message from "../../component/로그인 & 회원가입/Message";
 
+import {stringify} from "querystring";
+import axios from "axios";
 
 const SignUp = () => {
 
@@ -24,17 +26,41 @@ const SignUp = () => {
     const [passwordCheck, setpasswordCheck] = useState<boolean>(undefined);
 
     const [userInfo, setuserInfo] = useState<UserInfo>(null);
-
+    const [postResult, setPostResult] = useState(null);
     const navigate = useNavigate();
 
-    const signUpButtonClick = () => {
 
+    const formatResponse = (result) => {
+        //두번째 replace parameter는 filter같은 역할을 한다.
+        //세번째 parameter는 원하는 공백
+        JSON.stringify(result, null, 2);
 
-
-
-        navigate(`/signup/emailcheck`)
     }
 
+    async function postSignUpData() {
+        try {
+            const res = await axios.post("http://localhost:8080/auth/signup", userInfo);
+
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: res.headers,
+                data: res.data,
+            };
+            console.log(result);
+            // setPostResult(formatResponse(result));
+        } catch (err) {
+            console.log(err);
+
+        }
+    }
+
+
+    const signUpButtonClick = () => {
+        console.log(userInfo);
+        postSignUpData();
+    }
+
+    //입력완료하면 값이 state에 저장된다.
     const onChangeEmail = (e) => {
         setuserInfo((prevState) => {
             return {...prevState, email: e.target.value}
@@ -116,9 +142,8 @@ const SignUp = () => {
             </div>
 
         </div>
-
-
     );
 }
+
 
 export default SignUp;
