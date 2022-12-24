@@ -31,14 +31,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
 @WebMvcTest(PostController.class)
@@ -107,6 +107,17 @@ public class PostControllerTest {
                 .id(1L)
                 .build();
         return member;
+    }
+
+    public UpdatePostRequest createUpdatePostRequest() {
+        return UpdatePostRequest.builder()
+                .id(1L)
+                .title("제목 맘에 안들어서 바꿈")
+                .content("내용도 바꿀래요")
+                .productCategory(null)
+                .wishCategory(null)
+                .postTags(null)
+                .build();
     }
 
     public PostSaveRequest createPostSaveRequest(Member author, boolean tradeEachOther) {
@@ -184,14 +195,27 @@ public class PostControllerTest {
     }
 
 
-//    @Test
-//    @DisplayName("게시글 수정 테스트")
-//    @WithMockCustomUser
-//    public void updatePostSuccessTest() throws Exception {
-//        //given
-//        doReturn(1L).when(postService).updatePost(any());
-//        //when
-//
-//        //then
-//    }
+    @Test
+    @DisplayName("게시글 수정 테스트")
+    @WithMockCustomUser
+    public void updatePostSuccessTest() throws Exception {
+        //given
+        doReturn(new PostInfoDto()).when(postService).updatePost(any());
+        Member member = createMember();
+
+        //when
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
+        UpdatePostRequest updatePostRequest = createUpdatePostRequest();
+        Long postId = postService.savePost(postSaveRequest);
+
+        //then
+        mockMvc.perform(patch("/post" + "/{postId}", 1L)
+        .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updatePostRequest)))
+                .andDo(print())
+                .andExpect(status().isOk());
+//                .andExpect(jsonPath("$.title").value(updatePostRequest.getTitle()));
+    }
+
+
 }
