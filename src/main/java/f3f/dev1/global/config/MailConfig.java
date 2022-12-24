@@ -9,12 +9,14 @@ import java.util.Properties;
 
 @Configuration
 public class MailConfig {
+
+
     @Bean
     public JavaMailSender javaMailService() {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost("smtp.naver.com");
         javaMailSender.setUsername("cokiri_dev_team");
-        javaMailSender.setPassword(System.getenv("MAIL_PASSWORD"));
+        javaMailSender.setPassword(System.getenv("EMAIL_PASSWORD"));
 
         javaMailSender.setPort(465);
 

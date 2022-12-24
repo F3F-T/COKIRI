@@ -174,6 +174,15 @@ public class MemberDTO {
     public static class ConfirmEmailDto {
         private String email;
     }
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class EmailSentDto {
+        private String email;
+        private boolean success;
+    }
+
 
 
     @Builder
@@ -181,7 +190,17 @@ public class MemberDTO {
     @NoArgsConstructor
     @Getter
     public static class EmailConfirmCodeDto {
+
+        private String email;
         private String code;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class CodeConfirmDto {
+        private boolean matches;
     }
 
 

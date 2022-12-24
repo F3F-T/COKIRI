@@ -16,6 +16,7 @@ import f3f.dev1.global.error.exception.NotFoundByIdException;
 import f3f.dev1.global.jwt.JwtTokenProvider;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -46,7 +47,7 @@ public class AuthService {
 
     private final ScrapService scrapService;
 
-    private final HttpSession session;
+
 
     @Transactional
     public String signUp(SignUpRequest signUpRequest) {

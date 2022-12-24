@@ -49,11 +49,17 @@ public class MemberAuthController {
 
     // 이메일 인증 요청
     @PostMapping(value = "/mailConfirm")
-    public ResponseEntity<EmailConfirmCodeDto> mailConfirm(@RequestBody ConfirmEmailDto confirmEmailDto) throws Exception {
+    public ResponseEntity<EmailSentDto> mailConfirm(@RequestBody ConfirmEmailDto confirmEmailDto) throws Exception {
 
-        String code = emailCertificationService.sendSimpleMessage(confirmEmailDto.getEmail());
-        EmailConfirmCodeDto codeDto = EmailConfirmCodeDto.builder().code(code).build();
-        return ResponseEntity.ok(codeDto);
+        emailCertificationService.sendSimpleMessage(confirmEmailDto.getEmail());
+        return ResponseEntity.ok(EmailSentDto.builder().email(confirmEmailDto.getEmail()).success(true).build());
+    }
+
+    // 코드 인증 요청
+    @PostMapping(value = "/codeConfirm")
+    public ResponseEntity<CodeConfirmDto> codeConfirm(@RequestBody EmailConfirmCodeDto emailConfirmCodeDto) {
+        return ResponseEntity.ok(emailCertificationService.confirmCode(emailConfirmCodeDto));
+
     }
 
     // 이메일 찾기
