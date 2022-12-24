@@ -31,6 +31,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
@@ -119,6 +120,17 @@ public class PostControllerTest {
                 .build();
     }
 
+    public PostSaveRequest createPostSaveRequestWithDynamicAuthorId(Long authorId, boolean tradeEachOther) {
+        return PostSaveRequest.builder()
+                .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
+                .title("3년 신은 양말 거래 희망합니다")
+                .tradeEachOther(tradeEachOther)
+                .authorId(authorId)
+                .productCategory(null)
+                .wishCategory(null)
+                .build();
+    }
+
     @Test
     @DisplayName("게시글 생성 테스트")
     @WithMockCustomUser
@@ -143,17 +155,41 @@ public class PostControllerTest {
                         fieldWithPath("productCategory").description("productCategory value of post"),
                         fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
                         fieldWithPath("wishCategory").description("wishCategory value of post"),
-                        fieldWithPath("content").description("content value of post"),
                         fieldWithPath("authorId").description("author id value of post"),
+                        fieldWithPath("content").description("content value of post"),
                         fieldWithPath("title").description("title value of post")
                 )));
     }
 
+
+    @Test
+    @DisplayName("게시글 전체 조회 테스트")
+    public void getAllPostInfoSuccessTest() throws Exception {
+        //given
+        PostSaveRequest postSaveRequest = createPostSaveRequestWithDynamicAuthorId(1L, false);
+        PostSaveRequest postSaveRequest2 = createPostSaveRequestWithDynamicAuthorId(2L, false);
+        PostSaveRequest postSaveRequest3 = createPostSaveRequestWithDynamicAuthorId(3L, false);
+
+        //when
+        Long postId = postService.savePost(postSaveRequest);
+        Long postId2 = postService.savePost(postSaveRequest2);
+        Long postId3 = postService.savePost(postSaveRequest3);
+
+        //then
+        mockMvc.perform(get("/post")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString("")))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+
 //    @Test
-//    @DisplayName("게시글 생성 실패 - ")
-//    public void () throws Exception {
+//    @DisplayName("게시글 수정 테스트")
+//    @WithMockCustomUser
+//    public void updatePostSuccessTest() throws Exception {
 //        //given
-//
+//        doReturn(1L).when(postService).updatePost(any());
 //        //when
 //
 //        //then
