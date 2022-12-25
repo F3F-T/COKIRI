@@ -11,6 +11,7 @@ import f3f.dev1.domain.post.exception.NotMatchingCommentException;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
+import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -44,12 +45,18 @@ public class CommentService {
     // 부모 자식 대통합
     @Transactional
     public CommentInfoDto createComment(CreateCommentRequest createCommentRequest) {
-        Member user = memberRepository.findById(createCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+        Member user = memberRepository.findById(createCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Post post = postRepository.findById(createCommentRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         // 유저, 포스트 존재 확인
+
+        if(!currentMemberId.equals(user.getId())) {
+            throw new NotMatchingAuthorException("현재 로그인한 사용자가 요청자가 아닙니다.");
+        }
+
         if(createCommentRequest.getParentCommentId() == null) {
             // 부모 댓글이 null이라면 부모 댓글로 처리
-            Comment parentComment = createCommentRequest.toEntity(post, null);
+            Comment parentComment = createCommentRequest.toEntity(post, user, null);
             commentRepository.save(parentComment);
             CommentInfoDto commentInfoDto = CommentInfoDto.builder()
                     .memberId(parentComment.getAuthor().getId())
@@ -61,7 +68,7 @@ public class CommentService {
         } else {
             // 부모 댓글이 존재한다면 자식 댓글로 처리
             Comment parentComment = commentRepository.findById(createCommentRequest.getParentCommentId()).orElseThrow(NotFoundByIdException::new);
-            Comment comment = createCommentRequest.toEntity(post, parentComment);
+            Comment comment = createCommentRequest.toEntity(post, user, parentComment);
             // TODO 피드백 부분, 일단은 아래와 같이 작성해두고 나중에 다시 생각해보기로 하자
             parentComment.getChilds().add(comment);
             CommentInfoDto commentInfoDto = CommentInfoDto.builder()

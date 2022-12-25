@@ -15,14 +15,13 @@ import java.util.List;
 public class CommentDTO {
 
 
-    // TODO 문제 생길 여지 있어보임
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CreateCommentRequest {
         @NotNull
-        private Member author;
+        private Long authorId;
         @NotNull
         private Long postId;
         private Long depth;
@@ -30,10 +29,10 @@ public class CommentDTO {
         private String content;
         private Long parentCommentId;
 
-        public Comment toEntity(Post post, Comment parentComment) {
+        public Comment toEntity(Post post, Member author, Comment parentComment) {
             return Comment.builder()
                     .post(post)
-                    .author(this.author)
+                    .author(author)
                     .content(this.content)
                     .depth(this.depth)
                     .parent(parentComment)
