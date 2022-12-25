@@ -49,7 +49,7 @@ const SignUp = () => {
             console.log(result);
             // setPostResult(formatResponse(result));
         } catch (err) {
-            console.log(err); //
+            console.log(err); ///
 
         }
     }
