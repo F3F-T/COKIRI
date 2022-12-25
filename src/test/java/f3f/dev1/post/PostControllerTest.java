@@ -246,6 +246,34 @@ public class PostControllerTest {
                 )));
     }
 
+    @Test
+    @DisplayName("게시글 아이디로 특정 게시글 조회 테스트")
+    public void getPostInfoByPostIdTestSuccess() throws Exception {
+        //given
+        Member member = new Member();
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
+        PostInfoDto postInfoDto = PostInfoDto.builder().title(postSaveRequest.getTitle()).build();
+        postService.savePost(postSaveRequest);
+        doReturn(postInfoDto).when(postService).findPostById(any());
+
+        //when & then
+        mockMvc.perform(get("/post/{postId}", 1L)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(""))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(postInfoDto.getTitle()))
+                .andDo(document("post/readPostById/successful", responseFields(
+                        fieldWithPath("id").description("Id value of post"),
+                        fieldWithPath("content").description("content value of post"),
+                        fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
+                        fieldWithPath("authorNickname").description("authorNickname value of post"),
+                        fieldWithPath("wishCategory").description("wishCategory name value of post"),
+                        fieldWithPath("productCategory").description("productCategory name value of post"),
+                        fieldWithPath("title").description("title name value of post"),
+                        fieldWithPath("tradeStatus").description("tradeStatus value of post")
+                )));
+    }
 
     @Test
     @DisplayName("게시글 삭제 테스트")

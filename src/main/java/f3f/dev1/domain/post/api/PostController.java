@@ -42,11 +42,12 @@ public class PostController {
     }
 
     // 게시글 정보 조회 - 작성자로
-    @GetMapping(value = "/post/{memberId}")
-    public ResponseEntity<List<PostInfoDto>> getPostInfoByAuthorName(@PathVariable(name = "memberId") Long memberId) {
-        List<PostInfoDto> postInfoDtoList = postService.findPostByAuthor(memberId);
-        return new ResponseEntity<>(postInfoDtoList, HttpStatus.OK);
-    }
+    // TODO 게시글 정보 조회와 URL 형식이 똑같아 모호하다고 함. 일단 두고 나중에 필요하면 URL을 변경하겠다.
+//    @GetMapping(value = "/post/{memberId}")
+//    public ResponseEntity<List<PostInfoDto>> getPostInfoByAuthorName(@PathVariable(name = "memberId") Long memberId) {
+//        List<PostInfoDto> postInfoDtoList = postService.findPostByAuthor(memberId);
+//        return new ResponseEntity<>(postInfoDtoList, HttpStatus.OK);
+//    }
 
     // 게시글 정보 수정
     // 기존 PathVariable 에서 RequestBody로 변경
