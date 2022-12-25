@@ -1,5 +1,7 @@
 package f3f.dev1.domain.post.application;
 
+import f3f.dev1.domain.category.dao.CategoryRepository;
+import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthor;
@@ -30,6 +32,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final TradeRepository tradeRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public Long savePost(PostSaveRequest postSaveRequest) {
@@ -122,7 +125,7 @@ public class PostService {
 
     @Transactional
     public PostInfoDto updatePost(UpdatePostRequest updatePostRequest) {
-        Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(updatePostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         // 게시글 변경 정보가 기존이랑 똑같다면 (변화가 없다면) 예외를 터트리려 했는데, 그럴 필요가 없어보여서 일단은 검증하지 않겠다
         // 근데 또 예외는 던져놓고 처리를 안하는 방법도 있으니 이건 피드백을 받아 볼 예정
         /* TODO
@@ -130,7 +133,11 @@ public class PostService {
             관련 기능이 구현되면 추가할 것이고, 지금은 유효하다고 가정하고 로직을 작성하겠음
          */
 
-        post.updatePostInfos(updatePostRequest);
+        // post.updatePostInfos(updatePostRequest);
+        Category productCategory = categoryRepository.findById(updatePostRequest.getProductCategoryId()).orElseThrow(NotFoundByIdException::new);
+        Category wishCategory = categoryRepository.findById(updatePostRequest.getWishCategoryId()).orElseThrow(NotFoundByIdException::new);
+        post.updatePostInfos(updatePostRequest, productCategory, wishCategory);
+
         PostInfoDto response = PostInfoDto.builder()
                 .title(post.getTitle())
                 .content(post.getContent())
@@ -146,19 +153,19 @@ public class PostService {
     @Transactional
     public String deletePost(DeletePostRequest deletePostRequest) {
         // 먼저 해당 게시글이 존재하는지 검증
-        Post post = postRepository.findById(deletePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(deletePostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         // 그 후 작성자가 요청자와 동일인물인지 검증
         Member author = post.getAuthor();
         // TODO Id로만 비교하는게 좀 걸린다. 그렇다고 비밀번호 검증은 너무 투머치 같기도 하다
-        if(!author.getId().equals(deletePostRequest.getRequester().getId())) {
+        if(!author.getId().equals(deletePostRequest.getRequesterId())) {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
         }
         // 로그인한 사용자가 맞는지 확인
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        if(!currentMemberId.equals(deletePostRequest.getRequester().getId())) {
+        if(!currentMemberId.equals(deletePostRequest.getRequesterId())) {
             throw new NotMatchingAuthorException("현재 로그인한 사용자가 삭제 요청자가 아닙니다.");
         }
-        postRepository.deleteById(deletePostRequest.getId());
+        postRepository.deleteById(deletePostRequest.getPostId());
         return "DELETE";
     }
 

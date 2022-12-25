@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -26,6 +27,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -111,11 +115,11 @@ public class PostControllerTest {
 
     public UpdatePostRequest createUpdatePostRequest() {
         return UpdatePostRequest.builder()
-                .id(1L)
+                .postId(1L)
                 .title("제목 맘에 안들어서 바꿈")
                 .content("내용도 바꿀래요")
-                .productCategory(null)
-                .wishCategory(null)
+                .productCategoryId(null)
+                .wishCategoryId(null)
                 .postTags(null)
                 .build();
     }
@@ -139,6 +143,13 @@ public class PostControllerTest {
                 .authorId(authorId)
                 .productCategory(null)
                 .wishCategory(null)
+                .build();
+    }
+
+    public DeletePostRequest createDeletePostRequest(Long postId, Long authorId) {
+        return DeletePostRequest.builder()
+                .requesterId(authorId)
+                .postId(postId)
                 .build();
     }
 
@@ -200,7 +211,8 @@ public class PostControllerTest {
     @WithMockCustomUser
     public void updatePostSuccessTest() throws Exception {
         //given
-        doReturn(new PostInfoDto()).when(postService).updatePost(any());
+        PostInfoDto postInfoDto = PostInfoDto.builder().title("제목 맘에 안들어서 바꿈").build();
+        doReturn(postInfoDto).when(postService).updatePost(any());
         Member member = createMember();
 
         //when
@@ -213,9 +225,54 @@ public class PostControllerTest {
         .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updatePostRequest)))
                 .andDo(print())
-                .andExpect(status().isOk());
-//                .andExpect(jsonPath("$.title").value(updatePostRequest.getTitle()));
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(updatePostRequest.getTitle()))
+                .andDo(document("post/update/successful", requestFields(
+                        fieldWithPath("postId").description("Id value of post"),
+                        fieldWithPath("title").description("title value of post"),
+                        fieldWithPath("content").description("content value of post"),
+                        fieldWithPath("productCategoryId").description("product category Id value of post"),
+                        fieldWithPath("wishCategoryId").description("wish category Id value of post"),
+                        fieldWithPath("postTags").description("postTag values of post")
+                ), responseFields(
+                        fieldWithPath("id").description("Id value of post"),
+                        fieldWithPath("content").description("content value of post"),
+                        fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
+                        fieldWithPath("authorNickname").description("authorNickname value of post"),
+                        fieldWithPath("wishCategory").description("wishCategory name value of post"),
+                        fieldWithPath("productCategory").description("productCategory name value of post"),
+                        fieldWithPath("title").description("title name value of post"),
+                        fieldWithPath("tradeStatus").description("tradeStatus value of post")
+                )));
     }
 
+
+    @Test
+    @DisplayName("게시글 삭제 테스트")
+    @WithMockCustomUser
+    public void deletePostSuccessTest() throws Exception {
+        //given
+        DeletePostRequest deletePostRequest = createDeletePostRequest(1L, 1L);
+        doReturn("DELETE").when(postService).deletePost(any());
+        doReturn(1L).when(postService).savePost(any());
+        Member member = createMember();
+
+        //when
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
+        Long postId = postService.savePost(postSaveRequest);
+
+
+        //then
+        mockMvc.perform(delete("/post/{postId}", 1L)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(deletePostRequest)))
+                .andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andDo(document("post/delete/succssful", requestFields(
+                        fieldWithPath("postId").description("postId value of post"),
+                        fieldWithPath("requesterId").description("delete requesterId")
+                )));
+        // TODO responseFields 완성해야함
+    }
 
 }
