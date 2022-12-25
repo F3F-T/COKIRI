@@ -23,7 +23,7 @@ public class CommentController {
 
     // 댓글 작성
     @PostMapping(value = "/post/{postId}/comments")
-    public ResponseEntity<CommentInfoDto> createComment(@PathVariable Long postId, @RequestBody @Valid CreateCommentRequest createCommentRequest) {
+    public ResponseEntity<CommentInfoDto> createComment(@PathVariable(name = "postId") Long postId, @RequestBody @Valid CreateCommentRequest createCommentRequest) {
         CommentInfoDto commentInfoDto = commentService.createComment(createCommentRequest);
         return new ResponseEntity<>(commentInfoDto, HttpStatus.CREATED);
     }
@@ -32,14 +32,14 @@ public class CommentController {
     // 단일 댓글 조회 기능은 x
     // 게시글 단위 댓글 조회 기능만 제공
     @GetMapping(value = "/post/{postId}/comments")
-    public ResponseEntity<List<CommentInfoDto>> findCommentsByPostId(@PathVariable Long postId) {
+    public ResponseEntity<List<CommentInfoDto>> findCommentsByPostId(@PathVariable(name = "postId") Long postId) {
         List<CommentInfoDto> commentInfoDtoList = commentService.findCommentsByPostId(postId);
         return new ResponseEntity<>(commentInfoDtoList, HttpStatus.OK);
     }
 
     // 댓글 수정
     @PatchMapping(value = "/post/{postId}/comments/{commentId}")
-    public ResponseEntity<CommentInfoDto> updateComment(@PathVariable Long postId, @PathVariable Long commentId, @RequestBody UpdateCommentRequest updateCommentRequest) {
+    public ResponseEntity<CommentInfoDto> updateComment(@PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentId, @RequestBody UpdateCommentRequest updateCommentRequest) {
         CommentInfoDto commentInfoDto = commentService.updateComment(updateCommentRequest);
         return new ResponseEntity<>(commentInfoDto, HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class CommentController {
 
     // 댓글 삭제
     @DeleteMapping(value = "/post/{postId}/comments/{commentsId}")
-    public ResponseEntity<String> deleteComment(@PathVariable Long commentsId, @RequestHeader @Valid DeleteCommentRequest deleteCommentRequest) {
+    public ResponseEntity<String> deleteComment(@PathVariable(name = "postId") Long postId, @PathVariable(name = "commentsId") Long commentsId, @RequestHeader @Valid DeleteCommentRequest deleteCommentRequest) {
         String result = commentService.deleteComment(deleteCommentRequest);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
