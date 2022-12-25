@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
+import static f3f.dev1.domain.token.dto.TokenDTO.*;
 import static f3f.dev1.global.common.constants.JwtConstants.REFRESH_TOKEN;
 
 @Slf4j
@@ -95,7 +96,7 @@ public class MemberAuthController {
 
     // 재발급
     @PostMapping(value = "/reissue")
-    public ResponseEntity<TokenInfoDTO> reissue(@RequestBody TokenDTO.AccessTokenDTO accessTokenDTO) {
+    public ResponseEntity<TokenIssueDTO> reissue(@RequestBody AccessTokenDTO accessTokenDTO) {
         return ResponseEntity.ok(authService.reissue(accessTokenDTO));
     }
 

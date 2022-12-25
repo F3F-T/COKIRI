@@ -19,7 +19,7 @@ public class TokenDTO {
 
         private String refreshToken;
 
-        public TokenIssueDTO toTokenReissueDTO() {
+        public TokenIssueDTO toTokenIssueDTO() {
             return TokenIssueDTO.builder()
                     .accessToken(accessToken)
                     .accessTokenExpiresIn(accessTokenExpiresIn)
