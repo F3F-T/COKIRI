@@ -10,7 +10,6 @@ import exp from "constants";
 
 const cx = classNames.bind(styles)
 
-
 type ButtonTypes = 'black' | 'white' | 'lightblue'
 type ButtonColor = "white" | "black"
 type ButtonSize = "large" | "medium" | "small";
@@ -60,5 +59,10 @@ const Button = (buttonProps: ButtonProps) => {
         </>
     );
 }
+
+
+
+
+
 
 export default Button;

@@ -21,7 +21,8 @@ import categoryReducer from "./store/categoryReducer";
 //store/counterReducer에서 만든 reducer, action, state, 초기 설정값등을 reducer에 묶어주고, counter로 선언해준다
 export const store = configureStore({
     reducer : {
-        categoryReducer : categoryReducer
+        categoryReducer : categoryReducer,
+
     }
 })
 

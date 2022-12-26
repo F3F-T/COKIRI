@@ -39,7 +39,7 @@ const SignUp = () => {
 
     async function postSignUpData() {
         try {
-            const res = await axios.post("http://localhost:8080/auth/signup", userInfo);
+            const res = await axios.post("/auth/signup", userInfo);
 
             const result = {
                 status: res.status + "-" + res.statusText,

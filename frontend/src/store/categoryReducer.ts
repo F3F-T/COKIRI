@@ -12,7 +12,7 @@ import {createSlice,PayloadAction} from "@reduxjs/toolkit";
  */
 
 interface InitialCategoryState{
-    category : string
+    category : string;
 }
 
 const initialCategoryState : InitialCategoryState = {category : "도서"}
