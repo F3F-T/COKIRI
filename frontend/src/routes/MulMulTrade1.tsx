@@ -16,12 +16,17 @@ const MulmulTrade1 = () => {
 
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
-
+    const categories2: string[]=
+        ['생활가전',  '유아동',  '뷰티/미용',
+            '티켓/교환권', '식물', '반려동물용품', '가공용품', '취미/게임', '생활/주방']
     let navigate = useNavigate();
     return (
         <div className={styles.mulmulTrade}>
             <div className={styles.mulmulTradeContent}>
-                <div className={styles.navPostOrWant}>{store.categoryReducer.category}를 올린 사람들이에요</div>
+                { categories2.includes(store.categoryReducer.category)?
+                    <div className={styles.navPostOrWant}>{store.categoryReducer.category}을 올린 사람들이에요</div> :
+                    <div className={styles.navPostOrWant}>{store.categoryReducer.category}를 올린 사람들이에요</div>
+                }
                 <div className={styles.popularOrNewest}>
                     <div className={styles.pupularBtn}>인기도순</div>
                     <div className={styles.slash}>|</div>

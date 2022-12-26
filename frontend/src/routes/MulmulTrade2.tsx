@@ -15,13 +15,13 @@ import {resetCategory} from "../store/categoryReducer";
 const MulmulTrade2 = () => {
     let navigate = useNavigate();
 
-    const store = useSelector((state:Rootstate) => state);
+    const store = useSelector((state:Rootstate) => state.categoryReducer);
     const dispatch = useDispatch();
 
     return (
             <div className={styles.mulmulTrade}>
                 <div className={styles.mulmulTradeContent}>
-                    <div className={styles.navPostOrWant}>{store.categoryReducer.category}를 원하는 사람들이에요.</div>
+                    <div className={styles.navPostOrWant}>{store.category}를 원하는 사람들이에요.</div>
                     <div className={styles.popularOrNewest}>
                         <div className={styles.pupularBtn}>인기도순</div>
                         <div className={styles.slash}>|</div>

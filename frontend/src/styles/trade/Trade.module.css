@@ -51,11 +51,10 @@ postOrWant_2{
 }
 .navPostOrWant{
     /*border: 0.5px solid red;*/
-    padding-top: 0.5rem;
-    margin-left: 2rem;
     font-size: 2rem;
     height: 3rem;
     text-align: left;
+    font-weight: bold;
 }
 .popularOrNewest{
     display: flex;
@@ -65,7 +64,9 @@ postOrWant_2{
     /*border: 0.5px solid red;*/
     align-items: center;
     height: 3rem;
-    margin: 2rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+
 }
 .pupularBtn{
 

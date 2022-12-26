@@ -4,7 +4,8 @@ import profileImg from "../../img/profileImg.png";
 import classNames from "classnames/bind";
 import myImage from "../../img/cokkiriLogo.png";
 import PostContainer from "../trade/PostContainer";
-
+import transfer from "../../img/transfer.png"
+import tradeEx from "../../img/tradeEx.jpeg"
 
 
 //classNames로 styles를 bind해서 styles에 쉽게 접근하고 css 조건문을 쉽게 달수있게 돕는 API
@@ -28,13 +29,16 @@ const TradeCard = (props1:props)=>{
     return(
         <>
             <div className={styles.postItem}>
-                <img className={styles.postImage} src = {myImage}/>
+                <img className={styles.postImage} src = {tradeEx}/>
                 <p className={styles.postTitle}>{props1.postTitle}</p>
                 <p className={styles.postContent}>{props1.postContent}</p>
                 <div className={styles.detail}>
-                    <li>{props1.like}</li>
-                    <li>{props1.comment}</li>
-                    <li>{props1.category}</li>
+                    <p className={styles.like}>좋아요 {props1.like}개</p>
+                    <div className={styles.detail2}>
+                        <img className={styles.tradeImage} src = {transfer}/>
+                        <p className={styles.like}>{props1.category}</p>
+                    </div>
+
                 </div>
             </div>
 
@@ -49,9 +53,9 @@ const MypageCard = (props1:props)=>{
                 <p className={styles.postTitle}>{props1.postTitle}</p>
                 <p className={styles.postContent}>{props1.postContent}</p>
                 <div className={styles.detail}>
-                    <li>{props1.like}</li>
-                    <li>{props1.comment}</li>
-                    <li>{props1.category}</li>
+                    <p>{props1.like}</p>
+                    <p>{props1.comment}</p>
+                    <p>{props1.category}</p>
                 </div>
             </div>
 
@@ -59,24 +63,6 @@ const MypageCard = (props1:props)=>{
     )
 }
 
-const TalkCard = (props1:props)=>{
-    return(
-        <>
-            <div className={styles.postItem}>
-                <img className={styles.postImage} src = {myImage}/>
-                <div>
-
-                <p className={styles.postTitle}>{props1.postTitle}</p>
-                <div className={styles.detail}>
-                    <li>{props1.category}</li>
-                </div>
-                </div>
-
-            </div>
-
-        </>
-    )
-}
 
 const Card = (props1: props)=>{
     return(
