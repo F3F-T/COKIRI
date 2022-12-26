@@ -48,7 +48,6 @@ const SignUp = () => {
             };
             console.log(result);
             alert('로그인 성공');
-            navigate('/signup/emailcheck')
             // setPostResult(formatResponse(result));
         } catch (err) {
             console.log(err); ///
@@ -61,6 +60,7 @@ const SignUp = () => {
     const signUpButtonClick = () => {
         console.log(userInfo);
         postSignUpData();
+        navigate('/signup/emailcheck')
     }
 
     //입력완료하면 값이 state에 저장된다.
