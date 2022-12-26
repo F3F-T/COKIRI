@@ -5,16 +5,21 @@ import f3f.dev1.domain.member.application.EmailCertificationService;
 import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.token.dto.TokenDTO;
 import f3f.dev1.domain.token.dto.TokenDTO.TokenInfoDTO;
+import f3f.dev1.global.common.constants.GoogleAuthConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.token.dto.TokenDTO.*;
+import static f3f.dev1.global.common.constants.GoogleAuthConstants.GOOGLE_LOGIN_URL;
+import static f3f.dev1.global.common.constants.GoogleAuthConstants.GOOGLE_REDIRECT_URL;
 import static f3f.dev1.global.common.constants.JwtConstants.REFRESH_TOKEN;
 
 @Slf4j
@@ -93,6 +98,28 @@ public class MemberAuthController {
     public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.login(loginRequest));
     }
+
+//    // 구글 로그인 페이지로 이동
+//    @GetMapping(value = "/google-login")
+//    public ResponseEntity<GoogleLoginUrlDto> googleLoginUrl() {
+//        return ResponseEntity.ok(GoogleLoginUrlDto.builder().url(GOOGLE_LOGIN_URL + "/o/oauth2/v2/auth?client_id=" + System.getenv("GOOGLE_CLIENT") + "&redirect_url=" + GOOGLE_REDIRECT_URL + "&response_type=code&scope=email%20profile%20openid&access_type=offline").build());
+//    }
+//
+//    // 구글 연동 정보 조회
+//    @PostMapping(value = "/google-login")
+//    public ResponseEntity<UserLoginDto> googleLogin(HttpServletRequest request, @RequestParam(value = "code") String authCode, HttpServletResponse response) {
+//        // restTemplate 호출
+//        RestTemplate restTemplate = new RestTemplate();
+//
+//        GoogleOAuthRequest googleOAuthRequest = GoogleOAuthRequest.builder()
+//                .clientId(System.getenv("GOOGLE_CLIENT"))
+//                .clientSecret(System.getenv("GOOGLE_SECRET"))
+//                .code(authCode)
+//                .redirectUrl(GOOGLE_REDIRECT_URL)
+//                .grantType("authorization_code").build();
+//
+//        ResponseEntity<JSON>
+//    }
 
     // 재발급
     @PostMapping(value = "/reissue")
