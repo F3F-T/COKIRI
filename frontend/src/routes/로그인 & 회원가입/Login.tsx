@@ -45,7 +45,9 @@ const Login = () => {
             const res = await axios.post("/auth/login", userInfo);
 
             const accessToken = res.data;
+
             axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+            console.log("토큰값")
             console.log(accessToken);
 
             const result = {
