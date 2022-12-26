@@ -17,10 +17,10 @@ const SignUp = () => {
     interface UserInfo {
         email: string;
         password: string;
-        name: string;
-        birth: number;
+        userName: string;
+        birthDate: number;
         nickname: string;
-        phonenumber: number;
+        phoneNumber: number;
     }
 
     const [passwordCheck, setpasswordCheck] = useState<boolean>(undefined);
@@ -47,9 +47,12 @@ const SignUp = () => {
                 data: res.data,
             };
             console.log(result);
+            alert('로그인 성공');
+            navigate('/signup/emailcheck')
             // setPostResult(formatResponse(result));
         } catch (err) {
             console.log(err); ///
+            alert('로그인 실패');
 
         }
     }
@@ -85,13 +88,13 @@ const SignUp = () => {
 
     const onChangeName = (e) => {
         setuserInfo((prevState) => {
-            return {...prevState, name: e.target.value}
+            return {...prevState, userName: e.target.value}
         })
     }
 
     const onChangeBirth = (e) => {
         setuserInfo((prevState) => {
-            return {...prevState, birth: e.target.value}
+            return {...prevState, birthDate: e.target.value}
         })
     }
 
@@ -103,7 +106,7 @@ const SignUp = () => {
 
     const onChangePhoneNumber = (e) => {
         setuserInfo((prevState) => {
-            return {...prevState, phonenumber: e.target.value}
+            return {...prevState, phoneNumber: e.target.value}
         })
     }
 
