@@ -39,6 +39,13 @@ const SignUp = () => {
 
     async function postSignUpData() {
         try {
+
+            /**
+             * TODO: 함민혁) 여기서 url 주소 변경, post를 get으로 바꿔보고 console.log로 백엔드와 프론트엔드가 어떻게 연결이 되는지 확인해보기 (느낌만 파악하기)
+             */
+
+
+
             const res = await axios.post("/auth/signup", userInfo);
 
             const result = {

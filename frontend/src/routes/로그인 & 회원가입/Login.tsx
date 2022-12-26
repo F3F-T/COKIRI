@@ -42,6 +42,7 @@ const Login = () => {
 
     async function postLoginData() {
         try {
+
             const res = await axios.post("/auth/login", userInfo);
 
             const accessToken = res.data;
