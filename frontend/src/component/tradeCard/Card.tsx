@@ -48,6 +48,7 @@ const TradeCard = (props1:props)=>{
 const MypageCard = (props1:props)=>{
     return(
         <>
+
             <div className={styles.postItem}>
                 <img className={styles.postImage} src = {myImage}/>
                 <p className={styles.postTitle}>{props1.postTitle}</p>
