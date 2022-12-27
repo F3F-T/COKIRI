@@ -8,7 +8,6 @@ import Card from "../tradeCard/Card"
 import Comments from "../comments/Comments";
 
 
-// ㅂㅅ
 const PostContainer = () => {
 
         let navigate = useNavigate();

@@ -17,31 +17,11 @@ const MyPage = () =>  {
 
     const navigate = useNavigate();
 
-    function setDealTab(tab){
+    function setDealTab(tab) {
         setTab(tab)
         console.log(tab1)
         // return tab
     }
-    // const ref = useRef(null);
-    // const [text, setText] = useState(init);
-    // const [editable, setEditable] = useState(false);
-    // const editOn = () => {
-    //     setEditable(true);
-    // };
-    // const handleChange = (e) => {
-    //     setText(e.target.value);
-    // };
-    // const handleKeyDown = (e) => {
-    //     if (e.key === "Enter") {
-    //         setEditable(!editable);
-    //     }
-    // };
-    // const handleClickOutside = (e) => {
-    //     if (editable == true && !ref.current.contains(e.target)) setEditable(false);
-    // };
-    // useEffect(() => {
-    //     window.addEventListener("click", handleClickOutside, true);
-    // });
 
     return (
             <>

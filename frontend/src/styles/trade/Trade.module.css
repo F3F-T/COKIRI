@@ -69,10 +69,23 @@ postOrWant_2{
 
 }
 .pupularBtn{
+    border: none;
+    background-color: transparent;
+}
+.pupularBtnactive{
+    border: none;
+    font-weight: bold;
+    background-color: transparent;
 
 }
 .newsetBtn{
-
+    border: none;
+    background-color: transparent;
+}
+.newsetBtnactive{
+    border: none;
+    font-weight: bold;
+    background-color: transparent;
 }
 .slash{
     padding-left: 1rem;

@@ -13,6 +13,16 @@ import {resetCategory} from "../store/categoryReducer";
 
 
 const MulmulTrade1 = () => {
+    const [tab1, setTab] = useState('curr');
+    function setDealTab(tab){
+        setTab(tab)
+        console.log(tab1)
+        return(
+            <>
+                <button className={styles.pupularBtnactive}>d인기도순</button>
+            </>
+        )
+    }
 
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
@@ -28,9 +38,15 @@ const MulmulTrade1 = () => {
                     <div className={styles.navPostOrWant}>{store.categoryReducer.category}를 올린 사람들이에요</div>
                 }
                 <div className={styles.popularOrNewest}>
-                    <div className={styles.pupularBtn}>인기도순</div>
-                    <div className={styles.slash}>|</div>
-                    <div className={styles.newsetBtn}>누적도순</div>
+                    {/*<button className={styles.pupularBtn}>인기도순</button>*/}
+                    {/*<button className={`${styles["pupularBtn"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>인기도순</button>*/}
+                    {tab1 === 'curr' ? <button className={`${styles["pupularBtn"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>✓인기도순</button>
+                    : <button className={`${styles["pupularBtn"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>인기도순</button>
+                    }
+                    {tab1 === 'next' ? <button className={`${styles["newsetBtn"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>✓누적도순</button>
+                        : <button className={`${styles["newsetBtn"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>누적도순</button>
+                    }
+                    {/*<button className={styles.newsetBtn}>누적도순</button>*/}
                 </div>
                 <PostContainer/>
             </div>
