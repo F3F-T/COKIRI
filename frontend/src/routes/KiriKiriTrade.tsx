@@ -10,10 +10,14 @@ import PostContainer from "../component/trade/PostContainer";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
 import {resetCategory} from "../store/categoryReducer";
+import Button from "../component/common/Button";
 
 
 const KiriKiriTrade = () => {
-
+    const [tab1, setTab] = useState('curr');
+    function setDealTab(tab){
+        setTab(tab)
+    }
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
 
@@ -32,16 +36,21 @@ const KiriKiriTrade = () => {
             <div className={styles.mulmulTradeContent}>
                 <div className={styles.categoryBox}>
                     <div className={styles.forWho}>
-                        <button className={styles.forWho_1}>끼리끼리 교환해요.</button>
+                        <Button className={"lightblue"} content={"끼리끼리 교환해요"} hover={true} size={"small"}/>
                     </div>
                     <TradeCategory/>
                     <PriceBox/>
                 </div>
                 <div className={styles.navPostOrWant}>{store.categoryReducer.category}끼리 교환해요</div>
                 <div className={styles.popularOrNewest}>
-                    <div className={styles.pupularBtn}>인기도순</div>
-                    <div className={styles.slash}>|</div>
-                    <div className={styles.newsetBtn}>누적도순</div>
+                    <div className={styles.popularOrNewest}>
+                        {tab1 === 'curr' ? <button className={`${styles["pupularBtn"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>✓인기도순</button>
+                            : <button className={`${styles["pupularBtn"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>인기도순</button>
+                        }
+                        {tab1 === 'next' ? <button className={`${styles["newsetBtn"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>✓누적도순</button>
+                            : <button className={`${styles["newsetBtn"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>누적도순</button>
+                        }
+                    </div>
                 </div>
                 <PostContainer/>
             </div>

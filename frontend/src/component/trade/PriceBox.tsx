@@ -11,14 +11,14 @@ const PriceBox = () => {
     return ( //
         <div className={styles.priceBox}>
             <div className={styles.priceList}>
-                <button className="priceBtn">"5천원~1만원"</button>
-                <button className="priceBtn">"1만원~3만원"</button>
-                <button className="priceBtn">"3만원~10만원"</button>
-                <button className="priceBtn">"10만원~20만원"</button>
-                <button className="priceBtn">"20만원~30만원"</button>
-                <button className="priceBtn">"30만원~50만원"</button>
-                <button className="priceBtn">"50만원~100만원"</button>
-                <button className="priceBtn">"100만원~"</button>
+                <button className="priceBtn">5천원~1만원</button>
+                <button className="priceBtn">1만원~3만원</button>
+                <button className="priceBtn">3만원~10만원</button>
+                <button className="priceBtn">10만원~20만원</button>
+                <button className="priceBtn">20만원~30만원</button>
+                <button className="priceBtn">30만원~50만원</button>
+                <button className="priceBtn">50만원~100만원</button>
+                <button className="priceBtn">100만원~</button>
                 {/*<Button content={"5천원~1만원"}/>*/}
                 {/*<Button content={"1만원~3만원"}/>*/}
                 {/*<Button content={"3만원~10만원"}/>*/}
