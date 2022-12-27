@@ -3,24 +3,19 @@ package f3f.dev1.domain.member.api;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.EmailCertificationService;
 import f3f.dev1.domain.member.application.MemberService;
-import f3f.dev1.domain.token.dto.TokenDTO;
-import f3f.dev1.domain.token.dto.TokenDTO.TokenInfoDTO;
-import f3f.dev1.global.common.constants.GoogleAuthConstants;
+import f3f.dev1.domain.member.application.OAuth2UserService;
+import f3f.dev1.domain.member.dto.OAuthDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
-import static f3f.dev1.domain.token.dto.TokenDTO.*;
-import static f3f.dev1.global.common.constants.GoogleAuthConstants.GOOGLE_LOGIN_URL;
-import static f3f.dev1.global.common.constants.GoogleAuthConstants.GOOGLE_REDIRECT_URL;
-import static f3f.dev1.global.common.constants.JwtConstants.REFRESH_TOKEN;
+import static f3f.dev1.domain.token.dto.TokenDTO.AccessTokenDTO;
+import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 
 @Slf4j
 @RestController
@@ -32,6 +27,8 @@ public class MemberAuthController {
     private final EmailCertificationService emailCertificationService;
 
     private final AuthService authService;
+
+    private final OAuth2UserService oAuth2UserService;
 
 
     // 이메일 중복 확인
@@ -99,27 +96,20 @@ public class MemberAuthController {
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
-//    // 구글 로그인 페이지로 이동
-//    @GetMapping(value = "/google-login")
-//    public ResponseEntity<GoogleLoginUrlDto> googleLoginUrl() {
-//        return ResponseEntity.ok(GoogleLoginUrlDto.builder().url(GOOGLE_LOGIN_URL + "/o/oauth2/v2/auth?client_id=" + System.getenv("GOOGLE_CLIENT") + "&redirect_url=" + GOOGLE_REDIRECT_URL + "&response_type=code&scope=email%20profile%20openid&access_type=offline").build());
-//    }
-//
-//    // 구글 연동 정보 조회
-//    @PostMapping(value = "/google-login")
-//    public ResponseEntity<UserLoginDto> googleLogin(HttpServletRequest request, @RequestParam(value = "code") String authCode, HttpServletResponse response) {
-//        // restTemplate 호출
-//        RestTemplate restTemplate = new RestTemplate();
-//
-//        GoogleOAuthRequest googleOAuthRequest = GoogleOAuthRequest.builder()
-//                .clientId(System.getenv("GOOGLE_CLIENT"))
-//                .clientSecret(System.getenv("GOOGLE_SECRET"))
-//                .code(authCode)
-//                .redirectUrl(GOOGLE_REDIRECT_URL)
-//                .grantType("authorization_code").build();
-//
-//        ResponseEntity<JSON>
-//    }
+    // 외부 API 로그인 요청
+    @GetMapping(value = "/social_login/{loginType}")
+    public ResponseEntity<OAuthDTO.SocialLoginUrlDto> socialLogin(@PathVariable(name = "loginType") String loginType) {
+        return ResponseEntity.ok(oAuth2UserService.request(loginType.toUpperCase()));
+
+    }
+
+    // 구글 로그인 콜백 처리
+    @GetMapping(value = "/social_login/{loginType}/callback")
+    public ResponseEntity<UserLoginDto> callback(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
+        return ResponseEntity.ok(oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code));
+    }
+
+
 
     // 재발급
     @PostMapping(value = "/reissue")

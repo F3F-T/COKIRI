@@ -20,7 +20,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    private final OAuth2UserService oAuth2UserService;
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -59,13 +59,8 @@ public class SecurityConfig {
 
                 // JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용
                 .and()
-                .apply(new JwtSecurityConfig(jwtTokenProvider))
+                .apply(new JwtSecurityConfig(jwtTokenProvider));
 
-                // 구글 로그인을 위한 설정
-                .and()
-                .oauth2Login()
-                .userInfoEndpoint()
-                .userService(oAuth2UserService);
 
 
         return http.build();
