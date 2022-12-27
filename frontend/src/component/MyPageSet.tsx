@@ -43,10 +43,7 @@ const MyPage = () =>  {
 
                 </div>
             </div>
-            <div className={styles.menu}>
-                <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>
-                <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>관심 상품</button>
-            </div>
+
             </>
     );
 }

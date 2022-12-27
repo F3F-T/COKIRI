@@ -47,15 +47,15 @@ const TradeCard = (props1:props)=>{
 const MypageCard = (props1:props)=>{
     return(
         <>
-
             <div className={styles.postItem}>
-                <img className={styles.postImage} src = {myImage}/>
+                <img className={styles.postImage} src = {tradeEx}/>
                 <p className={styles.postTitle}>{props1.postTitle}</p>
-                <p className={styles.postContent}>{props1.postContent}</p>
                 <div className={styles.detail}>
-                    <p>{props1.like}</p>
-                    <p>{props1.comment}</p>
-                    <p>{props1.category}</p>
+                    <p className={styles.like}>좋아요 {props1.like}개</p>
+                    <div className={styles.detail2}>
+                        <img className={styles.tradeImage} src = {transfer}/>
+                        <p className={styles.like}>{props1.category}</p>
+                    </div>
                 </div>
             </div>
 
@@ -73,7 +73,7 @@ const Card = (props1: props)=>{
                 </div>}
             {props1.className === "forMypage" &&
                 <div className={ ck(props1.className)}>
-                    <MypageCard postTitle={props1.postTitle} postContent={props1.postContent} like={props1.like} comment={props1.comment} category={props1.category}/>
+                    <MypageCard postTitle={props1.postTitle} like={props1.like} comment={props1.comment} category={props1.category}/>
                 </div>}
 
         </>

@@ -5,7 +5,7 @@
 }
 
 .home{
-    width: 75%;
+    width:1200px;
     margin: auto;
 }
 /************************************************************************
@@ -45,14 +45,15 @@
 
 /*시작하기 설명 폰트 사이즈*/
 .startRight1{
+    margin-left: 3rem;
     font-size: 1em;
 
 }
 
 /*시작하기 버튼*/
 .startRight2 button{
+    margin-left: 3rem;
     margin-top: 1.5rem;
-    margin-right: 1.5rem;
     font-size: 0.75em;
 }
 
@@ -63,7 +64,7 @@
 
 /*물물교환 전체*/
 .mulmulTrade{
-    /*width : 75%;*/
+    margin-top: 4rem;    /*width : 75%;*/
     height: var( --mulmul-height);
     max-height: var( --mulmul-height);
 }
@@ -78,7 +79,8 @@
 추후엔 MulMulcardView module을 따로 빼서 넣어야 함*/
 
 .mulmulCardView{
-
+    margin-top: 4rem;
+    width:1200px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -166,4 +168,14 @@
     width:100%;
     margin-left: 1rem;
     max-height: var( --mulmul-height);
+}
+
+.HomePostContainer{
+    margin-top: 3rem;
+    width: 1200px;
+    border-radius: 10px;
+    /*border: 0.5px solid red;*/
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 1rem;
 }
