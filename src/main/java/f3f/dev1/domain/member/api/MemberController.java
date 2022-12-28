@@ -2,14 +2,10 @@ package f3f.dev1.domain.member.api;
 
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
-import f3f.dev1.domain.member.dao.MemberRepository;
-import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.Address;
-import f3f.dev1.global.error.exception.NotFoundByIdException;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,13 +65,14 @@ public class MemberController {
 
     // 로그아웃
     @DeleteMapping("/user/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ResponseEntity<String> logout(HttpServletRequest request) throws IOException {
 
-
-        return ResponseEntity.ok(authService.logout());
+        String token = request.getHeader("Authorization").split(" ")[1];
+        System.out.println("token = " + token);
+        return ResponseEntity.ok(authService.logout(token));
     }
 
-    // TODO 주소 업데이트 요청 처리 경로 만들어야함, 서비스도
+
     // 마이페이지용 조회 - 유저가 작성한 게시글 리스트 리턴
     @GetMapping("/user/posts")
     public ResponseEntity<GetUserPostDto> getUserPosts() {

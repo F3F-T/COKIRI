@@ -29,6 +29,8 @@ public class OAuth2UserService {
 
     private final MemberRepository memberRepository;
 
+
+
     public SocialLoginUrlDto request(String loginType) {
         String redirectUrl;
         switch (loginType) {

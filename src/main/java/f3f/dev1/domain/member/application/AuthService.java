@@ -13,7 +13,6 @@ import f3f.dev1.domain.token.exception.InvalidAccessTokenException;
 import f3f.dev1.domain.token.exception.InvalidRefreshTokenException;
 import f3f.dev1.domain.token.exception.LogoutUserException;
 import f3f.dev1.domain.token.exception.TokenNotMatchException;
-import f3f.dev1.domain.token.service.TokenService;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import f3f.dev1.global.jwt.JwtTokenProvider;
 import f3f.dev1.global.util.SecurityUtil;
@@ -44,8 +43,6 @@ public class AuthService {
 
     private final ScrapRepository scrapRepository;
 
-    private final TokenService tokenService;
-
     private final ScrapService scrapService;
 
     private final RedisTemplate<String, String> redisTemplate;
@@ -75,13 +72,6 @@ public class AuthService {
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
         // 4. refesh token 저장
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-//        RefreshToken redisRefreshToken = RefreshToken.builder()
-//                .userId(authenticate.getName())
-//                .accessToken(tokenInfoDTO.getAccessToken())
-//                .refreshToken(tokenInfoDTO.getRefreshToken())
-//                .expired(REFRESH_TOKEN_EXPIRE_TIME)
-//                .build();
-//        tokenService.save(redisRefreshToken);
         valueOperations.set(authenticate.getName(), tokenInfoDTO.getRefreshToken());
         valueOperations.set(tokenInfoDTO.getAccessToken(), tokenInfoDTO.getRefreshToken());
         redisTemplate.expire(authenticate.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
@@ -114,7 +104,6 @@ public class AuthService {
         if (accessByMemberId == null) {
             throw new LogoutUserException();
         }
-//        RefreshToken redisRefreshToken = tokenService.findById(authentication.getName());
 
         // 4. refresh token이 일치하는지 검사,
 
@@ -129,7 +118,6 @@ public class AuthService {
         valueOperations.set(tokenInfoDTO.getAccessToken(), tokenInfoDTO.getRefreshToken());
         redisTemplate.expire(authentication.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
         redisTemplate.expire(tokenInfoDTO.getAccessToken(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
-//        tokenService.update(tokenInfoDTO.getRefreshToken(), authentication.getName());
 
 
         // 토큰 발급
@@ -137,8 +125,11 @@ public class AuthService {
     }
 
     @Transactional
-    public String logout() throws IOException {
-        tokenService.delete(Long.toString(SecurityUtil.getCurrentMemberId()));
+    public String logout(String token) throws IOException {
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        valueOperations.getAndDelete(Long.toString(SecurityUtil.getCurrentMemberId()));
+        valueOperations.getAndDelete(token);
+
         return "SUCCESS";
     }
 

@@ -106,7 +106,11 @@ public class MemberAuthController {
     // 구글 로그인 콜백 처리
     @GetMapping(value = "/social_login/{loginType}/callback")
     public ResponseEntity<UserLoginDto> callback(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
-        return ResponseEntity.ok(oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code));
+        UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code);
+        if (userLoginDto.getUserInfo().getNickname() == null) {
+            return new ResponseEntity<>(userLoginDto, HttpStatus.CREATED);
+        }
+        return ResponseEntity.ok(userLoginDto);
     }
 
 
