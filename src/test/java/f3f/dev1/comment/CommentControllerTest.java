@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.domain.comment.api.CommentController;
 import f3f.dev1.domain.comment.application.CommentService;
 import f3f.dev1.domain.comment.dto.CommentDTO;
+import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
@@ -25,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
+import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -55,6 +58,42 @@ public class CommentControllerTest {
                 .apply(sharedHttpSession())
                 .apply(documentationConfiguration(restDocumentationContextProvider))
                 .build();
+    }
+
+    public Address createAddress() {
+        return Address.builder()
+                .addressName("address")
+                .postalAddress("13556")
+                .latitude("37.49455")
+                .longitude("127.12170")
+                .build();
+    }
+
+    public MemberDTO.SignUpRequest createSignUpRequest() {
+        return MemberDTO.SignUpRequest.builder()
+                .userName("username")
+                .nickname("nickname")
+                .phoneNumber("01012345678")
+                .email("userEmail@email.com")
+                .birthDate("990128")
+                .address(createAddress())
+                .password("password")
+                .userLoginType(EMAIL)
+                .build();
+    }
+
+    public Member createMember() {
+        MemberDTO.SignUpRequest signUpRequest = createSignUpRequest();
+        Member member = Member.builder()
+                .phoneNumber(signUpRequest.getPhoneNumber())
+                .birthDate(signUpRequest.getBirthDate())
+                .nickname(signUpRequest.getNickname())
+                .password(signUpRequest.getPassword())
+                .address(signUpRequest.getAddress())
+                .email(signUpRequest.getEmail())
+                .id(1L)
+                .build();
+        return member;
     }
 
     public PostSaveRequest createPostSaveRequest(Member author, boolean tradeEachOther) {
@@ -94,20 +133,26 @@ public class CommentControllerTest {
     @WithMockCustomUser
     public void createCommentTestForSuccess() throws Exception {
         //given
-        Member member = new Member();
-        CreateCommentRequest commentRequest = createCommentRequest(member);
+        doReturn(1L).when(postService).savePost(any());
+        Member member = createMember();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
+        Long postId = postService.savePost(postSaveRequest);
+
+        CreateCommentRequest commentRequest = createCommentRequest(member);
         doReturn(null).when(commentService).createComment(any());
         postService.savePost(postSaveRequest);
 
         //when
-        mockMvc.perform(post("/post/{postId}/comments", 1L)
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(commentRequest)))
-                .andDo(print())
-                .andExpect(status().isCreated());
+//        mockMvc.perform(post("/post")
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .content(objectMapper.writeValueAsString(postSaveRequest)));
 
         //then
+        mockMvc.perform(post("/post/{postId}/comments", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(commentRequest)))
+                .andDo(print())
+                .andExpect(status().isCreated());
     }
 
 }
