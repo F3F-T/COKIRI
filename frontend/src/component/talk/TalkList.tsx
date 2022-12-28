@@ -33,7 +33,7 @@ interface props{
 const TalkListLeft = (props2:props)=>{
 
     // props2.click =click
-    console.log(props2);
+    console.log("이건가",props2);
     return(
         <>
                 <div className={styles.talkContent}>

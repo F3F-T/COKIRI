@@ -52,7 +52,7 @@ const Message = (key: keyProps) => {
     ]
 
     console.log("키 값")
-    console.log(key.keys);
+    console.log("키키키킼",key.keys);
 
     const realKey = key.keys;
     // axios.get( url/chatroom/realKey=1)

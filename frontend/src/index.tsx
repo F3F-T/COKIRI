@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {configureStore} from "@reduxjs/toolkit";
 import {Provider} from "react-redux";
 import categoryReducer from "./store/categoryReducer";
+import postDetailReducer from "./store/postDetailReducer";
 
 /**
  * configureStore을 import해온다.
@@ -22,6 +23,7 @@ import categoryReducer from "./store/categoryReducer";
 export const store = configureStore({
     reducer : {
         categoryReducer : categoryReducer,
+        postDetailReducer : postDetailReducer,
 
     }
 })

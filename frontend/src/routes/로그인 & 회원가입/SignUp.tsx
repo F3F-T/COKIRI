@@ -24,7 +24,6 @@ const SignUp = () => {
     }
 
     const [passwordCheck, setpasswordCheck] = useState<boolean>(undefined);
-
     const [userInfo, setuserInfo] = useState<UserInfo>(null);
     const [postResult, setPostResult] = useState(null);
     const navigate = useNavigate();
@@ -46,7 +45,7 @@ const SignUp = () => {
 
 
 
-            const res = await axios.post("/auth/signup", userInfo);
+            const res = await axios.post("/auth/signup");
 
             const result = {
                 status: res.status + "-" + res.statusText,

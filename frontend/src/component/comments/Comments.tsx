@@ -42,8 +42,6 @@ const PrimaryComment = (commentInfo: CommentProps) => {
             </div>
             <ul className={styles.ProfileActionList}>
                 <li>대댓글</li>
-                <li>공감</li>
-                <li>쪽지</li>
                 <li>신고</li>
             </ul>
         </div>
@@ -67,8 +65,6 @@ const SecondaryComment = (commentInfo: CommentProps) => {
                 </div>
                 <ul className={styles.ProfileActionList}>
                     <li>대댓글</li>
-                    <li>공감</li>
-                    <li>쪽지</li>
                     <li>신고</li>
                 </ul>
             </div>

@@ -1,36 +1,46 @@
 .postDetail{
     width: 800px;
     margin: auto;
+
 }
 /*.post{*/
 /*    width: 800px;*/
 /*    margin: auto;*/
 /*}*/
+.post{
 
+}
 .postTop{
     display : flex;
     flex-direction: row;
-}
 
+
+}
+.postTopProfile{
+
+}
 .postTopProfileImg{
-    width: 4rem;
-    height: 4rem;
+    width: 4.5rem;
+    height: 4.5rem;
 }
 
 .postTopProfileInfo{
     flex-direction: column;
     display: inline-block;
+    margin-left:1rem;
+
 
 }
-
 .postTopNickname{
+    margin-top: 1rem;
     font-size: 1rem;
-    font-width: 700;
+    font-weight: bold;
 
 }
 
 .postTopAddress{
-    font-size: 0.5rem;
+    font-size: 0.8rem;
+    color: gray;
 }
 
 
@@ -38,21 +48,29 @@
     position: relative;
     display: inline;
     margin-left: auto;
-    align-self: center; /*텍스트를 중앙으로 놓는다*/
+    align-self: auto; /*텍스트를 중앙으로 놓는다*/
     margin-right: 3rem;
     font-size: 0.8rem;
+    margin-top: 2.4rem;
+
 }
 
 .postBody{
+    margin-top: 1.5rem;
     display: flex;
     padding-bottom: 2rem;
+    height: 23rem;
     border-bottom: 1px solid gray;
+
+}
+.postImg{
 
 }
 
 .postBodyImg{
     width: 22rem;
     height : 22rem;
+    border-radius: 10px;
 }
 
 .postDetailInfo{
@@ -62,49 +80,94 @@
 }
 
 .postDetailInfo .postDetailTitle{
-    margin-top: 1rem;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
 }
 
 .postDetailInfo .postDetailCategory{
-    font-size: 1.2rem;
+    margin-top: 0.7rem;
+    font-size: 1.5rem;
     color: gray;
 }
 
 .postDetailInfo .postDetailPrice{
-    font-size: 1rem;
+    margin-top: 0.7rem;
+    font-size: 1.2rem;
 }
 
 .postDetailInfo .postDetailContent{
-    margin-top: 1rem;
-    font-size: 0.85rem;
+    margin-top: 0.7rem;
+    font-size: 1rem;
     margin-right: 3rem;
-    font-weight: 550;
+    font-weight: bold;
 }
 
 .postDetailInfo .postDetailTag{
     color: blue;
-    margin-top: 2rem;
+    margin-top: 0.7rem;
 }
+.postDetailSwapCategoryBox{
+    margin-top: 1.5rem;
+    display: flex;
+}
+.transfer{
+    width: 2rem;
+    height: 2rem;
 
+}
 .postDetailInfo .postDetailSwapCategory{
+    margin-left:0.4rem;
     font-size: 1.2rem;
-    margin-top: 5rem;
 }
 
 .postBottom{
-    padding: 0.5rem 0rem;
-    padding-bottom: 3rem;
+    display: flex;
+    justify-content: space-between;
 }
-
-.postBottom span{
-    font-size: 0.8rem;
+.metaBox{
+    margin-top:0.5rem;
+    display: flex;
+    gap: 1rem;
 }
-
-.postBottom button{
-    float: right;
+.imgBox{
+    display: flex;
+    gap:0.2rem;
 }
+.likeImg{
+    width:1rem;
+    height: 1rem;
+    margin-top: 0.3rem;
+    margin-right: 0.2rem;
+}
+.commentBox{
+    display: flex;
+    gap:0.2rem;
+}
+.commentImg{
+    width:1rem;
+    height: 1rem;
+    margin-top: 0.3rem;
+    margin-right: 0.2rem;
 
+}
+.timeBox{
+    gap:0.2rem;
+    display: flex;
+}
+.timeImg{
+    width:1rem;
+    height: 1rem;
+    margin-top: 0.3rem;
+    margin-right: 0.2rem;
+}
+.exchangeBtn{
+    margin-top: 0.4rem;
+    border: none;
+    border-radius: 10px;
+    height:2rem;
+}
 .comments{
+    border: 1px #e5e8eb solid ;
+    border-radius: 10px;
+    margin-top: 3rem;
 
 }
