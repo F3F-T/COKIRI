@@ -26,14 +26,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
@@ -128,6 +133,17 @@ public class CommentControllerTest {
                 .build();
     }
 
+    public CommentInfoDto createCommentInfoDto(Long commentId, Long postId, Long memberId, String content) {
+        return CommentInfoDto.builder()
+                .id(commentId)
+                .postId(postId)
+                .memberId(memberId)
+                .depth(1L)
+                .content(content)
+                .parentCommentId(1L)
+                .build();
+    }
+
     @Test
     @DisplayName("댓글 생성 테스트")
     @WithMockCustomUser
@@ -142,17 +158,66 @@ public class CommentControllerTest {
         doReturn(null).when(commentService).createComment(any());
         postService.savePost(postSaveRequest);
 
-        //when
-//        mockMvc.perform(post("/post")
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(postSaveRequest)));
-
-        //then
+        //when & then
         mockMvc.perform(post("/post/{postId}/comments", 1L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(commentRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated());
+
+    }
+
+    @Test
+    @DisplayName("댓글 조회 테스트 성공")
+    public void findCommentsByPostIdTestForSuccess() throws Exception {
+        //given
+        doReturn(1L).when(postService).savePost(any());
+        Member member = createMember();
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
+        Long postId = postService.savePost(postSaveRequest);
+
+        // when
+        CreateCommentRequest commentRequest = createCommentRequest(member);
+        List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
+        CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "댓글1");
+        commentInfoDtoList.add(commentInfoDto);
+        doReturn(commentInfoDtoList).when(commentService).findCommentsByPostId(any());
+        postService.savePost(postSaveRequest);
+
+        //then
+        mockMvc.perform(get("/post/{postId}/comments", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(commentRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].content").value("댓글1"));
+    }
+
+    @Test
+    @DisplayName("댓글 조회 테스트 실패 - 없는 포스트에 대한 댓글 조회 요청")
+    public void findCommentsByPostIdTestForFail() throws Exception {
+        //given
+        doReturn(1L).when(postService).savePost(any());
+        Member member = createMember();
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
+        Long postId = postService.savePost(postSaveRequest);
+
+        // when
+        CreateCommentRequest commentRequest = createCommentRequest(member);
+        List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
+        CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "댓글1");
+        commentInfoDtoList.add(commentInfoDto);
+        doReturn(commentInfoDtoList).when(commentService).findCommentsByPostId(any());
+        postService.savePost(postSaveRequest);
+
+        //then
+        mockMvc.perform(get("/post/{postId}/comments", 30L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(commentRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0]").isEmpty());
+//                .andExpect(jsonPath());
     }
 
 }

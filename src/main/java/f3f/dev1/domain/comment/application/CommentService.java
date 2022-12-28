@@ -87,6 +87,7 @@ public class CommentService {
      */
 
     // id로 조회
+    // TODO URL 중복으로 컨트롤러가 삭제됐다. 후에 다시 컨트롤러가 다른 URL로 생기면 사용하겠음
     @Transactional(readOnly = true)
     public CommentInfoDto findCommentById(Long id) {
         Comment comment = commentRepository.findById(id).orElseThrow(NotFoundByIdException::new);
