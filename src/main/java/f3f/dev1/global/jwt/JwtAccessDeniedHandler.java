@@ -1,7 +1,7 @@
 package f3f.dev1.global.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import f3f.dev1.global.error.exception.ErrorResponse;
+import f3f.dev1.global.error.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;

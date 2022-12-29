@@ -2,7 +2,8 @@
 
   .Profile {
     display: flex;
-
+    padding-top: 0.3rem;
+    margin-left: 0.3rem;
   }
 
   .ProfileImg {
@@ -11,6 +12,7 @@
   }
 
   .ProfileInfo {
+
     display: inline-block;
     font-size: 0.8rem;
     font-width: 700;
@@ -20,14 +22,16 @@
   }
 
   .ProfileActionList {
+
     margin-left: auto;
     list-style: none;
   }
 
   .ProfileActionList li {
     float: left;
-    margin-left: 0.5rem;
     font-size: 0.5rem;
+    margin-right: 0.5rem;
+
   }
 
   .comments {
@@ -37,6 +41,8 @@
   }
 
   .time {
+    padding-left: 0.3rem;
+    padding-bottom: 0.3rem;
     margin-top: 0.3rem;
     font-size: 0.5rem;
   }
@@ -44,19 +50,22 @@
 }
 
 .secondary {
-
+margin-right: 0.8rem;
   margin-left: 3rem;
   border : 1px #e5e8eb solid ;
+  margin-top: 0.8rem;
+  border-radius: 10px;
 
 
   .Profile {
     display: flex;
-
   }
 
   .ProfileImg {
     width: 2rem;
     height: 2rem;
+    margin-left:0.3rem;
+    margin-top: 0.3rem;
   }
 
   .ProfileInfo {
@@ -64,6 +73,7 @@
     font-size: 0.8rem;
     font-width: 700;
     margin-left: 0.3rem;
+    margin-top: 0.2rem;
     vertical-align: center;
 
   }
@@ -75,7 +85,8 @@
 
   .ProfileActionList li {
     float: left;
-    margin-left: 0.5rem;
+    margin-top: 0.3rem;
+    margin-right: 0.5rem;
     font-size: 0.5rem;
   }
 
@@ -86,7 +97,8 @@
   }
 
   .time {
-    margin-top: 0.3rem;
+    margin: 0.3rem;
     font-size: 0.5rem;
+
   }
 }

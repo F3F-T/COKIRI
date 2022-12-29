@@ -59,11 +59,11 @@
 .post{
     border-left:none;
     border-right:none;
-    border-top:none;
+    border-bottom: 2px solid rgba(0, 0, 0, 0);
     background-color: transparent;
     font-size: 0.9rem;
     font-weight: bolder;
-    border-bottom: 2px solid rgba(150, 150, 150, 0.2);
+    border-top: 2px solid rgba(0, 0, 0, 1);
 
 }
 .postactive {
@@ -76,11 +76,11 @@
 .zzim{
     border-left:none;
     border-right:none;
-    border-top:none;
+    border-bottom: 2px solid rgba(0, 0, 0, 0);
     background-color: transparent;
     font-size: 0.9rem;
     font-weight: bolder;
-    border-bottom: 2px solid rgba(150, 150, 150, 0.2);
+    border-top: 2px solid rgba(0, 0, 0, 1);
 
 }
 .zzimactive {
@@ -91,9 +91,9 @@
 
 }
 .container{
+    margin-top: 2rem;
     grid-template-columns: repeat(4,1fr);
     border-radius: 10px;
-    margin: auto;
     gap: 0.5rem;
     display: grid;
 }

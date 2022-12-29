@@ -1,5 +1,7 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../../styles/talk/talkList.module.scss"
+import buttonstyled from "../../styles/common/Button.module.scss"
+
 import profileImg from "../img/profileImg.png"
 import spamImg from "../img/spam.png"
 import classNames from "classnames/bind";
@@ -10,7 +12,8 @@ import Message from "./Message";
 
 
 // type clickOrNot = true | false ;
-const tl = classNames.bind(styles)
+const tl = classNames.bind(styles);
+
 interface props{
     onClick?: (e : React.MouseEvent<HTMLButtonElement,MouseEvent>) => any;
     partner : string;
@@ -30,15 +33,23 @@ interface props{
 const TalkListLeft = (props2:props)=>{
 
     // props2.click =click
-    console.log(props2);
+    console.log("이건가",props2);
     return(
         <>
                 <div className={styles.talkContent}>
-                    <button onClick={props2.onClick}>클릭해보세용</button>
-                    <p className={styles.talkPartner}>{props2.partner}</p>
-                    <p className={styles.lastContent}>{props2.lastContent}</p>
-                    <p className={styles.date}>{props2.date}</p>
-                    <p className={styles.date}>{props2.keys}</p>
+                    <button className={styles.talkBtn} onClick={props2.onClick}>
+                        <div className={styles.box1}>
+                            <div className={styles.box1_1}>
+                                <p className={styles.talkPartner}>{props2.partner}</p>
+                            </div>
+                            <div className={styles.box1_2}>
+                                <p className={styles.date}>{props2.date}</p>
+                            </div>
+                        </div>
+                        <div className={styles.box2}>
+                            <p className={styles.lastContent}>{props2.lastContent}</p>
+                        </div>
+                    </button>
                 </div>
         </>
     )

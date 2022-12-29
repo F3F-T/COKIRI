@@ -15,49 +15,40 @@ import Card from "../component/tradeCard/Card";
 // }
 
 const MyPage = () =>  {
-    const [tab1, setTab] = useState('curr');
+    const [tab1, setTab] = useState<string>('curr');
 
     const navigate = useNavigate();
 
-    function setDealTab(tab){
+    function setDealTab(tab) {
         setTab(tab)
         console.log(tab1)
         // return tab
     }
-    // const ref = useRef(null);
-    // const [text, setText] = useState(init);
-    // const [editable, setEditable] = useState(false);
-    // const editOn = () => {
-    //     setEditable(true);
-    // };
-    // const handleChange = (e) => {
-    //     setText(e.target.value);
-    // };
-    // const handleKeyDown = (e) => {
-    //     if (e.key === "Enter") {
-    //         setEditable(!editable);
-    //     }
-    // };
-    // const handleClickOutside = (e) => {
-    //     if (editable == true && !ref.current.contains(e.target)) setEditable(false);
-    // };
-    // useEffect(() => {
-    //     window.addEventListener("click", handleClickOutside, true);
-    // });
-
     return (
         <>
             <div className={styles.MyPage}>
             <MyPageSet/>
+                <div className={styles.menu}>
+                    {/*{tab1 === 'curr' ? <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>d게시글</button>*/}
+                    {/*    :<button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>*/}
+                    {/*}*/}
+                    {/*{tab1 === 'next' ? <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>d관심 상품</button>*/}
+
+                    {/*    : <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); {tab1==="next"? navigate('/mypage/zzim'):navigate('/mypage')}}}>관심 상품</button>*/}
+                    {/*}*/}
+                    <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>
+                    {/*<button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>관심 상품</button>*/}
+                    <button className={styles.zzimactive} onClick={()=>{navigate('/mypage/zzim')}}>관심 상품</button>
+                </div>
               <div className={styles.container}>
-                  <Card className={"forMypage"} postTitle={"스팸아"} postContent={"아직 미완성 디자인"} like={3} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"고추참치"} postContent={"스패애애ㅐㅇㅁ"} like={4} comment={8} category={"음식"} />
-                  <Card className={"forMypage"} postTitle={"홍"} postContent={"스패애애ㅐㅇㅁ"} like={7} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"홍라면"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"김치찌개"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"그만"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"그만"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"아직"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"스팸아"} like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"고추참치"} like={4} comment={8} category={"음식"} />
+                  <Card className={"forMypage"} postTitle={"홍"}  like={7} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"홍라면"}  like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"김치찌개"} like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"그만"}  like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"그만"}  like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"아직"} like={3} comment={5} category={"가구"} />
 
               </div>
 

@@ -1,10 +1,12 @@
 
 .priceBox {
+    margin-top: 2rem;
     display: flex; /*내용물 가로 정렬*/
     flex-direction: row;
     /*border: 0.5px solid red;*/
 }
 .priceList {
+
     /*border: 0.5px solid red;*/
 
 }
@@ -13,6 +15,7 @@
     margin: 15px 6px 6px 6px;
 }
 .priceSet {
+    margin-left: 7.3rem;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -22,8 +25,17 @@
     /*flex로 가로정렬 후 space-evenly로 가로 위치 잡고 alogn-items로 세로 가운데에 위치*/
 }
 .setBox1{
-    height: 30%;
+    background-color: lightgray;
+    border-radius: 10px;
+    border: none;
+    height: 1.5rem;
+    /*height: 30%;*/
 }
 .setBox2{
-    height: 30%;
+    background-color: lightgray;
+    border-radius: 10px;
+    height: 1.5rem;
+    border: none;
+
+    /*height: 30%;*/
 }

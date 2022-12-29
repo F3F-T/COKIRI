@@ -17,31 +17,11 @@ const MyPage = () =>  {
 
     const navigate = useNavigate();
 
-    function setDealTab(tab){
+    function setDealTab(tab) {
         setTab(tab)
         console.log(tab1)
         // return tab
     }
-    // const ref = useRef(null);
-    // const [text, setText] = useState(init);
-    // const [editable, setEditable] = useState(false);
-    // const editOn = () => {
-    //     setEditable(true);
-    // };
-    // const handleChange = (e) => {
-    //     setText(e.target.value);
-    // };
-    // const handleKeyDown = (e) => {
-    //     if (e.key === "Enter") {
-    //         setEditable(!editable);
-    //     }
-    // };
-    // const handleClickOutside = (e) => {
-    //     if (editable == true && !ref.current.contains(e.target)) setEditable(false);
-    // };
-    // useEffect(() => {
-    //     window.addEventListener("click", handleClickOutside, true);
-    // });
 
     return (
             <>
@@ -63,10 +43,7 @@ const MyPage = () =>  {
 
                 </div>
             </div>
-            <div className={styles.menu}>
-                <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>
-                <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>관심 상품</button>
-            </div>
+
             </>
     );
 }

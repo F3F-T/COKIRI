@@ -14,7 +14,6 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 
-// TODO Builder가 필요없어보여서 포함하지 않았다
 public class PostDTO {
     // C : Create 담당 DTO
 
@@ -24,26 +23,23 @@ public class PostDTO {
     @AllArgsConstructor
     public static class PostSaveRequest {
 
-        @NotNull
-        private Long id;
         @Size(min=2, max=20, message = "제목은 2글자 이상, 20자 이하로 설정해주세요")
         private String title;
         @NotBlank(message = "내용문을 작성해주세요")
         private String content;
         private Boolean tradeEachOther;
         @NotNull
-        private Member author;
+        private Long authorId;
         private Category productCategory;
         private Category wishCategory;
 
-        //TODO 토큰 추가 예정
 
-        public Post toEntity() {
+        public Post toEntity(Member author) {
             return Post.builder()
                     .title(this.title)
                     .content(this.content)
                     .tradeEachOther(tradeEachOther)
-                    .author(this.author)
+                    .author(author)
                     .productCategory(this.productCategory)
                     .wishCategory(this.wishCategory)
                     .build();

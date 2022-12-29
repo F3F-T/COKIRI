@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {configureStore} from "@reduxjs/toolkit";
 import {Provider} from "react-redux";
 import categoryReducer from "./store/categoryReducer";
+import postDetailReducer from "./store/postDetailReducer";
 
 /**
  * configureStore을 import해온다.
@@ -21,7 +22,9 @@ import categoryReducer from "./store/categoryReducer";
 //store/counterReducer에서 만든 reducer, action, state, 초기 설정값등을 reducer에 묶어주고, counter로 선언해준다
 export const store = configureStore({
     reducer : {
-        categoryReducer : categoryReducer
+        categoryReducer : categoryReducer,
+        postDetailReducer : postDetailReducer,
+
     }
 })
 

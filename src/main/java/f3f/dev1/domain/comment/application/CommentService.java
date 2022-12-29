@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
@@ -42,7 +43,7 @@ public class CommentService {
 
     // 부모 자식 대통합
     @Transactional
-    public Long createComment(CreateCommentRequest createCommentRequest) {
+    public CommentInfoDto createComment(CreateCommentRequest createCommentRequest) {
         Member user = memberRepository.findById(createCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(createCommentRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
         // 유저, 포스트 존재 확인
@@ -53,14 +54,26 @@ public class CommentService {
             // 부모 댓글이 null이라면 부모 댓글로 처리
             Comment parentComment = createCommentRequest.toEntity();
             commentRepository.save(parentComment);
-            return parentComment.getId();
+            CommentInfoDto commentInfoDto = CommentInfoDto.builder()
+                    .memberId(parentComment.getAuthor().getId())
+                    .postId(parentComment.getPost().getId())
+                    .content(parentComment.getContent())
+                    .depth(parentComment.getDepth())
+                    .build();
+            return commentInfoDto;
         } else {
             // 부모 댓글이 존재한다면 자식 댓글로 처리
             Comment parentComment = createCommentRequest.getParentComment();
             Comment comment = commentRepository.findById(createCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
             // TODO 피드백 부분, 일단은 아래와 같이 작성해두고 나중에 다시 생각해보기로 하자
             parentComment.getChilds().add(comment);
-            return comment.getId();
+            CommentInfoDto commentInfoDto = CommentInfoDto.builder()
+                    .memberId(comment.getAuthor().getId())
+                    .postId(comment.getPost().getId())
+                    .content(comment.getContent())
+                    .depth(comment.getDepth())
+                    .build();
+            return commentInfoDto;
         }
     }
 
@@ -71,21 +84,37 @@ public class CommentService {
 
     // id로 조회
     @Transactional(readOnly = true)
-    public FindByIdCommentResponse findCommentById(Long id) {
+    public CommentInfoDto findCommentById(Long id) {
         Comment comment = commentRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        FindByIdCommentResponse response = new FindByIdCommentResponse(comment);
-        return response;
+//        FindByIdCommentResponse response = new FindByIdCommentResponse(comment);
+        CommentInfoDto commentInfoDto = CommentInfoDto.builder()
+                .memberId(comment.getAuthor().getId())
+                .content(comment.getContent())
+                .depth(comment.getDepth())
+                .postId(id)
+                .build();
+        return commentInfoDto;
     }
 
+    // DTO의 리스트로 수정하기
     // post로 조회
     @Transactional(readOnly = true)
-    public FindByPostIdCommentListResponse findCommentsByPostId(Long postId) {
+    public List<CommentInfoDto> findCommentsByPostId(Long postId) {
         if(!commentRepository.existsByPostId(postId)) {
             throw new NotFoundByIdException();
         }
-        List<Comment> byPostId = commentRepository.findByPostId(postId);
-        FindByPostIdCommentListResponse response = new FindByPostIdCommentListResponse(byPostId);
-        return response;
+        List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
+        List<Comment> comments = commentRepository.findByPostId(postId);
+        for (Comment comment : comments) {
+            CommentInfoDto commentInfoDto = CommentInfoDto.builder()
+                    .memberId(comment.getAuthor().getId())
+                    .postId(comment.getPost().getId())
+                    .content(comment.getContent())
+                    .depth(comment.getDepth())
+                    .build();
+            commentInfoDtoList.add(commentInfoDto);
+        }
+        return commentInfoDtoList;
     }
 
     /*
@@ -94,7 +123,7 @@ public class CommentService {
      */
 
     @Transactional
-    public ResponseEntity<String> updateComment(UpdateCommentRequest updateCommentRequest) {
+    public CommentInfoDto updateComment(UpdateCommentRequest updateCommentRequest) {
         Post post = postRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
@@ -102,11 +131,17 @@ public class CommentService {
             throw new NotMatchingCommentException("요청한 게시글에 수정하려는 댓글이 없습니다.");
         }
         commentInPost.updateContent(updateCommentRequest.getContent());
-        return UPDATE;
+        CommentInfoDto commentInfoDto = CommentInfoDto.builder()
+                .postId(comment.getPost().getId())
+                .memberId(comment.getAuthor().getId())
+                .content(comment.getContent())
+                .depth(comment.getDepth())
+                .build();
+        return commentInfoDto;
     }
 
     @Transactional
-    public ResponseEntity<String> deleteComment(DeleteCommentRequest deleteCommentRequest) {
+    public String deleteComment(DeleteCommentRequest deleteCommentRequest) {
         Post post = postRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Member user = memberRepository.findById(deleteCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
@@ -118,6 +153,6 @@ public class CommentService {
             throw new NotMatchingAuthorException("댓글 작성자가 아닙니다");
         }
         commentRepository.delete(commentInPost);
-        return DELETE;
+        return "DELETE";
     }
 }

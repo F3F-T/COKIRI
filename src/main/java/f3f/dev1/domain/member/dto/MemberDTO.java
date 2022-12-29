@@ -3,9 +3,6 @@ package f3f.dev1.domain.member.dto;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.domain.model.Address;
-import f3f.dev1.domain.model.TradeStatus;
-import f3f.dev1.domain.post.dto.PostDTO;
-import f3f.dev1.domain.token.dto.TokenDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,8 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
-import static f3f.dev1.domain.post.dto.PostDTO.*;
-import static f3f.dev1.domain.token.dto.TokenDTO.*;
+import static f3f.dev1.domain.post.dto.PostDTO.PostInfoDto;
+import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 
 public class MemberDTO {
 
@@ -32,7 +29,6 @@ public class MemberDTO {
 
         private String nickname;
 
-        private Address address;
 
         private String phoneNumber;
 
@@ -53,7 +49,6 @@ public class MemberDTO {
             return Member.builder()
                     .username(userName)
                     .nickname(nickname)
-                    .address(address)
                     .phoneNumber(phoneNumber)
                     .birthDate(birthDate)
                     .email(email)
@@ -90,6 +85,8 @@ public class MemberDTO {
     public static class UserInfo {
 
         private Long id;
+
+        private Long scrapId;
         private String userName;
 
         private String nickname;
@@ -177,6 +174,15 @@ public class MemberDTO {
     public static class ConfirmEmailDto {
         private String email;
     }
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class EmailSentDto {
+        private String email;
+        private boolean success;
+    }
+
 
 
     @Builder
@@ -184,7 +190,17 @@ public class MemberDTO {
     @NoArgsConstructor
     @Getter
     public static class EmailConfirmCodeDto {
+
+        private String email;
         private String code;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class CodeConfirmDto {
+        private boolean matches;
     }
 
 
@@ -243,6 +259,14 @@ public class MemberDTO {
 
     }
 
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class RedunCheckDto {
+        private Boolean exists;
+    }
 
 
 }

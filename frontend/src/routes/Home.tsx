@@ -12,7 +12,8 @@ import ticket from "../img/ticket.png";
 import young from "../img/young.png";
 import Button from "../component/common/Button";
 
-
+//모르는 태그가 너무 많아 하다가 멈춤
+//허락 맡고 다시 진행 예정
 const HomeStart = () => {
     const navigate = useNavigate();
 
@@ -66,8 +67,6 @@ const HomeMulmulTrade = () => {
                         <div>
                         </div>
                     </div>
-
-
 
                     {/*<div className={styles.mulmulCardView}>*/}
                     {/*    <MulMulCardView/>*/}

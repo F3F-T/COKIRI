@@ -4,6 +4,7 @@ import loginImg from "../../img/cokkiriLogo.png"
 import {useNavigate} from "react-router-dom";
 import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
+import axios from "axios";
 
 
 
@@ -11,6 +12,16 @@ const Login = () => {
 
     const [email,setEmail] = useState('');
 
+    interface UserInfo {
+        email: string;
+        password: string;
+
+    }
+
+    const [passwordCheck, setpasswordCheck] = useState<boolean>(undefined);
+
+    const [userInfo, setuserInfo] = useState<UserInfo>(null);
+    const [postResult, setPostResult] = useState(null);
     const navigate = useNavigate();
 
     const signInClick = () => {
@@ -18,18 +29,46 @@ const Login = () => {
     }
 
     const onChangeEmail = (e) => {
-        console.log(e.target.value);
-        setEmail(e.target.value);
+        setuserInfo((prevState) => {
+            return {...prevState, email: e.target.value}
+        })
     }
 
-    const handleChange = (e: React.FormEvent<HTMLInputElement>) => {
-        const newValue = e.currentTarget.value;
-        console.log(newValue);
+    const onChangePassword = (e) => {
+        setuserInfo((prevState) => {
+            return {...prevState, password: e.target.value}
+        })
     }
 
-    const handleClick= (e: React.MouseEvent<HTMLButtonElement,MouseEvent>) => {
-        console.log(e.target);
-        console.log(e.currentTarget);
+    async function postLoginData() {
+        try {
+
+            const res = await axios.post("/auth/login", userInfo);
+
+            const accessToken = res.data;
+
+            axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+            console.log("토큰값")
+            console.log(accessToken);
+
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: res.headers,
+                data: res.data,
+            };
+            console.log(result);
+            alert('로그인 성공');
+            // setPostResult(formatResponse(result));
+        } catch (err) {
+            console.log(err); ///
+            alert('로그인 실패');
+
+        }
+    }
+
+    const handleClick= () => {
+        console.log(userInfo);
+        postLoginData();
     }
 
 
@@ -45,9 +84,9 @@ const Login = () => {
                     <div className={styles.loginContents}>
                         <fieldset>
                             <div className={styles.idAndPassword}>
-                                <TextInput placeholder={"코끼리 ID(이메일)을 입력해주세요."} onChange={handleChange}/>
+                                <TextInput placeholder={"코끼리 ID(이메일)을 입력해주세요."} onBlur={onChangeEmail}/>
                             <div className={styles.password}>
-                                <TextInput placeholder={"비밀번호를 입력해주세요."}/>
+                                <TextInput placeholder={"비밀번호를 입력해주세요."} onBlur={onChangePassword}/>
                             </div>
 
                             </div>
