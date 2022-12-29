@@ -47,8 +47,10 @@ public class PostService {
             categoryRepository.findById(productCategory.getId()) ~
             해당 부분이 구현되면 추가하겠음
          */
+        Category productCategory = categoryRepository.findById(postSaveRequest.getProductCategoryId()).orElseThrow(NotFoundByIdException::new);
+        Category wishCategory = categoryRepository.findById(postSaveRequest.getWishCategoryId()).orElseThrow(NotFoundByIdException::new);
 
-        Post post = postSaveRequest.toEntity(member);
+        Post post = postSaveRequest.toEntity(member, productCategory, wishCategory);
         member.getPosts().add(post);
         postRepository.save(post);
         return post.getId();

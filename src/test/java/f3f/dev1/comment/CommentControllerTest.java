@@ -86,7 +86,7 @@ public class CommentControllerTest {
                 .phoneNumber("01012345678")
                 .email("userEmail@email.com")
                 .birthDate("990128")
-                .address(createAddress())
+//                .address(createAddress())
                 .password("password")
                 .userLoginType(EMAIL)
                 .build();
@@ -99,7 +99,7 @@ public class CommentControllerTest {
                 .birthDate(signUpRequest.getBirthDate())
                 .nickname(signUpRequest.getNickname())
                 .password(signUpRequest.getPassword())
-                .address(signUpRequest.getAddress())
+//                .address(signUpRequest.getAddress())
                 .email(signUpRequest.getEmail())
                 .id(1L)
                 .build();
@@ -112,8 +112,8 @@ public class CommentControllerTest {
                 .title("12번 사용한 마스크 교환해요~")
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
-                .productCategory(null)
-                .wishCategory(null)
+                .productCategoryId(null)
+                .wishCategoryId(null)
                 .build();
     }
 
@@ -123,8 +123,8 @@ public class CommentControllerTest {
                 .title("12번 사용한 마스크 교환해요~")
                 .tradeEachOther(tradeEachOther)
                 .authorId(authorId)
-                .productCategory(null)
-                .wishCategory(null)
+                .productCategoryId(null)
+                .wishCategoryId(null)
                 .build();
     }
 

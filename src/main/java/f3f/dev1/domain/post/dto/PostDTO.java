@@ -30,18 +30,18 @@ public class PostDTO {
         private Boolean tradeEachOther;
         @NotNull
         private Long authorId;
-        private Category productCategory;
-        private Category wishCategory;
+        private Long productCategoryId;
+        private Long wishCategoryId;
 
 
-        public Post toEntity(Member author) {
+        public Post toEntity(Member author, Category product, Category wish) {
             return Post.builder()
                     .title(this.title)
                     .content(this.content)
                     .tradeEachOther(tradeEachOther)
                     .author(author)
-                    .productCategory(this.productCategory)
-                    .wishCategory(this.wishCategory)
+                    .productCategory(product)
+                    .wishCategory(wish)
                     .build();
         }
     }
