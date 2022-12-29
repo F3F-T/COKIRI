@@ -144,13 +144,13 @@ const SignUp = () => {
                 //중복일 경우
                 (async() => {
                     const checkEmailDuplicated = await CheckEmailDuplicated(jsonObj)
-                    if(checkEmailDuplicated)
+                    if(checkEmailDuplicated) //중복인 경우 -> true 반환
                     {
                         setValidationCheck((prevState) => {
                             return {...prevState, emailCheck: "duplicated", emailCheckBoolean: false}
                         })
                     }
-                    else
+                    else //중복이 아닌 경우 -> false 반환
                     {
                         setValidationCheck((prevState) => {
                             return {...prevState, emailCheck: "valid", emailCheckBoolean: true}
