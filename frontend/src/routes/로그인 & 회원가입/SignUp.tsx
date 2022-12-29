@@ -24,9 +24,11 @@ const SignUp = () => {
         userLoginType: string;
     }
 
+    type checkEmailTypes = 'invalid' | 'valid' | 'gmail' | 'duplicated'
+
     interface ValidationCheck {
-        emailCheck: string | undefined;
-        emailCheckBoolean : boolean;
+        emailCheck: checkEmailTypes | undefined;
+        emailCheckBoolean: boolean;
         passwordCheck: boolean;
         nameCheck: string;
         birthCheck: string;
@@ -38,7 +40,7 @@ const SignUp = () => {
     const [validationCheck, setValidationCheck] = useState<ValidationCheck>(
         {
             emailCheck: undefined,
-            emailCheckBoolean : undefined,
+            emailCheckBoolean: undefined,
             birthCheck: undefined,
             nameCheck: undefined,
             nicknameCheck: undefined,
@@ -90,23 +92,21 @@ const SignUp = () => {
         }
     }
 
-    async function CheckEmailDuplicated(email:string) {
+    async function CheckEmailDuplicated(email: object) {
+        console.log("CheckEmailDuplicated 접근")
+        console.log(email)
         try {
             const res = await axios.post("http://localhost:8080/auth/check-email", email);
 
-            const result = {
-                status: res.status + "-" + res.statusText,
-                headers: res.headers,
-                data: res.data,
-            };
-            console.log(result);
+            const result = res.data;
 
-            alert('로그인 성공');
-            navigate('/signup/emailcheck')
+            const duplicated = result.exists
+            console.log(duplicated);
+            return duplicated
 
         } catch (err) {
-            console.log(err); ///
-            alert('로그인 실패');
+            console.log(err);
+            alert('서버와 통신 실패');
 
         }
     }
@@ -133,24 +133,58 @@ const SignUp = () => {
             //@gmail.com일때
             if (inputEmail.includes("@gmail.com")) {
                 setValidationCheck((prevState) => {
-                    return {...prevState, emailCheck: "gmail", emailCheckBoolean : false}
+                    return {...prevState, emailCheck: "gmail", emailCheckBoolean: false}
                 })
             } else { //일반 이메일일때
                 //이메일 중복체크 백엔드 통신
-                CheckEmailDuplicated(inputEmail);
+                //string인 inputEmail을 json형태의 객체로 변환
+                let jsonObj = {"email": inputEmail};
 
-                setValidationCheck((prevState) => {
-                    return {...prevState, emailCheck: "valid" , emailCheckBoolean : true}
-                })
-                setuserInfo((prevState) => {
-                    return {...prevState, email: e.target.value
-                                        , userLoginType: "EMAIL"}
-                })
+                //변환한 json 객체로 이메일 중복체크
+                //중복일 경우
+                (async() => {
+                    const checkEmailDuplicated = await CheckEmailDuplicated(jsonObj)
+                    if(checkEmailDuplicated)
+                    {
+                        setValidationCheck((prevState) => {
+                            return {...prevState, emailCheck: "duplicated", emailCheckBoolean: false}
+                        })
+                    }
+                    else
+                    {
+                        setValidationCheck((prevState) => {
+                            return {...prevState, emailCheck: "valid", emailCheckBoolean: true}
+                        })
+                        setuserInfo((prevState) => {
+                            return {
+                                ...prevState, email: e.target.value
+                                , userLoginType: "EMAIL"
+                            }
+                        })
+                    }
+                })()
+
+                // if (CheckEmailDuplicated(jsonObj) === false) {
+                //     setValidationCheck((prevState) => {
+                //         return {...prevState, emailCheck: "duplicated", emailCheckBoolean: false}
+                //     })
+                // }//중복이 아닌경우
+                // else {
+                //     setValidationCheck((prevState) => {
+                //         return {...prevState, emailCheck: "valid", emailCheckBoolean: true}
+                //     })
+                //     setuserInfo((prevState) => {
+                //         return {
+                //             ...prevState, email: e.target.value
+                //             , userLoginType: "EMAIL"
+                //         }
+                //     })
+
             }
         } else //이메일 유효성 검사 실패했을때
         {
             setValidationCheck((prevState) => {
-                return {...prevState, emailCheck: "invalid", emailCheckBoolean : false}
+                return {...prevState, emailCheck: "invalid", emailCheckBoolean: false}
             })
         }
 
@@ -208,16 +242,21 @@ const SignUp = () => {
             </div>
             <div className={styles.userInfo}>
                 <TextInput placeholder={"이메일"} onBlur={onChangeEmail}/>
-                {(validationCheck.emailCheck === undefined && <Message validCheck={validationCheck.emailCheckBoolean} content={""}/>)
+                {(validationCheck.emailCheck === undefined &&
+                        <Message validCheck={validationCheck.emailCheckBoolean} content={""}/>)
                     ||
                     (validationCheck.emailCheck === "valid" &&
                         <Message validCheck={validationCheck.emailCheckBoolean} content={"✔ 사용 가능한 이메일입니다."}/>)
                     ||
                     (validationCheck.emailCheck === "gmail" &&
-                        <Message validCheck={validationCheck.emailCheckBoolean} content={"❌ gmail 계정은 Google 로그인을 이용해주세요."}/>)
+                        <Message validCheck={validationCheck.emailCheckBoolean}
+                                 content={"❌ gmail 계정은 Google 로그인을 이용해주세요."}/>)
                     ||
                     (validationCheck.emailCheck === "invalid" &&
-                    <Message validCheck={validationCheck.emailCheckBoolean} content={"❌ 유효하지 않은 이메일입니다."}/>)}
+                        <Message validCheck={validationCheck.emailCheckBoolean} content={"❌ 유효하지 않은 이메일입니다."}/>)
+                    ||
+                    (validationCheck.emailCheck === "duplicated" &&
+                        <Message validCheck={validationCheck.emailCheckBoolean} content={"❌ 이미 가입된 이메일입니다."}/>)}
 
 
                 <TextInput placeholder={"비밀번호"} onBlur={onChangePassword}/>
