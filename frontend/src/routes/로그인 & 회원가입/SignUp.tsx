@@ -26,11 +26,11 @@ const SignUp = () => {
     }
 
     /**
-     * emailCheck :
-     * 1) invalid : 유효하지 않은 이메일일때
-     * 2) valid : 유효한 이메일일때
-     * 3) gmail : @gmail.com일때
-     * 4) duplicated : 이메일이 중복일때
+     * Type:
+     * 1) invalid : 헤딩 필드가 조건에 부합하지 않아 유효하지 않을때
+     * 2) valid : 헤딩 필드가 유효하여 통과할때
+     * 3) duplicated : 헤딩 필드가 중복일때
+     * 4) gmail : 구글 이메일일때
      */
     type checkEmailTypes = 'invalid' | 'valid' | 'gmail' | 'duplicated'
     type checkNicknameTypes = 'invalid' | 'valid' | 'duplicated'
@@ -107,8 +107,6 @@ const SignUp = () => {
 
     //이메일 중복 체크 함수
     async function CheckEmailDuplicated(email: object) {
-        console.log("CheckEmailDuplicated 접근")
-        console.log(email)
         try {
             const res = await axios.post("http://localhost:8080/auth/check-email", email);
 
@@ -145,7 +143,6 @@ const SignUp = () => {
 
         try {
             const res = await axios.post("http://localhost:8080/auth/check-nickname", nickname);
-            console.log(res)
             const result = res.data;
             const duplicated = result.exists
 
@@ -177,8 +174,6 @@ const SignUp = () => {
 
         try {
             const res = await axios.post("http://localhost:8080/auth/check-phone", phoneNumber);
-            console.log(phoneNumber)
-            console.log(res)
             const result = res.data;
             const duplicated = result.exists
 
@@ -214,14 +209,11 @@ const SignUp = () => {
             validationCheck.passwordCheckBoolean &&
             validationCheck.nameAndBirthCheckBoolean &&
             validationCheck.nicknameCheckBoolean &&
-            validationCheck.phoneNumberCheckBoolean)
-        {
+            validationCheck.phoneNumberCheckBoolean) {
             SignUpData();
-        }else{ //유효성 검증 하나라도 실패한 경우 회원가입 실패
+        } else { //유효성 검증 하나라도 실패한 경우 회원가입 실패
             alert("회원가입 정보를 모두 만족시켜주세요")
         }
-
-
     }
 
     //입력완료하면 값이 state에 저장된다.
@@ -266,7 +258,6 @@ const SignUp = () => {
 
         //유효성 검사 통과할때(안전할때)
         if (passwordValidation.test(inputPassword)) {
-            console.log("안전해")
             setValidationCheck((prevState) => {
                 return {...prevState, passwordCheck: true, passwordCheckBoolean: true}
             })
@@ -283,16 +274,14 @@ const SignUp = () => {
     const onChangeCheckPassword = (e) => {
         if (userInfo.password === e.target.value) {
             setpasswordReCheck(true);
-            console.log("OK")
         } else {
             setpasswordReCheck(false);
-            console.log("비밀번호 일치하지 않음")
         }
     }
 
     const onChangeName = (e) => {
         let inputName = e.target.value;
-        //한글자도 작성하지 않았을때 에러
+        //한글자 이상 작성했을때
         if (inputName.length > 0) {
             setuserInfo((prevState) => {
                 return {...prevState, userName: e.target.value}
@@ -303,7 +292,7 @@ const SignUp = () => {
             })
 
         }
-        //한글자 이상 작성했을때
+        //한글자도 작성하지 않았을때 에러
         else {
             setValidationCheck((prevState) => {
                 return {...prevState, nameAndBirthCheck: false, nameAndBirthCheckBoolean: false}
@@ -336,10 +325,8 @@ const SignUp = () => {
     const onChangeNickname = (e) => {
         let inputNickname = e.target.value;
 
-
         //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
         if (inputNickname.length > 0) {
-
 
             //닉네임 중복체크 백엔드 통신
             //string인 inputNickname을 json형태의 객체로 변환
@@ -364,7 +351,7 @@ const SignUp = () => {
         //핸드폰번호 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
         if (phoneNumberValidation.test(inputPhoneNumber)) {
             //중복체크 백엔드 통신
-            //number인 inputPhonenumber을 json형태의 객체로 변환
+            //string type인 inputPhonenumber을 json형태의 객체로 변환
             let jsonObj = {"phoneNumber": inputPhoneNumber};
 
             //변환한 json 객체로 이메일 중복체크
@@ -451,6 +438,7 @@ const SignUp = () => {
                     ||
                     (validationCheck.nicknameCheck === "duplicated" &&
                         <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}
+
                 <TextInput placeholder={"전화번호"} onBlur={onChangePhoneNumber}/>
                 {(validationCheck.phoneNumberCheck === undefined &&
                         <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={""}/>)
