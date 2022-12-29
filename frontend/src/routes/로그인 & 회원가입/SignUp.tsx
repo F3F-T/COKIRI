@@ -8,8 +8,8 @@ import PriceBox from "../../component/trade/PriceBox";
 import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
 import Message from "../../component/로그인 & 회원가입/Message";
-
 import {stringify} from "querystring";
+
 import axios from "axios";
 
 const SignUp = () => {
@@ -20,7 +20,7 @@ const SignUp = () => {
         userName: string;
         birthDate: number;
         nickname: string;
-        phoneNumber: number;
+        phoneNumber: string;
         userLoginType: string;
     }
 
@@ -32,7 +32,8 @@ const SignUp = () => {
      * 4) duplicated : 이메일이 중복일때
      */
     type checkEmailTypes = 'invalid' | 'valid' | 'gmail' | 'duplicated'
-
+    type checkNicknameTypes = 'invalid' | 'valid' | 'duplicated'
+    type checkPhoneNumberTypes = 'invalid' | 'valid' | 'duplicated'
 
 
     //각 항목들의 유효성 체크와
@@ -41,11 +42,16 @@ const SignUp = () => {
         emailCheck: checkEmailTypes;
         emailCheckBoolean: boolean;
         passwordCheck: boolean;
-        passwordCheckBoolean : boolean;
-        nameCheck: string;
-        birthCheck: string;
-        nicknameCheck: string;
-        phoneNumberCheck: string;
+        passwordCheckBoolean: boolean;
+
+        nameAndBirthCheck: boolean;
+        nameAndBirthCheckBoolean: boolean;
+
+        nicknameCheck: checkNicknameTypes;
+        nicknameCheckBoolean: boolean;
+
+        phoneNumberCheck: checkPhoneNumberTypes;
+        phoneNumberCheckBoolean: boolean;
 
     }
 
@@ -55,13 +61,16 @@ const SignUp = () => {
             emailCheckBoolean: undefined,
 
             passwordCheck: undefined,
-            passwordCheckBoolean : undefined,
+            passwordCheckBoolean: undefined,
 
-            birthCheck: undefined,
+            nameAndBirthCheck: undefined,
+            nameAndBirthCheckBoolean: undefined,
 
-            nameCheck: undefined,
             nicknameCheck: undefined,
+            nicknameCheckBoolean: undefined,
+
             phoneNumberCheck: undefined,
+            phoneNumberCheckBoolean: undefined,
 
         }
     );
@@ -69,7 +78,7 @@ const SignUp = () => {
     const [passwordReCheck, setpasswordReCheck] = useState<boolean>(undefined);
     const [test, setTest] = useState(undefined);
 
-        // const [emailCheck, setEmailCheck] = useState<string>(undefined);
+    // const [emailCheck, setEmailCheck] = useState<string>(undefined);
     const [userInfo, setuserInfo] = useState<UserInfo>(null);
     const [postResult, setPostResult] = useState(null);
     const navigate = useNavigate();
@@ -105,21 +114,86 @@ const SignUp = () => {
             const result = res.data;
             const duplicated = result.exists
 
-            if(duplicated) //중복인 경우 -> true 반환
+            if (duplicated) //중복인 경우 -> true 반환
             {
                 setValidationCheck((prevState) => {
                     return {...prevState, emailCheck: "duplicated", emailCheckBoolean: false}
                 })
-            }
-            else //중복이 아닌 경우 -> false 반환
+            } else //중복이 아닌 경우 -> false 반환
             {
                 setValidationCheck((prevState) => {
                     return {...prevState, emailCheck: "valid", emailCheckBoolean: true}
                 })
                 setuserInfo((prevState) => {
                     return {
-                        ...prevState, email : email.toString()
+                        ...prevState, email: email.toString()
                         , userLoginType: "EMAIL"
+                    }
+                })
+            }
+
+        } catch (err) {
+            console.log(err);
+            alert('서버와 통신 실패');
+
+        }
+    }
+
+
+    async function CheckNickNameDuplicated(nickname: object) {
+
+        try {
+            const res = await axios.post("http://localhost:8080/auth/check-nickname", nickname);
+            console.log(res)
+            const result = res.data;
+            const duplicated = result.exists
+
+            if (duplicated) //중복인 경우 -> true 반환
+            {
+                setValidationCheck((prevState) => {
+                    return {...prevState, nicknameCheck: "duplicated", nicknameCheckBoolean: false}
+                })
+            } else //중복이 아닌 경우 -> false 반환
+            {
+                setValidationCheck((prevState) => {
+                    return {...prevState, nicknameCheck: "valid", nicknameCheckBoolean: true}
+                })
+                setuserInfo((prevState) => {
+                    return {
+                        ...prevState, nickname: nickname.toString()
+                    }
+                })
+            }
+
+        } catch (err) {
+            console.log(err);
+            alert('서버와 통신 실패');
+
+        }
+    }
+
+    async function CheckPhoneNumberDuplicated(phoneNumber: object) {
+
+        try {
+            const res = await axios.post("http://localhost:8080/auth/check-phone", phoneNumber);
+            console.log(phoneNumber)
+            console.log(res)
+            const result = res.data;
+            const duplicated = result.exists
+
+            if (duplicated) //중복인 경우 -> true 반환
+            {
+                setValidationCheck((prevState) => {
+                    return {...prevState, phoneNumberCheck: "duplicated", phoneNumberCheckBoolean: false}
+                })
+            } else //중복이 아닌 경우 -> false 반환
+            {
+                setValidationCheck((prevState) => {
+                    return {...prevState, phoneNumberCheck: "valid", phoneNumberCheckBoolean: true}
+                })
+                setuserInfo((prevState) => {
+                    return {
+                        ...prevState, phoneNumber: phoneNumber.toString()
                     }
                 })
             }
@@ -180,18 +254,18 @@ const SignUp = () => {
         if (passwordValidation.test(inputPassword)) {
             console.log("안전해")
             setValidationCheck((prevState) => {
-                return {...prevState, passwordCheck: true , passwordCheckBoolean: true}
+                return {...prevState, passwordCheck: true, passwordCheckBoolean: true}
             })
             setuserInfo((prevState) => {
                 return {...prevState, password: e.target.value}
             })
-        }else{
+        } else {
             setValidationCheck((prevState) => {
-                return {...prevState, passwordCheck: false , passwordCheckBoolean: false}
+                return {...prevState, passwordCheck: false, passwordCheckBoolean: false}
             })
         }
-
     }
+
     const onChangeCheckPassword = (e) => {
         if (userInfo.password === e.target.value) {
             setpasswordReCheck(true);
@@ -203,28 +277,93 @@ const SignUp = () => {
     }
 
     const onChangeName = (e) => {
-        setuserInfo((prevState) => {
-            return {...prevState, userName: e.target.value}
-        })
+        let inputName = e.target.value;
+        //한글자도 작성하지 않았을때 에러
+        if (inputName.length > 0) {
+            setuserInfo((prevState) => {
+                return {...prevState, userName: e.target.value}
+            })
+
+            setValidationCheck((prevState) => {
+                return {...prevState, nameAndBirthCheck: true, nameAndBirthCheckBoolean: true}
+            })
+
+        }
+        //한글자 이상 작성했을때
+        else {
+            setValidationCheck((prevState) => {
+                return {...prevState, nameAndBirthCheck: false, nameAndBirthCheckBoolean: false}
+            })
+        }
 
     }
 
     const onChangeBirth = (e) => {
-        setuserInfo((prevState) => {
-            return {...prevState, birthDate: e.target.value}
-        })
+        let inputBirth = e.target.value;
+        //생일 6자리 입력했을때 올바른 값
+        if (inputBirth.length === 6) {
+            setuserInfo((prevState) => {
+                return {...prevState, birthDate: e.target.value}
+            })
+
+            setValidationCheck((prevState) => {
+                return {...prevState, nameAndBirthCheck: true, nameAndBirthCheckBoolean: true}
+            })
+
+        } //생일 6자리가 아닐때
+        else {
+            setValidationCheck((prevState) => {
+                return {...prevState, nameAndBirthCheck: false, nameAndBirthCheckBoolean: false}
+            })
+        }
+
     }
 
     const onChangeNickname = (e) => {
-        setuserInfo((prevState) => {
-            return {...prevState, nickname: e.target.value}
-        })
+        let inputNickname = e.target.value;
+
+
+        //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
+        if (inputNickname.length > 0) {
+
+
+            //닉네임 중복체크 백엔드 통신
+            //string인 inputNickname을 json형태의 객체로 변환
+            let jsonObj = {"nickname": inputNickname};
+
+            //변환한 json 객체로 이메일 중복체크
+            CheckNickNameDuplicated(jsonObj);
+
+
+        } else //이메일 유효성 검사 실패했을때
+        {
+            setValidationCheck((prevState) => {
+                return {...prevState, nicknameCheck: "invalid", nicknameCheckBoolean: false}
+            })
+        }
     }
 
     const onChangePhoneNumber = (e) => {
-        setuserInfo((prevState) => {
-            return {...prevState, phoneNumber: e.target.value}
-        })
+        let inputPhoneNumber = e.target.value;
+
+        let phoneNumberValidation = /^(01[016789]{1})[0-9]{3,4}[0-9]{4}$/;
+        //핸드폰번호 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
+        if (phoneNumberValidation.test(inputPhoneNumber)) {
+            //중복체크 백엔드 통신
+            //number인 inputPhonenumber을 json형태의 객체로 변환
+            let jsonObj = {"phoneNumber": inputPhoneNumber};
+
+            //변환한 json 객체로 이메일 중복체크
+            CheckPhoneNumberDuplicated(jsonObj);
+
+
+        } else //유효성 검사 실패했을때
+        {
+            setValidationCheck((prevState) => {
+                return {...prevState, phoneNumberCheck: "invalid", phoneNumberCheckBoolean: false}
+            })
+        }
+
     }
 
     return (
@@ -255,12 +394,14 @@ const SignUp = () => {
 
 
                 <TextInput placeholder={"비밀번호"} onBlur={onChangePassword}/>
-                {(validationCheck.passwordCheck === undefined && <Message validCheck={validationCheck.passwordCheckBoolean} content={""}/>)
+                {(validationCheck.passwordCheck === undefined &&
+                        <Message validCheck={validationCheck.passwordCheckBoolean} content={""}/>)
                     ||
                     (validationCheck.passwordCheck ?
                         <Message validCheck={validationCheck.passwordCheckBoolean} content={"✔ 안전한 비밀번호입니다."}/>
                         :
-                        <Message validCheck={validationCheck.passwordCheckBoolean} content={"❌ 숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요."}/>)}
+                        <Message validCheck={validationCheck.passwordCheckBoolean}
+                                 content={"❌ 숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요."}/>)}
 
                 <TextInput placeholder={"비밀번호 확인"} onBlur={onChangeCheckPassword}/>
                 {(passwordReCheck === undefined && <Message validCheck={passwordReCheck} content={""}/>)
@@ -273,11 +414,41 @@ const SignUp = () => {
 
                 <section className={styles.userNameBirth}>
                     <TextInput placeholder={"이름"} onBlur={onChangeName}/>
-                    <TextInput placeholder={"생일"} onBlur={onChangeBirth}/>
+                    <TextInput placeholder={"생일 6자리"} onBlur={onChangeBirth}/>
                 </section>
+                {(validationCheck.nameAndBirthCheck === undefined &&
+                        <Message validCheck={validationCheck.nameAndBirthCheckBoolean} content={""}/>)
+                    ||
+                    (validationCheck.nameAndBirthCheck ?
+                        <Message validCheck={undefined} content={""}/>
+                        :
+                        <Message validCheck={validationCheck.nameAndBirthCheckBoolean}
+                                 content={"❌ 이름과 생일을 올바르게 입력해주세요"}/>)}
 
                 <TextInput placeholder={"닉네임"} onBlur={onChangeNickname}/>
+                {(validationCheck.nicknameCheck === undefined &&
+                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={""}/>)
+                    ||
+                    (validationCheck.nicknameCheck === "valid" &&
+                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"✔ 사용 가능한 닉네임입니다."}/>)
+                    ||
+                    (validationCheck.nicknameCheck === "invalid" &&
+                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 닉네임은 한글자 이상이어야합니다."}/>)
+                    ||
+                    (validationCheck.nicknameCheck === "duplicated" &&
+                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}
                 <TextInput placeholder={"전화번호"} onBlur={onChangePhoneNumber}/>
+                {(validationCheck.phoneNumberCheck === undefined &&
+                        <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={""}/>)
+                    ||
+                    (validationCheck.phoneNumberCheck === "valid" &&
+                        <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={"✔ 사용 가능한 전화번호 입니다."}/>)
+                    ||
+                    (validationCheck.phoneNumberCheck === "invalid" &&
+                        <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={"❌ 유효하지 않은 핸드폰 번호입니다. 예시) 01012345678"}/>)
+                    ||
+                    (validationCheck.phoneNumberCheck === "duplicated" &&
+                        <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={"❌ 이미 가입된 핸드폰 번호입니다."}/>)}
             </div>
 
             <div className={styles.btnPlace}>
