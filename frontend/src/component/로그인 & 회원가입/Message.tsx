@@ -5,21 +5,21 @@ import classNames from "classnames/bind";
 const cx = classNames.bind(styles)
 
 interface MessageProps {
-    passwordCheck : undefined | boolean;
+    validCheck : undefined | boolean;
     content : string;
 }
 const Message = (messageProps : MessageProps) => {
     return (
         <>
-            {messageProps.passwordCheck === undefined && null}
+            {messageProps.validCheck === undefined && null}
 
-            {messageProps.passwordCheck === true &&
+            {messageProps.validCheck === true &&
                 <p className={cx('successMessage')}>
                     {messageProps.content}
                 </p>
             }
 
-            {messageProps.passwordCheck === false &&
+            {messageProps.validCheck === false &&
                 <p className={cx('errorMessage')}>
                     {messageProps.content}
                 </p>

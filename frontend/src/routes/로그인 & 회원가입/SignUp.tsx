@@ -21,9 +21,41 @@ const SignUp = () => {
         birthDate: number;
         nickname: string;
         phoneNumber: number;
+        userLoginType: string;
     }
 
+    interface ValidationCheck {
+        emailCheck: string | undefined;
+        emailCheckBoolean : boolean;
+        passwordCheck: boolean;
+        nameCheck: string;
+        birthCheck: string;
+        nicknameCheck: string;
+        phoneNumberCheck: string;
+
+    }
+
+    const [validationCheck, setValidationCheck] = useState<ValidationCheck>(
+        {
+            emailCheck: undefined,
+            emailCheckBoolean : undefined,
+            birthCheck: undefined,
+            nameCheck: undefined,
+            nicknameCheck: undefined,
+            phoneNumberCheck: undefined,
+            passwordCheck: undefined
+        }
+    );
+
     const [passwordCheck, setpasswordCheck] = useState<boolean>(undefined);
+    const [test, setTest] = useState(undefined);
+    /**
+     * emailCheck :
+     * 1) invalid : 유효하지 않은 이메일일때
+     * 2) valid : 유효한 이메일일때
+     * 3) gmail : @gmail.com일때
+     */
+        // const [emailCheck, setEmailCheck] = useState<string>(undefined);
     const [userInfo, setuserInfo] = useState<UserInfo>(null);
     const [postResult, setPostResult] = useState(null);
     const navigate = useNavigate();
@@ -39,13 +71,8 @@ const SignUp = () => {
     async function postSignUpData() {
         try {
 
-            /**
-             * TODO: 함민혁) 여기서 url 주소 변경, post를 get으로 바꿔보고 console.log로 백엔드와 프론트엔드가 어떻게 연결이 되는지 확인해보기 (느낌만 파악하기)
-             */
 
-
-
-            const res = await axios.post("http://localhost:8080/auth/signup",userInfo);
+            const res = await axios.post("http://localhost:8080/auth/signup", userInfo);
 
             const result = {
                 status: res.status + "-" + res.statusText,
@@ -63,17 +90,71 @@ const SignUp = () => {
         }
     }
 
+    async function CheckEmailDuplicated(email:string) {
+        try {
+            const res = await axios.post("http://localhost:8080/auth/check-email", email);
 
-    const signUpButtonClick = () => {
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: res.headers,
+                data: res.data,
+            };
+            console.log(result);
+
+            alert('로그인 성공');
+            navigate('/signup/emailcheck')
+
+        } catch (err) {
+            console.log(err); ///
+            alert('로그인 실패');
+
+        }
+    }
+
+
+    const signUpButtonClick = (e) => {
+        setuserInfo((prevState) => {
+            return {...prevState, userLoginType: "EMAIL"}
+        })
+        console.log(userInfo.userLoginType)
         console.log(userInfo);
         postSignUpData();
     }
 
     //입력완료하면 값이 state에 저장된다.
     const onChangeEmail = (e) => {
-        setuserInfo((prevState) => {
-            return {...prevState, email: e.target.value}
-        })
+        let inputEmail = e.target.value;
+
+        let emailValidationCheck = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
+        // 형식에 맞는 경우 true 리턴
+
+        //이메일 유효성 검사를 통과했을때
+        if (emailValidationCheck.test(inputEmail)) {
+            //@gmail.com일때
+            if (inputEmail.includes("@gmail.com")) {
+                setValidationCheck((prevState) => {
+                    return {...prevState, emailCheck: "gmail", emailCheckBoolean : false}
+                })
+            } else { //일반 이메일일때
+                //이메일 중복체크 백엔드 통신
+                CheckEmailDuplicated(inputEmail);
+
+                setValidationCheck((prevState) => {
+                    return {...prevState, emailCheck: "valid" , emailCheckBoolean : true}
+                })
+                setuserInfo((prevState) => {
+                    return {...prevState, email: e.target.value
+                                        , userLoginType: "EMAIL"}
+                })
+            }
+        } else //이메일 유효성 검사 실패했을때
+        {
+            setValidationCheck((prevState) => {
+                return {...prevState, emailCheck: "invalid", emailCheckBoolean : false}
+            })
+        }
+
+
     }
 
     const onChangePassword = (e) => {
@@ -96,6 +177,7 @@ const SignUp = () => {
         setuserInfo((prevState) => {
             return {...prevState, userName: e.target.value}
         })
+
     }
 
     const onChangeBirth = (e) => {
@@ -125,16 +207,27 @@ const SignUp = () => {
 
             </div>
             <div className={styles.userInfo}>
-
                 <TextInput placeholder={"이메일"} onBlur={onChangeEmail}/>
+                {(validationCheck.emailCheck === undefined && <Message validCheck={validationCheck.emailCheckBoolean} content={""}/>)
+                    ||
+                    (validationCheck.emailCheck === "valid" &&
+                        <Message validCheck={validationCheck.emailCheckBoolean} content={"✔ 사용 가능한 이메일입니다."}/>)
+                    ||
+                    (validationCheck.emailCheck === "gmail" &&
+                        <Message validCheck={validationCheck.emailCheckBoolean} content={"❌ gmail 계정은 Google 로그인을 이용해주세요."}/>)
+                    ||
+                    (validationCheck.emailCheck === "invalid" &&
+                    <Message validCheck={validationCheck.emailCheckBoolean} content={"❌ 유효하지 않은 이메일입니다."}/>)}
+
+
                 <TextInput placeholder={"비밀번호"} onBlur={onChangePassword}/>
                 <TextInput placeholder={"비밀번호 확인"} onBlur={onChangeCheckPassword}/>
-                {(passwordCheck === undefined && <Message passwordCheck={passwordCheck} content={""}/>)
+                {(passwordCheck === undefined && <Message validCheck={passwordCheck} content={""}/>)
                     ||
                     (passwordCheck ?
-                        <Message passwordCheck={passwordCheck} content={"✔ 비밀번호가 일치합니다"}/>
+                        <Message validCheck={passwordCheck} content={"✔ 비밀번호가 일치합니다"}/>
                         :
-                        <Message passwordCheck={passwordCheck} content={"❌ 비밀번호가 일치하지 않습니다"}/>)}
+                        <Message validCheck={passwordCheck} content={"❌ 비밀번호가 일치하지 않습니다"}/>)}
 
 
                 <section className={styles.userNameBirth}>
