@@ -1,5 +1,6 @@
-package f3f.dev1.global.error.exception;
+package f3f.dev1.global.error;
 
+import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

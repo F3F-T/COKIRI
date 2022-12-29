@@ -29,7 +29,6 @@ public class MemberDTO {
 
         private String nickname;
 
-        private Address address;
 
         private String phoneNumber;
 
@@ -50,7 +49,6 @@ public class MemberDTO {
             return Member.builder()
                     .username(userName)
                     .nickname(nickname)
-                    .address(address)
                     .phoneNumber(phoneNumber)
                     .birthDate(birthDate)
                     .email(email)
@@ -176,6 +174,15 @@ public class MemberDTO {
     public static class ConfirmEmailDto {
         private String email;
     }
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class EmailSentDto {
+        private String email;
+        private boolean success;
+    }
+
 
 
     @Builder
@@ -183,7 +190,17 @@ public class MemberDTO {
     @NoArgsConstructor
     @Getter
     public static class EmailConfirmCodeDto {
+
+        private String email;
         private String code;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class CodeConfirmDto {
+        private boolean matches;
     }
 
 
@@ -250,8 +267,6 @@ public class MemberDTO {
     public static class RedunCheckDto {
         private Boolean exists;
     }
-
-
 
 
 }

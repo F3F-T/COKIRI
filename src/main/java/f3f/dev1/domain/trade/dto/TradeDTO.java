@@ -36,7 +36,7 @@ public class TradeDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class UpdateTradeDto {
-        private Long tradeId;
+        private Long postId;
 
         private Long userId;
 
@@ -55,4 +55,15 @@ public class TradeDTO {
 
         private TradeStatus tradeStatus;
     }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DeleteTradeDto {
+        private Long postId;
+
+        private Long userId;
+    }
+
 }

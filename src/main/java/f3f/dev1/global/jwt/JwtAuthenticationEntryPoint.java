@@ -1,7 +1,7 @@
 package f3f.dev1.global.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import f3f.dev1.global.error.exception.ErrorResponse;
+import f3f.dev1.global.error.ErrorResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;

@@ -7,32 +7,31 @@ import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.dto.ScrapDTO;
 import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
 import f3f.dev1.domain.scrap.model.Scrap;
-import f3f.dev1.domain.token.dao.RefreshTokenRepository;
+import f3f.dev1.domain.token.dto.TokenDTO.AccessTokenDTO;
+import f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
+import f3f.dev1.domain.token.exception.InvalidAccessTokenException;
 import f3f.dev1.domain.token.exception.InvalidRefreshTokenException;
 import f3f.dev1.domain.token.exception.LogoutUserException;
+import f3f.dev1.domain.token.exception.TokenNotMatchException;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import f3f.dev1.global.jwt.JwtTokenProvider;
+import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseCookie;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.token.dto.TokenDTO.TokenInfoDTO;
-import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
-import static f3f.dev1.global.common.constants.JwtConstants.*;
-import static f3f.dev1.global.common.constants.SecurityConstants.JSESSIONID;
-import static f3f.dev1.global.common.constants.SecurityConstants.REMEMBER_ME;
+import static f3f.dev1.global.common.constants.JwtConstants.REFRESH_TOKEN_EXPIRE_TIME;
 
 @Service
 @RequiredArgsConstructor
@@ -43,11 +42,12 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final ScrapRepository scrapRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     private final ScrapService scrapService;
 
-    private final HttpSession session;
+    private final RedisTemplate<String, String> redisTemplate;
+
+
 
     @Transactional
     public String signUp(SignUpRequest signUpRequest) {
@@ -62,7 +62,7 @@ public class AuthService {
     }
 
     @Transactional
-    public UserLoginDto login(LoginRequest loginRequest, HttpServletResponse response) {
+    public UserLoginDto login(LoginRequest loginRequest) {
         // 1. 이메일, 비밀번호 기반으로 토큰 생성
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = loginRequest.toAuthentication();
         // 2. 실제로 검증이 이뤄지는 부분,
@@ -71,101 +71,68 @@ public class AuthService {
         // 3. 인증 정보를 기반으로 jwt 토큰 생성
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
         // 4. refesh token 저장
-//        RefreshToken refreshToken = RefreshToken.builder()
-//                .key(authenticate.getName())
-//                .value(tokenInfoDTO.getRefreshToken())
-//                .build();
-//
-//        refreshTokenRepository.save(refreshToken);
-
-
-        String refreshToken = tokenInfoDTO.getRefreshToken();
-        saveRefreshTokenInStorage(refreshToken); // 추후 DB 나 어딘가 저장 예정
-        setRefreshTokenInCookie(response, refreshToken); // 리프레시 토큰 쿠키에 저장
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        valueOperations.set(authenticate.getName(), tokenInfoDTO.getRefreshToken());
+        valueOperations.set(tokenInfoDTO.getAccessToken(), tokenInfoDTO.getRefreshToken());
+        redisTemplate.expire(authenticate.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(tokenInfoDTO.getAccessToken(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
         // 5. 토큰 발급
         Member member = memberRepository.findById(Long.parseLong(authenticate.getName())).orElseThrow(NotFoundByIdException::new);
         Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).orElseThrow(UserScrapNotFoundException::new);
 
-        return UserLoginDto.builder().userInfo(member.toUserInfo(scrap.getId())).tokenInfo(tokenInfoDTO.toTokenReissueDTO()).build();
+        return UserLoginDto.builder().userInfo(member.toUserInfo(scrap.getId())).tokenInfo(tokenInfoDTO.toTokenIssueDTO()).build();
     }
 
     @Transactional
-    public TokenInfoDTO reissue(TokenIssueDTO tokenReissueDTO, HttpServletResponse response, String cookieRefreshToken) {
+    public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO) {
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        String accessByRefresh = valueOperations.get(accessTokenDTO.getAccessToken());
+        if (accessByRefresh == null) {
+            throw new InvalidAccessTokenException();
+        }
+//        RefreshToken tokenByAccess = tokenService.findByAccessToken(accessTokenDTO.getAccessToken());
         // 1. refresh token 검증
-        if (!jwtTokenProvider.validateToken(cookieRefreshToken)) {
+        if (!jwtTokenProvider.validateToken(accessByRefresh)) {
             throw new InvalidRefreshTokenException();
         }
 
         // 2. Access Token에서 멤버 아이디 가져오기
-        Authentication authentication = jwtTokenProvider.getAuthentication(tokenReissueDTO.getAccessToken());
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessTokenDTO.getAccessToken());
 
         // 3. 저장소에서 member id를 기반으로 refresh token 값 가져옴
-//        RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName()).orElseThrow(LogoutUserException::new);
-        String refreshToken = (String)session.getAttribute(REFRESH_TOKEN);
-        if(refreshToken == null){
+        String accessByMemberId = valueOperations.get(authentication.getName());
+        if (accessByMemberId == null) {
             throw new LogoutUserException();
         }
 
         // 4. refresh token이 일치하는지 검사,
-        if (!refreshToken.equals(cookieRefreshToken)) {
-            throw new IllegalArgumentException("토큰의 유저 정보가 일치하지 않습니다");
+
+        if (!accessByMemberId.equals(accessByRefresh)) {
+            throw new TokenNotMatchException();
         }
 
         // 5. 새로운 토큰 생성
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication);
         // 6. 저장소 정보 업데이트
-//        RefreshToken newRefreshToken = refreshToken.updateValue(tokenInfoDTO.getRefreshToken());
-//        refreshTokenRepository.save(newRefreshToken);
-        saveRefreshTokenInStorage(tokenInfoDTO.getRefreshToken());// 추후 디비에 저장
-        setRefreshTokenInCookie(response,tokenInfoDTO.getRefreshToken()); // 쿠키에 refresh 토큰 저장
+        valueOperations.set(authentication.getName(), tokenInfoDTO.getRefreshToken());
+        valueOperations.set(tokenInfoDTO.getAccessToken(), tokenInfoDTO.getRefreshToken());
+        redisTemplate.expire(authentication.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(tokenInfoDTO.getAccessToken(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+
 
         // 토큰 발급
-        return tokenInfoDTO;
+        return tokenInfoDTO.toTokenIssueDTO();
     }
 
     @Transactional
-    public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public String logout(String token) throws IOException {
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        valueOperations.getAndDelete(Long.toString(SecurityUtil.getCurrentMemberId()));
+        valueOperations.getAndDelete(token);
 
-        request.getSession().invalidate();
-
-        deleteCookie(response,JSESSIONID);
-        deleteCookie(response, REMEMBER_ME);
-        deleteCookie(response,REFRESH_TOKEN);
-
-//        response.sendRedirect("/login"); //로그아웃 시 로그인 할 수 있는 페이지로 이동하도록 처리한다.
+        return "SUCCESS";
     }
 
-    /**
-     * 쿠키에 refresh 토큰 저장
-     */
-    private void setRefreshTokenInCookie(HttpServletResponse response, String refreshToken) {
-        ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN, refreshToken)
-                .maxAge(REFRESH_TOKEN_COOKIE_EXPIRE_TIME) //7일
-                .path("/")
-                .secure(true)
-                .sameSite("None")
-                .httpOnly(true)
-                .build();
-        response.setHeader(SET_COOKIE, cookie.toString());
-    }
-
-    /**
-     * 저장소에 토큰 저장 추후에 DB 나 캐시 고려
-     */
-    private void saveRefreshTokenInStorage(String refreshToken) {
-
-        session.setAttribute(REFRESH_TOKEN, refreshToken);
-    }
-
-
-    /**
-     * 쿠키 제거
-     */
-    private void deleteCookie(HttpServletResponse response,String cookieName) {
-        Cookie cookie = new Cookie(cookieName, null); // choiceCookieName(쿠키 이름)에 대한 값을 null로 지정
-        cookie.setMaxAge(0); // 유효시간을 0으로 설정
-        response.addCookie(cookie);
-    }
 
 
 }

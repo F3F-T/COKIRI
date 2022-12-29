@@ -9,6 +9,7 @@ import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
+import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,15 +35,17 @@ public class PostService {
     public Long savePost(PostSaveRequest postSaveRequest) {
 
         // 유저 객체 받아와서 포스트 리스트에 추가해줘야 함
-        // TODO Trade 객체를 어떻게 처리할지 아직 명확하지 않음
-        Member member = memberRepository.findById(postSaveRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
-
+        Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        if(!currentMemberId.equals(member.getId())) {
+            throw new NotMatchingAuthorException("현재 로그인한 사용자가 생성 요청자가 아닙니다.");
+        }
         /* TODO 카테고리 객체 받아와서 카테고리 리스트에 추가해줘야 함
             categoryRepository.findById(productCategory.getId()) ~
             해당 부분이 구현되면 추가하겠음
          */
 
-        Post post = postSaveRequest.toEntity();
+        Post post = postSaveRequest.toEntity(member);
         member.getPosts().add(post);
         postRepository.save(post);
         return post.getId();
@@ -117,7 +120,6 @@ public class PostService {
         U : 게시글 업데이트
      */
 
-    // TODO 피드백 받기 : 반환 타입을 Long (id)으로 하는 거랑 Post 객체 하나만 가지고 있는 DTO로 하는 것 중 뭐가 더 나은가
     @Transactional
     public PostInfoDto updatePost(UpdatePostRequest updatePostRequest) {
         Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
@@ -150,6 +152,11 @@ public class PostService {
         // TODO Id로만 비교하는게 좀 걸린다. 그렇다고 비밀번호 검증은 너무 투머치 같기도 하다
         if(!author.getId().equals(deletePostRequest.getRequester().getId())) {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
+        }
+        // 로그인한 사용자가 맞는지 확인
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        if(!currentMemberId.equals(deletePostRequest.getRequester().getId())) {
+            throw new NotMatchingAuthorException("현재 로그인한 사용자가 삭제 요청자가 아닙니다.");
         }
         postRepository.deleteById(deletePostRequest.getId());
         return "DELETE";
