@@ -77,14 +77,11 @@ const SignUp = () => {
     );
 
     const [passwordReCheck, setpasswordReCheck] = useState<boolean>(undefined);
-    const [test, setTest] = useState(undefined);
 
     // const [emailCheck, setEmailCheck] = useState<string>(undefined);
     const [userInfo, setuserInfo] = useState<UserInfo>(null);
-    const [postResult, setPostResult] = useState(null);
     const navigate = useNavigate();
 
-    //
     async function SignUpData() {
         try {
             const res = await axios.post("http://localhost:8080/auth/signup", userInfo);
@@ -95,8 +92,10 @@ const SignUp = () => {
                 data: res.data,
             };
             console.log(result);
+            console.log(userInfo);
             alert('회원가입에 성공했습니다.');
-            navigate('/signup/emailcheck')
+            //이메일 인증으로 넘어가면서 이메일 props 전달
+            navigate('/signup/emailcheck', {state : userInfo})
 
         } catch (err) {
             console.log(err);
