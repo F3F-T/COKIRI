@@ -30,30 +30,36 @@ public class MemberAuthController {
 
     // 이메일 중복 확인
     @PostMapping(value = "/check-email")
-    public ResponseEntity<Boolean> emailDuplicateCheck(@RequestBody CheckEmailDto checkEmailDto) {
+    public ResponseEntity<RedunCheckDto> emailDuplicateCheck(@RequestBody CheckEmailDto checkEmailDto) {
         return ResponseEntity.ok(memberService.existsByEmail(checkEmailDto.getEmail()));
     }
 
     // 닉네임 중복 확인
     @PostMapping(value = "/check-nickname")
-    public ResponseEntity<Boolean> nicknameDuplicateCheck(@RequestBody CheckNicknameDto checkNicknameDto) {
+    public ResponseEntity<RedunCheckDto> nicknameDuplicateCheck(@RequestBody CheckNicknameDto checkNicknameDto) {
         return ResponseEntity.ok(memberService.existsByNickname(checkNicknameDto.getNickname()));
     }
 
     // 전화번호 중복 확인
-    @PostMapping(value = "/auth/check-phone")
-    public ResponseEntity<Boolean> phoneNumberDuplicateCheck(@RequestBody CheckPhoneNumberDto checkPhoneNumberDto) {
+    @PostMapping(value = "/check-phone")
+    public ResponseEntity<RedunCheckDto> phoneNumberDuplicateCheck(@RequestBody CheckPhoneNumberDto checkPhoneNumberDto) {
         return ResponseEntity.ok(memberService.existsByPhoneNumber(checkPhoneNumberDto.getPhoneNumber()));
 
     }
 
     // 이메일 인증 요청
     @PostMapping(value = "/mailConfirm")
-    public ResponseEntity<EmailConfirmCodeDto> mailConfirm(@RequestBody ConfirmEmailDto confirmEmailDto) throws Exception {
+    public ResponseEntity<EmailSentDto> mailConfirm(@RequestBody ConfirmEmailDto confirmEmailDto) throws Exception {
 
-        String code = emailCertificationService.sendSimpleMessage(confirmEmailDto.getEmail());
-        EmailConfirmCodeDto codeDto = EmailConfirmCodeDto.builder().code(code).build();
-        return ResponseEntity.ok(codeDto);
+        emailCertificationService.sendSimpleMessage(confirmEmailDto.getEmail());
+        return ResponseEntity.ok(EmailSentDto.builder().email(confirmEmailDto.getEmail()).success(true).build());
+    }
+
+    // 코드 인증 요청
+    @PostMapping(value = "/codeConfirm")
+    public ResponseEntity<CodeConfirmDto> codeConfirm(@RequestBody EmailConfirmCodeDto emailConfirmCodeDto) {
+        return ResponseEntity.ok(emailCertificationService.confirmCode(emailConfirmCodeDto));
+
     }
 
     // 이메일 찾기
@@ -83,14 +89,14 @@ public class MemberAuthController {
 
     // 로그인
     @PostMapping(value = "/login")
-    public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        return ResponseEntity.ok(authService.login(loginRequest, response));
+    public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(authService.login(loginRequest));
     }
 
     // 재발급
     @PostMapping(value = "/reissue")
-    public ResponseEntity<TokenInfoDTO> reissue(@RequestBody TokenDTO.TokenIssueDTO tokenReissueDTO, HttpServletResponse response, @CookieValue(name = REFRESH_TOKEN) String refreshToken) {
-        return ResponseEntity.ok(authService.reissue(tokenReissueDTO, response, refreshToken));
+    public ResponseEntity<TokenInfoDTO> reissue(@RequestBody TokenDTO.AccessTokenDTO accessTokenDTO) {
+        return ResponseEntity.ok(authService.reissue(accessTokenDTO));
     }
 
 

@@ -74,7 +74,7 @@ public class Member extends MemberBase {
         this.nickname = nickname;
     }
 
-    public UserInfo toUserInfo() {
+    public UserInfo toUserInfo(Long scrapId) {
         return UserInfo.builder()
                 .address(this.address)
                 .userName(this.userName)
@@ -83,6 +83,7 @@ public class Member extends MemberBase {
                 .nickname(this.nickname)
                 .loginType(this.getUserLoginType())
                 .id(this.getId())
+                .scrapId(scrapId)
                 .build();
     }
 
