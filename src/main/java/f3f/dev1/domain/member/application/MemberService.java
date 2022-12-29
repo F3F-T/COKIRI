@@ -33,7 +33,6 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    private final ScrapService scrapService;
 
     private final PasswordEncoder passwordEncoder;
     private final PostRepository postRepository;

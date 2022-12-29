@@ -8,13 +8,13 @@ import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.trade.dao.TradeRepository;
+import f3f.dev1.domain.trade.dto.TradeDTO.DeleteTradeDto;
 import f3f.dev1.domain.trade.dto.TradeDTO.TradeInfoDto;
 import f3f.dev1.domain.trade.exception.DuplicateTradeException;
 import f3f.dev1.domain.trade.exception.InvalidSellerIdException;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +22,6 @@ import java.util.Optional;
 
 import static f3f.dev1.domain.trade.dto.TradeDTO.CreateTradeDto;
 import static f3f.dev1.domain.trade.dto.TradeDTO.UpdateTradeDto;
-import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +62,7 @@ public class TradeService {
 
     // 트레이드 정보 조회 메서드
     @Transactional(readOnly = true)
-    public TradeInfoDto getTradeInfo(Long postId, Long memberId) {
+    public TradeInfoDto getTradeInfo(Long postId) {
         Optional<Trade> byId = tradeRepository.findByPostId(postId);
         if (byId.isPresent()) {
             Trade trade = byId.get();
@@ -72,7 +71,8 @@ public class TradeService {
             String buyerNickname = trade.getBuyer().getNickname();
             return trade.tradeInfoDto(sellerNickname, buyerNickname);
         } else {
-            String userNickname = memberRepository.findById(memberId).orElseThrow(UserNotFoundException::new).getNickname();
+            Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
+            String userNickname = memberRepository.findById(post.getAuthor().getId()).orElseThrow(UserNotFoundException::new).getNickname();
             return TradeInfoDto.builder()
                     .sellerNickname(userNickname)
                     .buyerNickname("none")
@@ -84,7 +84,7 @@ public class TradeService {
     // 거래상태 업데이트 메서드
     @Transactional
     public TradeInfoDto updateTradeStatus(UpdateTradeDto updateTradeDto, Long memberId) {
-        Trade trade = tradeRepository.findById(updateTradeDto.getTradeId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(updateTradeDto.getPostId()).orElseThrow(NotFoundByIdException::new);
         if (!updateTradeDto.getUserId().equals(memberId)) {
             throw new NotAuthorizedException();
         }
@@ -100,9 +100,20 @@ public class TradeService {
 
     // 거래 삭제 메서드
     @Transactional
-    public ResponseEntity<String> deleteTradeById(Long tradeId) {
-        Trade trade = tradeRepository.findById(tradeId).orElseThrow(NotFoundByIdException::new);
+    public TradeInfoDto deleteTrade(DeleteTradeDto deleteTradeDto, Long memberId) {
+        Trade trade = tradeRepository.findByPostId(deleteTradeDto.getPostId()).orElseThrow(NotFoundByIdException::new);
+        if (!deleteTradeDto.getUserId().equals(memberId)) {
+            throw new NotAuthorizedException();
+        }
+        if (!deleteTradeDto.getUserId().equals(trade.getSeller().getId())) {
+            throw new InvalidSellerIdException();
+        }
         tradeRepository.delete(trade);
-        return DELETE;
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+
+        return TradeInfoDto.builder()
+                .sellerNickname(member.getNickname())
+                .buyerNickname("none")
+                .tradeStatus(TradeStatus.TRADABLE).build();
     }
 }

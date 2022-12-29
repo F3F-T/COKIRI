@@ -3,18 +3,19 @@ package f3f.dev1.domain.member.api;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.EmailCertificationService;
 import f3f.dev1.domain.member.application.MemberService;
-import f3f.dev1.domain.token.dto.TokenDTO;
-import f3f.dev1.domain.token.dto.TokenDTO.TokenInfoDTO;
+import f3f.dev1.domain.member.application.OAuth2UserService;
+import f3f.dev1.domain.member.dto.OAuthDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
-import static f3f.dev1.global.common.constants.JwtConstants.REFRESH_TOKEN;
+import static f3f.dev1.domain.token.dto.TokenDTO.AccessTokenDTO;
+import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 
 @Slf4j
 @RestController
@@ -26,6 +27,8 @@ public class MemberAuthController {
     private final EmailCertificationService emailCertificationService;
 
     private final AuthService authService;
+
+    private final OAuth2UserService oAuth2UserService;
 
 
     // 이메일 중복 확인
@@ -49,11 +52,17 @@ public class MemberAuthController {
 
     // 이메일 인증 요청
     @PostMapping(value = "/mailConfirm")
-    public ResponseEntity<EmailConfirmCodeDto> mailConfirm(@RequestBody ConfirmEmailDto confirmEmailDto) throws Exception {
+    public ResponseEntity<EmailSentDto> mailConfirm(@RequestBody ConfirmEmailDto confirmEmailDto) throws Exception {
 
-        String code = emailCertificationService.sendSimpleMessage(confirmEmailDto.getEmail());
-        EmailConfirmCodeDto codeDto = EmailConfirmCodeDto.builder().code(code).build();
-        return ResponseEntity.ok(codeDto);
+        emailCertificationService.sendSimpleMessage(confirmEmailDto.getEmail());
+        return ResponseEntity.ok(EmailSentDto.builder().email(confirmEmailDto.getEmail()).success(true).build());
+    }
+
+    // 코드 인증 요청
+    @PostMapping(value = "/codeConfirm")
+    public ResponseEntity<CodeConfirmDto> codeConfirm(@RequestBody EmailConfirmCodeDto emailConfirmCodeDto) {
+        return ResponseEntity.ok(emailCertificationService.confirmCode(emailConfirmCodeDto));
+
     }
 
     // 이메일 찾기
@@ -83,14 +92,33 @@ public class MemberAuthController {
 
     // 로그인
     @PostMapping(value = "/login")
-    public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
-        return ResponseEntity.ok(authService.login(loginRequest, response));
+    public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(authService.login(loginRequest));
     }
+
+    // 외부 API 로그인 요청
+    @GetMapping(value = "/social_login/{loginType}")
+    public ResponseEntity<OAuthDTO.SocialLoginUrlDto> socialLogin(@PathVariable(name = "loginType") String loginType) {
+        return ResponseEntity.ok(oAuth2UserService.request(loginType.toUpperCase()));
+
+    }
+
+    // 구글 로그인 콜백 처리
+    @GetMapping(value = "/social_login/{loginType}/callback")
+    public ResponseEntity<UserLoginDto> callback(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
+        UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code);
+        if (userLoginDto.getUserInfo().getNickname() == null) {
+            return new ResponseEntity<>(userLoginDto, HttpStatus.CREATED);
+        }
+        return ResponseEntity.ok(userLoginDto);
+    }
+
+
 
     // 재발급
     @PostMapping(value = "/reissue")
-    public ResponseEntity<TokenInfoDTO> reissue(@RequestBody TokenDTO.TokenIssueDTO tokenReissueDTO, HttpServletResponse response, @CookieValue(name = REFRESH_TOKEN) String refreshToken) {
-        return ResponseEntity.ok(authService.reissue(tokenReissueDTO, response, refreshToken));
+    public ResponseEntity<TokenIssueDTO> reissue(@RequestBody AccessTokenDTO accessTokenDTO) {
+        return ResponseEntity.ok(authService.reissue(accessTokenDTO));
     }
 
 

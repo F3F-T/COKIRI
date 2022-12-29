@@ -70,7 +70,6 @@ public class MemberServiceTest {
                 .phoneNumber("01012345678")
                 .email("userEmail@email.com")
                 .birthDate("990128")
-                .address(createAddress())
                 .password("password")
                 .build();
     }
@@ -193,7 +192,6 @@ public class MemberServiceTest {
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
         SignUpRequest duplicateNickname = SignUpRequest.builder()
                 .nickname("duplicateNickname")
-                .address(createAddress())
                 .userName("dupliateUser")
                 .email("test@test.com")
                 .password("12345678")
@@ -220,7 +218,6 @@ public class MemberServiceTest {
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
         SignUpRequest duplicatePhone = SignUpRequest.builder()
                 .nickname("duplicateNickname")
-                .address(createAddress())
                 .userName("dupliateUser")
                 .email("test@test.com")
                 .password("12345678")

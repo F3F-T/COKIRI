@@ -92,7 +92,6 @@ public class MemberControllerTest {
                 .phoneNumber("01012345678")
                 .email("userEmail@email.com")
                 .birthDate("990128")
-                .address(createAddress())
                 .password("password")
                 .userLoginType(EMAIL)
                 .build();
@@ -145,11 +144,6 @@ public class MemberControllerTest {
                 .andExpect(status().isCreated())
                 .andDo(document("auth/signup/successful", requestFields(
                         fieldWithPath("userName").description("The user's name"),
-                        fieldWithPath("address").description("The user's address class"),
-                        fieldWithPath("address.addressName").description("The user's address name"),
-                        fieldWithPath("address.postalAddress").description("The user's postal address"),
-                        fieldWithPath("address.latitude").description("latitude of user address"),
-                        fieldWithPath("address.longitude").description("longitude of user address"),
                         fieldWithPath("nickname").description("The user's nickname"),
                         fieldWithPath("phoneNumber").description("The user's phoneNumber"),
                         fieldWithPath("email").description("The user's email"),
@@ -188,7 +182,7 @@ public class MemberControllerTest {
         LoginRequest loginRequest = createLoginRequest();
 
         // when
-        doThrow(new UserNotFoundException()).when(authService).login(any(), any());
+        doThrow(new UserNotFoundException()).when(authService).login(any());
 
         // then
         mockMvc.perform(post("/auth/login")
@@ -211,7 +205,7 @@ public class MemberControllerTest {
         LoginRequest loginRequest = createLoginRequest();
 
         // when
-        doThrow(new UserNotFoundException()).when(authService).login(any(), any());
+        doThrow(new UserNotFoundException()).when(authService).login(any());
 
         // then
         mockMvc.perform(post("/auth/login")
