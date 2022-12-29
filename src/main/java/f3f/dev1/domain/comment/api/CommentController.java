@@ -46,8 +46,9 @@ public class CommentController {
 
 
     // 댓글 삭제
-    @DeleteMapping(value = "/post/{postId}/comments/{commentsId}")
-    public ResponseEntity<String> deleteComment(@PathVariable(name = "postId") Long postId, @PathVariable(name = "commentsId") Long commentsId, @RequestHeader @Valid DeleteCommentRequest deleteCommentRequest) {
+    // TODO requestHeader로 전달하던 DeleteCommentRequest를 body로 변경
+    @DeleteMapping(value = "/post/{postId}/comments/{commentId}")
+    public ResponseEntity<String> deleteComment(@PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentsId, @RequestBody @Valid DeleteCommentRequest deleteCommentRequest) {
         String result = commentService.deleteComment(deleteCommentRequest);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

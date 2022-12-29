@@ -41,8 +41,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -152,6 +151,10 @@ public class CommentControllerTest {
 
     public UpdateCommentRequest createUpdateCommentRequest(Long commentId, Long authorId, Long postId, String content) {
         return new UpdateCommentRequest(commentId, authorId, postId, content);
+    }
+
+    public DeleteCommentRequest createDeleteCommentRequest(Long commentId, Long authorId, Long postId) {
+        return new DeleteCommentRequest(commentId, authorId, postId);
     }
 
     @Test
@@ -293,6 +296,34 @@ public class CommentControllerTest {
                         fieldWithPath("content").description("content of comment"),
                         fieldWithPath("depth").description("depth value of comment"),
                         fieldWithPath("parentCommentId").description("Id value of parent comment")
+                )));
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 테스트")
+    public void deleteCommentTestForSuccess() throws Exception {
+        //given
+        doReturn(1L).when(postService).savePost(any());
+        Member member = createMember();
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
+        Long postId = postService.savePost(postSaveRequest);
+
+        //when
+        CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "새로 만든 댓글");
+        doReturn(commentInfoDto).when(commentService).createComment(any());
+        DeleteCommentRequest deleteCommentRequest = createDeleteCommentRequest(1L, member.getId(), postId);
+        doReturn("DELETE").when(commentService).deleteComment(any());
+
+        //then
+        mockMvc.perform(delete("/post/{postId}/comments/{commentId}", 1L, 1L)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(deleteCommentRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("comment/delete/success", requestFields(
+                        fieldWithPath("id").description("Id value of comment"),
+                        fieldWithPath("authorId").description("Id value of author"),
+                        fieldWithPath("postId").description("Id value of post")
                 )));
     }
 }
