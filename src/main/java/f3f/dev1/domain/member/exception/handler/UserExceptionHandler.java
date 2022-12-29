@@ -72,4 +72,20 @@ public class UserExceptionHandler {
         log.debug("권한이 없는 요청", request.getDescription(false));
         return new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.UNAUTHORIZED).message(ex.getMessage()).build(), HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(EmailCertificationExpireException.class)
+    protected final ResponseEntity<ErrorResponse> handleEmailCertificationExpireException(
+            EmailCertificationExpireException ex, WebRequest request
+    ){
+        log.debug("만료된 이메일 코드", request.getDescription(false));
+        return EMAIL_CERTIFICATION_EXPIRE;
+    }
+
+    @ExceptionHandler(InvalidCertificationCodeException.class)
+    protected final ResponseEntity<ErrorResponse> handleInvalidCertificationCodeException(
+            InvalidCertificationCodeException ex, WebRequest request
+    ) {
+        log.debug("잘못된 이메일 인증 코드", request.getDescription(false));
+        return INVALID_CERTIFICATION;
+    }
 }

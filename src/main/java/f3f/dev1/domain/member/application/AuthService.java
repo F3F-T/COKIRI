@@ -8,26 +8,26 @@ import f3f.dev1.domain.scrap.dto.ScrapDTO;
 import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.token.dto.TokenDTO.AccessTokenDTO;
+import f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
+import f3f.dev1.domain.token.exception.InvalidAccessTokenException;
 import f3f.dev1.domain.token.exception.InvalidRefreshTokenException;
+import f3f.dev1.domain.token.exception.LogoutUserException;
 import f3f.dev1.domain.token.exception.TokenNotMatchException;
-import f3f.dev1.domain.token.model.RefreshToken;
-import f3f.dev1.domain.token.service.TokenService;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import f3f.dev1.global.jwt.JwtTokenProvider;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.token.dto.TokenDTO.TokenInfoDTO;
@@ -43,9 +43,9 @@ public class AuthService {
 
     private final ScrapRepository scrapRepository;
 
-    private final TokenService tokenService;
-
     private final ScrapService scrapService;
+
+    private final RedisTemplate<String, String> redisTemplate;
 
 
 
@@ -71,28 +71,28 @@ public class AuthService {
         // 3. 인증 정보를 기반으로 jwt 토큰 생성
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
         // 4. refesh token 저장
-        RefreshToken redisRefreshToken = RefreshToken.builder()
-                .userId(authenticate.getName())
-                .accessToken(tokenInfoDTO.getAccessToken())
-                .refreshToken(tokenInfoDTO.getRefreshToken())
-                .expired(REFRESH_TOKEN_EXPIRE_TIME)
-                .build();
-        tokenService.save(redisRefreshToken);
-
-
-        String refreshToken = tokenInfoDTO.getRefreshToken();
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        valueOperations.set(authenticate.getName(), tokenInfoDTO.getRefreshToken());
+        valueOperations.set(tokenInfoDTO.getAccessToken(), tokenInfoDTO.getRefreshToken());
+        redisTemplate.expire(authenticate.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(tokenInfoDTO.getAccessToken(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
         // 5. 토큰 발급
         Member member = memberRepository.findById(Long.parseLong(authenticate.getName())).orElseThrow(NotFoundByIdException::new);
         Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).orElseThrow(UserScrapNotFoundException::new);
 
-        return UserLoginDto.builder().userInfo(member.toUserInfo(scrap.getId())).tokenInfo(tokenInfoDTO.toTokenReissueDTO()).build();
+        return UserLoginDto.builder().userInfo(member.toUserInfo(scrap.getId())).tokenInfo(tokenInfoDTO.toTokenIssueDTO()).build();
     }
 
     @Transactional
-    public TokenInfoDTO reissue(AccessTokenDTO accessTokenDTO) {
-        RefreshToken tokenByAccess = tokenService.findByAccessToken(accessTokenDTO.getAccessToken());
+    public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO) {
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        String accessByRefresh = valueOperations.get(accessTokenDTO.getAccessToken());
+        if (accessByRefresh == null) {
+            throw new InvalidAccessTokenException();
+        }
+//        RefreshToken tokenByAccess = tokenService.findByAccessToken(accessTokenDTO.getAccessToken());
         // 1. refresh token 검증
-        if (!jwtTokenProvider.validateToken(tokenByAccess.getRefreshToken())) {
+        if (!jwtTokenProvider.validateToken(accessByRefresh)) {
             throw new InvalidRefreshTokenException();
         }
 
@@ -100,27 +100,36 @@ public class AuthService {
         Authentication authentication = jwtTokenProvider.getAuthentication(accessTokenDTO.getAccessToken());
 
         // 3. 저장소에서 member id를 기반으로 refresh token 값 가져옴
-        RefreshToken redisRefreshToken = tokenService.findById(authentication.getName());
+        String accessByMemberId = valueOperations.get(authentication.getName());
+        if (accessByMemberId == null) {
+            throw new LogoutUserException();
+        }
 
         // 4. refresh token이 일치하는지 검사,
 
-        if (!redisRefreshToken.getRefreshToken().equals(tokenByAccess.getRefreshToken())) {
+        if (!accessByMemberId.equals(accessByRefresh)) {
             throw new TokenNotMatchException();
         }
 
         // 5. 새로운 토큰 생성
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication);
         // 6. 저장소 정보 업데이트
-        tokenService.update(tokenInfoDTO.getRefreshToken(), authentication.getName());
+        valueOperations.set(authentication.getName(), tokenInfoDTO.getRefreshToken());
+        valueOperations.set(tokenInfoDTO.getAccessToken(), tokenInfoDTO.getRefreshToken());
+        redisTemplate.expire(authentication.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(tokenInfoDTO.getAccessToken(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
 
         // 토큰 발급
-        return tokenInfoDTO;
+        return tokenInfoDTO.toTokenIssueDTO();
     }
 
     @Transactional
-    public String logout() throws IOException {
-        tokenService.delete(Long.toString(SecurityUtil.getCurrentMemberId()));
+    public String logout(String token) throws IOException {
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        valueOperations.getAndDelete(Long.toString(SecurityUtil.getCurrentMemberId()));
+        valueOperations.getAndDelete(token);
+
         return "SUCCESS";
     }
 

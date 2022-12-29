@@ -20,4 +20,8 @@ public class UserErrorResponse {
 
 
     public static final ResponseEntity<ErrorResponse> INVALID_PASSWORD = new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.CONFLICT).message("잘못된 비밀번호 입력입니다.").build(), HttpStatus.CONFLICT);
+
+    public static final ResponseEntity<ErrorResponse> EMAIL_CERTIFICATION_EXPIRE = new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.CONFLICT).message("만료된 이메일 코드입니다").build(), HttpStatus.CONFLICT);
+
+    public static final ResponseEntity<ErrorResponse> INVALID_CERTIFICATION = new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.CONFLICT).message("잘못된 이메일 코드입니다").build(), HttpStatus.CONFLICT);
 }

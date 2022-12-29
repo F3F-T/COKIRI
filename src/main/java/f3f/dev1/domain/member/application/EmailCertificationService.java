@@ -1,16 +1,13 @@
 package f3f.dev1.domain.member.application;
 
-import f3f.dev1.domain.member.dao.EmailCertificationRepository;
-import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.dto.MemberDTO.CodeConfirmDto;
 import f3f.dev1.domain.member.dto.MemberDTO.EmailConfirmCodeDto;
 import f3f.dev1.domain.member.exception.EmailCertificationExpireException;
 import f3f.dev1.domain.member.exception.InvalidCertificationCodeException;
-import f3f.dev1.domain.member.model.EmailCertification;
-import f3f.dev1.global.common.constants.EmailConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -20,8 +17,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
-import static f3f.dev1.global.common.constants.EmailConstants.*;
+import static f3f.dev1.global.common.constants.EmailConstants.EMIAL_CERTIFICATION_TIME;
 import static javax.mail.Message.RecipientType.TO;
 
 @Slf4j
@@ -31,7 +29,8 @@ public class EmailCertificationService {
 
     private final JavaMailSender emailSender;
 
-    private final EmailCertificationRepository emailCertificationRepository;
+
+    private final RedisTemplate<String, String> redisTemplate;
 
     // 인증 번호
     private String ePw;
@@ -88,14 +87,9 @@ public class EmailCertificationService {
         MimeMessage message = createMessage(to);
         try {
             emailSender.send(message);
-            if (emailCertificationRepository.existsById(to)) {
-                emailCertificationRepository.deleteById(to);
-            }
-            EmailCertification emailCertification = EmailCertification.builder()
-                    .email(to)
-                    .code(ePw)
-                    .expired(EMIAL_CERTIFICATION_TIME).build();
-            emailCertificationRepository.save(emailCertification);
+            ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+            valueOperations.set(to, ePw);
+            redisTemplate.expire(to, EMIAL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
         } catch (MailException es) {
             es.printStackTrace();
             throw new IllegalArgumentException("메일 전송중 오류 발생");
@@ -106,8 +100,12 @@ public class EmailCertificationService {
 
     // 코드 검증
     public CodeConfirmDto confirmCode(EmailConfirmCodeDto emailConfirmCodeDto) {
-        EmailCertification emailCertification = emailCertificationRepository.findById(emailConfirmCodeDto.getEmail()).orElseThrow(EmailCertificationExpireException::new);
-        if (!emailCertification.getCode().equals(emailConfirmCodeDto.getCode())) {
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        String code = valueOperations.get(emailConfirmCodeDto.getEmail());
+        if (code == null) {
+            throw new EmailCertificationExpireException();
+        }
+        if (!code.equals(emailConfirmCodeDto.getCode())) {
             throw new InvalidCertificationCodeException();
         }
         return CodeConfirmDto.builder().matches(true).build();

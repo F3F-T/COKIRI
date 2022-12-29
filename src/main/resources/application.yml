@@ -7,6 +7,15 @@ spring:
   redis:
     host: localhost
     port: 6379
+  OAuth2:
+    google:
+      url: https://accounts.google.com/o/oauth2/v2/auth
+      callback-url : http://localhost:8080/auth/social_login/google/callback
+      scope : https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
+      token_request : "https://oauth2.googleapis.com/token"
+      userinfo_request: "https://www.googleapis.com/oauth2/v1/userinfo"
+
+
 
 
   jpa:
