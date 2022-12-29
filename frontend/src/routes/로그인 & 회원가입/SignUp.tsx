@@ -45,14 +45,14 @@ const SignUp = () => {
 
 
 
-            const res = await axios.post("/auth/signup");
+                const res = await axios.post("http://localhost:8080/auth/signup",userInfo);
 
             const result = {
                 status: res.status + "-" + res.statusText,
                 headers: res.headers,
                 data: res.data,
             };
-            console.log(result);
+            console.log("result",result);
             alert('로그인 성공');
             // setPostResult(formatResponse(result));
         } catch (err) {
