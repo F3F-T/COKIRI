@@ -41,6 +41,7 @@ const SignUp = () => {
         emailCheck: checkEmailTypes;
         emailCheckBoolean: boolean;
         passwordCheck: boolean;
+        passwordCheckBoolean : boolean;
         nameCheck: string;
         birthCheck: string;
         nicknameCheck: string;
@@ -52,15 +53,20 @@ const SignUp = () => {
         {
             emailCheck: undefined,
             emailCheckBoolean: undefined,
+
+            passwordCheck: undefined,
+            passwordCheckBoolean : undefined,
+
             birthCheck: undefined,
+
             nameCheck: undefined,
             nicknameCheck: undefined,
             phoneNumberCheck: undefined,
-            passwordCheck: undefined
+
         }
     );
 
-    const [passwordCheck, setpasswordCheck] = useState<boolean>(undefined);
+    const [passwordReCheck, setpasswordReCheck] = useState<boolean>(undefined);
     const [test, setTest] = useState(undefined);
 
         // const [emailCheck, setEmailCheck] = useState<string>(undefined);
@@ -89,6 +95,7 @@ const SignUp = () => {
         }
     }
 
+    //이메일 중복 체크 함수
     async function CheckEmailDuplicated(email: object) {
         console.log("CheckEmailDuplicated 접근")
         console.log(email)
@@ -126,11 +133,6 @@ const SignUp = () => {
 
 
     const signUpButtonClick = (e) => {
-        setuserInfo((prevState) => {
-            return {...prevState, userLoginType: "EMAIL"}
-        })
-        console.log(userInfo.userLoginType)
-        console.log(userInfo);
         postSignUpData();
     }
 
@@ -138,7 +140,7 @@ const SignUp = () => {
     const onChangeEmail = (e) => {
         let inputEmail = e.target.value;
 
-        //유효성 검사
+        //이메일 유효성 검사
         let emailValidationCheck = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
 
         //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
@@ -168,17 +170,34 @@ const SignUp = () => {
     }
 
     const onChangePassword = (e) => {
-        setuserInfo((prevState) => {
-            return {...prevState, password: e.target.value}
-        })
-    }
 
+        let inputPassword = e.target.value;
+
+        //숫자+영문자+특수문자 조합으로 8자리 이상 입력
+        const passwordValidation = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/
+
+        //유효성 검사 통과할때(안전할때)
+        if (passwordValidation.test(inputPassword)) {
+            console.log("안전해")
+            setValidationCheck((prevState) => {
+                return {...prevState, passwordCheck: true , passwordCheckBoolean: true}
+            })
+            setuserInfo((prevState) => {
+                return {...prevState, password: e.target.value}
+            })
+        }else{
+            setValidationCheck((prevState) => {
+                return {...prevState, passwordCheck: false , passwordCheckBoolean: false}
+            })
+        }
+
+    }
     const onChangeCheckPassword = (e) => {
         if (userInfo.password === e.target.value) {
-            setpasswordCheck(true);
+            setpasswordReCheck(true);
             console.log("OK")
         } else {
-            setpasswordCheck(false);
+            setpasswordReCheck(false);
             console.log("비밀번호 일치하지 않음")
         }
     }
@@ -236,13 +255,20 @@ const SignUp = () => {
 
 
                 <TextInput placeholder={"비밀번호"} onBlur={onChangePassword}/>
-                <TextInput placeholder={"비밀번호 확인"} onBlur={onChangeCheckPassword}/>
-                {(passwordCheck === undefined && <Message validCheck={passwordCheck} content={""}/>)
+                {(validationCheck.passwordCheck === undefined && <Message validCheck={validationCheck.passwordCheckBoolean} content={""}/>)
                     ||
-                    (passwordCheck ?
-                        <Message validCheck={passwordCheck} content={"✔ 비밀번호가 일치합니다"}/>
+                    (validationCheck.passwordCheck ?
+                        <Message validCheck={validationCheck.passwordCheckBoolean} content={"✔ 안전한 비밀번호입니다."}/>
                         :
-                        <Message validCheck={passwordCheck} content={"❌ 비밀번호가 일치하지 않습니다"}/>)}
+                        <Message validCheck={validationCheck.passwordCheckBoolean} content={"❌ 숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요."}/>)}
+
+                <TextInput placeholder={"비밀번호 확인"} onBlur={onChangeCheckPassword}/>
+                {(passwordReCheck === undefined && <Message validCheck={passwordReCheck} content={""}/>)
+                    ||
+                    (passwordReCheck ?
+                        <Message validCheck={passwordReCheck} content={"✔ 비밀번호가 일치합니다"}/>
+                        :
+                        <Message validCheck={passwordReCheck} content={"❌ 비밀번호가 일치하지 않습니다"}/>)}
 
 
                 <section className={styles.userNameBirth}>
