@@ -11,6 +11,7 @@ import Message from "../../component/로그인 & 회원가입/Message";
 import {stringify} from "querystring";
 
 import axios from "axios";
+import {forEach} from "list";
 
 const SignUp = () => {
 
@@ -84,7 +85,7 @@ const SignUp = () => {
     const navigate = useNavigate();
 
     //
-    async function postSignUpData() {
+    async function SignUpData() {
         try {
             const res = await axios.post("http://localhost:8080/auth/signup", userInfo);
 
@@ -94,12 +95,12 @@ const SignUp = () => {
                 data: res.data,
             };
             console.log(result);
-            alert('로그인 성공');
+            alert('회원가입에 성공했습니다.');
             navigate('/signup/emailcheck')
 
         } catch (err) {
-            console.log(err); ///
-            alert('로그인 실패');
+            console.log(err);
+            alert('회원가입에 실패했습니다.');
 
         }
     }
@@ -207,7 +208,20 @@ const SignUp = () => {
 
 
     const signUpButtonClick = (e) => {
-        postSignUpData();
+
+        //유효성 검증이 모두 성공했을 경우 (모두 true일 경우) 회원가입
+        if (validationCheck.emailCheckBoolean &&
+            validationCheck.passwordCheckBoolean &&
+            validationCheck.nameAndBirthCheckBoolean &&
+            validationCheck.nicknameCheckBoolean &&
+            validationCheck.phoneNumberCheckBoolean)
+        {
+            SignUpData();
+        }else{ //유효성 검증 하나라도 실패한 경우 회원가입 실패
+            alert("회원가입 정보를 모두 만족시켜주세요")
+        }
+
+
     }
 
     //입력완료하면 값이 state에 저장된다.
@@ -445,10 +459,12 @@ const SignUp = () => {
                         <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={"✔ 사용 가능한 전화번호 입니다."}/>)
                     ||
                     (validationCheck.phoneNumberCheck === "invalid" &&
-                        <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={"❌ 유효하지 않은 핸드폰 번호입니다. 예시) 01012345678"}/>)
+                        <Message validCheck={validationCheck.phoneNumberCheckBoolean}
+                                 content={"❌ 유효하지 않은 핸드폰 번호입니다. 예시) 01012345678"}/>)
                     ||
                     (validationCheck.phoneNumberCheck === "duplicated" &&
-                        <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={"❌ 이미 가입된 핸드폰 번호입니다."}/>)}
+                        <Message validCheck={validationCheck.phoneNumberCheckBoolean}
+                                 content={"❌ 이미 가입된 핸드폰 번호입니다."}/>)}
             </div>
 
             <div className={styles.btnPlace}>
