@@ -45,7 +45,7 @@ const SignUp = () => {
 
 
 
-            const res = await axios.post("/auth/signup");
+            const res = await axios.post("http://localhost:8080/auth/signup",userInfo);
 
             const result = {
                 status: res.status + "-" + res.statusText,
@@ -54,7 +54,8 @@ const SignUp = () => {
             };
             console.log(result);
             alert('로그인 성공');
-            // setPostResult(formatResponse(result));
+            navigate('/signup/emailcheck')
+
         } catch (err) {
             console.log(err); ///
             alert('로그인 실패');
@@ -66,7 +67,6 @@ const SignUp = () => {
     const signUpButtonClick = () => {
         console.log(userInfo);
         postSignUpData();
-        navigate('/signup/emailcheck')
     }
 
     //입력완료하면 값이 state에 저장된다.
