@@ -24,10 +24,21 @@ const SignUp = () => {
         userLoginType: string;
     }
 
+    /**
+     * emailCheck :
+     * 1) invalid : 유효하지 않은 이메일일때
+     * 2) valid : 유효한 이메일일때
+     * 3) gmail : @gmail.com일때
+     * 4) duplicated : 이메일이 중복일때
+     */
     type checkEmailTypes = 'invalid' | 'valid' | 'gmail' | 'duplicated'
 
+
+
+    //각 항목들의 유효성 체크와
+    //성공인지, 실패인지에 따라 UI(실패하면 빨간색, 성공하면 초록색)를 결정해주는 Boolean
     interface ValidationCheck {
-        emailCheck: checkEmailTypes | undefined;
+        emailCheck: checkEmailTypes;
         emailCheckBoolean: boolean;
         passwordCheck: boolean;
         nameCheck: string;
@@ -51,29 +62,15 @@ const SignUp = () => {
 
     const [passwordCheck, setpasswordCheck] = useState<boolean>(undefined);
     const [test, setTest] = useState(undefined);
-    /**
-     * emailCheck :
-     * 1) invalid : 유효하지 않은 이메일일때
-     * 2) valid : 유효한 이메일일때
-     * 3) gmail : @gmail.com일때
-     */
+
         // const [emailCheck, setEmailCheck] = useState<string>(undefined);
     const [userInfo, setuserInfo] = useState<UserInfo>(null);
     const [postResult, setPostResult] = useState(null);
     const navigate = useNavigate();
 
-
-    const formatResponse = (result) => {
-        //두번째 replace parameter는 filter같은 역할을 한다.
-        //세번째 parameter는 원하는 공백
-        JSON.stringify(result, null, 2);
-
-    }
-
+    //
     async function postSignUpData() {
         try {
-
-
             const res = await axios.post("http://localhost:8080/auth/signup", userInfo);
 
             const result = {
@@ -99,10 +96,26 @@ const SignUp = () => {
             const res = await axios.post("http://localhost:8080/auth/check-email", email);
 
             const result = res.data;
-
             const duplicated = result.exists
-            console.log(duplicated);
-            return duplicated
+
+            if(duplicated) //중복인 경우 -> true 반환
+            {
+                setValidationCheck((prevState) => {
+                    return {...prevState, emailCheck: "duplicated", emailCheckBoolean: false}
+                })
+            }
+            else //중복이 아닌 경우 -> false 반환
+            {
+                setValidationCheck((prevState) => {
+                    return {...prevState, emailCheck: "valid", emailCheckBoolean: true}
+                })
+                setuserInfo((prevState) => {
+                    return {
+                        ...prevState, email : email.toString()
+                        , userLoginType: "EMAIL"
+                    }
+                })
+            }
 
         } catch (err) {
             console.log(err);
@@ -125,10 +138,10 @@ const SignUp = () => {
     const onChangeEmail = (e) => {
         let inputEmail = e.target.value;
 
+        //유효성 검사
         let emailValidationCheck = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
-        // 형식에 맞는 경우 true 리턴
 
-        //이메일 유효성 검사를 통과했을때
+        //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
         if (emailValidationCheck.test(inputEmail)) {
             //@gmail.com일때
             if (inputEmail.includes("@gmail.com")) {
@@ -141,44 +154,7 @@ const SignUp = () => {
                 let jsonObj = {"email": inputEmail};
 
                 //변환한 json 객체로 이메일 중복체크
-                //중복일 경우
-                (async() => {
-                    const checkEmailDuplicated = await CheckEmailDuplicated(jsonObj)
-                    if(checkEmailDuplicated) //중복인 경우 -> true 반환
-                    {
-                        setValidationCheck((prevState) => {
-                            return {...prevState, emailCheck: "duplicated", emailCheckBoolean: false}
-                        })
-                    }
-                    else //중복이 아닌 경우 -> false 반환
-                    {
-                        setValidationCheck((prevState) => {
-                            return {...prevState, emailCheck: "valid", emailCheckBoolean: true}
-                        })
-                        setuserInfo((prevState) => {
-                            return {
-                                ...prevState, email: e.target.value
-                                , userLoginType: "EMAIL"
-                            }
-                        })
-                    }
-                })()
-
-                // if (CheckEmailDuplicated(jsonObj) === false) {
-                //     setValidationCheck((prevState) => {
-                //         return {...prevState, emailCheck: "duplicated", emailCheckBoolean: false}
-                //     })
-                // }//중복이 아닌경우
-                // else {
-                //     setValidationCheck((prevState) => {
-                //         return {...prevState, emailCheck: "valid", emailCheckBoolean: true}
-                //     })
-                //     setuserInfo((prevState) => {
-                //         return {
-                //             ...prevState, email: e.target.value
-                //             , userLoginType: "EMAIL"
-                //         }
-                //     })
+                CheckEmailDuplicated(jsonObj);
 
             }
         } else //이메일 유효성 검사 실패했을때
