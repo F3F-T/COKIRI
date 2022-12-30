@@ -37,7 +37,6 @@ public class CategoryService {
         //질문)category.getParent()-- null을 categoryRepository.existById(categor.getParentId())이렇게 해주는게 나으려나 뭐가 달라?
 
         //카테고리 이름에 대한 처리
-        //getName() Null은 @NonNull하면 따로 안넣어도 될듯
         if(categoryRepository.existByName(categorySaveRequest.getName())){
             throw new CategoryException("이미 존재하는 카테고리입니다.");
         }
@@ -60,7 +59,7 @@ public class CategoryService {
             //질문)depth를 NonNUll로 했는데 그럼 parent에서 deth+1을 안해도 되지 않나? 동준오빠는 무한 depth여서?set을 왜 한거지?
             //질문) save 위치 나는 save한다음에 add가 들어가는게 맞는 것 같음. 근데 그렇게 안하면 코드 1줄로 줄일 수 있음.
            // Category parentCategory = categoryRepository.findById(category.getParent().getId()).orElseThrow(NotFoundByIdException::new);
-            if(category.getDepth() != category.getParent().getDepth()){
+            if(category.getDepth().equals(category.getParent().getDepth())){ //왜 !=로 비교 안돼?
                 throw new CategoryException("카테고리 depth 오류 : (1,2)중에서 확인");
             }
 //            if(parentCategory.getName().equals("root")){
@@ -78,6 +77,7 @@ public class CategoryService {
 
     //TODO)각각 조회말고 전체 조회 해야함.
     //이건 카테고리를 클릭하면 해당 카테고리 리스트만 나오는거.
+    //카테고리 누르면 자식 카테고리 나오는 식. (쿠팡)
     @Transactional(readOnly = true)
     public List<Category> readCategoryByCategory(Long id){
         Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -87,12 +87,46 @@ public class CategoryService {
         return category.getChild();
     }
 
+    //루트에서 바로 그냥 카테고리 불러오기->원래 들어가면 바로 카테고리 보이게?->필터형식?
+//    @Transactional(readOnly = true)
+//    public List<Category> readTotalCategory(){
+//
+//
+//    }
+
+
+
     @Transactional(readOnly = true)
     public List<Post> readPostByCategory(Long id){
         Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
 
         return category.getProducts();
     }
+
+    //카테고리 업데이트
+    @Transactional
+    public String updateCategoryName(Long id, String newName){
+        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        //업데이트하려는 카테고리 이름이 이미 존재할 때
+        if(categoryRepository.existByName(newName)){
+            throw new CategoryException("이미 존재하는 카테고리 이름입니다.");
+        }
+        else{
+            category.updateCategoryName(newName);
+        }
+        return "UPDATE";
+    }
+
+    //카테고리 깊이 수정 -> 그냥 삭제하고 다시 만들어?
+    @Transactional
+    public String updateCategoryDepth(Long id, String newDepth){
+        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+//        category.getDepth().toString();
+        return "UPDATE";
+    }
+
+
+
 
 
 
