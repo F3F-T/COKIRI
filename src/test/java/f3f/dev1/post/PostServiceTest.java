@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static f3f.dev1.domain.category.dto.CategoryDTO.*;
@@ -58,6 +59,7 @@ public class PostServiceTest {
         memberRepository.deleteAll();
         postRepository.deleteAll();
         commentRepository.deleteAll();
+        categoryRepository.deleteAll();
     }
 
     public CategorySaveRequest createCategorySaveRequest(String name, Long depth, Category parent, Member author) {
@@ -126,6 +128,17 @@ public class PostServiceTest {
                 .build();
     }
 
+    public PostSaveRequest createPostSaveRequestWithDynamicTitle(Member author, String title, boolean tradeEachOther, Long productId, Long wishId) {
+        return PostSaveRequest.builder()
+                .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
+                .title(title)
+                .tradeEachOther(tradeEachOther)
+                .authorId(author.getId())
+                .productCategoryId(productId)
+                .wishCategoryId(wishId)
+                .build();
+    }
+
     public PostSaveRequest createPostSaveRequestWithDynamicAuthorId(Long authorId, boolean tradeEachOther) {
         return PostSaveRequest.builder()
                 .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
@@ -178,8 +191,6 @@ public class PostServiceTest {
         CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
-//        Category product = categoryRepository.findById(productCategoryId).get();
-//        Category wish = categoryRepository.findById(wishCategoryId).get();
 
         //when
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
@@ -194,9 +205,79 @@ public class PostServiceTest {
     @Test
     public void findPostByAuthorSuccess() throws Exception {
         //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
 
         //when
+        // 첫번째 게시글
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        Long postId = postService.savePost(postSaveRequest);
+        Post post = postRepository.findById(postId).get();
+
+        //두번째 게시글
+        PostSaveRequest postSaveRequest2 = createPostSaveRequestWithDynamicTitle(member, "2년 쓴 이불 바꿔요",false, productCategoryId, wishCategoryId);
+        Long postId2 = postService.savePost(postSaveRequest2);
+        Post post2 = postRepository.findById(postId2).get();
 
         //then
+        List<PostInfoDto> postsByAuthor = postService.findPostByAuthor(member.getId());
+        assertThat(postsByAuthor).extracting("title")
+                .hasSize(2)
+                .contains("2년 쓴 이불 바꿔요", "3년 신은 양말 거래 희망합니다");
+
+        assertThat(postsByAuthor).extracting("content")
+                .hasSize(2);
+    }
+    
+    @Test
+    @DisplayName("게시글 전체 조회 테스트")
+    public void findAllPostTestForSuccess() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        //when
+        // 첫번째 게시글
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        Long postId = postService.savePost(postSaveRequest);
+        Post post = postRepository.findById(postId).get();
+
+        //두번째 게시글
+        PostSaveRequest postSaveRequest2 = createPostSaveRequestWithDynamicTitle(member, "2년 쓴 이불 바꿔요",false, productCategoryId, wishCategoryId);
+        Long postId2 = postService.savePost(postSaveRequest2);
+        Post post2 = postRepository.findById(postId2).get();
+        
+        //then
+        List<PostInfoDto> allPosts = postService.findAllPosts();
+        assertThat(allPosts).extracting("title")
+                .hasSize(2)
+                .contains("2년 쓴 이불 바꿔요", "3년 신은 양말 거래 희망합니다");
+
+        assertThat(allPosts).extracting("content")
+                .hasSize(2);
     }
 }

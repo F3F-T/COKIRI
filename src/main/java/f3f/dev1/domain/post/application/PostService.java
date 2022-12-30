@@ -75,7 +75,8 @@ public class PostService {
                     .authorNickname(post.getAuthor().getNickname())
                     .wishCategory(post.getWishCategory().getName())
                     .productCategory(post.getProductCategory().getName())
-                    .tradeStatus(post.getTrade().getTradeStatus())
+                    // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
+//                    .tradeStatus(post.getTrade().getTradeStatus())
                     .build();
             response.add(responseEach);
         }
@@ -98,7 +99,8 @@ public class PostService {
                     .authorNickname(post.getAuthor().getNickname())
                     .wishCategory(post.getWishCategory().getName())
                     .productCategory(post.getProductCategory().getName())
-                    .tradeStatus(post.getTrade().getTradeStatus())
+                    // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
+//                    .tradeStatus(post.getTrade().getTradeStatus())
                     .build();
             response.add(responseEach);
         }
