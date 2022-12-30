@@ -1,5 +1,9 @@
 package f3f.dev1.post;
 
+import f3f.dev1.domain.category.application.CategoryService;
+import f3f.dev1.domain.category.dao.CategoryRepository;
+import f3f.dev1.domain.category.dto.CategoryDTO;
+import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.dao.MemberRepository;
@@ -10,6 +14,7 @@ import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
+import static f3f.dev1.domain.category.dto.CategoryDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
@@ -30,6 +36,12 @@ public class PostServiceTest {
     PostService postService;
 
     @Autowired
+    AuthService authService;
+
+    @Autowired
+    CategoryService categoryService;
+
+    @Autowired
     MemberRepository memberRepository;
 
     @Autowired
@@ -39,14 +51,22 @@ public class PostServiceTest {
     CommentRepository commentRepository;
 
     @Autowired
-    AuthService authService;
-
+    CategoryRepository categoryRepository;
 
     @BeforeEach
     public void deleteAll() {
         memberRepository.deleteAll();
         postRepository.deleteAll();
         commentRepository.deleteAll();
+    }
+
+    public CategorySaveRequest createCategorySaveRequest(String name, Long depth, Category parent, Member author) {
+        return CategorySaveRequest.builder()
+                .name(name)
+                .depth(depth)
+                .parent(parent)
+                .member(author)
+                .build();
     }
 
     public Address createAddress() {
@@ -95,14 +115,14 @@ public class PostServiceTest {
                 .build();
     }
 
-    public PostSaveRequest createPostSaveRequest(Member author, boolean tradeEachOther) {
+    public PostSaveRequest createPostSaveRequest(Member author, boolean tradeEachOther, Long productId, Long wishId) {
         return PostSaveRequest.builder()
                 .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
                 .title("3년 신은 양말 거래 희망합니다")
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
-                .productCategoryId(null)
-                .wishCategoryId(null)
+                .productCategoryId(productId)
+                .wishCategoryId(wishId)
                 .build();
     }
 
@@ -144,11 +164,26 @@ public class PostServiceTest {
     @WithMockCustomUser
     public void savePostSuccess() throws Exception {
         //given
-        Member member = createMember();
-        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        Long postId = postService.savePost(postSaveRequest);
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+//        Category product = categoryRepository.findById(productCategoryId).get();
+//        Category wish = categoryRepository.findById(wishCategoryId).get();
 
         //when
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        Long postId = postService.savePost(postSaveRequest);
         Post post = postRepository.findById(postId).get();
 
         //then
