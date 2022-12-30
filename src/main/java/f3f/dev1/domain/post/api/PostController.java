@@ -20,7 +20,10 @@ public class PostController {
 
     private final PostService postService;
 
+    // TODO 조회 필터링은 post에서 하는 걸로
+
     //게시글 전체 조회
+    // TODO 쿼리스트링 추가
     @GetMapping(value = "/post")
     public ResponseEntity<List<PostInfoDto>> getAllPostInfo() {
         List<PostInfoDto> allPosts = postService.findAllPosts();

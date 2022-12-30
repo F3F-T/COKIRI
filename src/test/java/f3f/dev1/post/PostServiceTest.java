@@ -196,8 +196,8 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, root, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 

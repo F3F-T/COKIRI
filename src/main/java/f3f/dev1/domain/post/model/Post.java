@@ -38,6 +38,8 @@ public class Post extends BaseTimeEntity {
     @OneToOne(mappedBy = "post")
     private Trade trade;
 
+    // TODO price 추가
+
     @ManyToOne
     @JoinColumn(name = "productCategory_id")
     private Category productCategory;
