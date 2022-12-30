@@ -39,6 +39,10 @@
     margin-bottom: 3rem;
 }
 
+.red{
+    border-bottom: 2px solid red;
+}
+
 .btnLogin{
     background-color: #17191D;
     color: white;

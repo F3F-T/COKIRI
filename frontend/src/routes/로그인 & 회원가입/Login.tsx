@@ -6,7 +6,7 @@ import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
 import axios from "axios";
 import Modal from "../../routes/로그인 & 회원가입/GoogleLoginModal"
-import GoogleLogin from 'react-google-login'
+// import GoogleLogin from 'react-google-login'
 // import {gapi} from 'gapi-script';
 
 const Login = () => {
