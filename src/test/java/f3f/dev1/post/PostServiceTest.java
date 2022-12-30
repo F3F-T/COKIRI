@@ -1,24 +1,36 @@
 package f3f.dev1.post;
 
-import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.comment.dao.CommentRepository;
+import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.dto.PostDTO;
-import f3f.dev1.domain.trade.model.Trade;
+import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.global.common.annotation.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Optional;
+
+import static f3f.dev1.domain.member.dto.MemberDTO.*;
+import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 public class PostServiceTest {
 
     @Autowired
-    MemberRepository userRepository;
+    PostService postService;
+
+    @Autowired
+    MemberRepository memberRepository;
 
     @Autowired
     PostRepository postRepository;
@@ -26,29 +38,122 @@ public class PostServiceTest {
     @Autowired
     CommentRepository commentRepository;
 
+    @Autowired
+    AuthService authService;
 
-//    public PostSaveRequest CreatePostSaveRequestDTO(String title, String content, Boolean tradeEachOther, Member author, Category productCategory, Category wishCategory, Trade trade) {
-//        PostSaveRequest.builder()
-//                .
-//                .build()
-//    }
 
     @BeforeEach
     public void deleteAll() {
-        userRepository.deleteAll();
+        memberRepository.deleteAll();
         postRepository.deleteAll();
         commentRepository.deleteAll();
     }
 
+    public Address createAddress() {
+        return Address.builder()
+                .addressName("address")
+                .postalAddress("13556")
+                .latitude("37.49455")
+                .longitude("127.12170")
+                .build();
+    }
 
-    // TODO 카테고리 완료되면 Create test 마저 진행하겠다
+    // 회원가입 DTO
+    public SignUpRequest createSignUpRequest() {
+        return SignUpRequest.builder()
+                .userName("username")
+                .nickname("nickname")
+                .phoneNumber("01012345678")
+                .email("userEmail@email.com")
+                .birthDate("990128")
+                .password("password")
+                .userLoginType(EMAIL)
+                .build();
+    }
+
+    public Member createMember() {
+        SignUpRequest signUpRequest = createSignUpRequest();
+        Member member = Member.builder()
+                .phoneNumber(signUpRequest.getPhoneNumber())
+                .birthDate(signUpRequest.getBirthDate())
+                .nickname(signUpRequest.getNickname())
+                .password(signUpRequest.getPassword())
+                .email(signUpRequest.getEmail())
+                .id(1L)
+                .build();
+        return member;
+    }
+
+    public UpdatePostRequest createUpdatePostRequest() {
+        return UpdatePostRequest.builder()
+                .postId(1L)
+                .title("제목 맘에 안들어서 바꿈")
+                .content("내용도 바꿀래요")
+                .productCategoryId(null)
+                .wishCategoryId(null)
+                .postTags(null)
+                .build();
+    }
+
+    public PostSaveRequest createPostSaveRequest(Member author, boolean tradeEachOther) {
+        return PostSaveRequest.builder()
+                .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
+                .title("3년 신은 양말 거래 희망합니다")
+                .tradeEachOther(tradeEachOther)
+                .authorId(author.getId())
+                .productCategoryId(null)
+                .wishCategoryId(null)
+                .build();
+    }
+
+    public PostSaveRequest createPostSaveRequestWithDynamicAuthorId(Long authorId, boolean tradeEachOther) {
+        return PostSaveRequest.builder()
+                .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
+                .title("3년 신은 양말 거래 희망합니다")
+                .tradeEachOther(tradeEachOther)
+                .authorId(authorId)
+                .productCategoryId(null)
+                .wishCategoryId(null)
+                .build();
+    }
+
+    public DeletePostRequest createDeletePostRequest(Long postId, Long authorId) {
+        return DeletePostRequest.builder()
+                .requesterId(authorId)
+                .postId(postId)
+                .build();
+    }
+
+    // 회원가입 테스트
+    // 뒤에서 활용될 유저 생성 관련 테스트 선행
     @Test
+    @DisplayName("유저 생성 성공 테스트")
+    public void signUpTestSuccess() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+
+        // when
+        authService.signUp(signUpRequest);
+        Optional<Member> byId = memberRepository.findByEmail(signUpRequest.getEmail());
+        // then
+        assertThat(byId.get().getEmail()).isEqualTo(signUpRequest.getEmail());
+    }
+
+    @Test
+    @DisplayName("게시글 생성 테스트")
+    @WithMockCustomUser
     public void savePostSuccess() throws Exception {
         //given
+        Member member = createMember();
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
+        Long postId = postService.savePost(postSaveRequest);
 
         //when
-        
+        Post post = postRepository.findById(postId).get();
+
         //then
+        assertThat(post.getContent()).isEqualTo(postSaveRequest.getContent());
+        assertThat(post.getTitle()).isEqualTo(postSaveRequest.getTitle());
     }
 
     @Test
