@@ -119,12 +119,13 @@ const SignUp = () => {
                 })
             } else //중복이 아닌 경우 -> false 반환
             {
+
                 setValidationCheck((prevState) => {
                     return {...prevState, emailCheck: "valid", emailCheckBoolean: true}
                 })
                 setuserInfo((prevState) => {
                     return {
-                        ...prevState, email: email.toString()
+                        ...prevState, email: email["email"]
                         , userLoginType: "EMAIL"
                     }
                 })
@@ -157,7 +158,7 @@ const SignUp = () => {
                 })
                 setuserInfo((prevState) => {
                     return {
-                        ...prevState, nickname: nickname.toString()
+                        ...prevState, nickname: nickname["nickname"]
                     }
                 })
             }
@@ -188,7 +189,7 @@ const SignUp = () => {
                 })
                 setuserInfo((prevState) => {
                     return {
-                        ...prevState, phoneNumber: phoneNumber.toString()
+                        ...prevState, phoneNumber: phoneNumber["phoneNumber"]
                     }
                 })
             }
