@@ -94,6 +94,7 @@ const SignUp = () => {
             console.log(result);
             console.log(userInfo);
             alert('회원가입에 성공했습니다.');
+            MailConfirm({"email" : userInfo.email})
             //이메일 인증으로 넘어가면서 이메일 props 전달
             navigate('/signup/emailcheck', {state : userInfo})
 
@@ -237,7 +238,6 @@ const SignUp = () => {
 
                 //변환한 json 객체로 이메일 중복체크
                 CheckEmailDuplicated(jsonObj);
-
             }
         } else //이메일 유효성 검사 실패했을때
         {
@@ -245,8 +245,6 @@ const SignUp = () => {
                 return {...prevState, emailCheck: "invalid", emailCheckBoolean: false}
             })
         }
-
-
     }
 
     const onChangePassword = (e) => {
@@ -365,6 +363,32 @@ const SignUp = () => {
             })
         }
 
+    }
+
+    async function MailConfirm(jsonEmail:object) {
+        try {
+            const res = await axios.post("http://localhost:8080/auth/mailConfirm", jsonEmail);
+
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: res.headers,
+                data: res.data,
+            };
+            console.log(res)
+            console.log(result);
+            if(result.data.success)
+            {
+                console.log("이메일 전송")
+            }
+            else{
+                console.log("이메일 전송 실패")
+            }
+
+        } catch (err) {
+            console.log(err);
+            alert('이메일 전송 실패.');
+
+        }
     }
 
     return (
