@@ -124,6 +124,26 @@ public class CategoryService {
 //        category.getDepth().toString();
         return "UPDATE";
     }
+    //카테고리 삭제
+    //카테고리를 삭제하면 관련 포스트도 다 삭제된다.
+    @Transactional
+    public String deleteCategoryByID(Long id){
+        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        //자식 카테고리가 있다면, 자식 카테고리를 지운다.(계속 반복)
+        while(!category.getChild().isEmpty()){
+            for(Category childCategory : category.getChild()){
+                //자식 카테고리에 포스트가 있다면, 포스트를 다 지움.
+                if(!childCategory.getProducts().isEmpty()){
+                    for(Post post : childCategory.getProducts()) {
+                        postRepository.delete(post); //deleteAll이어야해?
+                    }
+                }
+                categoryRepository.delete(childCategory);
+            }
+        }
+        return "delete";
+    }
+
 
 
 
