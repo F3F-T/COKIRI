@@ -89,7 +89,6 @@ public class PostDTO {
     }
 
     @Getter
-    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DeletePostRequest {

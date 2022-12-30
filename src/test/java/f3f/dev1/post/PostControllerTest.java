@@ -145,10 +145,7 @@ public class PostControllerTest {
     }
 
     public DeletePostRequest createDeletePostRequest(Long postId, Long authorId) {
-        return DeletePostRequest.builder()
-                .requesterId(authorId)
-                .postId(postId)
-                .build();
+        return new DeletePostRequest(postId, authorId);
     }
 
     @Test

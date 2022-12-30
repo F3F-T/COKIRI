@@ -151,11 +151,20 @@ public class PostServiceTest {
     }
 
     public DeletePostRequest createDeletePostRequest(Long postId, Long authorId) {
-        return DeletePostRequest.builder()
-                .requesterId(authorId)
+        return new DeletePostRequest(postId, authorId);
+    }
+
+    // 업데이트 요청, postTags 제외
+    public UpdatePostRequest createUpdatePostRequest(Long postId, String title, String content, Long productCategoryId, Long wishCategoryId) {
+        return UpdatePostRequest.builder()
                 .postId(postId)
+                .title(title)
+                .content(content)
+                .productCategoryId(productCategoryId)
+                .wishCategoryId(wishCategoryId)
                 .build();
     }
+
 
     // 회원가입 테스트
     // 뒤에서 활용될 유저 생성 관련 테스트 선행
@@ -203,6 +212,7 @@ public class PostServiceTest {
     }
 
     @Test
+    @DisplayName("작성자로 게시글 조회 테스트")
     public void findPostByAuthorSuccess() throws Exception {
         //given
         SignUpRequest signUpRequest = createSignUpRequest();
@@ -279,5 +289,86 @@ public class PostServiceTest {
 
         assertThat(allPosts).extracting("content")
                 .hasSize(2);
+    }
+
+    @Test
+    @DisplayName("게시글 업데이트 테스트")
+    public void updatePostTestForSuccess() throws Exception {
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        //when
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        Long postId = postService.savePost(postSaveRequest);
+        Post post = postRepository.findById(postId).get();
+        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getId(), post.getWishCategory().getId());
+        PostInfoDto postInfoDto = postService.updatePost(updatePostRequest);
+
+        //then
+        assertThat(postInfoDto.getTitle()).isEqualTo(updatePostRequest.getTitle());
+        assertThat(postInfoDto.getContent()).isEqualTo(updatePostRequest.getContent());
+        assertThat(postInfoDto.getId()).isEqualTo(updatePostRequest.getPostId());
+
+        // then +
+        Post updatedPost = postRepository.findById(postInfoDto.getId()).get();
+        assertThat(updatedPost.getTitle()).isEqualTo(updatedPost.getTitle());
+        assertThat(updatedPost.getContent()).isEqualTo(updatedPost.getContent());
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 테스트")
+    @WithMockCustomUser
+    public void deletePostTestForSuccess() throws Exception {
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        //when
+
+        // 첫번째 게시글
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        Long postId = postService.savePost(postSaveRequest);
+        Post post = postRepository.findById(postId).get();
+
+        // 두번째 게시글
+        PostSaveRequest postSaveRequest2 = createPostSaveRequestWithDynamicTitle(member, "2년 쓴 이불 바꿔요",false, productCategoryId, wishCategoryId);
+        Long postId2 = postService.savePost(postSaveRequest2);
+        Post post2 = postRepository.findById(postId2).get();
+
+        // 첫번째 게시글 삭제
+        DeletePostRequest deletePostRequest = createDeletePostRequest(postId, member.getId());
+        String result = postService.deletePost(deletePostRequest);
+
+        // 모든 게시글 조회
+        List<PostInfoDto> allPosts = postService.findAllPosts();
+
+        //then
+        // 게시글이 삭제된 뒤 하나만 조회됨
+        assertThat(allPosts).extracting("title")
+                .hasSize(1)
+                .contains("2년 쓴 이불 바꿔요");
     }
 }

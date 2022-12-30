@@ -40,7 +40,7 @@ public class PostService {
         // 유저 객체 받아와서 포스트 리스트에 추가해줘야 함
         Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         // TODO 아래 코드 추가해야 하는지
-//        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
 //        if(!currentMemberId.equals(member.getId())) {
 //            throw new NotMatchingAuthorException("현재 로그인한 사용자가 생성 요청자가 아닙니다.");
 //        }
@@ -144,13 +144,14 @@ public class PostService {
         post.updatePostInfos(updatePostRequest, productCategory, wishCategory);
 
         PostInfoDto response = PostInfoDto.builder()
+                .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .tradeEachOther(post.getTradeEachOther())
                 .authorNickname(post.getAuthor().getNickname())
                 .wishCategory(post.getWishCategory().getName())
                 .productCategory(post.getProductCategory().getName())
-                .tradeStatus(post.getTrade().getTradeStatus())
+//                .tradeStatus(post.getTrade().getTradeStatus())
                 .build();
         return response;
     }
@@ -167,9 +168,9 @@ public class PostService {
         }
         // 로그인한 사용자가 맞는지 확인
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        if(!currentMemberId.equals(deletePostRequest.getRequesterId())) {
-            throw new NotMatchingAuthorException("현재 로그인한 사용자가 삭제 요청자가 아닙니다.");
-        }
+//        if(!currentMemberId.equals(deletePostRequest.getRequesterId())) {
+//            throw new NotMatchingAuthorException("현재 로그인한 사용자가 삭제 요청자가 아닙니다.");
+//        }
         postRepository.deleteById(deletePostRequest.getPostId());
         return "DELETE";
     }
