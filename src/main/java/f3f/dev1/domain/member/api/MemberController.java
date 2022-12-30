@@ -55,12 +55,19 @@ public class MemberController {
 
     }
 
+    @PatchMapping(value = "/user/image")
+    public ResponseEntity<String> updateUserImage(@RequestBody UpdateUserImage updateUserImage) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.updateUserImage(updateUserImage, currentMemberId));
+    }
+
     // 유저 주소 업데이트
     @PatchMapping(value = "/user/address")
-    public ResponseEntity<Address> updateUserAddress(@RequestBody Address address) {
+    public ResponseEntity<Address> updateUserAddress(@RequestBody UpdateUserAddress address) {
+
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         memberService.updateUserAddress(address, currentMemberId);
-        return ResponseEntity.ok(address);
+        return ResponseEntity.ok(address.getAddress());
     }
 
     // 로그아웃

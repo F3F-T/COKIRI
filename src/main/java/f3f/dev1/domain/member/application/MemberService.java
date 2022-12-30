@@ -89,9 +89,9 @@ public class MemberService {
 
     // 주소 업데이트 메소드
     @Transactional
-    public void updateUserAddress(Address address, Long currentMemberId) {
+    public void updateUserAddress(UpdateUserAddress address, Long currentMemberId) {
         Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-        member.updateAddress(address);
+        member.updateAddress(address.getAddress());
     }
 
     // 유저 비밀번호 업데이트 처리 메소드
@@ -104,6 +104,14 @@ public class MemberService {
         }
         updateUserPassword.encrypt(passwordEncoder);
         member.updateUserPassword(updateUserPassword);
+        return "UPDATE";
+    }
+
+    // 유저 프사 변경 메소드
+    @Transactional
+    public String updateUserImage(UpdateUserImage updateUserImage, Long currentMemberId) {
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+        member.updateImage(updateUserImage.getNewImageUrl());
         return "UPDATE";
     }
 
