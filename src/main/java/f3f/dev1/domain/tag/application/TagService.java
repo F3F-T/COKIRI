@@ -141,35 +141,48 @@ public class TagService {
     public List<PostInfoDto> getPostsByTagNames(List<String> names) {
         List<Post> resultPostList = new ArrayList<>();
         List<PostInfoDto> response = new ArrayList<>();
-//        for (String name : names) {
-//            List<PostTag> postTags = postTagRepository.findByTagName(name);
-//            List<Post> posts = postRepository.findByPostTags(postTags);
-//            resultPostList.addAll(posts);
-//        }
-        for(int i=0; i<names.size(); i++) {
-            List<PostTag> postTags = postTagRepository.findByTagName(names.get(i));
-            List<Post> posts = postRepository.findByPostTagsIn(postTags);
-            // 첫번째 루프면 결과 리스트를 전부 저장하고,
-            // 두번째 루프 이상부터는 결과 리스트와의 교집합만 저장한다.
-            if(i == 0) {
-                resultPostList.addAll(posts);
-            } else {
-                resultPostList.retainAll(posts);
-            }
-        }
-//        List<Post> deduplicatedList = DeduplicationUtils.deduplication(resultPostList, Post::getId);
-        for (Post post : resultPostList) {
-            PostInfoDto responseEach = PostInfoDto.builder()
-                    .title(post.getTitle())
-                    .content(post.getContent())
-                    .tradeEachOther(post.getTradeEachOther())
-                    .authorNickname(post.getAuthor().getNickname())
-                    .wishCategory(post.getWishCategory().getName())
-                    .productCategory(post.getProductCategory().getName())
-                    // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
+
+        if(names.isEmpty()) {
+            List<Post> all = postRepository.findAll();
+            for (Post post : all) {
+                PostInfoDto responseEach = PostInfoDto.builder()
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .tradeEachOther(post.getTradeEachOther())
+                        .authorNickname(post.getAuthor().getNickname())
+                        .wishCategory(post.getWishCategory().getName())
+                        .productCategory(post.getProductCategory().getName())
+                        // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
 //                    .tradeStatus(post.getTrade().getTradeStatus())
-                    .build();
-            response.add(responseEach);
+                        .build();
+                response.add(responseEach);
+            }
+        } else {
+            for(int i=0; i<names.size(); i++) {
+                List<PostTag> postTags = postTagRepository.findByTagName(names.get(i));
+                List<Post> posts = postRepository.findByPostTagsIn(postTags);
+                // 첫번째 루프면 결과 리스트를 전부 저장하고,
+                // 두번째 루프 이상부터는 결과 리스트와의 교집합만 저장한다.
+                if(i == 0) {
+                    resultPostList.addAll(posts);
+                } else {
+                    resultPostList.retainAll(posts);
+                }
+            }
+//        List<Post> deduplicatedList = DeduplicationUtils.deduplication(resultPostList, Post::getId);
+            for (Post post : resultPostList) {
+                PostInfoDto responseEach = PostInfoDto.builder()
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .tradeEachOther(post.getTradeEachOther())
+                        .authorNickname(post.getAuthor().getNickname())
+                        .wishCategory(post.getWishCategory().getName())
+                        .productCategory(post.getProductCategory().getName())
+                        // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
+//                    .tradeStatus(post.getTrade().getTradeStatus())
+                        .build();
+                response.add(responseEach);
+            }
         }
         return response;
     }
