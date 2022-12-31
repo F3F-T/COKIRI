@@ -10,6 +10,7 @@ import f3f.dev1.domain.tag.exception.DuplicateTagException;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
+import f3f.dev1.global.util.DeduplicationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -133,6 +134,30 @@ public class TagService {
             response.add(responseEach);
         }
         return response;
+    }
+
+    @Transactional(readOnly = true)
+    public List<PostInfoDto> getPostsByTagNames(List<String> names) {
+        List<PostInfoDto> response = new ArrayList<>();
+        for (String name : names) {
+            List<PostTag> postTags = postTagRepository.findByTagName(name);
+            for (PostTag postTag : postTags) {
+                PostInfoDto responseEach = PostInfoDto.builder()
+                        .id(postTag.getPost().getId())
+                        .title(postTag.getPost().getTitle())
+                        .content(postTag.getPost().getContent())
+                        .tradeEachOther(postTag.getPost().getTradeEachOther())
+                        .authorNickname(postTag.getPost().getAuthor().getNickname())
+                        .wishCategory(postTag.getPost().getWishCategory().getName())
+                        .productCategory(postTag.getPost().getProductCategory().getName())
+                        // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
+//                    .tradeStatus(postTag.getPost().getTrade().getTradeStatus())
+                        .build();
+                response.add(responseEach);
+            }
+        }
+        List<PostInfoDto> deduplicatedResponse = DeduplicationUtils.deduplication(response, PostInfoDto::getId);
+        return deduplicatedResponse;
     }
 
 
