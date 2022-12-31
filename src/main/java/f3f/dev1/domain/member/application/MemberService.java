@@ -106,7 +106,7 @@ public class MemberService {
         member.updateUserPassword(updateUserPassword);
         return "UPDATE";
     }
-
+    // TODO dto에 유저 검증 추가로 인한 코드 검토해야함
     // 유저 프사 변경 메소드
     @Transactional
     public String updateUserImage(UpdateUserImage updateUserImage, Long currentMemberId) {

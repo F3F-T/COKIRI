@@ -85,6 +85,7 @@ public class Member extends MemberBase {
                 .phoneNumber(this.phoneNumber)
                 .nickname(this.nickname)
                 .loginType(this.getUserLoginType())
+                .imageUrl(this.imageUrl)
                 .id(this.getId())
                 .scrapId(scrapId)
                 .build();

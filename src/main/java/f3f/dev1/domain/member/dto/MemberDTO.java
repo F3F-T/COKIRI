@@ -89,6 +89,8 @@ public class MemberDTO {
         private Long scrapId;
         private String userName;
 
+        private String imageUrl;
+
         private String nickname;
 
         private Address address;
