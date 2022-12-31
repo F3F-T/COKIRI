@@ -40,6 +40,7 @@ public class PostService {
 
         // 유저 객체 받아와서 포스트 리스트에 추가해줘야 함
         Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
+        List<PostTag> resultsList = new ArrayList<>();
         // TODO 아래 코드 추가해야 하는지
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         if(!currentMemberId.equals(member.getId())) {
@@ -52,7 +53,15 @@ public class PostService {
         Category productCategory = categoryRepository.findById(postSaveRequest.getProductCategoryId()).orElseThrow(NotFoundByIdException::new);
         Category wishCategory = categoryRepository.findById(postSaveRequest.getWishCategoryId()).orElseThrow(NotFoundByIdException::new);
 
-        Post post = postSaveRequest.toEntity(member, productCategory, wishCategory);
+        List<String> tagNames = postSaveRequest.getTagNames();
+        for (String tagName : tagNames) {
+            List<PostTag> postTags = postTagRepository.findByTagName(tagName);
+            resultsList.addAll(postTags);
+        }
+
+        // 태그 명은 중복될 수 없으니 resultsList에 대해서는 중복 제거를 진행하지 않겠다.
+
+        Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
         member.getPosts().add(post);
         postRepository.save(post);
         return post.getId();
@@ -90,11 +99,11 @@ public class PostService {
         List<Post> resultPostlist = new ArrayList<>();
         List<PostInfoDto> response = new ArrayList<>();
         if(!productCategoryName.equals("")) {
-
+            // TODO 카테고리 서비스에서 이름으로 포스트를 받아오는 로직 필요함
         }
 
         if(!wishCategoryName.equals("")) {
-
+            // TODO 카테고리 서비스에서 이름으로 포스트를 받아오는 로직 필요함
         }
 
         if(!tagNames.isEmpty()) {

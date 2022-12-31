@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -125,6 +126,18 @@ public class PostServiceTest {
                 .authorId(author.getId())
                 .productCategoryId(productId)
                 .wishCategoryId(wishId)
+                .build();
+    }
+
+    public PostSaveRequest createPostSaveRequestWithTag(Member author, boolean tradeEachOther, Long productId, Long wishId, List<String> tagNames) {
+        return PostSaveRequest.builder()
+                .content("태그 게시글 content")
+                .title("태그 게시글 title")
+                .tradeEachOther(tradeEachOther)
+                .authorId(author.getId())
+                .productCategoryId(productId)
+                .wishCategoryId(wishId)
+                .tagNames(tagNames)
                 .build();
     }
 
@@ -289,6 +302,45 @@ public class PostServiceTest {
 
         assertThat(allPosts).extracting("content")
                 .hasSize(2);
+    }
+
+    @Test
+    @DisplayName("태그 정보와 함께 게시글 조회 테스트")
+    public void getPostsWithTagsTestForSuccess() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        //when
+        // 첫번째 게시글
+        List<String> names = new ArrayList<>();
+        names.add("해시태그1");
+        names.add("해시태그2");
+        names.add("해시태그3");
+        PostSaveRequest postSaveRequestWithTag = createPostSaveRequestWithTag(member, false, productCategoryId, wishCategoryId, names);
+        Long postId = postService.savePost(postSaveRequestWithTag);
+        Post post = postRepository.findById(postId).get();
+
+        //두번째 게시글
+        List<String> names2 = new ArrayList<>();
+        names2.add("해시태그4");
+        PostSaveRequest postSaveRequestWithTag2 = createPostSaveRequestWithTag(member, false, productCategoryId, wishCategoryId, names2);
+        Long postId2 = postService.savePost(postSaveRequestWithTag2);
+        Post post2 = postRepository.findById(postId2).get();
+
+        //then
     }
 
     @Test

@@ -200,6 +200,16 @@ public class PostControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @DisplayName("태그 정보와 함께 게시글 조회 테스트")
+    public void getPostsWithTagsTestForSuccess() throws Exception {
+        //given
+
+        //when
+
+        //then
+    }
+
 
     @Test
     @DisplayName("게시글 수정 테스트")

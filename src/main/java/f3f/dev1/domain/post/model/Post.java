@@ -74,13 +74,14 @@ public class Post extends BaseTimeEntity {
 
 
     @Builder
-    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author) {
+    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.tradeEachOther = tradeEachOther;
         this.productCategory = productCategory;
         this.wishCategory = wishCategory;
+        this.postTags = postTags;
         this.author = author;
     }
 

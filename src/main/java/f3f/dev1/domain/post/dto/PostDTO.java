@@ -32,9 +32,9 @@ public class PostDTO {
         private Long authorId;
         private Long productCategoryId;
         private Long wishCategoryId;
+        private List<String> tagNames;
 
-
-        public Post toEntity(Member author, Category product, Category wish) {
+        public Post toEntity(Member author, Category product, Category wish, List<PostTag> postTags) {
             return Post.builder()
                     .title(this.title)
                     .content(this.content)
@@ -42,6 +42,7 @@ public class PostDTO {
                     .author(author)
                     .productCategory(product)
                     .wishCategory(wish)
+                    .postTags(postTags)
                     .build();
         }
     }
