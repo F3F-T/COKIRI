@@ -8,12 +8,13 @@ import f3f.dev1.domain.post.exception.NotFoundPostListByAuthor;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.tag.dao.PostTagRepository;
+import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.dao.TradeRepository;
-import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
+import f3f.dev1.global.util.DeduplicationUtils;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -22,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static f3f.dev1.domain.post.dto.PostDTO.*;
-import static f3f.dev1.global.common.constants.ResponseConstants.*;
 
 @Service
 @Validated
@@ -33,6 +33,7 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final TradeRepository tradeRepository;
     private final CategoryRepository categoryRepository;
+    private final PostTagRepository postTagRepository;
 
     @Transactional
     public Long savePost(PostSaveRequest postSaveRequest) {
@@ -68,6 +69,48 @@ public class PostService {
         List<Post> allPosts = postRepository.findAll();
         List<PostInfoDto> response = new ArrayList<>();
         for (Post post : allPosts) {
+            PostInfoDto responseEach = PostInfoDto.builder()
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .tradeEachOther(post.getTradeEachOther())
+                    .authorNickname(post.getAuthor().getNickname())
+                    .wishCategory(post.getWishCategory().getName())
+                    .productCategory(post.getProductCategory().getName())
+                    // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
+//                    .tradeStatus(post.getTrade().getTradeStatus())
+                    .build();
+            response.add(responseEach);
+        }
+        return response;
+    }
+
+    // TODO for문을 너무 많이 돌아버린다... 개선할 수 있지 않을까
+    @Transactional(readOnly = true)
+    public List<PostInfoDto> findPostsWithConditions(String productCategoryName, String wishCategoryName, List<String> tagNames) {
+        List<Post> resultPostlist = new ArrayList<>();
+        List<PostInfoDto> response = new ArrayList<>();
+        if(!productCategoryName.equals("")) {
+
+        }
+
+        if(!wishCategoryName.equals("")) {
+
+        }
+
+        if(!tagNames.isEmpty()) {
+            // 태그 이름으로 포스트 태그 먼저 찾아온 다음 포스트 태그로 포스트 찾기.
+            for (String tagName : tagNames) {
+                List<PostTag> byTagName = postTagRepository.findByTagName(tagName);
+                for (PostTag postTag : byTagName) {
+                    List<Post> posts = postRepository.findByPostTagsId(postTag.getId());
+                    resultPostlist.addAll(posts);
+                }
+            }
+        }
+        // 중복이 제거된 리스트
+        List<Post> deduplicatedList = DeduplicationUtils.deduplication(resultPostlist, Post::getId);
+
+        for (Post post : deduplicatedList) {
             PostInfoDto responseEach = PostInfoDto.builder()
                     .title(post.getTitle())
                     .content(post.getContent())

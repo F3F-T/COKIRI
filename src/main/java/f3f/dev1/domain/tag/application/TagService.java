@@ -74,7 +74,7 @@ public class TagService {
 
     // TODO 요청으로 넘기는 DTO 객체는 Id만 가지고 있다. 이런 경우 그냥 Long으로 바로 넘기는게 나으려나? - 피드백 받기
     @Transactional(readOnly = true)
-    public GetPostListByTagResponse getPostsByTagId(GetPostListByTagIdRequest request) {
+    public List<Post> getPostsByTagId(GetPostListByTagIdRequest request) {
         // 먼저 postTag 리스트를 찾고 하나하나 포스트를 찾아서 추가해준다.
         if(!tagRepository.existsById(request.getId())) {
             throw new NotFoundByIdException();
@@ -84,23 +84,21 @@ public class TagService {
         for (PostTag postTagEach : postTagList) {
             postList.add(postTagEach.getPost());
         }
-        GetPostListByTagResponse response = new GetPostListByTagResponse(postList);
-        return response;
+        return postList;
     }
 
     @Transactional(readOnly = true)
-    public GetPostListByTagResponse getPostsByTagName(GetPostListByTagNameRequest request) {
+    public List<Post> getPostsByTagName(String tagName) {
         // 먼저 postTag 리스트를 찾고 하나하나 포스트를 찾아서 추가해준다.
-        if(!tagRepository.existsByName(request.getName())) {
+        if(!tagRepository.existsByName(tagName)) {
             throw new NotFoundByIdException();
         }
-        List<PostTag> postTagList = postTagRepository.findByTagName(request.getName());
+        List<PostTag> postTagList = postTagRepository.findByTagName(tagName);
         List<Post> postList = new ArrayList<>();
         for (PostTag postTagEach : postTagList) {
             postList.add(postTagEach.getPost());
         }
-        GetPostListByTagResponse response = new GetPostListByTagResponse(postList);
-        return response;
+        return postList;
     }
 
 

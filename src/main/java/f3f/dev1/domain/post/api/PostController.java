@@ -1,7 +1,11 @@
 package f3f.dev1.domain.post.api;
 
+import f3f.dev1.domain.category.application.CategoryService;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dto.PostDTO;
+import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.tag.application.TagService;
+import f3f.dev1.domain.tag.dto.TagDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +16,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static f3f.dev1.domain.tag.dto.TagDTO.*;
 
 @RestController
 @Validated
@@ -20,12 +25,21 @@ public class PostController {
 
     private final PostService postService;
 
+    private final CategoryService categoryService;
+
+    private final TagService tagService;
+
     // TODO 조회 필터링은 post에서 하는 걸로
 
     //게시글 전체 조회
-    // TODO 쿼리스트링 추가
+    // TODO 쿼리스트링 추가 -
     @GetMapping(value = "/post")
-    public ResponseEntity<List<PostInfoDto>> getAllPostInfo() {
+    public ResponseEntity<List<PostInfoDto>> getAllPostInfo(
+            @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
+            @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
+            @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames) {
+
+        // TODO 태그로 조회 서비스 로직 추가하기
         List<PostInfoDto> allPosts = postService.findAllPosts();
         return new ResponseEntity<>(allPosts, HttpStatus.OK);
     }

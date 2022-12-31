@@ -48,21 +48,21 @@ public class TagDTO {
         private Long id;
     }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GetPostListByTagNameRequest {
-        @NotNull
-        private String name;
-    }
+//    @Getter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class GetPostListByTagNameRequest {
+//        @NotNull
+//        private String name;
+//    }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GetPostListByTagResponse {
-        @NotNull
-        private List<Post> postList;
-    }
+//    @Getter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class GetPostListByTagResponse {
+//        @NotNull
+//        private List<Post> postList;
+//    }
 
     @Getter
     @NoArgsConstructor
