@@ -162,15 +162,15 @@ public class CommentControllerTest {
     @WithMockCustomUser
     public void createCommentTestForSuccess() throws Exception {
         //given
-        doReturn(1L).when(postService).savePost(any());
+        doReturn(1L).when(postService).savePost(any(), any());
         Member member = createMember();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
         CreateCommentRequest commentRequest = createCommentRequest(member);
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "새로 만든 댓글");
         doReturn(commentInfoDto).when(commentService).createComment(any());
-        postService.savePost(postSaveRequest);
+        postService.savePost(postSaveRequest, member.getId());
 
         //when & then
         mockMvc.perform(post("/post/{postId}/comments", 1L)
@@ -200,17 +200,17 @@ public class CommentControllerTest {
     @DisplayName("댓글 조회 테스트 성공")
     public void findCommentsByPostIdTestForSuccess() throws Exception {
         //given
-        doReturn(1L).when(postService).savePost(any());
+        doReturn(1L).when(postService).savePost(any(), any());
         Member member = createMember();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
         // when
         List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "댓글1");
         commentInfoDtoList.add(commentInfoDto);
         doReturn(commentInfoDtoList).when(commentService).findCommentsByPostId(any());
-        postService.savePost(postSaveRequest);
+        postService.savePost(postSaveRequest, member.getId());
 
         //then
         mockMvc.perform(get("/post/{postId}/comments", 1L)
@@ -235,10 +235,10 @@ public class CommentControllerTest {
     // TODO /post/3/comments 랑 post/20/comments 랑 똑같은 body가 return된다... 왜지??
     public void findCommentsByPostIdTestForFail() throws Exception {
         //given
-        doReturn(1L).when(postService).savePost(any());
+        doReturn(1L).when(postService).savePost(any(), any());
         Member member = createMember();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
         // when
         List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
@@ -246,7 +246,7 @@ public class CommentControllerTest {
         commentInfoDtoList.add(commentInfoDto);
         // 20번 아이디를 가진 포스트는 존재하지 않는다고 가정.
         doReturn(null).when(commentService).findCommentsByPostId(20L);
-        postService.savePost(postSaveRequest);
+        postService.savePost(postSaveRequest, member.getId());
 
         //then
         MvcResult mvcResult = mockMvc.perform(get("/post/{postId}/comments", 20L)
@@ -265,10 +265,10 @@ public class CommentControllerTest {
     @DisplayName("댓글 수정 테스트")
     public void updateCommentTestForSuccess() throws Exception {
         //given
-        doReturn(1L).when(postService).savePost(any());
+        doReturn(1L).when(postService).savePost(any(), any());
         Member member = createMember();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
         //when
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "새로 만든 댓글");
@@ -303,10 +303,10 @@ public class CommentControllerTest {
     @DisplayName("댓글 삭제 테스트")
     public void deleteCommentTestForSuccess() throws Exception {
         //given
-        doReturn(1L).when(postService).savePost(any());
+        doReturn(1L).when(postService).savePost(any(), any());
         Member member = createMember();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
         //when
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "새로 만든 댓글");

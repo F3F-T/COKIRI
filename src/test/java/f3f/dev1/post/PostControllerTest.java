@@ -28,10 +28,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -128,6 +131,7 @@ public class PostControllerTest {
                 .title("3년 신은 양말 거래 희망합니다")
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
+                .tagNames(new ArrayList<>())
                 .productCategoryId(null)
                 .wishCategoryId(null)
                 .build();
@@ -138,9 +142,10 @@ public class PostControllerTest {
                 .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
                 .title("3년 신은 양말 거래 희망합니다")
                 .tradeEachOther(tradeEachOther)
-                .authorId(authorId)
+                .tagNames(new ArrayList<>())
                 .productCategoryId(null)
                 .wishCategoryId(null)
+                .authorId(authorId)
                 .build();
     }
 
@@ -154,12 +159,12 @@ public class PostControllerTest {
     public void createPostSuccessTest() throws Exception{
         //given
         // 어떤 값으로 postService를 호출하던 리턴값은 1L로 줘라.
-        doReturn(1L).when(postService).savePost(any());
+        doReturn(1L).when(postService).savePost(any(), any());
         Member member = createMember();
 
         //when
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
         //then
         // TODO rest docs 매개변수 수정하기
@@ -172,6 +177,7 @@ public class PostControllerTest {
                         fieldWithPath("productCategoryId").description("productCategory Id value of post"),
                         fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
                         fieldWithPath("wishCategoryId").description("wishCategory Id value of post"),
+                        fieldWithPath("tagNames").description("tag names list value of post"),
                         fieldWithPath("authorId").description("author id value of post"),
                         fieldWithPath("content").description("content value of post"),
                         fieldWithPath("title").description("title value of post")
@@ -186,11 +192,11 @@ public class PostControllerTest {
         PostSaveRequest postSaveRequest = createPostSaveRequestWithDynamicAuthorId(1L, false);
         PostSaveRequest postSaveRequest2 = createPostSaveRequestWithDynamicAuthorId(2L, false);
         PostSaveRequest postSaveRequest3 = createPostSaveRequestWithDynamicAuthorId(3L, false);
-
+        Member member = createMember();
         //when
-        Long postId = postService.savePost(postSaveRequest);
-        Long postId2 = postService.savePost(postSaveRequest2);
-        Long postId3 = postService.savePost(postSaveRequest3);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
+        Long postId2 = postService.savePost(postSaveRequest2, member.getId());
+        Long postId3 = postService.savePost(postSaveRequest3, member.getId());
 
         //then
         mockMvc.perform(get("/post")
@@ -217,13 +223,13 @@ public class PostControllerTest {
     public void updatePostSuccessTest() throws Exception {
         //given
         PostInfoDto postInfoDto = PostInfoDto.builder().title("제목 맘에 안들어서 바꿈").build();
-        doReturn(postInfoDto).when(postService).updatePost(any());
+        doReturn(postInfoDto).when(postService).updatePost(any(), any());
         Member member = createMember();
 
         //when
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
         UpdatePostRequest updatePostRequest = createUpdatePostRequest();
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
         //then
         mockMvc.perform(patch("/post" + "/{postId}", 1L)
@@ -258,7 +264,7 @@ public class PostControllerTest {
         Member member = new Member();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
         PostInfoDto postInfoDto = PostInfoDto.builder().title(postSaveRequest.getTitle()).build();
-        postService.savePost(postSaveRequest);
+        postService.savePost(postSaveRequest, member.getId());
         doReturn(postInfoDto).when(postService).findPostById(any());
 
         //when & then
@@ -287,12 +293,12 @@ public class PostControllerTest {
         //given
         DeletePostRequest deletePostRequest = createDeletePostRequest(1L, 1L);
         doReturn("DELETE").when(postService).deletePost(any());
-        doReturn(1L).when(postService).savePost(any());
+        doReturn(1L).when(postService).savePost(any(), any());
         Member member = createMember();
 
         //when
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
 
         //then

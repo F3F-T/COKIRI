@@ -125,7 +125,7 @@ public class ScrapServiceTest {
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
         Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).get();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member.getId());
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
 
         // when
@@ -146,7 +146,7 @@ public class ScrapServiceTest {
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
         Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).get();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member.getId());
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
 
         // when
@@ -164,7 +164,7 @@ public class ScrapServiceTest {
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
         Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).get();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member.getId());
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
 
         // when
@@ -182,7 +182,7 @@ public class ScrapServiceTest {
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
         Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).get();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member.getId());
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
         AddScrapPostDTO addScrapPostDTO = AddScrapPostDTO.builder().userId(member.getId()).postId(postId).build();
 
@@ -202,7 +202,7 @@ public class ScrapServiceTest {
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
         Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).get();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member.getId());
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
         AddScrapPostDTO addScrapPostDTO = AddScrapPostDTO.builder().userId(member.getId()).postId(postId).build();
 
@@ -222,7 +222,7 @@ public class ScrapServiceTest {
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
         Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).get();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member.getId());
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
 
         AddScrapPostDTO addScrapPostDTO = AddScrapPostDTO.builder().userId(member.getId()).postId(postId).build();
 

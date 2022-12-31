@@ -243,7 +243,7 @@ public class TagServiceTest {
         //when
         // 게시글 추가 + 게시글에 태그 추가
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
         Long postTagId = tagService.addTagToPost(addTagToPostRequest);
@@ -278,14 +278,14 @@ public class TagServiceTest {
         //when
         // 게시글 추가 + 게시글에 태그 추가
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
         Long postTagId = tagService.addTagToPost(addTagToPostRequest);
         PostTag postTag = postTagRepository.findById(postTagId).get();
 
         PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productCategoryId, wishCategoryId);
-        Long secondPostId = postService.savePost(secondPostSaveRequest);
+        Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
         Post secondPost = postRepository.findById(secondPostId).get();
 
         //then
@@ -325,7 +325,7 @@ public class TagServiceTest {
         // 게시글 추가 + 게시글에 태그 추가
         // 첫번째 게시글에 해시태그 1, 2, 3이 모두 추가되어있다.
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
         AddTagToPostRequest addTagToPostSecondRequest = createAddTagToPostRequest(secondTagId, postId);
@@ -335,7 +335,7 @@ public class TagServiceTest {
         tagService.addTagToPost(addTagToPostThirdRequest);
 
         PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productCategoryId, wishCategoryId);
-        Long secondPostId = postService.savePost(secondPostSaveRequest);
+        Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
         Post secondPost = postRepository.findById(secondPostId).get();
 
         //then
@@ -382,7 +382,7 @@ public class TagServiceTest {
         // 게시글 추가 + 게시글에 태그 추가
         // 첫번째 게시글에 해시태그 1, 2, 3이 모두 추가되어있다.
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
         AddTagToPostRequest addTagToPostSecondRequest = createAddTagToPostRequest(secondTagId, postId);
@@ -393,7 +393,7 @@ public class TagServiceTest {
 
         // 두번째 게시글에 해시태그 1, 2가 추가됐다.
         PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productCategoryId, wishCategoryId);
-        Long secondPostId = postService.savePost(secondPostSaveRequest);
+        Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
         Post secondPost = postRepository.findById(secondPostId).get();
         AddTagToPostRequest addTagToSecondPostRequest = createAddTagToPostRequest(tagId, secondPostId);
         AddTagToPostRequest addSecondTagToSecondPostRequest = createAddTagToPostRequest(secondTagId, secondPostId);
@@ -402,14 +402,14 @@ public class TagServiceTest {
 
         // 세번째 게시글에 해시태그1이 추가되었다.
         PostSaveRequest thirdPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "세번째 게시글", false, productCategoryId, wishCategoryId);
-        Long thirdPostId = postService.savePost(thirdPostSaveRequest);
+        Long thirdPostId = postService.savePost(thirdPostSaveRequest, member.getId());
         Post thirdPost = postRepository.findById(thirdPostId).get();
         AddTagToPostRequest addTagToThirdPostRequest = createAddTagToPostRequest(tagId, thirdPostId);
         tagService.addTagToPost(addTagToThirdPostRequest);
 
         // 네번째 게시글에는 해시태그를 추가하지 않겠다.
         PostSaveRequest fourthPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "네번째 게시글", false, productCategoryId, wishCategoryId);
-        Long fourthPostId = postService.savePost(fourthPostSaveRequest);
+        Long fourthPostId = postService.savePost(fourthPostSaveRequest, member.getId());
         Post fourthPost = postRepository.findById(fourthPostId).get();
 
         //then

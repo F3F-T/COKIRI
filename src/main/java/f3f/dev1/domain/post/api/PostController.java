@@ -6,6 +6,7 @@ import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dto.TagDTO;
+import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,9 @@ public class PostController {
 
     private final PostService postService;
 
-    private final CategoryService categoryService;
+//    private final CategoryService categoryService;
 
-    private final TagService tagService;
+//    private final TagService tagService;
 
     // TODO 조회 필터링은 post에서 하는 걸로
 
@@ -47,7 +48,8 @@ public class PostController {
     // 게시글 작성
     @PostMapping(value = "/post")
     public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest) {
-        Long postId = postService.savePost(postSaveRequest);
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Long postId = postService.savePost(postSaveRequest, currentMemberId);
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }
 
@@ -70,7 +72,8 @@ public class PostController {
     // 기존 PathVariable 에서 RequestBody로 변경
     @PatchMapping(value = "/post/{postId}")
     public ResponseEntity<PostInfoDto> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
-        PostInfoDto postInfoDto = postService.updatePost(updatePostRequest);
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        PostInfoDto postInfoDto = postService.updatePost(updatePostRequest, currentMemberId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
 

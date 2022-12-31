@@ -36,9 +36,10 @@ public class PostService {
     private final PostTagRepository postTagRepository;
 
     @Transactional
-    public Long savePost(PostSaveRequest postSaveRequest) {
+    public Long savePost(PostSaveRequest postSaveRequest, Long memberId) {
 
         // 유저 객체 받아와서 포스트 리스트에 추가해줘야 함
+        // TODO memberId를 추가로 받기 때문에 관련 로직 작성해야함
         Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         List<PostTag> resultsList = new ArrayList<>();
         // TODO 아래 코드 추가해야 하는지
@@ -93,47 +94,6 @@ public class PostService {
         return response;
     }
 
-    // TODO for문을 너무 많이 돌아버린다... 개선할 수 있지 않을까
-    @Transactional(readOnly = true)
-    public List<PostInfoDto> findPostsWithConditions(String productCategoryName, String wishCategoryName, List<String> tagNames) {
-        List<Post> resultPostlist = new ArrayList<>();
-        List<PostInfoDto> response = new ArrayList<>();
-        if(!productCategoryName.equals("")) {
-            // TODO 카테고리 서비스에서 이름으로 포스트를 받아오는 로직 필요함
-        }
-
-        if(!wishCategoryName.equals("")) {
-            // TODO 카테고리 서비스에서 이름으로 포스트를 받아오는 로직 필요함
-        }
-
-        if(!tagNames.isEmpty()) {
-            // 태그 이름으로 포스트 태그 먼저 찾아온 다음 포스트 태그로 포스트 찾기.
-            for (String tagName : tagNames) {
-                List<PostTag> byTagName = postTagRepository.findByTagName(tagName);
-                for (PostTag postTag : byTagName) {
-                    List<Post> posts = postRepository.findByPostTagsId(postTag.getId());
-                    resultPostlist.addAll(posts);
-                }
-            }
-        }
-        // 중복이 제거된 리스트
-        List<Post> deduplicatedList = DeduplicationUtils.deduplication(resultPostlist, Post::getId);
-
-        for (Post post : deduplicatedList) {
-            PostInfoDto responseEach = PostInfoDto.builder()
-                    .title(post.getTitle())
-                    .content(post.getContent())
-                    .tradeEachOther(post.getTradeEachOther())
-                    .authorNickname(post.getAuthor().getNickname())
-                    .wishCategory(post.getWishCategory().getName())
-                    .productCategory(post.getProductCategory().getName())
-                    // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
-//                    .tradeStatus(post.getTrade().getTradeStatus())
-                    .build();
-            response.add(responseEach);
-        }
-        return response;
-    }
 
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     @Transactional(readOnly = true)
@@ -181,7 +141,7 @@ public class PostService {
      */
 
     @Transactional
-    public PostInfoDto updatePost(UpdatePostRequest updatePostRequest) {
+    public PostInfoDto updatePost(UpdatePostRequest updatePostRequest, Long memberId) {
         Post post = postRepository.findById(updatePostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         // 게시글 변경 정보가 기존이랑 똑같다면 (변화가 없다면) 예외를 터트리려 했는데, 그럴 필요가 없어보여서 일단은 검증하지 않겠다
         // 근데 또 예외는 던져놓고 처리를 안하는 방법도 있으니 이건 피드백을 받아 볼 예정
@@ -219,7 +179,7 @@ public class PostService {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
         }
         // 로그인한 사용자가 맞는지 확인
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+//        Long currentMemberId = SecurityUtil.getCurrentMemberId();
 //        if(!currentMemberId.equals(deletePostRequest.getRequesterId())) {
 //            throw new NotMatchingAuthorException("현재 로그인한 사용자가 삭제 요청자가 아닙니다.");
 //        }

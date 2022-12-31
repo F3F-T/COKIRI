@@ -218,7 +218,7 @@ public class PostServiceTest {
 
         //when
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
 
         //then
@@ -248,12 +248,12 @@ public class PostServiceTest {
         //when
         // 첫번째 게시글
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
 
         //두번째 게시글
         PostSaveRequest postSaveRequest2 = createPostSaveRequestWithDynamicTitle(member, "2년 쓴 이불 바꿔요",false, productCategoryId, wishCategoryId);
-        Long postId2 = postService.savePost(postSaveRequest2);
+        Long postId2 = postService.savePost(postSaveRequest2, member.getId());
         Post post2 = postRepository.findById(postId2).get();
 
         //then
@@ -288,12 +288,12 @@ public class PostServiceTest {
         //when
         // 첫번째 게시글
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
 
         //두번째 게시글
         PostSaveRequest postSaveRequest2 = createPostSaveRequestWithDynamicTitle(member, "2년 쓴 이불 바꿔요",false, productCategoryId, wishCategoryId);
-        Long postId2 = postService.savePost(postSaveRequest2);
+        Long postId2 = postService.savePost(postSaveRequest2, member.getId());
         Post post2 = postRepository.findById(postId2).get();
         
         //then
@@ -332,14 +332,14 @@ public class PostServiceTest {
         names.add("해시태그2");
         names.add("해시태그3");
         PostSaveRequest postSaveRequestWithTag = createPostSaveRequestWithTag(member, false, productCategoryId, wishCategoryId, names);
-        Long postId = postService.savePost(postSaveRequestWithTag);
+        Long postId = postService.savePost(postSaveRequestWithTag, member.getId());
         Post post = postRepository.findById(postId).get();
 
         //두번째 게시글
         List<String> names2 = new ArrayList<>();
         names2.add("해시태그4");
         PostSaveRequest postSaveRequestWithTag2 = createPostSaveRequestWithTag(member, false, productCategoryId, wishCategoryId, names2);
-        Long postId2 = postService.savePost(postSaveRequestWithTag2);
+        Long postId2 = postService.savePost(postSaveRequestWithTag2, member.getId());
         Post post2 = postRepository.findById(postId2).get();
 
         //then
@@ -365,10 +365,10 @@ public class PostServiceTest {
 
         //when
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getId(), post.getWishCategory().getId());
-        PostInfoDto postInfoDto = postService.updatePost(updatePostRequest);
+        PostInfoDto postInfoDto = postService.updatePost(updatePostRequest, member.getId());
 
         //then
         assertThat(postInfoDto.getTitle()).isEqualTo(updatePostRequest.getTitle());
@@ -404,12 +404,12 @@ public class PostServiceTest {
 
         // 첫번째 게시글
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
-        Long postId = postService.savePost(postSaveRequest);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
 
         // 두번째 게시글
         PostSaveRequest postSaveRequest2 = createPostSaveRequestWithDynamicTitle(member, "2년 쓴 이불 바꿔요",false, productCategoryId, wishCategoryId);
-        Long postId2 = postService.savePost(postSaveRequest2);
+        Long postId2 = postService.savePost(postSaveRequest2, member.getId());
         Post post2 = postRepository.findById(postId2).get();
 
         // 첫번째 게시글 삭제
