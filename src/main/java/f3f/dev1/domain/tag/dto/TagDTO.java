@@ -17,8 +17,7 @@ public class TagDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CreateTagRequest {
-        @NotNull
-        private Long id;
+
         @NotNull
         @Size(max = 10, message = "태그는 10글자 이하로 작성해주세요")
         private String name;
@@ -37,9 +36,9 @@ public class TagDTO {
     @AllArgsConstructor
     public static class AddTagToPostRequest {
         @NotNull
-        private Long id;
+        private Long tagId;
         @NotNull
-        private Post post;
+        private Long postId;
     }
 
     @Getter

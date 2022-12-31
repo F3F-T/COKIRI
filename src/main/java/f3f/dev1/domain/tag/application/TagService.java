@@ -43,9 +43,6 @@ public class TagService {
 
     @Transactional
     public Long createTag(CreateTagRequest createTagRequest) {
-        if(tagRepository.existsById(createTagRequest.getId())) {
-            throw new DuplicateTagException("이미 존재하는 태그입니다.");
-        }
         if(tagRepository.existsByName(createTagRequest.getName())) {
             throw new DuplicateTagException("이미 존재하는 태그명입니다.");
         }
@@ -58,11 +55,13 @@ public class TagService {
     }
 
     public Long addTagToPost(AddTagToPostRequest addTagToPostRequest) {
-        Post post = postRepository.findById(addTagToPostRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
-        Tag tag = tagRepository.findById(addTagToPostRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(addTagToPostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        Tag tag = tagRepository.findById(addTagToPostRequest.getTagId()).orElseThrow(NotFoundByIdException::new);
+        // TODO 예외를 던질 필요까지는 없나?
         if(postTagRepository.existsByPostAndTag(post, tag)) {
             throw new DuplicateTagException("게시글에 이미 해당 태그가 존재합니다");
         }
+        // TODO PostTag 레포지토리에 여기서 추가를 해주네.. 구조가 이렇게 돼도 되는가?
         PostTag postTag = PostTag.builder()
                 .post(post)
                 .tag(tag)
@@ -136,6 +135,7 @@ public class TagService {
         return response;
     }
 
+    // TODO 고민 : 여러 개의 해시태그가 들어오면 걔네를 다 가지고 있는 게시글만 보여줘야하나? 하나라도 포함이면 보여줘야 하나?
     @Transactional(readOnly = true)
     public List<PostInfoDto> getPostsByTagNames(List<String> names) {
         List<PostInfoDto> response = new ArrayList<>();
