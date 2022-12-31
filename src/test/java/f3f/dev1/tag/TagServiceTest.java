@@ -257,7 +257,7 @@ public class TagServiceTest {
 
     @Test
     @DisplayName("단일 태그 이름으로 게시글 조회 테스트")
-    public void getPostsByTag() throws Exception {
+    public void getPostsBySingleTagName() throws Exception {
         //given
         SignUpRequest signUpRequest = createSignUpRequest();
         authService.signUp(signUpRequest);
@@ -293,6 +293,63 @@ public class TagServiceTest {
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getTitle()).isEqualTo("3년 신은 양말 거래 희망합니다");
         assertThat(result).extracting("content")
+                .hasSize(1)
+                .contains("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요");
+    }
+
+    @Test
+    @DisplayName("복수 태그 이름으로 게시글 조회 테스트")
+    public void getPostsByMultiTagNames() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        //when
+        // 게시글 추가 + 게시글에 태그 추가
+        // 첫번째 게시글에 해시태그 1, 2, 3이 모두 추가되어있다.
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        Long postId = postService.savePost(postSaveRequest);
+        Post post = postRepository.findById(postId).get();
+        AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
+        AddTagToPostRequest addTagToPostSecondRequest = createAddTagToPostRequest(secondTagId, postId);
+        AddTagToPostRequest addTagToPostThirdRequest = createAddTagToPostRequest(thirdTagId, postId);
+        tagService.addTagToPost(addTagToPostRequest);
+        tagService.addTagToPost(addTagToPostSecondRequest);
+        tagService.addTagToPost(addTagToPostThirdRequest);
+
+        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productCategoryId, wishCategoryId);
+        Long secondPostId = postService.savePost(secondPostSaveRequest);
+        Post secondPost = postRepository.findById(secondPostId).get();
+
+        //then
+        List<String> names = new ArrayList<>();
+        names.add("해시태그1");
+        names.add("해시태그2");
+        names.add("해시태그3");
+
+        List<PostInfoDto> postInfoDtoList = tagService.getPostsByTagNames(names);
+        assertThat(postInfoDtoList).extracting("title")
+                .hasSize(1)
+                .contains("3년 신은 양말 거래 희망합니다");
+
+        assertThat(postInfoDtoList).extracting("content")
                 .hasSize(1)
                 .contains("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요");
     }

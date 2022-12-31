@@ -136,28 +136,42 @@ public class TagService {
     }
 
     // TODO 고민 : 여러 개의 해시태그가 들어오면 걔네를 다 가지고 있는 게시글만 보여줘야하나? 하나라도 포함이면 보여줘야 하나?
+    // ==> 다 가지고 있는 애만 보여주는 걸로
     @Transactional(readOnly = true)
     public List<PostInfoDto> getPostsByTagNames(List<String> names) {
+        List<Post> resultPostList = new ArrayList<>();
         List<PostInfoDto> response = new ArrayList<>();
-        for (String name : names) {
-            List<PostTag> postTags = postTagRepository.findByTagName(name);
-            for (PostTag postTag : postTags) {
-                PostInfoDto responseEach = PostInfoDto.builder()
-                        .id(postTag.getPost().getId())
-                        .title(postTag.getPost().getTitle())
-                        .content(postTag.getPost().getContent())
-                        .tradeEachOther(postTag.getPost().getTradeEachOther())
-                        .authorNickname(postTag.getPost().getAuthor().getNickname())
-                        .wishCategory(postTag.getPost().getWishCategory().getName())
-                        .productCategory(postTag.getPost().getProductCategory().getName())
-                        // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
-//                    .tradeStatus(postTag.getPost().getTrade().getTradeStatus())
-                        .build();
-                response.add(responseEach);
+//        for (String name : names) {
+//            List<PostTag> postTags = postTagRepository.findByTagName(name);
+//            List<Post> posts = postRepository.findByPostTags(postTags);
+//            resultPostList.addAll(posts);
+//        }
+        for(int i=0; i<names.size(); i++) {
+            List<PostTag> postTags = postTagRepository.findByTagName(names.get(i));
+            List<Post> posts = postRepository.findByPostTagsIn(postTags);
+            // 첫번째 루프면 결과 리스트를 전부 저장하고,
+            // 두번째 루프 이상부터는 결과 리스트와의 교집합만 저장한다.
+            if(i == 0) {
+                resultPostList.addAll(posts);
+            } else {
+                resultPostList.retainAll(posts);
             }
         }
-        List<PostInfoDto> deduplicatedResponse = DeduplicationUtils.deduplication(response, PostInfoDto::getId);
-        return deduplicatedResponse;
+//        List<Post> deduplicatedList = DeduplicationUtils.deduplication(resultPostList, Post::getId);
+        for (Post post : resultPostList) {
+            PostInfoDto responseEach = PostInfoDto.builder()
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .tradeEachOther(post.getTradeEachOther())
+                    .authorNickname(post.getAuthor().getNickname())
+                    .wishCategory(post.getWishCategory().getName())
+                    .productCategory(post.getProductCategory().getName())
+                    // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
+//                    .tradeStatus(post.getTrade().getTradeStatus())
+                    .build();
+            response.add(responseEach);
+        }
+        return response;
     }
 
 
