@@ -42,10 +42,10 @@ public class PostService {
         Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         List<PostTag> resultsList = new ArrayList<>();
         // TODO 아래 코드 추가해야 하는지
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        if(!currentMemberId.equals(member.getId())) {
-            throw new NotMatchingAuthorException("현재 로그인한 사용자가 생성 요청자가 아닙니다.");
-        }
+//        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+//        if(!currentMemberId.equals(member.getId())) {
+//            throw new NotMatchingAuthorException("현재 로그인한 사용자가 생성 요청자가 아닙니다.");
+//        }
         /* TODO 카테고리 객체 받아와서 카테고리 리스트에 추가해줘야 함
             categoryRepository.findById(productCategory.getId()) ~
             해당 부분이 구현되면 추가하겠음

@@ -32,6 +32,7 @@ public class PostDTO {
         private Long authorId;
         private Long productCategoryId;
         private Long wishCategoryId;
+        @NotNull
         private List<String> tagNames;
 
         public Post toEntity(Member author, Category product, Category wish, List<PostTag> postTags) {

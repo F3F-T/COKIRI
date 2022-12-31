@@ -1,6 +1,8 @@
 package f3f.dev1.domain.tag.application;
 
+import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.post.dao.PostRepository;
+import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
@@ -19,6 +21,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
+import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static f3f.dev1.domain.tag.dto.TagDTO.*;
 import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
 
@@ -30,6 +33,7 @@ public class TagService {
     private final TagRepository tagRepository;
     private final PostRepository postRepository;
     private final PostTagRepository postTagRepository;
+    private final MemberRepository memberRepository;
 
     /*
         C : create
@@ -43,6 +47,9 @@ public class TagService {
         }
         if(tagRepository.existsByName(createTagRequest.getName())) {
             throw new DuplicateTagException("이미 존재하는 태그명입니다.");
+        }
+        if(!memberRepository.existsById(createTagRequest.getAuthorId())) {
+            throw new NotFoundByIdException("요청자가 존재하지 않는 사용자입니다.");
         }
         Tag tag = createTagRequest.toEntity();
         tagRepository.save(tag);
@@ -72,33 +79,60 @@ public class TagService {
         태그 자체에 대한 조회는 필요 없을 것 같아서.
      */
 
-    // TODO 요청으로 넘기는 DTO 객체는 Id만 가지고 있다. 이런 경우 그냥 Long으로 바로 넘기는게 나으려나? - 피드백 받기
     @Transactional(readOnly = true)
-    public List<Post> getPostsByTagId(GetPostListByTagIdRequest request) {
+    public List<PostInfoDto> getPostsByTagId(GetPostListByTagIdRequest request) {
         // 먼저 postTag 리스트를 찾고 하나하나 포스트를 찾아서 추가해준다.
         if(!tagRepository.existsById(request.getId())) {
             throw new NotFoundByIdException();
         }
         List<PostTag> postTagList = postTagRepository.findByTagId(request.getId());
         List<Post> postList = new ArrayList<>();
+        List<PostInfoDto> response = new ArrayList<>();
         for (PostTag postTagEach : postTagList) {
             postList.add(postTagEach.getPost());
         }
-        return postList;
+        for (Post post : postList) {
+                PostInfoDto responseEach = PostInfoDto.builder()
+                        .title(post.getTitle())
+                        .content(post.getContent())
+                        .tradeEachOther(post.getTradeEachOther())
+                        .authorNickname(post.getAuthor().getNickname())
+                        .wishCategory(post.getWishCategory().getName())
+                        .productCategory(post.getProductCategory().getName())
+                        // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
+//                    .tradeStatus(post.getTrade().getTradeStatus())
+                        .build();
+                response.add(responseEach);
+        }
+        return response;
     }
 
     @Transactional(readOnly = true)
-    public List<Post> getPostsByTagName(String tagName) {
+    public List<PostInfoDto> getPostsByTagName(String tagName) {
         // 먼저 postTag 리스트를 찾고 하나하나 포스트를 찾아서 추가해준다.
         if(!tagRepository.existsByName(tagName)) {
             throw new NotFoundByIdException();
         }
         List<PostTag> postTagList = postTagRepository.findByTagName(tagName);
         List<Post> postList = new ArrayList<>();
+        List<PostInfoDto> response = new ArrayList<>();
         for (PostTag postTagEach : postTagList) {
             postList.add(postTagEach.getPost());
         }
-        return postList;
+        for (Post post : postList) {
+            PostInfoDto responseEach = PostInfoDto.builder()
+                    .title(post.getTitle())
+                    .content(post.getContent())
+                    .tradeEachOther(post.getTradeEachOther())
+                    .authorNickname(post.getAuthor().getNickname())
+                    .wishCategory(post.getWishCategory().getName())
+                    .productCategory(post.getProductCategory().getName())
+                    // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
+//                    .tradeStatus(post.getTrade().getTradeStatus())
+                    .build();
+            response.add(responseEach);
+        }
+        return response;
     }
 
 

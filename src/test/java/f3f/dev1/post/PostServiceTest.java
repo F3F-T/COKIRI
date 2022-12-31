@@ -125,6 +125,7 @@ public class PostServiceTest {
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
                 .productCategoryId(productId)
+                .tagNames(new ArrayList<>())
                 .wishCategoryId(wishId)
                 .build();
     }
@@ -148,6 +149,7 @@ public class PostServiceTest {
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
                 .productCategoryId(productId)
+                .tagNames(new ArrayList<>())
                 .wishCategoryId(wishId)
                 .build();
     }

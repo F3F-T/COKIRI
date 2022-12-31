@@ -23,6 +23,8 @@ public class TagDTO {
         @Size(max = 10, message = "태그는 10글자 이하로 작성해주세요")
         private String name;
 
+        private Long authorId;
+
         public Tag toEntity() {
             return Tag.builder()
                     .name(this.name)
