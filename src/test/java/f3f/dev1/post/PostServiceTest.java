@@ -13,6 +13,10 @@ import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.tag.application.TagService;
+import f3f.dev1.domain.tag.dao.PostTagRepository;
+import f3f.dev1.domain.tag.dao.TagRepository;
+import f3f.dev1.domain.tag.dto.TagDTO;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,6 +24,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +38,7 @@ import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
+@Transactional
 public class PostServiceTest {
 
     @Autowired
@@ -42,6 +49,9 @@ public class PostServiceTest {
 
     @Autowired
     CategoryService categoryService;
+
+    @Autowired
+    TagService tagService;
 
     @Autowired
     MemberRepository memberRepository;
@@ -55,13 +65,30 @@ public class PostServiceTest {
     @Autowired
     CategoryRepository categoryRepository;
 
+    @Autowired
+    TagRepository tagRepository;
+
+    @Autowired
+    PostTagRepository postTagRepository;
+
     @BeforeEach
     public void deleteAll() {
         memberRepository.deleteAll();
         postRepository.deleteAll();
         commentRepository.deleteAll();
         categoryRepository.deleteAll();
+        tagRepository.deleteAll();
+        postTagRepository.deleteAll();
     }
+
+    public TagDTO.CreateTagRequest createTagRequest(String tagName, Long authorId) {
+        return new TagDTO.CreateTagRequest(tagName, authorId);
+    }
+
+    public TagDTO.AddTagToPostRequest createAddTagToPostRequest(Long tagId, Long postId) {
+        return new TagDTO.AddTagToPostRequest(tagId, postId);
+    }
+
 
     public CategorySaveRequest createCategorySaveRequest(String name, Long depth, Category parent, Member author) {
         return CategorySaveRequest.builder()
@@ -307,42 +334,102 @@ public class PostServiceTest {
     }
 
     @Test
-    @DisplayName("태그 정보와 함께 게시글 조회 테스트")
-    public void getPostsWithTagsTestForSuccess() throws Exception {
+    @DisplayName("조건과 함께 게시글 검색 테스트 - 태그로만 검색")
+    @Rollback
+    public void findPostsWithTagNamesConditionTestForSuccess() throws Exception {
         //given
         SignUpRequest signUpRequest = createSignUpRequest();
         authService.signUp(signUpRequest);
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+        TagDTO.CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        TagDTO.CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        TagDTO.CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
 
         // 루트 생성
         CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
         Long rootId = categoryService.createCategory(rootRequest);
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
-
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, root, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
         //when
-        // 첫번째 게시글
+        // 게시글 추가 + 게시글에 태그 추가
+        // 첫번째 게시글에 해시태그 1, 2, 3이 모두 추가되어있다.
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
+        Post post = postRepository.findById(postId).get();
+        TagDTO.AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
+        TagDTO.AddTagToPostRequest addTagToPostSecondRequest = createAddTagToPostRequest(secondTagId, postId);
+        TagDTO.AddTagToPostRequest addTagToPostThirdRequest = createAddTagToPostRequest(thirdTagId, postId);
+        tagService.addTagToPost(addTagToPostRequest);
+        tagService.addTagToPost(addTagToPostSecondRequest);
+        tagService.addTagToPost(addTagToPostThirdRequest);
+
+        // 두번째 게시글에 해시태그 1, 2가 추가됐다.
+        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productCategoryId, wishCategoryId);
+        Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
+        Post secondPost = postRepository.findById(secondPostId).get();
+        TagDTO.AddTagToPostRequest addTagToSecondPostRequest = createAddTagToPostRequest(tagId, secondPostId);
+        TagDTO.AddTagToPostRequest addSecondTagToSecondPostRequest = createAddTagToPostRequest(secondTagId, secondPostId);
+        tagService.addTagToPost(addTagToSecondPostRequest);
+        tagService.addTagToPost(addSecondTagToSecondPostRequest);
+
+        // 세번째 게시글에 해시태그1이 추가되었다.
+        PostSaveRequest thirdPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "세번째 게시글", false, productCategoryId, wishCategoryId);
+        Long thirdPostId = postService.savePost(thirdPostSaveRequest, member.getId());
+        Post thirdPost = postRepository.findById(thirdPostId).get();
+        TagDTO.AddTagToPostRequest addTagToThirdPostRequest = createAddTagToPostRequest(tagId, thirdPostId);
+        tagService.addTagToPost(addTagToThirdPostRequest);
+
+        // 네번째 게시글에는 해시태그를 추가하지 않겠다.
+        PostSaveRequest fourthPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "네번째 게시글", false, productCategoryId, wishCategoryId);
+        Long fourthPostId = postService.savePost(fourthPostSaveRequest, member.getId());
+        Post fourthPost = postRepository.findById(fourthPostId).get();
+
+        //then
         List<String> names = new ArrayList<>();
         names.add("해시태그1");
         names.add("해시태그2");
         names.add("해시태그3");
-        PostSaveRequest postSaveRequestWithTag = createPostSaveRequestWithTag(member, false, productCategoryId, wishCategoryId, names);
-        Long postId = postService.savePost(postSaveRequestWithTag, member.getId());
-        Post post = postRepository.findById(postId).get();
 
-        //두번째 게시글
-        List<String> names2 = new ArrayList<>();
-        names2.add("해시태그4");
-        PostSaveRequest postSaveRequestWithTag2 = createPostSaveRequestWithTag(member, false, productCategoryId, wishCategoryId, names2);
-        Long postId2 = postService.savePost(postSaveRequestWithTag2, member.getId());
-        Post post2 = postRepository.findById(postId2).get();
+        List<PostInfoDto> postInfoDtoList = postService.findPostsWithConditions("", "", names);
+        assertThat(postInfoDtoList).extracting("title")
+                .hasSize(1)
+                .contains("3년 신은 양말 거래 희망합니다");
 
-        //then
+        assertThat(postInfoDtoList).extracting("content")
+                .hasSize(1)
+                .contains("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요");
+
+        List<String> secondNames = new ArrayList<>();
+        secondNames.add("해시태그1");
+        secondNames.add("해시태그2");
+
+        List<PostInfoDto> secondPostInfoDtoList = postService.findPostsWithConditions("", "", secondNames);
+        assertThat(secondPostInfoDtoList).extracting("title")
+                .hasSize(2)
+                .contains("두번째 게시글", "3년 신은 양말 거래 희망합니다");
+
+        List<String> thirdNames = new ArrayList<>();
+        thirdNames.add("해시태그1");
+
+        List<PostInfoDto> thirdPostInfoDtoList = postService.findPostsWithConditions("", "", thirdNames);
+        assertThat(thirdPostInfoDtoList).extracting("title")
+                .hasSize(3)
+                .contains("세번째 게시글", "두번째 게시글", "3년 신은 양말 거래 희망합니다");
+
+        // 비어있는 태그 이름 리스트를 넘기면 게시글 전체 조회
+        List<String> emptyNamesList = new ArrayList<>();
+        List<PostInfoDto> fourthPostInfoDtoList = postService.findPostsWithConditions("", "", emptyNamesList);
+        assertThat(fourthPostInfoDtoList).extracting("title")
+                .hasSize(4)
+                .contains("네번째 게시글", "세번째 게시글", "두번째 게시글", "3년 신은 양말 거래 희망합니다");
     }
 
     @Test
