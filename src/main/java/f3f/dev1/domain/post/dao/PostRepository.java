@@ -23,8 +23,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByPostTagsIn(List<PostTag> postTags);
     List<Post> findByWishCategoryName(String wishCategoryName);
     List<Post> findByProductCategoryName(String productCategoryName);
-    List<Post> findByProductCategoryNameAndWishCategoryName(String productCategoryName, Long wishCategoryName);
-    List<Post> findByProductCategoryNameAndWishCategoryNameAndPostTagsIn(String productCategoryName, Long wishCategoryName, List<PostTag> postTags);
+    List<Post> findByWishCategoryNameAndPostTagsIn(String wishCategoryName, List<PostTag> postTags);
+    List<Post> findByProductCategoryNameAndPostTagsIn(String productCategoryName, List<PostTag> postTags);
+    List<Post> findByProductCategoryNameAndWishCategoryName(String productCategoryName, String wishCategoryName);
+    List<Post> findByProductCategoryNameAndWishCategoryNameAndPostTagsIn(String productCategoryName, String wishCategoryName, List<PostTag> postTags);
     void deleteById(Long id);
 
 }

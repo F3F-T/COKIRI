@@ -43,7 +43,10 @@ public class PostService {
         List<PostTag> resultsList = new ArrayList<>();
         Category productCategory = categoryRepository.findById(postSaveRequest.getProductCategoryId()).orElseThrow(NotFoundByIdException::new);
         Category wishCategory = categoryRepository.findById(postSaveRequest.getWishCategoryId()).orElseThrow(NotFoundByIdException::new);
-
+        memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+        if(!member.getId().equals(currentMemberId)) {
+            throw new NotMatchingAuthorException("요청자가 현재 로그인한 유저가 아닙니다");
+        }
         List<String> tagNames = postSaveRequest.getTagNames();
         for (String tagName : tagNames) {
             List<PostTag> postTags = postTagRepository.findByTagName(tagName);
@@ -69,17 +72,7 @@ public class PostService {
         List<Post> allPosts = postRepository.findAll();
         List<PostInfoDto> response = new ArrayList<>();
         for (Post post : allPosts) {
-            PostInfoDto responseEach = PostInfoDto.builder()
-                    .id(post.getId())
-                    .title(post.getTitle())
-                    .content(post.getContent())
-                    .tradeEachOther(post.getTradeEachOther())
-                    .authorNickname(post.getAuthor().getNickname())
-                    .wishCategory(post.getWishCategory().getName())
-                    .productCategory(post.getProductCategory().getName())
-                    // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
-//                    .tradeStatus(post.getTrade().getTradeStatus())
-                    .build();
+            PostInfoDto responseEach = post.toInfoDto();
             response.add(responseEach);
         }
         return response;
@@ -95,35 +88,96 @@ public class PostService {
         List<PostInfoDto> response = new ArrayList<>();
         List<Post> byAuthor = postRepository.findByAuthorId(authorId);
         for (Post post : byAuthor) {
-            PostInfoDto responseEach = PostInfoDto.builder()
-                    .title(post.getTitle())
-                    .content(post.getContent())
-                    .tradeEachOther(post.getTradeEachOther())
-                    .authorNickname(post.getAuthor().getNickname())
-                    .wishCategory(post.getWishCategory().getName())
-                    .productCategory(post.getProductCategory().getName())
-                    // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
-//                    .tradeStatus(post.getTrade().getTradeStatus())
-                    .build();
+            PostInfoDto responseEach = post.toInfoDto();
             response.add(responseEach);
         }
         return response;
     }
 
     @Transactional(readOnly = true)
+    public List<PostInfoDto> findPostsWithConditions(String productCategoryName, String wishCategoryName, List<String> tagNames) {
+        List<Post> resultPostList = new ArrayList<>();
+        List<PostInfoDto> response = new ArrayList<>();
+
+        if(!tagNames.isEmpty()) {
+            // 카테고리 정보는 없고 태그로만 검색하는 경우
+            if(productCategoryName.equals("") && wishCategoryName.equals("")) {
+                for(int i=0; i<tagNames.size(); i++) {
+                    List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
+                    List<Post> posts = postRepository.findByPostTagsIn(postTags);
+                    if(i == 0) {
+                        resultPostList.addAll(posts);
+                    } else {
+                        resultPostList.retainAll(posts);
+                    }
+                }
+                // 올린 상품 카테고리 정보와 태그만 있고, 희망 상품 카테고리 정보는 없이 검색한 경우
+            } else if(!productCategoryName.equals("") && wishCategoryName.equals("")) {
+                for(int i=0; i<tagNames.size(); i++) {
+                    List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
+                    List<Post> posts = postRepository.findByProductCategoryNameAndPostTagsIn(productCategoryName, postTags);
+                    if(i == 0) {
+                        resultPostList.addAll(posts);
+                    } else {
+                        resultPostList.retainAll(posts);
+                    }
+                }
+                // 올린 상품 카테고리 정보는 없고, 희망 상품 카테고리 정보와 태그로만 검색한 경우
+            } else if(productCategoryName.equals("") && !wishCategoryName.equals("")) {
+                for(int i=0; i<tagNames.size(); i++) {
+                    List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
+                    List<Post> posts = postRepository.findByWishCategoryNameAndPostTagsIn(wishCategoryName, postTags);
+                    if(i == 0) {
+                        resultPostList.addAll(posts);
+                    } else {
+                        resultPostList.retainAll(posts);
+                    }
+                }
+                // 올린 상품 카테고리와 희망 상품 카테고리, 태그 모두 사용해서 검색한 경우
+            } else if(!productCategoryName.equals("") && !wishCategoryName.equals("")) {
+                for(int i=0; i<tagNames.size(); i++) {
+                    List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
+                    List<Post> posts = postRepository.findByProductCategoryNameAndWishCategoryNameAndPostTagsIn(productCategoryName, wishCategoryName, postTags);
+                    if(i == 0) {
+                        resultPostList.addAll(posts);
+                    } else {
+                        resultPostList.retainAll(posts);
+                    }
+                }
+            }
+
+        } else if(tagNames.isEmpty()) {
+            // 올린 상품 카테고리와 희망 상품 카테고리, 태그정보 모두 없이 검색한 경우 - 전체 조회 결과로 반환
+            if(productCategoryName.equals("") && wishCategoryName.equals("")) {
+                List<Post> all = postRepository.findAll();
+                resultPostList.addAll(all);
+            // 올린 상품 카테고리만 있고 희망 상품 카테고리와 태그는 없이 검색하는 경우
+            } else if(!productCategoryName.equals("") && wishCategoryName.equals("")) {
+                List<Post> postsFromProductCategoryName = postRepository.findByProductCategoryName(productCategoryName);
+                resultPostList.addAll(postsFromProductCategoryName);
+                // 올린 상품 카테고리와 태그는 없고 희망 상품 카테고리만 사용하여 검색하는 경우
+            } else if(productCategoryName.equals("") && !wishCategoryName.equals("")) {
+                List<Post> postsFromWishProductCategoryName = postRepository.findByWishCategoryName(wishCategoryName);
+                resultPostList.addAll(postsFromWishProductCategoryName);
+            }
+        }
+            // 지금까지 resultPostList를 위에서 필터링하여 만들었다.
+            // 여기서부터는 필터링된 resultPostList를 postInfoDto로 바꿔서 리스트에 추가하는 파트
+            for (Post post : resultPostList) {
+                PostInfoDto responseEach = post.toInfoDto();
+                response.add(responseEach);
+            }
+        return response;
+    }
+
+    // TODO 거래 가능한 게시글만 검색하기
+
+    @Transactional(readOnly = true)
     public PostInfoDto findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
 //        // TODO 거래 가능 상태인지 확인하기
 //        Trade trade = tradeRepository.findByPostId(post.getId()).orElseThrow(NotFoundByIdException::new);
-        PostInfoDto response = PostInfoDto.builder()
-                .title(post.getTitle())
-                .content(post.getContent())
-                .tradeEachOther(post.getTradeEachOther())
-                .authorNickname(post.getAuthor().getNickname())
-                .wishCategory(post.getWishCategory().getName())
-                .productCategory(post.getProductCategory().getName())
-                .tradeStatus(post.getTrade().getTradeStatus())
-                .build();
+        PostInfoDto response = post.toInfoDto();
         return response;
     }
 
@@ -136,26 +190,12 @@ public class PostService {
         Post post = postRepository.findById(updatePostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         // 게시글 변경 정보가 기존이랑 똑같다면 (변화가 없다면) 예외를 터트리려 했는데, 그럴 필요가 없어보여서 일단은 검증하지 않겠다
         // 근데 또 예외는 던져놓고 처리를 안하는 방법도 있으니 이건 피드백을 받아 볼 예정
-        /* TODO
-            업데이트된 카테고리들이 유효한지 각각 Id로 확인한다.
-            관련 기능이 구현되면 추가할 것이고, 지금은 유효하다고 가정하고 로직을 작성하겠음
-         */
-
         // post.updatePostInfos(updatePostRequest);
         Category productCategory = categoryRepository.findById(updatePostRequest.getProductCategoryId()).orElseThrow(NotFoundByIdException::new);
         Category wishCategory = categoryRepository.findById(updatePostRequest.getWishCategoryId()).orElseThrow(NotFoundByIdException::new);
         post.updatePostInfos(updatePostRequest, productCategory, wishCategory);
 
-        PostInfoDto response = PostInfoDto.builder()
-                .id(post.getId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .tradeEachOther(post.getTradeEachOther())
-                .authorNickname(post.getAuthor().getNickname())
-                .wishCategory(post.getWishCategory().getName())
-                .productCategory(post.getProductCategory().getName())
-//                .tradeStatus(post.getTrade().getTradeStatus())
-                .build();
+        PostInfoDto response = post.toInfoDto();
         return response;
     }
 

@@ -135,7 +135,7 @@ public class TagService {
         return response;
     }
 
-    // TODO 고민 : 여러 개의 해시태그가 들어오면 걔네를 다 가지고 있는 게시글만 보여줘야하나? 하나라도 포함이면 보여줘야 하나?
+    // 고민 : 여러 개의 해시태그가 들어오면 걔네를 다 가지고 있는 게시글만 보여줘야하나? 하나라도 포함이면 보여줘야 하나?
     // ==> 다 가지고 있는 애만 보여주는 걸로
     @Transactional(readOnly = true)
     public List<PostInfoDto> getPostsByTagNames(List<String> names) {
