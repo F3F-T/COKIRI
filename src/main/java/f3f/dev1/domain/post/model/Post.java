@@ -94,7 +94,7 @@ public class Post extends BaseTimeEntity {
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
                 .tradeEachOther(this.tradeEachOther)
-                .tradeStatus(this.trade.getTradeStatus())
+//                .tradeStatus(this.trade.getTradeStatus())
                 .build();
     }
 
