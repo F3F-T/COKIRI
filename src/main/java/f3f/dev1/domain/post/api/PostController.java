@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 import static f3f.dev1.domain.post.dto.PostDTO.*;
@@ -26,11 +27,14 @@ public class PostController {
 
     private final PostService postService;
 
+    private final TagService tagService;
+
 //    private final CategoryService categoryService;
 
 //    private final TagService tagService;
 
     // TODO 조회 필터링은 post에서 하는 걸로
+    // => 안되겠다. 컨트롤러같은 웹 계층이 없어도 애플리케이션이 동작할 수 있어야 한다.
 
     //게시글 전체 조회
     // TODO 쿼리스트링 추가 -
@@ -40,9 +44,16 @@ public class PostController {
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames) {
 
-        // TODO 태그로 조회 서비스 로직 추가하기
-        List<PostInfoDto> allPosts = postService.findAllPosts();
-        return new ResponseEntity<>(allPosts, HttpStatus.OK);
+        List<PostInfoDto> responseList = new ArrayList<>();
+
+        if(productCategoryName.equals("") && wishCategoryName.equals("") && !tagNames.isEmpty()) {
+            List<PostInfoDto> postInfoDtoList = tagService.getPostsByTagNames(tagNames);
+            responseList.addAll(postInfoDtoList);
+        } else {
+            List<PostInfoDto> allPosts = postService.findAllPosts();
+            responseList.addAll(allPosts);
+        }
+        return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 
     // 게시글 작성

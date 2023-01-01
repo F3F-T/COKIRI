@@ -36,21 +36,11 @@ public class PostService {
     private final PostTagRepository postTagRepository;
 
     @Transactional
-    public Long savePost(PostSaveRequest postSaveRequest, Long memberId) {
+    public Long savePost(PostSaveRequest postSaveRequest, Long currentMemberId) {
 
-        // 유저 객체 받아와서 포스트 리스트에 추가해줘야 함
         // TODO memberId를 추가로 받기 때문에 관련 로직 작성해야함
         Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         List<PostTag> resultsList = new ArrayList<>();
-        // TODO 아래 코드 추가해야 하는지
-//        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-//        if(!currentMemberId.equals(member.getId())) {
-//            throw new NotMatchingAuthorException("현재 로그인한 사용자가 생성 요청자가 아닙니다.");
-//        }
-        /* TODO 카테고리 객체 받아와서 카테고리 리스트에 추가해줘야 함
-            categoryRepository.findById(productCategory.getId()) ~
-            해당 부분이 구현되면 추가하겠음
-         */
         Category productCategory = categoryRepository.findById(postSaveRequest.getProductCategoryId()).orElseThrow(NotFoundByIdException::new);
         Category wishCategory = categoryRepository.findById(postSaveRequest.getWishCategoryId()).orElseThrow(NotFoundByIdException::new);
 
