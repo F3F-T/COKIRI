@@ -80,6 +80,7 @@ public class PostService {
         List<PostInfoDto> response = new ArrayList<>();
         for (Post post : allPosts) {
             PostInfoDto responseEach = PostInfoDto.builder()
+                    .id(post.getId())
                     .title(post.getTitle())
                     .content(post.getContent())
                     .tradeEachOther(post.getTradeEachOther())
