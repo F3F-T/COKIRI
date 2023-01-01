@@ -38,6 +38,8 @@ public class Post extends BaseTimeEntity {
     @OneToOne(mappedBy = "post")
     private Trade trade;
 
+    private Long price;
+
     @ManyToOne
     @JoinColumn(name = "productCategory_id")
     private Category productCategory;
@@ -62,22 +64,24 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
-    public void updatePostInfos(UpdatePostRequest updatePostRequest) {
+    public void updatePostInfos(UpdatePostRequest updatePostRequest, Category productCategory, Category wishCategory) {
         this.title = updatePostRequest.getTitle();
         this.content = updatePostRequest.getContent();
         this.postTags = updatePostRequest.getPostTags();
-        this.productCategory = updatePostRequest.getProductCategory();
-        this.wishCategory = updatePostRequest.getWishCategory();
+        this.productCategory = productCategory;
+        this.wishCategory = wishCategory;
     }
 
+
     @Builder
-    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author) {
+    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.tradeEachOther = tradeEachOther;
         this.productCategory = productCategory;
         this.wishCategory = wishCategory;
+        this.postTags = postTags;
         this.author = author;
     }
 

@@ -40,4 +40,8 @@ public class Category {
         this.depth = depth;
         this.parent = parent;
     }
+
+    public void setDepth(Long depth){
+        this.depth = depth;
+    }
 }
