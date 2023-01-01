@@ -29,15 +29,13 @@ public class CategoryService {
     //TODO 위시, 프로덕트 카테고리  구분해서 만들기(뎁스 3)
     @Transactional
     public Long createCategory(CategorySaveRequest categorySaveRequest){
-        Member admin = memberRepository.findById(categorySaveRequest.getMember().getId()).orElseThrow(NotFoundByIdException::new);
+        Member admin = memberRepository.findById(categorySaveRequest.getMemberId()).orElseThrow(NotFoundByIdException::new);
         //유저 어드민 확인해야되는데 어드민 만들어지면 해야할듯
-        //포스트가 유효한지 확인
-        Post post = postRepository.findById(categorySaveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
 
         //질문)category.getParent()-- null을 categoryRepository.existById(categor.getParentId())이렇게 해주는게 나으려나 뭐가 달라?
 
         //카테고리 이름에 대한 처리
-        if(categoryRepository.existByName(categorySaveRequest.getName())){
+        if(categoryRepository.existsByName(categorySaveRequest.getName())){
             throw new CategoryException("이미 존재하는 카테고리입니다.");
         }
         //depth가 root 포함 0,1,2임
@@ -49,9 +47,13 @@ public class CategoryService {
 
         //부모 카테고리 확인
         //부모 카테고리가 존재하지 않음. -> 무조건 root 카테고리
-        if(!categoryRepository.existsById(category.getParent().getId())) {
-            if (category.getDepth() != 0) {
-                throw new CategoryException("부모카테고리 설정 오류 : root 카테고리여야합니다.");
+        // 루트 카테고리가 존재하는데 부모가 없다면 예외 던지기
+        //설정 처음에 루트 카테고리 만들기-> 카테고리가 있는지 확인하기
+        if(categoryRepository.findAll().isEmpty()) {//이걸 써도 되나?
+            if (!categoryRepository.existsById(category.getParent().getId())) {
+                if (category.getDepth() != 0) {
+                    throw new CategoryException("부모카테고리 설정 오류 : root 카테고리여야합니다.");
+                }
             }
         }
         //root 카테고리 하위
@@ -108,7 +110,7 @@ public class CategoryService {
     public String updateCategoryName(Long id, String newName){
         Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         //업데이트하려는 카테고리 이름이 이미 존재할 때
-        if(categoryRepository.existByName(newName)){
+        if(categoryRepository.existsByName(newName)){
             throw new CategoryException("이미 존재하는 카테고리 이름입니다.");
         }
         else{
@@ -117,13 +119,15 @@ public class CategoryService {
         return "UPDATE";
     }
 
-    //카테고리 깊이 수정 -> 그냥 삭제하고 다시 만들어?
-    @Transactional
-    public String updateCategoryDepth(Long id, String newDepth){
-        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-//        category.getDepth().toString();
-        return "UPDATE";
-    }
+    //카테고리 깊이 수정 -> 그냥 삭제하고 다시 만들어?-> 12/31 회의 결과 루트->물물교환, 끼리끼리-> 도서, 화장품 등으로 나뉘어서 굳이 필요 없을 듯.
+//    @Transactional
+//    public String updateCategoryDepth(Long id, String newDepth){
+//        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+////        category.getDepth().toString();
+//        return "UPDATE";
+//    }
+
+
     //카테고리 삭제
     //카테고리를 삭제하면 관련 포스트도 다 삭제된다.
     @Transactional
@@ -135,7 +139,7 @@ public class CategoryService {
                 //자식 카테고리에 포스트가 있다면, 포스트를 다 지움.
                 if(!childCategory.getProducts().isEmpty()){
                     for(Post post : childCategory.getProducts()) {
-                        postRepository.delete(post); //deleteAll이어야해?
+                        postRepository.delete(post); //deleteAll, deleteAllInBatch()다시 찾아보기
                     }
                 }
                 categoryRepository.delete(childCategory);

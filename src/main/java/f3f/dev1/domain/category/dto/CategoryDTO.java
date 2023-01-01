@@ -19,26 +19,24 @@ public class CategoryDTO {
         private String name;
         @NonNull
         private Long depth;
-        @NonNull
-        private Category parent;
+       // @NonNull -- 루트 카테고리를 위해 삭제
+        private Long parentId;
 
         //유저 확인해야함. -> 둘다 아이디로 바꿔도 될듯?
-        @NonNull
-        private Member member;
+//        @NonNull
+//        private Member member;
+
+//        @NonNull
+////      private Post post; 포스트는 넣으면 안됨.
 
         @NonNull
-        private Post post;
-//        @NonNull
-//        private Long memberId;
-//
-//        @NonNull
-//        private Long postId;
+        private Long memberId;
 
         public Category toEntity() {
             return Category.builder()
                     .name(this.name)
                     .depth(this.depth)
-                    .parent(this.parent)
+                    .parent(this.toEntity().getParent())
                     .build();
         }
 
