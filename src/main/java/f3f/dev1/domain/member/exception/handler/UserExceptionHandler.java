@@ -81,11 +81,5 @@ public class UserExceptionHandler {
         return EMAIL_CERTIFICATION_EXPIRE;
     }
 
-    @ExceptionHandler(InvalidCertificationCodeException.class)
-    protected final ResponseEntity<ErrorResponse> handleInvalidCertificationCodeException(
-            InvalidCertificationCodeException ex, WebRequest request
-    ) {
-        log.debug("잘못된 이메일 인증 코드", request.getDescription(false));
-        return INVALID_CERTIFICATION;
-    }
+
 }

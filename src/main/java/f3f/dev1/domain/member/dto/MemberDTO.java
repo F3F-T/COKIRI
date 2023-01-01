@@ -89,6 +89,8 @@ public class MemberDTO {
         private Long scrapId;
         private String userName;
 
+        private String imageUrl;
+
         private String nickname;
 
         private Address address;
@@ -106,6 +108,8 @@ public class MemberDTO {
     @Getter
     public static class UpdateUserInfo {
 
+        private Long userId;
+
         private String nickname;
 
         private Address address;
@@ -120,6 +124,8 @@ public class MemberDTO {
     @Getter
     public static class UpdateUserPassword {
 
+        private Long userId;
+
         private String oldPassword;
 
         private String newPassword;
@@ -129,6 +135,27 @@ public class MemberDTO {
             this.newPassword = passwordEncoder.encode(newPassword);
         }
     }
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UpdateUserImage{
+
+        private Long userId;
+
+        private String newImageUrl;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UpdateUserAddress{
+        private Long userId;
+
+        private Address address;
+    }
+
 
     @Builder
     @AllArgsConstructor

@@ -86,6 +86,12 @@ public class Post extends BaseTimeEntity {
     }
 
     public PostInfoDto toInfoDto() {
+        TradeStatus tradeStatus;
+        if (this.trade == null) {
+            tradeStatus = TradeStatus.TRADABLE;
+        } else {
+            tradeStatus = this.trade.getTradeStatus();
+        }
         return PostInfoDto.builder()
                 .id(this.id)
                 .authorNickname(this.author.getNickname())
@@ -94,7 +100,7 @@ public class Post extends BaseTimeEntity {
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
                 .tradeEachOther(this.tradeEachOther)
-                .tradeStatus(this.trade.getTradeStatus())
+                .tradeStatus(tradeStatus)
                 .build();
     }
 

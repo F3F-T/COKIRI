@@ -22,6 +22,8 @@ public class MemberBase extends BaseTimeEntity {
 
     private String password;
 
+
+
     @Enumerated(EnumType.STRING)
     protected Authority authority;
 
@@ -31,5 +33,7 @@ public class MemberBase extends BaseTimeEntity {
     public void updatePassword(String pw) {
         this.password = pw;
     }
+
+
 
 }
