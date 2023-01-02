@@ -159,6 +159,9 @@ public class PostService {
             } else if(productCategoryName.equals("") && !wishCategoryName.equals("")) {
                 List<Post> postsFromWishProductCategoryName = postRepository.findByWishCategoryName(wishCategoryName);
                 resultPostList.addAll(postsFromWishProductCategoryName);
+            } else if(!productCategoryName.equals("") && !wishCategoryName.equals("")) {
+                List<Post> posts = postRepository.findByProductCategoryNameAndWishCategoryName(productCategoryName, wishCategoryName);
+                resultPostList.addAll(posts);
             }
         }
             // 지금까지 resultPostList를 위에서 필터링하여 만들었다.
