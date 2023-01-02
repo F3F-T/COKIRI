@@ -35,6 +35,7 @@ import static f3f.dev1.domain.category.dto.CategoryDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static f3f.dev1.domain.tag.dto.TagDTO.*;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
@@ -81,12 +82,12 @@ public class PostServiceTest {
         postTagRepository.deleteAll();
     }
 
-    public TagDTO.CreateTagRequest createTagRequest(String tagName, Long authorId) {
-        return new TagDTO.CreateTagRequest(tagName, authorId);
+    public CreateTagRequest createTagRequest(String tagName, Long authorId) {
+        return new CreateTagRequest(tagName, authorId);
     }
 
-    public TagDTO.AddTagToPostRequest createAddTagToPostRequest(Long tagId, Long postId) {
-        return new TagDTO.AddTagToPostRequest(tagId, postId);
+    public AddTagToPostRequest createAddTagToPostRequest(Long tagId, Long postId) {
+        return new AddTagToPostRequest(tagId, postId);
     }
 
 
@@ -341,9 +342,9 @@ public class PostServiceTest {
         SignUpRequest signUpRequest = createSignUpRequest();
         authService.signUp(signUpRequest);
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
-        TagDTO.CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
-        TagDTO.CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
-        TagDTO.CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
         Long tagId = tagService.createTag(tagRequest);
         Long secondTagId = tagService.createTag(secondTagRequest);
         Long thirdTagId = tagService.createTag(thirdTagRequest);
@@ -364,9 +365,9 @@ public class PostServiceTest {
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
         Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
-        TagDTO.AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
-        TagDTO.AddTagToPostRequest addTagToPostSecondRequest = createAddTagToPostRequest(secondTagId, postId);
-        TagDTO.AddTagToPostRequest addTagToPostThirdRequest = createAddTagToPostRequest(thirdTagId, postId);
+        AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
+        AddTagToPostRequest addTagToPostSecondRequest = createAddTagToPostRequest(secondTagId, postId);
+        AddTagToPostRequest addTagToPostThirdRequest = createAddTagToPostRequest(thirdTagId, postId);
         tagService.addTagToPost(addTagToPostRequest);
         tagService.addTagToPost(addTagToPostSecondRequest);
         tagService.addTagToPost(addTagToPostThirdRequest);
@@ -375,8 +376,8 @@ public class PostServiceTest {
         PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productCategoryId, wishCategoryId);
         Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
         Post secondPost = postRepository.findById(secondPostId).get();
-        TagDTO.AddTagToPostRequest addTagToSecondPostRequest = createAddTagToPostRequest(tagId, secondPostId);
-        TagDTO.AddTagToPostRequest addSecondTagToSecondPostRequest = createAddTagToPostRequest(secondTagId, secondPostId);
+        AddTagToPostRequest addTagToSecondPostRequest = createAddTagToPostRequest(tagId, secondPostId);
+        AddTagToPostRequest addSecondTagToSecondPostRequest = createAddTagToPostRequest(secondTagId, secondPostId);
         tagService.addTagToPost(addTagToSecondPostRequest);
         tagService.addTagToPost(addSecondTagToSecondPostRequest);
 
@@ -384,7 +385,7 @@ public class PostServiceTest {
         PostSaveRequest thirdPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "세번째 게시글", false, productCategoryId, wishCategoryId);
         Long thirdPostId = postService.savePost(thirdPostSaveRequest, member.getId());
         Post thirdPost = postRepository.findById(thirdPostId).get();
-        TagDTO.AddTagToPostRequest addTagToThirdPostRequest = createAddTagToPostRequest(tagId, thirdPostId);
+        AddTagToPostRequest addTagToThirdPostRequest = createAddTagToPostRequest(tagId, thirdPostId);
         tagService.addTagToPost(addTagToThirdPostRequest);
 
         // 네번째 게시글에는 해시태그를 추가하지 않겠다.
@@ -430,6 +431,114 @@ public class PostServiceTest {
         assertThat(fourthPostInfoDtoList).extracting("title")
                 .hasSize(4)
                 .contains("네번째 게시글", "세번째 게시글", "두번째 게시글", "3년 신은 양말 거래 희망합니다");
+    }
+
+    @Test
+    @DisplayName("조건과 함께 테스트 - 상품 카테고리로만 검색")
+    public void findPostsWithProductCategoryNameConditionTestForSuccess() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        // 구분을 두기 위해 다른 product 하나 더 생성
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, root, member);
+        Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
+
+        //when
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
+
+        // 구분을 두기 위해 다른 productCategory를 가지는 게시글을 하나 더 만들겠음
+        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, secondProductCategoryId, wishCategoryId);
+        Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
+
+        List<PostInfoDto> postsWithConditions = postService.findPostsWithConditions(productRequest.getName(), "", new ArrayList<>());
+        List<PostInfoDto> secondPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), "", new ArrayList<>());
+
+        //then
+        assertThat(postsWithConditions).extracting("title")
+                .hasSize(1)
+                .contains("3년 신은 양말 거래 희망합니다");
+
+        assertThat(postsWithConditions).extracting("productCategory")
+                .hasSize(1)
+                .contains("product");
+
+        assertThat(secondPostsWithConditions).extracting("title")
+                .hasSize(1)
+                .contains("두번째 게시글");
+
+        assertThat(secondPostsWithConditions).extracting("productCategory")
+                .hasSize(1)
+                .contains("product2");
+    }
+
+    @Test
+    @DisplayName("조건과 함께 테스트 - 희망 카테고리로만 검색")
+    public void findPostsWithWishCategoryNameConditionTestForSuccess() throws Exception {
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        // 구분을 두기 위해 다른 product 하나 더 생성
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, root, member);
+        Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
+
+        //when
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
+
+        // 구분을 두기 위해 다른 productCategory를 가지는 게시글을 하나 더 만들겠음
+        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productCategoryId, secondWishCategoryId);
+        Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
+
+        // 하나만 더 만들겠음
+        PostSaveRequest thirdPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "세번째 게시글", false, productCategoryId, secondWishCategoryId);
+        Long thirdPostId = postService.savePost(thirdPostSaveRequest, member.getId());
+
+        List<PostInfoDto> postsWithConditions = postService.findPostsWithConditions("", wishRequest.getName(), new ArrayList<>());
+        List<PostInfoDto> secondPostsWithConditions = postService.findPostsWithConditions("", secondWishRequest.getName(), new ArrayList<>());
+
+        //then
+        assertThat(postsWithConditions).extracting("title")
+                .hasSize(1)
+                .contains("3년 신은 양말 거래 희망합니다");
+
+        assertThat(postsWithConditions).extracting("wishCategory")
+                .hasSize(1)
+                .contains("wish");
+
+        assertThat(secondPostsWithConditions).extracting("title")
+                .hasSize(2)
+                .contains("두번째 게시글", "세번째 게시글");
+
+        assertThat(secondPostsWithConditions).extracting("wishCategory")
+                .hasSize(2)
+                .contains("wish2");
+
     }
 
     @Test
