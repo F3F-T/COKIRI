@@ -6,9 +6,14 @@ import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
 import axios from "axios";
 import Modal from "../../routes/로그인 & 회원가입/GoogleLoginModal"
+import {useDispatch, useSelector} from "react-redux";
 // import {gapi} from 'gapi-script';
+import {setToken, deleteToken} from "../../store/jwtTokenReducer";
+import {Rootstate} from "../../index";
 
 const Login = () => {
+    const store = useSelector((state:Rootstate) => state);
+    const dispatch = useDispatch();
 
     const [isOpenModal, setOpenModal] = useState<boolean>(false);
 
@@ -77,8 +82,18 @@ const Login = () => {
             };
             console.log(result)
 
+            //jwt 토큰 redux에 넣기
+            const jwtToken = accessToken.tokenInfo;
+            console.log(jwtToken)
+
             alert('로그인 성공');
-            // setPostResult(formatResponse(result));
+            dispatch(setToken(jwtToken));
+
+
+            // console.log(store.jwtTokenReducer);
+            // console.log(store.jwtTokenReducer.accessToken);
+            // console.log(store.jwtTokenReducer.authenticated);
+            // console.log(store.jwtTokenReducer.accessTokenExpiresIn);
         } catch (err) {
             console.log(err); ///
             alert('로그인 실패');
@@ -89,6 +104,15 @@ const Login = () => {
     const handleClick= () => {
         console.log(userInfo);
         postLoginData();
+
+        if(store.jwtTokenReducer.authenticated === true)
+        {
+            navigate(`/`)
+        }
+        else
+        {
+            alert("로그인 토근 없음")
+        }
     }
 
     const googleClick=()=>{

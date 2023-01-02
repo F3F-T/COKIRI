@@ -14,13 +14,13 @@ import {createSlice,PayloadAction} from "@reduxjs/toolkit";
 interface InitialJwtTokenState{
     authenticated: boolean;
     accessToken : String;
-    expireTime : Number;
+    accessTokenExpiresIn : Number;
 }
 
 const initialJwtTokenState : InitialJwtTokenState = {
     authenticated: false,
     accessToken : null,
-    expireTime : null
+    accessTokenExpiresIn : null
 }
 
 //state는 이 상태의 현재 상태 값을 의미한다
@@ -33,7 +33,7 @@ const jwtTokenSlice = createSlice({
         setToken(state,action){
           state.authenticated = true;
           state.accessToken = action.payload.accessToken;
-          state.expireTime = action.payload.expireTime;
+          state.accessTokenExpiresIn = action.payload.accessTokenExpiresIn;
         },
         deleteToken(state){
             state = initialJwtTokenState;
