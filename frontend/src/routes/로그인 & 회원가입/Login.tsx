@@ -75,6 +75,7 @@ const Login = () => {
                 headers: res.headers,
                 data: res.data,
             };
+            console.log(result)
 
             alert('로그인 성공');
             // setPostResult(formatResponse(result));
@@ -144,11 +145,4 @@ const Login = () => {
 }
 //
 
-function Modal2(){
-    return(
-        <div className={styles.modal}>
-            모달창입니다.
-        </div>
-    )
-}
 export default Login;

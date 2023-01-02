@@ -9,6 +9,7 @@ import {configureStore} from "@reduxjs/toolkit";
 import {Provider} from "react-redux";
 import categoryReducer from "./store/categoryReducer";
 import postDetailReducer from "./store/postDetailReducer";
+import jwtTokenReducer from "./store/jwtTokenReducer";
 
 /**
  * configureStore을 import해온다.
@@ -24,6 +25,7 @@ export const store = configureStore({
     reducer : {
         categoryReducer : categoryReducer,
         postDetailReducer : postDetailReducer,
+        jwtTokenReducer : jwtTokenReducer
 
     }
 })
