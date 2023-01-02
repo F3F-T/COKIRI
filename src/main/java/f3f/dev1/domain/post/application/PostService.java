@@ -47,14 +47,16 @@ public class PostService {
         if(!member.getId().equals(currentMemberId)) {
             throw new NotMatchingAuthorException("요청자가 현재 로그인한 유저가 아닙니다");
         }
-        List<String> tagNames = postSaveRequest.getTagNames();
-        for (String tagName : tagNames) {
-            List<PostTag> postTags = postTagRepository.findByTagName(tagName);
-            resultsList.addAll(postTags);
-        }
-
-        // 태그 명은 중복될 수 없으니 resultsList에 대해서는 중복 제거를 진행하지 않겠다.
-
+        // 여기서는 PostTags만 추가해준다.
+        // 넘어온 이름으로 존재하는 태그를 찾아서 추가해주는 작업은 컨트롤러에서 tag 서비스를 호출해서 수행해준다.
+//        List<String> tagNames = postSaveRequest.getTagNames();
+//        for (String tagName : tagNames) {
+//            List<PostTag> postTags = postTagRepository.findByTagName(tagName);
+//            resultsList.addAll(postTags);
+//        }
+        // resultList가 postService의 save 에서는 항상 비어있는 리스트로 들어간다.
+        // 컨트롤러에서 postService.save 이후에 tagService를 호출해 addTagToPost로 태그를 추가해주는데,
+        // 그때 포스트가 호출되어 리스트에 PostTag가 추가되게 된다.
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
         member.getPosts().add(post);
         postRepository.save(post);
