@@ -10,6 +10,7 @@ import {useDispatch, useSelector} from "react-redux";
 // import {gapi} from 'gapi-script';
 import {setToken, deleteToken} from "../../store/jwtTokenReducer";
 import {Rootstate} from "../../index";
+import Api from "../../utils/api"
 
 const Login = () => {
     const store = useSelector((state:Rootstate) => state);
@@ -67,10 +68,16 @@ const Login = () => {
     async function postLoginData() {
         try {
 
+            const res2 = await Api.post('/auth/login',userInfo);
+
+            console.log("res2 정보");
+            console.log(res2);
+            //
             const res = await axios.post("http://localhost:8080/auth/login", userInfo);
             console.log("res",res);
             const accessToken = res.data;
 
+            //header에 토큰값 전달
             axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
             console.log("토큰값")
             console.log(accessToken);
@@ -86,8 +93,9 @@ const Login = () => {
             const jwtToken = accessToken.tokenInfo;
             console.log(jwtToken)
 
-            alert('로그인 성공');
             dispatch(setToken(jwtToken));
+            alert("로그인 성공")
+            navigate(`/`)
 
 
             // console.log(store.jwtTokenReducer);
@@ -95,7 +103,7 @@ const Login = () => {
             // console.log(store.jwtTokenReducer.authenticated);
             // console.log(store.jwtTokenReducer.accessTokenExpiresIn);
         } catch (err) {
-            console.log(err); ///
+            console.log(err);
             alert('로그인 실패');
 
         }
@@ -104,15 +112,6 @@ const Login = () => {
     const handleClick= () => {
         console.log(userInfo);
         postLoginData();
-
-        if(store.jwtTokenReducer.authenticated === true)
-        {
-            navigate(`/`)
-        }
-        else
-        {
-            alert("로그인 토근 없음")
-        }
     }
 
     const googleClick=()=>{
