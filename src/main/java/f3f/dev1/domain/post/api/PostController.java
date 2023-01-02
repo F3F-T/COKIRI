@@ -61,6 +61,7 @@ public class PostController {
     public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Long postId = postService.savePost(postSaveRequest, currentMemberId);
+        tagService.addTagsToPost(postId, postSaveRequest.getTagNames());
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }
 

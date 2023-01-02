@@ -61,7 +61,6 @@ public class TagService {
         if(postTagRepository.existsByPostAndTag(post, tag)) {
             throw new DuplicateTagException("게시글에 이미 해당 태그가 존재합니다");
         }
-        // TODO PostTag 레포지토리에 여기서 추가를 해주네.. 구조가 이렇게 돼도 되는가?
         PostTag postTag = PostTag.builder()
                 .post(post)
                 .tag(tag)
@@ -71,6 +70,29 @@ public class TagService {
         post.getPostTags().add(postTag);
 
         return postTag.getId();
+    }
+
+    // TODO 테스트코드 필시 작성해봐야 함.
+    public Long addTagsToPost(Long postId, List<String> tagNames) {
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
+        if(tagNames.isEmpty()) {
+            // 추가한 태그가 없다면 바로 게시글을 생성해도 된다.
+            return post.getId();
+        } else {
+            List<Tag> tags = tagRepository.findByNameIn(tagNames);
+            // 태그들을 일일이 게시글에 추가해주는 작업
+            for (Tag tag : tags) {
+                // 게시글을 처음 생성하는 시점에는 이미 존재하는 태그 자체가 없으니 예외처리는 따로 하지 않겠다.
+                PostTag postTag = PostTag.builder()
+                        .post(post)
+                        .tag(tag)
+                        .build();
+                postTagRepository.save(postTag);
+                tag.getPostTags().add(postTag);
+                post.getPostTags().add(postTag);
+            }
+            return post.getId();
+        }
     }
 
     /*
