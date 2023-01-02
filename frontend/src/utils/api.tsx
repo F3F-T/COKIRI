@@ -6,6 +6,9 @@
 
 import axios, {AxiosRequestConfig} from 'axios';
 import {setToken} from "../store/jwtTokenReducer";
+import {history} from "../index";
+
+
 let store;
 
 //이렇게 store을 index파일에서 주입해주는 식으로 하면 순환오류를 막을수있다.
@@ -29,13 +32,11 @@ Api.interceptors.request.use(
         try {
             if (!accessToken) {
                 config.headers["Authorization"] = null;
-            }
-            else if (config.headers && accessToken) {
+            } else if (config.headers && accessToken) {
                 config.headers["Authorization"] = `Bearer ${accessToken}`;
             }
 
-        }catch (err)
-        {
+        } catch (err) {
             console.error('[_axios.interceptors.request] config : ' + err);
         }
 
@@ -58,32 +59,65 @@ Api.interceptors.response.use(
 
         //accessToken이 만료가 돼서 401이 떴을때
         if (err.response && err.response.status === 401) {
-            console.log(`${err.response.data.status} : ` +  err.response.data.message);
+            console.log(`${err.response.data.status} : ` + err.response.data.message);
             switch (err.response.status) {
                 /**
                  * 401 : UNAUTORIZED 권한이 없음
-                 * 1. 일반적으로 accessToken이 만료됐을때
+                 * 예외 처리 시나리오
+                 * 1. accessToken이 만료됐을때
                  */
                 case 401: {
+                    console.log("401 오류 switch문 접근")
                     const accessToken = store.getState().jwtTokenReducer.accessToken;
-                    const jsonObj = {"accessToken" : accessToken};
+                    const jsonObj = {"accessToken": accessToken};
+                    console.log(jsonObj)
+                    //유저 로그인 상태일때
+                    if(accessToken) {
+                        //accessToken 만료가 되면 백엔드에 있는 refreshToken으로 accessToken을 다시 받아온다.
+                        try {
+                            const data = await Api.post("/auth/reissue", jsonObj);
+                            const jwtToken = data.data.tokenInfo;
 
-                    //accessToken 만료가 되면 백엔드에 있는 refreshToken으로 accessToken을 다시 받아온다.
-                    const data = await Api.post("/auth/reissue", jsonObj);
-                    console.log(data)
+                            if (jwtToken) {
+                                store.dispatch(setToken(jwtToken));
+                                console.log("reissue 성공")
+                                return new Promise(() => {
+                                    console.log("Promise Chain Destroyed")
+                                });
+                                // return await Api.request(err.config);
+                            }
+
+                            //refreshToken도 만료가 됐을때 : 재로그인
+                        } catch (err) {
+                            console.log("refreshToken이 만료돼서 accesToken을 재발급할수없음")
+                            alert("토콘이 만료됐으니 다시 로그인 해주세요")
+                            history.push('/login');
+                            console.log("재로그인해야함")
+                        }
+                    }else{
+                        console.log("로그인 예외처리..? ")
+                        // alert("로그인이 필요한 작업입니다")
+                        return Promise.reject(err);
+                    }
+
+                    console.log(err)
+
 
                     //promise chain을 끊어준다
-                    return new Promise(() => {});
+                    // return new Promise(() => {
+                    // });
 
-                    }
+                }
                 case 404: {
 
-                    return new Promise(() => {});
+                    return new Promise(() => {
+                    });
                 }
 
                 case 409: {
 
-                    return new Promise(() => {});
+                    return new Promise(() => {
+                    });
                 }
 
 

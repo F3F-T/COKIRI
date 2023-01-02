@@ -68,20 +68,10 @@ const Login = () => {
     async function postLoginData() {
 
             //interceptor를 사용한 방식 (header에 token값 전달)
+        try{
             const res = await Api.post('/auth/login',userInfo);
-            console.log("res")
-            console.log(res)
 
-            // const res = await axios.post("http://localhost:8080/auth/login", userInfo);
             const accessToken = res.data;
-
-            const result = {
-                status: res.status + "-" + res.statusText,
-                headers: res.headers,
-                data: res.data,
-            };
-            console.log("result")
-            console.log(result)
 
             //jwt 토큰 redux에 넣기
             const jwtToken = accessToken.tokenInfo;
@@ -90,6 +80,13 @@ const Login = () => {
             dispatch(setToken(jwtToken));
             alert("로그인 성공")
             navigate(`/`)
+            }
+            catch (err)
+            {
+                console.log(err)
+                alert("로그인에 실패하였습니다." + `\n` +
+                    "아이디 혹은 비밀번호를 다시 확인해주세요")
+            }
 
 
             // console.log(store.jwtTokenReducer);
