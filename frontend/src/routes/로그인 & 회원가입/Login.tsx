@@ -66,27 +66,21 @@ const Login = () => {
         }
     }
     async function postLoginData() {
-        try {
 
-            const res2 = await Api.post('/auth/login',userInfo);
+            //interceptor를 사용한 방식 (header에 token값 전달)
+            const res = await Api.post('/auth/login',userInfo);
+            console.log("res")
+            console.log(res)
 
-            console.log("res2 정보");
-            console.log(res2);
-            //
-            const res = await axios.post("http://localhost:8080/auth/login", userInfo);
-            console.log("res",res);
+            // const res = await axios.post("http://localhost:8080/auth/login", userInfo);
             const accessToken = res.data;
-
-            //header에 토큰값 전달
-            axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-            console.log("토큰값")
-            console.log(accessToken);
 
             const result = {
                 status: res.status + "-" + res.statusText,
                 headers: res.headers,
                 data: res.data,
             };
+            console.log("result")
             console.log(result)
 
             //jwt 토큰 redux에 넣기
@@ -102,11 +96,7 @@ const Login = () => {
             // console.log(store.jwtTokenReducer.accessToken);
             // console.log(store.jwtTokenReducer.authenticated);
             // console.log(store.jwtTokenReducer.accessTokenExpiresIn);
-        } catch (err) {
-            console.log(err);
-            alert('로그인 실패');
 
-        }
     }
 
     const handleClick= () => {

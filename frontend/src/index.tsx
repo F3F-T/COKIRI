@@ -10,6 +10,7 @@ import {Provider} from "react-redux";
 import categoryReducer from "./store/categoryReducer";
 import postDetailReducer from "./store/postDetailReducer";
 import jwtTokenReducer from "./store/jwtTokenReducer";
+import {injectStore} from "./utils/api";
 
 /**
  * configureStore을 import해온다.
@@ -29,6 +30,9 @@ export const store = configureStore({
 
     }
 })
+
+injectStore(store);
+
 
 export type Rootstate = ReturnType<typeof store.getState>
 
