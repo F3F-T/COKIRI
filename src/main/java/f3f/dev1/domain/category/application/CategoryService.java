@@ -43,8 +43,9 @@ public class CategoryService {
         if(categorySaveRequest.getDepth()>2){
             throw new CategoryException("max depth(2)를 초과하셨습니다.");
         }
+        Category parentCat = categoryRepository.findById(categorySaveRequest.getParentId()).orElseThrow(NotFoundByIdException::new);
         //카테고리 엔티티 생성
-        Category category = categorySaveRequest.toEntity();
+        Category category = categorySaveRequest.toEntity(parentCat);
 
         //부모 카테고리 확인
         //부모 카테고리가 존재하지 않음. -> 무조건 root 카테고리

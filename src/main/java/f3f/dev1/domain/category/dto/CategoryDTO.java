@@ -17,6 +17,9 @@ public class CategoryDTO {
         @NonNull
         @Size(min = 1, message="카테고리 이름은 한 글자 이상이어야합니다.")
         private String name;
+
+        @NonNull
+        private Long memberId;
         @NonNull
         private Long depth;
        // @NonNull -- 루트 카테고리를 위해 삭제
@@ -29,18 +32,24 @@ public class CategoryDTO {
 //        @NonNull
 ////      private Post post; 포스트는 넣으면 안됨.
 
-        @NonNull
-        private Long memberId;
-
-        public Category toEntity() {
+        public Category toEntity(Category parentCategory) {
             return Category.builder()
                     .name(this.name)
                     .depth(this.depth)
-                    .parent(this.toEntity().getParent())
+                    .parent(parentCategory)
                     .build();
         }
 
     }
+
+//    @Getter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    @Builder
+//    public static class UpdateCategoryNameRequest{
+//        private String name;
+//        private String newName;
+//    }
 
 
 }
