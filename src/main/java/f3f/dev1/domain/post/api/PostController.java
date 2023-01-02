@@ -94,7 +94,8 @@ public class PostController {
     // pathVariable로 하기 위해 일단 매개변수를 2개 받는 형식으로 갔는데, 이게 맞을지 모르겠네..?
     @DeleteMapping(value = "/post/{postId}")
     public ResponseEntity<String> deletePost(@RequestBody @Valid DeletePostRequest deletePostRequest,@PathVariable(name = "postId") Long postId) {
-        String result = postService.deletePost(deletePostRequest);
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        String result = postService.deletePost(deletePostRequest, currentMemberId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

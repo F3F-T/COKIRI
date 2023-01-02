@@ -292,7 +292,7 @@ public class PostControllerTest {
     public void deletePostSuccessTest() throws Exception {
         //given
         DeletePostRequest deletePostRequest = createDeletePostRequest(1L, 1L);
-        doReturn("DELETE").when(postService).deletePost(any());
+        doReturn("DELETE").when(postService).deletePost(any(), any());
         doReturn(1L).when(postService).savePost(any(), any());
         Member member = createMember();
 

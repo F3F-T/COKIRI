@@ -200,7 +200,7 @@ public class PostService {
     }
 
     @Transactional
-    public String deletePost(DeletePostRequest deletePostRequest) {
+    public String deletePost(DeletePostRequest deletePostRequest, Long memberId) {
         // 먼저 해당 게시글이 존재하는지 검증
         Post post = postRepository.findById(deletePostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         // 그 후 작성자가 요청자와 동일인물인지 검증
@@ -209,11 +209,6 @@ public class PostService {
         if(!author.getId().equals(deletePostRequest.getRequesterId())) {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
         }
-        // 로그인한 사용자가 맞는지 확인
-//        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-//        if(!currentMemberId.equals(deletePostRequest.getRequesterId())) {
-//            throw new NotMatchingAuthorException("현재 로그인한 사용자가 삭제 요청자가 아닙니다.");
-//        }
         postRepository.deleteById(deletePostRequest.getPostId());
         return "DELETE";
     }

@@ -501,7 +501,7 @@ public class PostServiceTest {
 
         // 첫번째 게시글 삭제
         DeletePostRequest deletePostRequest = createDeletePostRequest(postId, member.getId());
-        String result = postService.deletePost(deletePostRequest);
+        String result = postService.deletePost(deletePostRequest, member.getId());
 
         // 모든 게시글 조회
         List<PostInfoDto> allPosts = postService.findAllPosts();
