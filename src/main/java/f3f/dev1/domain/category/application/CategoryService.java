@@ -3,6 +3,7 @@ package f3f.dev1.domain.category.application;
 import f3f.dev1.domain.category.dao.CategoryRepository;
 import f3f.dev1.domain.category.dto.CategoryDTO;
 import f3f.dev1.domain.category.exception.CategoryException;
+import f3f.dev1.domain.category.exception.NotFoundCategoryByNameException;
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.model.Member;
@@ -49,19 +50,26 @@ public class CategoryService {
         //부모 카테고리가 존재하지 않음. -> 무조건 root 카테고리
         // 루트 카테고리가 존재하는데 부모가 없다면 예외 던지기
         //설정 처음에 루트 카테고리 만들기-> 카테고리가 있는지 확인하기
-        if(categoryRepository.findAll().isEmpty()) {//이걸 써도 되나?
-            if (!categoryRepository.existsById(category.getParent().getId())) {
-                if (category.getDepth() != 0) {
-                    throw new CategoryException("부모카테고리 설정 오류 : root 카테고리여야합니다.");
-                }
+        if (!categoryRepository.existsById(category.getParent().getId())) {
+            if(categoryRepository.findAll().isEmpty()) {//이걸 써도 되나?
+                Category rootCategory = Category.builder()
+                        .name("root")
+                        .depth(0L)
+                        .parent(null)
+                        .build();
+                categoryRepository.save(rootCategory);
+//                if (category.getDepth() != 0) {
+//                    throw new CategoryException("부모카테고리 설정 오류 : root 카테고리여야합니다.");
+//                }
             }
         }
         //root 카테고리 하위
+        //부모 카테고리가 있다면
         else{
-            //질문)depth를 NonNUll로 했는데 그럼 parent에서 deth+1을 안해도 되지 않나? 동준오빠는 무한 depth여서?set을 왜 한거지?
+            //질문)depth를 NonNUll로 했는데 그럼 parent에서 deth+1을 안해도 되지 않나?
             //질문) save 위치 나는 save한다음에 add가 들어가는게 맞는 것 같음. 근데 그렇게 안하면 코드 1줄로 줄일 수 있음.
            // Category parentCategory = categoryRepository.findById(category.getParent().getId()).orElseThrow(NotFoundByIdException::new);
-            if(category.getDepth().equals(category.getParent().getDepth())){ //왜 !=로 비교 안돼?
+            if(category.getDepth().equals(category.getParent().getDepth()+1 )){ //왜 !=로 비교 안돼?
                 throw new CategoryException("카테고리 depth 오류 : (1,2)중에서 확인");
             }
 //            if(parentCategory.getName().equals("root")){
@@ -69,10 +77,9 @@ public class CategoryService {
 //                    throw new CategoryException("카테고리 설정 오류 : depth가 1이어야합니다.");
 //                }
                 //category.setDepth(parentCategory.getDepth()+1); -> NonNull로 받았으니까 필요 없을 듯.
-            category.getParent().getChild().add(category);
-
         }
         categoryRepository.save(category);
+        category.getParent().getChild().add(category);
         return category.getId();
     }
 
@@ -83,26 +90,29 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public List<Category> readCategoryByCategory(Long id){
         Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-//        if(category.getDepth() == 1){
-//
-//        }
         return category.getChild();
     }
 
-    //루트에서 바로 그냥 카테고리 불러오기->원래 들어가면 바로 카테고리 보이게?->필터형식?
-//    @Transactional(readOnly = true)
-//    public List<Category> readTotalCategory(){
-//
-//
-//    }
 
-
-
+   // 루트에서 바로 그냥 카테고리 불러오기->원래 들어가면 바로 카테고리 보이게?->필터형식?
     @Transactional(readOnly = true)
-    public List<Post> readPostByCategory(Long id){
+    public List<Category> readTotalCategory(){
+        return categoryRepository.findAll();
+    }
+
+    //카테고리 아이디로 포스트 조회
+    @Transactional(readOnly = true)
+    public List<Post> readProductByCategory(Long id){
         Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
 
         return category.getProducts();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Post> readWishProductByCategory(Long id){
+        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+
+        return category.getWishProducts();
     }
 
     //카테고리 업데이트
@@ -119,13 +129,18 @@ public class CategoryService {
         return "UPDATE";
     }
 
-    //카테고리 깊이 수정 -> 그냥 삭제하고 다시 만들어?-> 12/31 회의 결과 루트->물물교환, 끼리끼리-> 도서, 화장품 등으로 나뉘어서 굳이 필요 없을 듯.
-//    @Transactional
-//    public String updateCategoryDepth(Long id, String newDepth){
-//        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-////        category.getDepth().toString();
-//        return "UPDATE";
-//    }
+    //카테고리 깊이 수정 -> 원래는 depth를 받아서 했는데 부모카테고리 문제가 있어서 이름만!
+    //자식 카테고리도 따라가고 부모 카테고리 잘 있는지, 원래꺼 사라졌는지 확인
+    @Transactional
+    public String updateCategoryDepth(Long id, String name){//바꾸고자 하는 카테고리 아이디, 바꿀 카테고리 이름
+        Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        Category parentCat = categoryRepository.findCategoryByName(name).orElseThrow(NotFoundCategoryByNameException::new);
+
+        category.updateCategoryDepth(parentCat.getDepth()+1);
+        parentCat.getChild().add(category);
+
+        return "UPDATE";
+    }
 
 
     //카테고리 삭제
