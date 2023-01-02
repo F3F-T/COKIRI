@@ -38,9 +38,9 @@ public class CategoryService {
 
         //카테고리 이름에 대한 처리
         //getName() Null은 @NonNull하면 따로 안넣어도 될듯
-        if(categoryRepository.existByName(categorySaveRequest.getName())){
-            throw new CategoryException("이미 존재하는 카테고리입니다.");
-        }
+//        if(categoryRepository.existByName(categorySaveRequest.getName())){
+//            throw new CategoryException("이미 존재하는 카테고리입니다.");
+//        }
         //depth가 root 포함 0,1,2임
         if(categorySaveRequest.getDepth()>2){
             throw new CategoryException("max depth(2)를 초과하셨습니다.");
