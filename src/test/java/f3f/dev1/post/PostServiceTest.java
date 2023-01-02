@@ -503,7 +503,6 @@ public class PostServiceTest {
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
-        // 구분을 두기 위해 다른 product 하나 더 생성
         CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, root, member);
         Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
 
@@ -539,6 +538,97 @@ public class PostServiceTest {
                 .hasSize(2)
                 .contains("wish2");
 
+    }
+
+    @Test
+    @DisplayName("조건과 함께 테스트 - 상품 카테고리와 희망 카테고리 모두 고려하여 검색")
+    public void findPostsWithBothProductCategoryNameAndWishCategoryNameConditionTestForSuccess() throws Exception {
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, root, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, root, member);
+        Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
+        Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
+
+        //when
+
+        // 첫번째 게시글은 product, wish로 생성하겠음
+        PostSaveRequest postSaveRequest = createPostSaveRequestWithDynamicTitle(member, "첫번째 게시글", false, productCategoryId, wishCategoryId);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
+
+        // 두번째 게시글은 product2, wish로 생성하겠음
+        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, secondProductCategoryId, wishCategoryId);
+        Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
+
+        // 세번째 게시글은 product, wish2로 생성하겠음
+        PostSaveRequest thirdPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "세번째 게시글", false, productCategoryId, secondWishCategoryId);
+        Long thirdPostId = postService.savePost(thirdPostSaveRequest, member.getId());
+
+        // 네번째 게시글은 product2, wish2로 생성하겠음
+        PostSaveRequest fourthPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "네번째 게시글", false, secondProductCategoryId, secondWishCategoryId);
+        Long fourthPostId = postService.savePost(fourthPostSaveRequest, member.getId());
+
+        // 첫번째 게시글만 조회되어야 한다.
+        List<PostInfoDto> firstPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), wishRequest.getName(), new ArrayList<>());
+        // 두번째 게시글만 조회되어야 한다.
+        List<PostInfoDto> secondPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), wishRequest.getName(), new ArrayList<>());
+        // 세번째 게시글만 조회되어야 한다.
+        List<PostInfoDto> thirdPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), secondWishRequest.getName(), new ArrayList<>());
+        // 네번째 게시글만 조회되어야 한다.
+        List<PostInfoDto> fourthPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), secondWishRequest.getName(), new ArrayList<>());
+        // 첫번째, 세번째 게시글만 조회되어야 한다.
+        List<PostInfoDto> firstAndThirdPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), "", new ArrayList<>());
+        // 두번째, 네번째 게시글만 조회되어야 한다.
+        List<PostInfoDto> secondAndFourthPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), "", new ArrayList<>());
+        // 첫번째, 두번째 게시글만 조회되어야 한다.
+        List<PostInfoDto> firstAndSecondPostsWithConditions = postService.findPostsWithConditions("", wishRequest.getName(), new ArrayList<>());
+        // 세번째, 네번째 게시글만 조회되어야 한다.
+        List<PostInfoDto> thirdAndFourthPostsWithConditions = postService.findPostsWithConditions("", secondWishRequest.getName(), new ArrayList<>());
+        // 조건이 전달되지 않았으므로 모든 게시글이 조회되어야 한다.
+        List<PostInfoDto> allPostsWithNoConditions = postService.findPostsWithConditions("", "", new ArrayList<>());
+        //then
+        assertThat(firstPostsWithConditions).extracting("title").hasSize(1).contains("첫번째 게시글");
+        assertThat(firstPostsWithConditions).extracting("productCategory").hasSize(1).contains("product");
+        assertThat(firstPostsWithConditions).extracting("wishCategory").hasSize(1).contains("wish");
+
+        assertThat(secondPostsWithConditions).extracting("title").hasSize(1).contains("두번째 게시글");
+        assertThat(secondPostsWithConditions).extracting("productCategory").hasSize(1).contains("product2");
+        assertThat(secondPostsWithConditions).extracting("wishCategory").hasSize(1).contains("wish");
+
+        assertThat(thirdPostsWithConditions).extracting("title").hasSize(1).contains("세번째 게시글");
+        assertThat(thirdPostsWithConditions).extracting("productCategory").hasSize(1).contains("product");
+        assertThat(thirdPostsWithConditions).extracting("wishCategory").hasSize(1).contains("wish2");
+
+        assertThat(fourthPostsWithConditions).extracting("title").hasSize(1).contains("네번째 게시글");
+        assertThat(fourthPostsWithConditions).extracting("productCategory").hasSize(1).contains("product2");
+        assertThat(fourthPostsWithConditions).extracting("wishCategory").hasSize(1).contains("wish2");
+
+        assertThat(firstAndThirdPostsWithConditions).extracting("title").hasSize(2).contains("첫번째 게시글", "세번째 게시글");
+        assertThat(firstAndThirdPostsWithConditions).extracting("productCategory").hasSize(2).contains("product");
+
+        assertThat(secondAndFourthPostsWithConditions).extracting("title").hasSize(2).contains("두번째 게시글", "네번째 게시글");
+        assertThat(secondAndFourthPostsWithConditions).extracting("productCategory").hasSize(2).contains("product2");
+
+        assertThat(firstAndSecondPostsWithConditions).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+        assertThat(firstAndSecondPostsWithConditions).extracting("wishCategory").hasSize(2).contains("wish");
+
+        assertThat(thirdAndFourthPostsWithConditions).extracting("title").hasSize(2).contains("세번째 게시글", "네번째 게시글");
+        assertThat(thirdAndFourthPostsWithConditions).extracting("wishCategory").hasSize(2).contains("wish2");
+
+        assertThat(allPostsWithNoConditions).extracting("title").hasSize(4).contains("첫번째 게시글", "두번째 게시글", "세번째 게시글", "네번째 게시글");
     }
 
     @Test
