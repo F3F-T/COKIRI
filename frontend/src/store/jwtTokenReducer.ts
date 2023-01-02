@@ -13,8 +13,8 @@ import {createSlice,PayloadAction} from "@reduxjs/toolkit";
 
 interface InitialJwtTokenState{
     authenticated: boolean;
-    accessToken : String;
-    accessTokenExpiresIn : Number;
+    accessToken : string;
+    accessTokenExpiresIn : number;
 }
 
 const initialJwtTokenState : InitialJwtTokenState = {

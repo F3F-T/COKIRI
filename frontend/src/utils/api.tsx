@@ -4,6 +4,9 @@ import {Rootstate} from "../index";
 import {setToken} from "../store/jwtTokenReducer";
 
 
+const store = useSelector((state: Rootstate) => state);
+const dispatch = useDispatch();
+
 const Api = axios.create({
     baseURL: "http://localhost:8080",
 });

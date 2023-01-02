@@ -72,7 +72,7 @@ const EmailCheck = () => {
     }
 
     const onChangeCode = (e) => {
-        let inputCode = e.target.value;
+        const inputCode = e.target.value;
         setCode(inputCode);
         console.log(inputCode);
     }

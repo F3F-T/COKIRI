@@ -8,7 +8,7 @@ import mypage from "../img/mypage.png";
 import talk from "../img/talk.png";
 
 const Nav1 = () => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     return (
         <div className={styles.navBarBar}>
