@@ -6,10 +6,13 @@ import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
 import axios from "axios";
 import Modal from "../../routes/로그인 & 회원가입/GoogleLoginModal"
+import GoogleButton from "./GoogleButton.js"
+import {gapi} from "gapi-script"
+import GoogleLogin from "react-google-login";
 // import GoogleLogin from 'react-google-login'
 // import {gapi} from 'gapi-script';
 
-const Login = () => {
+const Login= () =>{
 
     const [isOpenModal, setOpenModal] = useState<boolean>(false);
 
@@ -95,13 +98,14 @@ const Login = () => {
         googleLogin();
     }
     // googleLogin();
-    const url = google
+    const url = google;
 
 
-    return (
+
+        return (
         <><div className={styles.box}>
             <button onClick={()=>{window.open(url)}}>2324234</button>
-
+            {/*<GoogleButton/>*/}
             {isOpenModal && (
                 <Modal onClickToggleModal={onClickToggleModal}>
                     <embed type="text/html" src={url} width="800" height="608"/>

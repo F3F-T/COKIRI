@@ -111,11 +111,16 @@ const SignUp = () => {
             const res = await axios.post("http://localhost:8080/auth/check-email", email);
 
             const result = res.data;
+            console.log("리절트",result)
             const duplicated = result.exists
+            console.log("중복이니",duplicated)
+
 
             if (duplicated) //중복인 경우 -> true 반환
             {
                 setValidationCheck((prevState) => {
+                    console.log("프리베이트 슽이트",prevState)
+
                     return {...prevState, emailCheck: "duplicated", emailCheckBoolean: false}
                 })
             } else //중복이 아닌 경우 -> false 반환
@@ -334,7 +339,7 @@ const SignUp = () => {
             CheckNickNameDuplicated(jsonObj);
 
 
-        } else //이메일 유효성 검사 실패했을때
+        } else //닉네임 유효성 검사 실패했을때
         {
             setValidationCheck((prevState) => {
                 return {...prevState, nicknameCheck: "invalid", nicknameCheckBoolean: false}
@@ -374,14 +379,14 @@ const SignUp = () => {
                 headers: res.headers,
                 data: res.data,
             };
-            console.log(res)
-            console.log(result);
+            console.log("에메일",res)
+            console.log("에메일22",result);
             if(result.data.success)
             {
                 console.log("이메일 전송")
             }
             else{
-                console.log("이메일 전송 실패")
+                console.log("이메일 전송 실패2")
             }
 
         } catch (err) {

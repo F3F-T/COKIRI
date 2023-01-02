@@ -21,6 +21,7 @@ import EmailCheckOK from "./routes/로그인 & 회원가입/EmailCheckOK";
 import PostDetail from "./routes/PostDetail";
 import MulmulTrade1 from "./routes/MulMulTrade1";
 import KokiriTalk from "./routes/KokiriTalk";
+import GoogleButton from "./routes/로그인 & 회원가입/GoogleButton.js";
 
 function App() {
     return (
@@ -51,6 +52,8 @@ function App() {
                 <Route path="/upload" element={<PostUpload/>}/>
 
                 <Route path='*' element={<NotFound />}/>
+                <Route path='/googlelogin' element={<GoogleButton/>}/>
+
             </Routes>
 
         </div>
