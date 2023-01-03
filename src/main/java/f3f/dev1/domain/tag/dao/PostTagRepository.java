@@ -20,6 +20,8 @@ public interface PostTagRepository extends JpaRepository<PostTag, Long> {
     Optional<PostTag> findByPostAndTag(Post post, Tag tag);
     List<PostTag> findByTagId(Long tagId);
     boolean existsByPostAndTag(Post post, Tag tag);
+    List<PostTag> findByPost(Post post);
+    void deleteByPost(Post post);
 
     @Modifying
     @Query("delete from PostTag p where p.post = :post")

@@ -66,8 +66,10 @@ public class TagService {
                 .tag(tag)
                 .build();
         postTagRepository.save(postTag);
-        tag.getPostTags().add(postTag);
-        post.getPostTags().add(postTag);
+//        tag.getPostTags().add(postTag);
+//        post.getPostTags().add(postTag);
+//        tag.addToPostTags(postTag);
+//        post.addToPostTags(postTag);
 
         return postTag.getId();
     }
