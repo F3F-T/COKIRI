@@ -45,7 +45,7 @@ public class UserExceptionHandler {
     @ExceptionHandler(DuplicatePhoneNumberExepction.class)
     protected final ResponseEntity<ErrorResponse> handleDuplicatePhoneNumberException(
             DuplicatePhoneNumberExepction ex, WebRequest request) {
-        log.debug("Duplicate phonNumber :: {}, detection time = {}", request.getDescription(false));
+        log.debug("Duplicate phoneNumber :: {}, detection time = {}", request.getDescription(false));
         return DUPLICATE_PHONE_NUMBER;
 
     }

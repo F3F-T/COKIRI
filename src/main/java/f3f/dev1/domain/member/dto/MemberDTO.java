@@ -99,6 +99,8 @@ public class MemberDTO {
 
         private String email;
 
+        private String birthDate;
+
         private UserLoginType loginType;
     }
 
