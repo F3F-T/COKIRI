@@ -6,7 +6,9 @@ import Navbar from 'react-bootstrap/Navbar';
 import photo from "../../img/photoSelect.png"
 import PriceBox from "../../component/trade/PriceBox";
 import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
-import "@yaireo/tagify/dist/tagify.css" // Tagify CSS
+// import "@yaireo/tagify/src/tagify.scss"
+import "../../styles/scss/main.scss"
+//https://github.com/yairEO/tagify 에서 tagify 참조
 
 const PostUpload = () => {
 
@@ -17,9 +19,7 @@ const PostUpload = () => {
         content: string;
         productCategory: String;
         wishCategory: String;
-        nickname: string;
-        phoneNumber: string;
-        userLoginType: string;
+        tag : string[];
     }
 
     const [uploadData, setUploadData] = useState<UploadData>()
@@ -75,11 +75,31 @@ const PostUpload = () => {
 
     // on tag add/edit/remove
     const onChange = useCallback((e) => {
-        console.log("CHANGED:"
-            , e.detail.tagify.value // Array where each tag includes tagify's (needed) extra properties
-            , e.detail.tagify.getCleanValue() // Same as above, without the extra properties
-            , e.detail.value // a string representing the tags
-        )
+        // console.log("CHANGED:"
+        //     , e.detail.tagify.value // Array where each tag includes tagify's (needed) extra properties
+        //     , e.detail.tagify.getCleanValue() // Same as above, without the extra properties
+        //     , e.detail.value // a string representing the tags
+        // )
+
+        const tagifyCleanValue = e.detail.tagify.getCleanValue()
+
+        let tagList = tagifyCleanValue.reduce((prev,cur)=>{
+            prev.push(cur.value)
+            return prev;
+        },[]);
+
+        console.log(tagList);
+
+        setUploadData((prevState) => {
+            return {...prevState, tag: tagList}
+        })
+
+
+
+        // setUploadData((prevState) => {
+        //     return {...prevState, tag: selectedCategory}
+        // })
+
     }, [])
 
 
@@ -133,7 +153,10 @@ const PostUpload = () => {
                 <button className={styles.uploadBtn}>내 물건 올리기</button>
             </div>
             <Tags
+                className={styles.customLook}
                 placeholder="해시태그를 적고 엔터를 눌러주세요."
+                //여기서 자동완성을 설정할수있음, 추후에 서버에서 tag 리스트를 가져와서 넣으면 될듯
+                whitelist={["스팸","식품","과일존맛","신상품","스팸클래식"]}
                 // defaultValue="a,b,c"
                 onChange={onChange}
             />
