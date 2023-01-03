@@ -11,6 +11,7 @@ import f3f.dev1.domain.post.exception.NotMatchingCommentException;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
+import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -44,15 +45,18 @@ public class CommentService {
     // 부모 자식 대통합
     @Transactional
     public CommentInfoDto createComment(CreateCommentRequest createCommentRequest) {
-        Member user = memberRepository.findById(createCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
-        Post post = postRepository.findById(createCommentRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        Member user = memberRepository.findById(createCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Post post = postRepository.findById(createCommentRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         // 유저, 포스트 존재 확인
-        if(commentRepository.existsById(createCommentRequest.getId())) {
-            throw new DuplicateCommentException("이미 존재하는 댓글입니다.");
+
+        if(!currentMemberId.equals(user.getId())) {
+            throw new NotMatchingAuthorException("현재 로그인한 사용자가 요청자가 아닙니다.");
         }
-        if(createCommentRequest.getParentComment() == null) {
+
+        if(createCommentRequest.getParentCommentId() == null) {
             // 부모 댓글이 null이라면 부모 댓글로 처리
-            Comment parentComment = createCommentRequest.toEntity();
+            Comment parentComment = createCommentRequest.toEntity(post, user, null);
             commentRepository.save(parentComment);
             CommentInfoDto commentInfoDto = CommentInfoDto.builder()
                     .memberId(parentComment.getAuthor().getId())
@@ -63,8 +67,8 @@ public class CommentService {
             return commentInfoDto;
         } else {
             // 부모 댓글이 존재한다면 자식 댓글로 처리
-            Comment parentComment = createCommentRequest.getParentComment();
-            Comment comment = commentRepository.findById(createCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
+            Comment parentComment = commentRepository.findById(createCommentRequest.getParentCommentId()).orElseThrow(NotFoundByIdException::new);
+            Comment comment = createCommentRequest.toEntity(post, user, parentComment);
             // TODO 피드백 부분, 일단은 아래와 같이 작성해두고 나중에 다시 생각해보기로 하자
             parentComment.getChilds().add(comment);
             CommentInfoDto commentInfoDto = CommentInfoDto.builder()
@@ -83,6 +87,7 @@ public class CommentService {
      */
 
     // id로 조회
+    // TODO URL 중복으로 컨트롤러가 삭제됐다. 후에 다시 컨트롤러가 다른 URL로 생기면 사용하겠음
     @Transactional(readOnly = true)
     public CommentInfoDto findCommentById(Long id) {
         Comment comment = commentRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -143,13 +148,13 @@ public class CommentService {
     @Transactional
     public String deleteComment(DeleteCommentRequest deleteCommentRequest) {
         Post post = postRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
-        Member user = memberRepository.findById(deleteCommentRequest.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
+        Member user = memberRepository.findById(deleteCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
         if(commentInPost.getId().equals(comment.getId())) {
             throw new NotMatchingCommentException("요청한 게시글에 수정하려는 댓글이 없습니다.");
         }
-        if(commentInPost.getAuthor().getId().equals(deleteCommentRequest.getAuthor().getId())) {
+        if(commentInPost.getAuthor().getId().equals(deleteCommentRequest.getAuthorId())) {
             throw new NotMatchingAuthorException("댓글 작성자가 아닙니다");
         }
         commentRepository.delete(commentInPost);
