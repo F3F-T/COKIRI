@@ -66,21 +66,19 @@ public class CategoryService {
                 category.getParent().getChild().add(category);
                 return category.getId();
                 }
-            else{
+            else{//부모가 널인데 카테고리가 비어있지 않다 -> 루트 있으니까 무조건 부모 있어야함.
                 throw new CategoryException("부모 카테고리 오류(depth가 1이면 root가 부모)");
             }
         }
-        else{
+        else{//널이 아니면 생성
             Category parentCat = categoryRepository.findById(categorySaveRequest.getParentId()).orElseThrow(NotFoundByIdException::new);
             //카테고리 엔티티 생성
             Category category = categorySaveRequest.toEntity(parentCat);
             //root 카테고리 하위
             //부모 카테고리가 있다면
-            if(categoryRepository.existsById(category.getParent().getId())) {
+
                 //질문)depth를 NonNUll로 했는데 그럼 parent에서 deth+1을 안해도 되지 않나?
-                //질문) save 위치 나는 save한다음에 add가 들어가는게 맞는 것 같음. 근데 그렇게 안하면 코드 1줄로 줄일 수 있음.
-                // Category parentCategory = categoryRepository.findById(category.getParent().getId()).orElseThrow(NotFoundByIdException::new);
-                if (category.getDepth().equals(category.getParent().getDepth() + 1)) { //왜 !=로 비교 안돼?
+                if (category.getDepth()!=category.getParent().getDepth() + 1) { //왜 !=로 비교 안돼?
                     throw new CategoryException("카테고리 depth 오류 : (1,2)중에서 확인");
                 }
 //            if(parentCategory.getName().equals("root")){
@@ -88,7 +86,6 @@ public class CategoryService {
 //                    throw new CategoryException("카테고리 설정 오류 : depth가 1이어야합니다.");
 //                }
                 //category.setDepth(parentCategory.getDepth()+1); -> NonNull로 받았으니까 필요 없을 듯.
-            }
             categoryRepository.save(category);
             category.getParent().getChild().add(category);
             return category.getId();
@@ -161,7 +158,7 @@ public class CategoryService {
     public String deleteCategoryByID(Long id){
         Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         //자식 카테고리가 있다면, 자식 카테고리를 지운다.(계속 반복)
-        while(!category.getChild().isEmpty()){
+        if(!category.getChild().isEmpty()){
             for(Category childCategory : category.getChild()){
                 //자식 카테고리에 포스트가 있다면, 포스트를 다 지움.
                 if(!childCategory.getProducts().isEmpty()){
@@ -171,8 +168,10 @@ public class CategoryService {
                 }
                 categoryRepository.delete(childCategory);
             }
+           // category.getChild().clear();
         }
-        return "delete";
+        categoryRepository.delete(category);
+        return "DELETE";
     }
 
 
