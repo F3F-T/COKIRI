@@ -121,7 +121,6 @@ public class PostControllerTest {
                 .content("내용도 바꿀래요")
                 .productCategoryId(null)
                 .wishCategoryId(null)
-                .postTags(null)
                 .build();
     }
 

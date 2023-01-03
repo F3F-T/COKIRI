@@ -17,6 +17,8 @@ import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.dto.TagDTO;
+import f3f.dev1.domain.tag.model.PostTag;
+import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -142,7 +144,6 @@ public class PostServiceTest {
                 .content("내용도 바꿀래요")
                 .productCategoryId(null)
                 .wishCategoryId(null)
-                .postTags(null)
                 .build();
     }
 
@@ -209,14 +210,15 @@ public class PostServiceTest {
         return new DeletePostRequest(postId, authorId);
     }
 
-    // 업데이트 요청, postTags 제외
-    public UpdatePostRequest createUpdatePostRequest(Long postId, String title, String content, Long productCategoryId, Long wishCategoryId) {
+    // 업데이트 요청
+    public UpdatePostRequest createUpdatePostRequest(Long postId, String title, String content, Long productCategoryId, Long wishCategoryId, List<String> tagNames) {
         return UpdatePostRequest.builder()
                 .postId(postId)
                 .title(title)
                 .content(content)
                 .productCategoryId(productCategoryId)
                 .wishCategoryId(wishCategoryId)
+                .tagNames(tagNames)
                 .build();
     }
 
@@ -783,7 +785,7 @@ public class PostServiceTest {
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
         Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
-        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getId(), post.getWishCategory().getId());
+        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getId(), post.getWishCategory().getId(), new ArrayList<>());
         PostInfoDto postInfoDto = postService.updatePost(updatePostRequest, member.getId());
 
         //then
@@ -795,6 +797,67 @@ public class PostServiceTest {
         Post updatedPost = postRepository.findById(postInfoDto.getId()).get();
         assertThat(updatedPost.getTitle()).isEqualTo(updatedPost.getTitle());
         assertThat(updatedPost.getContent()).isEqualTo(updatedPost.getContent());
+    }
+
+    @Test
+    @DisplayName("게시글 수정 - 태그 변경")
+    public void updatePostWithDifferentTagsTestForSuccess() throws Exception {
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        // 태그 생성
+        CreateTagRequest tagRequest1 = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest tagRequest2 = createTagRequest("해시태그2", member.getId());
+        Long tag1 = tagService.createTag(tagRequest1);
+        Long tag2 = tagService.createTag(tagRequest2);
+
+        //when
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
+        Post post = postRepository.findById(postId).get();
+        // 게시글1에 태그1을 추가하겠다. 이 시점에서 게시글1은 태그2에 대한 어떠한 정보(PostTag)도 없다.
+        AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tag1, postId);
+        tagService.addTagToPost(addTagToPostRequest);
+        // 여기서 업데이트 요청에 태그2를 넘기겠다.
+        // 이 요청에 실행되면 게시글1은 기존 태그1이 사라지고 (postTag까지 사라져야함) 아무것도 없던 태그2가 PostTag까지 함께 생성되어 가지고 있어야 한다.
+        // PostTag에 추가됐는지 확인하는 것이 핵심이다.
+        List<String> secondTagNameList = new ArrayList<>();
+        secondTagNameList.add("해시태그2");
+        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getId(), post.getWishCategory().getId(), secondTagNameList);
+        PostInfoDto postInfoDto = postService.updatePost(updatePostRequest, member.getId());
+
+        //then
+        Post updatedPost = postRepository.findById(postInfoDto.getId()).get();
+        List<PostTag> postTags = updatedPost.getPostTags();
+        assertThat(postTags.size()).isEqualTo(1);
+        assertThat(postTags.get(0).getTag().getName()).isEqualTo("해시태그2");
+
+        assertThat(post.getPostTags().size()).isEqualTo(1);
+        assertThat(post.getPostTags().get(0).getTag().getName()).isEqualTo("해시태그2");
+
+        // post <--> tag2 사이의 postTag가 생성되었는지 검증
+        Tag secondTag = tagRepository.findById(tag2).get();
+        assertThat(postTagRepository.existsByPostAndTag(post,secondTag)).isTrue();
+
+        // post <--> tag1 사이의 postTag가 삭제됐는지 검증
+        Tag tag = tagRepository.findById(tag1).get();
+        assertThat(postTagRepository.existsByPostAndTag(post,tag)).isFalse();
+
+        assertThat(secondTag.getPostTags().get(0).getPost().getTitle()).isEqualTo("변경한 제목");
+        // 얘는 통과하면 안되는데 자꾸 통과한다...
+        assertThat(tag.getPostTags().get(0).getPost().getTitle()).isEqualTo("변경한 제목");
     }
 
     @Test

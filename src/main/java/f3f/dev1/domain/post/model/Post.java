@@ -64,10 +64,10 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
-    public void updatePostInfos(UpdatePostRequest updatePostRequest, Category productCategory, Category wishCategory) {
+    public void updatePostInfos(UpdatePostRequest updatePostRequest, Category productCategory, Category wishCategory, List<PostTag> postTags) {
         this.title = updatePostRequest.getTitle();
         this.content = updatePostRequest.getContent();
-        this.postTags = updatePostRequest.getPostTags();
+        this.postTags = postTags;
         this.productCategory = productCategory;
         this.wishCategory = wishCategory;
     }

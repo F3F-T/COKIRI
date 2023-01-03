@@ -87,7 +87,9 @@ public class PostDTO {
         private String content;
         private Long productCategoryId;
         private Long wishCategoryId;
-        private List<PostTag> postTags;
+        // TODO 태그 이름 리스트?
+        // private List<PostTag> postTags;
+        private List<String> tagNames;
     }
 
     @Getter
