@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -262,9 +261,6 @@ public class CategoryServiceTest {
         Long cid1 = categoryService.createCategory(categoryDTO1);
         Category category1 = categoryRepository.findById(cid1).get();
         Category root = categoryRepository.findCategoryByName("root").get();
-        assertThat(categoryRepository.existsByName("root")).isEqualTo(true);
-        assertThat(categoryRepository.existsByName("물물교환")).isEqualTo(true);
-        //2번째 요청 시에 잘 만들어지는지
         CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("끼리끼리", admin.getId(), 1L, categoryRepository.findCategoryByName("root").get().getId());
         Long cid2 = categoryService.createCategory(categoryDTO2);
         Category category2 = categoryRepository.findById(cid2).get();
@@ -275,13 +271,15 @@ public class CategoryServiceTest {
         Long cid4 = categoryService.createCategory(categoryDTO4);
         Category category4 = categoryRepository.findById(cid4).get();
         //when
-        categoryService.deleteCategoryByID(cid2);
+        categoryService.deleteCategoryByID(cid1);
         //then
-        //assertThat(categoryRepository.findAll().size()).isEqualTo(2);
-        //assertThat(root.getChild().size()).isEqualTo(1);
-        assertThat(categoryRepository.existsById(cid2)).isEqualTo(false);
-        //assertThat(categoryRepository.existsById(cid1)).isEqualTo(false);
+        assertThat(categoryRepository.findAll().size()).isEqualTo(2);
+        assertThat(categoryRepository.findByParentId(root.getId()).size()).isEqualTo(1);
+        assertThat(categoryRepository.existsById(cid1)).isEqualTo(false);
+        assertThat(categoryRepository.existsById(cid3)).isEqualTo(false);
+        assertThat(categoryRepository.existsById(cid4)).isEqualTo(false);
     }
+
 }
 
 

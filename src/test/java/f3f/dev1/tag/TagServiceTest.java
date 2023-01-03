@@ -81,8 +81,8 @@ public class TagServiceTest {
         return CategorySaveRequest.builder()
                 .name(name)
                 .depth(depth)
-                .parent(parent)
-                .member(author)
+                .parentId(parent.getId())
+                .memberId(author.getId())
                 .build();
     }
 
