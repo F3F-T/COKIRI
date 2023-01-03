@@ -127,8 +127,8 @@ public class TradeControllerTest {
     public PostSaveRequest createPostSaveRequest(Long authorId) {
 
         return PostSaveRequest.builder()
-                .productCategory(null)
-                .wishCategory(null)
+                .productCategoryId(null)
+                .wishCategoryId(null)
                 .tradeEachOther(false)
                 .title("title")
                 .content("content")

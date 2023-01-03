@@ -6,6 +6,7 @@ import f3f.dev1.domain.member.api.MemberController;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.EmailCertificationService;
 import f3f.dev1.domain.member.application.MemberService;
+import f3f.dev1.domain.member.application.OAuth2UserService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.DuplicateNicknameException;
 import f3f.dev1.domain.member.exception.DuplicatePhoneNumberExepction;
@@ -51,6 +52,9 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
 public class MemberControllerTest {
     @MockBean
     private MemberService memberService;
+
+    @MockBean
+    private OAuth2UserService oAuth2UserService;
 
     @MockBean
     private EmailCertificationService emailCertificationService;

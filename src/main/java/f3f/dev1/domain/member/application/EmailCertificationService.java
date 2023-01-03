@@ -105,7 +105,7 @@ public class EmailCertificationService {
             throw new EmailCertificationExpireException();
         }
         if (!code.equals(emailConfirmCodeDto.getCode())) {
-            throw new InvalidCertificationCodeException();
+            return CodeConfirmDto.builder().matches(false).build();
         }
         return CodeConfirmDto.builder().matches(true).build();
 
