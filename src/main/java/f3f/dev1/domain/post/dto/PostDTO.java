@@ -14,7 +14,6 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 
-// TODO Builder가 필요없어보여서 포함하지 않았다
 public class PostDTO {
     // C : Create 담당 DTO
 
@@ -24,28 +23,27 @@ public class PostDTO {
     @AllArgsConstructor
     public static class PostSaveRequest {
 
-        @NotNull
-        private Long id;
         @Size(min=2, max=20, message = "제목은 2글자 이상, 20자 이하로 설정해주세요")
         private String title;
         @NotBlank(message = "내용문을 작성해주세요")
         private String content;
         private Boolean tradeEachOther;
         @NotNull
-        private Member author;
-        private Category productCategory;
-        private Category wishCategory;
+        private Long authorId;
+        private Long productCategoryId;
+        private Long wishCategoryId;
+        @NotNull
+        private List<String> tagNames;
 
-        //TODO 토큰 추가 예정
-
-        public Post toEntity() {
+        public Post toEntity(Member author, Category product, Category wish, List<PostTag> postTags) {
             return Post.builder()
                     .title(this.title)
                     .content(this.content)
                     .tradeEachOther(tradeEachOther)
-                    .author(this.author)
-                    .productCategory(this.productCategory)
-                    .wishCategory(this.wishCategory)
+                    .author(author)
+                    .productCategory(product)
+                    .wishCategory(wish)
+                    .postTags(postTags)
                     .build();
         }
     }
@@ -81,27 +79,27 @@ public class PostDTO {
     public static class UpdatePostRequest {
         // 태그도 수정될 수 있으니 태그 리스트를 받은 뒤 Post의 UpdatePostTags에서 수정하도록 하겠다.
         // 카테고리도 같은 맥락
-        // TODO 토큰값 추가하기
         @NotNull
-        private Long id;
+        private Long postId;
         @Size(min=2, max=20, message = "제목은 2글자 이상, 20자 이하로 설정해주세요")
         private String title;
         @NotBlank(message = "내용문을 작성해주세요")
         private String content;
-        private Category productCategory;
-        private Category wishCategory;
-        private List<PostTag> postTags;
+        private Long productCategoryId;
+        private Long wishCategoryId;
+        // TODO 태그 이름 리스트?
+        // private List<PostTag> postTags;
+        private List<String> tagNames;
     }
 
     @Getter
-    @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DeletePostRequest {
         @NotNull
-        private Long id;
+        private Long postId;
         @NotNull
-        private Member requester;
+        private Long requesterId;
     }
     @Getter
     @Builder

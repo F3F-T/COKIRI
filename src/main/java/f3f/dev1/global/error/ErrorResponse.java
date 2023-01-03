@@ -1,4 +1,4 @@
-package f3f.dev1.global.error.exception;
+package f3f.dev1.global.error;
 
 import lombok.Builder;
 import lombok.Getter;

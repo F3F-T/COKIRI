@@ -9,6 +9,9 @@ import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.application.ScrapService;
+import f3f.dev1.domain.scrap.dao.ScrapRepository;
+import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
+import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,27 +33,27 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    private final ScrapService scrapService;
 
     private final PasswordEncoder passwordEncoder;
     private final PostRepository postRepository;
 
     private final MessageRoomRepository messageRoomRepository;
+    private final ScrapRepository scrapRepository;
 
 
     @Transactional(readOnly = true)
-    public Boolean existsByEmail(String email) {
-        return memberRepository.existsByEmail(email);
+    public RedunCheckDto existsByEmail(String email) {
+        return new RedunCheckDto(memberRepository.existsByEmail(email));
     }
 
     @Transactional(readOnly = true)
-    public Boolean existsByNickname(String nickname) {
-        return memberRepository.existsByNickname(nickname);
+    public RedunCheckDto existsByNickname(String nickname) {
+        return new RedunCheckDto(memberRepository.existsByNickname(nickname));
     }
 
     @Transactional(readOnly = true)
-    public Boolean existsByPhoneNumber(String phoneNumber) {
-        return memberRepository.existsByPhoneNumber(phoneNumber);
+    public RedunCheckDto existsByPhoneNumber(String phoneNumber) {
+        return new RedunCheckDto(memberRepository.existsByPhoneNumber(phoneNumber));
     }
 
 
@@ -59,15 +62,16 @@ public class MemberService {
     @Transactional(readOnly = true)
     public UserInfo getUserInfo(Long userId) {
         Member byId = memberRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
+        Scrap scrap = scrapRepository.findScrapByMemberId(byId.getId()).orElseThrow(UserScrapNotFoundException::new);
 
-        return byId.toUserInfo();
+
+        return byId.toUserInfo(scrap.getId());
 
     }
 
 
     // 업데이트 메소드
     // 유저 정보 업데이트 처리 메소드
-    // TODO: 유저 닉네임 중복 검사 추가
     @Transactional
     public UserInfo updateUserInfo(UpdateUserInfo updateUserInfo, Long currentMemberId) {
         Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
@@ -78,14 +82,16 @@ public class MemberService {
             throw new DuplicatePhoneNumberExepction();
         }
         member.updateUserInfo(updateUserInfo);
-        return member.toUserInfo();
+        Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).orElseThrow(UserScrapNotFoundException::new);
+
+        return member.toUserInfo(scrap.getId());
     }
 
     // 주소 업데이트 메소드
     @Transactional
-    public void updateUserAddress(Address address, Long currentMemberId) {
+    public void updateUserAddress(UpdateUserAddress address, Long currentMemberId) {
         Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-        member.updateAddress(address);
+        member.updateAddress(address.getAddress());
     }
 
     // 유저 비밀번호 업데이트 처리 메소드
@@ -98,6 +104,14 @@ public class MemberService {
         }
         updateUserPassword.encrypt(passwordEncoder);
         member.updateUserPassword(updateUserPassword);
+        return "UPDATE";
+    }
+    // TODO dto에 유저 검증 추가로 인한 코드 검토해야함
+    // 유저 프사 변경 메소드
+    @Transactional
+    public String updateUserImage(UpdateUserImage updateUserImage, Long currentMemberId) {
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+        member.updateImage(updateUserImage.getNewImageUrl());
         return "UPDATE";
     }
 
@@ -135,7 +149,7 @@ public class MemberService {
         member.updateUserPassword(updateUserPassword);
         return ReturnPasswordDto.builder().password(newPassword).build();
     }
-
+    // 비밀번호 찾을때 랜덤한 비밀번호 생성해주는 메소드
     public String createRandomPassword() {
         int targetStringLength = 10;
         Random random = new Random();
@@ -149,12 +163,13 @@ public class MemberService {
     }
 
 
-    // TODO: 마이페이지 조회 메소드 필요할 것 같음 추가예정 - 조회할떄 각 정보 DTO로 감싸서 리턴하게 해야함, 각 도메인 별로 조회용 DTO 생성되면 구현 예정
+    // TODO 마이페이지 조회 메소드 필요할 것 같음 추가예정 - 조회할떄 각 정보 DTO로 감싸서 리턴하게 해야함, 각 도메인 별로 조회용 DTO 생성되면 구현 예정
 
     @Transactional(readOnly = true)
     public GetUserPostDto getUserPostDto(Long memberId) {
         List<Post> byAuthorId = postRepository.findByAuthorId(memberId);
         List<PostInfoDto> userPosts = new ArrayList<>();
+        // TODO SPOTCAST 코드 보고 리스트 DTO로 뱉는거로 바꿀 예정
         for (Post post : byAuthorId) {
             userPosts.add(post.toInfoDto());
         }
@@ -162,7 +177,7 @@ public class MemberService {
         return GetUserPostDto.builder().userPosts(userPosts).build();
 
     }
-
+    // TODO 아직 미구현
     @Transactional(readOnly = true)
     public GetUserMessageRoomDto getUserMessageRoomDto(Long memberId) {
 //        messageRoomRepository.

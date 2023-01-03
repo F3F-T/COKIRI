@@ -1,6 +1,6 @@
 package f3f.dev1.domain.member.exception.response;
 
-import f3f.dev1.global.error.exception.ErrorResponse;
+import f3f.dev1.global.error.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,4 +20,8 @@ public class UserErrorResponse {
 
 
     public static final ResponseEntity<ErrorResponse> INVALID_PASSWORD = new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.CONFLICT).message("잘못된 비밀번호 입력입니다.").build(), HttpStatus.CONFLICT);
+
+    public static final ResponseEntity<ErrorResponse> EMAIL_CERTIFICATION_EXPIRE = new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.CONFLICT).message("만료된 이메일 코드입니다").build(), HttpStatus.CONFLICT);
+
+
 }

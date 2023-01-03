@@ -3,17 +3,18 @@ package f3f.dev1.member;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.domain.member.api.MemberAuthController;
+import f3f.dev1.domain.member.api.MemberController;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.EmailCertificationService;
-import f3f.dev1.domain.member.exception.*;
-import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.model.Address;
-import f3f.dev1.domain.member.api.MemberController;
 import f3f.dev1.domain.member.application.MemberService;
+import f3f.dev1.domain.member.application.OAuth2UserService;
 import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.member.exception.DuplicateNicknameException;
+import f3f.dev1.domain.member.exception.DuplicatePhoneNumberExepction;
+import f3f.dev1.domain.member.exception.InvalidPasswordException;
+import f3f.dev1.domain.member.exception.UserNotFoundException;
+import f3f.dev1.domain.model.Address;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
-import f3f.dev1.global.error.exception.NotFoundByIdException;
-import f3f.dev1.global.util.SecurityUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,12 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,7 +37,8 @@ import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -54,6 +53,9 @@ import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfig
 public class MemberControllerTest {
     @MockBean
     private MemberService memberService;
+
+    @MockBean
+    private OAuth2UserService oAuth2UserService;
 
     @MockBean
     private EmailCertificationService emailCertificationService;
@@ -94,7 +96,6 @@ public class MemberControllerTest {
                 .phoneNumber("01012345678")
                 .email("userEmail@email.com")
                 .birthDate("990128")
-                .address(createAddress())
                 .password("password")
                 .userLoginType(EMAIL)
                 .build();
@@ -147,11 +148,6 @@ public class MemberControllerTest {
                 .andExpect(status().isCreated())
                 .andDo(document("auth/signup/successful", requestFields(
                         fieldWithPath("userName").description("The user's name"),
-                        fieldWithPath("address").description("The user's address class"),
-                        fieldWithPath("address.addressName").description("The user's address name"),
-                        fieldWithPath("address.postalAddress").description("The user's postal address"),
-                        fieldWithPath("address.latitude").description("latitude of user address"),
-                        fieldWithPath("address.longitude").description("longitude of user address"),
                         fieldWithPath("nickname").description("The user's nickname"),
                         fieldWithPath("phoneNumber").description("The user's phoneNumber"),
                         fieldWithPath("email").description("The user's email"),
@@ -190,7 +186,7 @@ public class MemberControllerTest {
         LoginRequest loginRequest = createLoginRequest();
 
         // when
-        doThrow(new UserNotFoundException()).when(authService).login(any(), any());
+        doThrow(new UserNotFoundException()).when(authService).login(any());
 
         // then
         mockMvc.perform(post("/auth/login")
@@ -213,7 +209,7 @@ public class MemberControllerTest {
         LoginRequest loginRequest = createLoginRequest();
 
         // when
-        doThrow(new UserNotFoundException()).when(authService).login(any(), any());
+        doThrow(new UserNotFoundException()).when(authService).login(any());
 
         // then
         mockMvc.perform(post("/auth/login")
@@ -224,6 +220,68 @@ public class MemberControllerTest {
                 .andDo(document("auth/login/fail/wrongPassword", requestFields(
                         fieldWithPath("email").description("Correct user email"),
                         fieldWithPath("password").description("Wrong password")
+                )));
+    }
+
+    @Test
+    @DisplayName("회원 정보 조회 성공 테스트")
+    @WithMockCustomUser
+    public void getUserInfoTestSuccess() throws Exception{
+        //given
+        UserInfo userInfo = UserInfo.builder()
+                .id(1L)
+                .loginType(EMAIL)
+                .scrapId(2L)
+                .userName("userName")
+                .address(createAddress())
+                .email("email")
+                .nickname("nickname")
+                .phoneNumber("01012345678").build();
+
+
+        // when
+        doReturn(userInfo).when(memberService).getUserInfo(any());
+        // then
+        mockMvc.perform(get("/user"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("user/get-info/success", responseFields(
+                        fieldWithPath("id").description("Id of user"),
+                        fieldWithPath("loginType").description("login type of user"),
+                        fieldWithPath("userName").description("name of user"),
+                        fieldWithPath("scrapId").description("Id of scrap"),
+                        fieldWithPath("email").description("email of user"),
+                        fieldWithPath("address").description("The user's address class"),
+                        fieldWithPath("address.addressName").description("The user's address name"),
+                        fieldWithPath("address.postalAddress").description("The user's postal address"),
+                        fieldWithPath("address.latitude").description("latitude of user address"),
+                        fieldWithPath("address.longitude").description("longitude of user address"),
+                        fieldWithPath("nickname").description("The user's nickname"),
+                        fieldWithPath("phoneNumber").description("The user's phoneNumber")
+                )));
+    }
+
+    @Test
+    @DisplayName("로그인하지 않아서 유저 정보 조회 실패 테스트")
+    public void getUserInfoTestFailByNonLogin() throws Exception{
+        //given
+        UserInfo userInfo = UserInfo.builder()
+                .id(1L)
+                .loginType(EMAIL)
+                .scrapId(2L)
+                .userName("userName")
+                .address(createAddress())
+                .email("email")
+                .nickname("nickname")
+                .phoneNumber("01012345678").build();
+
+        // then
+        mockMvc.perform(get("/user"))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andDo(document("user/get-info/fail/non-login", responseFields(
+                        fieldWithPath("status").description("status of http response"),
+                        fieldWithPath("message").description("description of error message")
                 )));
     }
 
@@ -516,5 +574,138 @@ public class MemberControllerTest {
                         fieldWithPath("email").description("The email of user that doesn't exists or match with userName and phoneNumber")
                 )));
     }
-    // TODO: 중복 확인 메소드 테스트 작성되어야함, 예외 통일해야할듯
+
+    @Test
+    @DisplayName("이메일 중복 확인 성공 테스트 - true 리턴")
+    public void checkDuplicateEmailTestReturnTrue() throws Exception{
+        //given
+        CheckEmailDto build = CheckEmailDto.builder().email("test@email.com").build();
+
+
+        // when
+        doReturn(new RedunCheckDto(true)).when(memberService).existsByEmail(any());
+        // then
+        mockMvc.perform(post("/auth/check-email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(build)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("auth/check-email/success", requestFields(
+                        fieldWithPath("email").description("email to check redundance")
+                ), responseFields(
+                        fieldWithPath("exists").description("boolean value of existence")
+                )));
+
+    }
+
+    @Test
+    @DisplayName("이메일 중복 확인 실패 테스트 - false 리턴")
+    public void checkDuplicateEmailTestReturnFalse() throws Exception{
+        //given
+        CheckEmailDto build = CheckEmailDto.builder().email("test@email.com").build();
+
+
+        // when
+        doReturn(new RedunCheckDto(false)).when(memberService).existsByEmail(any());
+        // then
+        mockMvc.perform(post("/auth/check-email")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(build)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("auth/check-email/fail", requestFields(
+                        fieldWithPath("email").description("email to check redundance")
+                ), responseFields(
+                        fieldWithPath("exists").description("boolean value of existence")
+                )));
+    }
+
+    @Test
+    @DisplayName("전화번호 중복 확인 성공 테스트 - true 리턴")
+    public void checkDuplicatePhoneTestReturnTrue() throws Exception{
+        //given
+        CheckPhoneNumberDto checkPhoneNumberDto = CheckPhoneNumberDto.builder().phoneNumber("01012345678").build();
+
+        // when
+        doReturn(new RedunCheckDto(true)).when(memberService).existsByPhoneNumber(any());
+        // then
+        mockMvc.perform(post("/auth/check-phone")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(checkPhoneNumberDto)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("auth/check-email/success", requestFields(
+                        fieldWithPath("phoneNumber").description("phoneNumber to check redundance")
+                ), responseFields(
+                        fieldWithPath("exists").description("boolean value of existence")
+                )));
+
+    }
+
+    @Test
+    @DisplayName("전화번호 중복 확인 실패 테스트 - false 리턴")
+    public void checkDuplicatePhoneTestReturnFalse() throws Exception{
+        //given
+        CheckPhoneNumberDto checkPhoneNumberDto = CheckPhoneNumberDto.builder().phoneNumber("01012345678").build();
+
+        // when
+        doReturn(new RedunCheckDto(false)).when(memberService).existsByPhoneNumber(any());
+        // then
+        mockMvc.perform(post("/auth/check-phone")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(checkPhoneNumberDto)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("auth/check-email/fail", requestFields(
+                        fieldWithPath("phoneNumber").description("phoneNumber to check redundance")
+                ), responseFields(
+                        fieldWithPath("exists").description("boolean value of existence")
+                )));
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 확인 성공 테스트 - true 리턴")
+    public void checkDuplicateNicknameTestReturnTrue() throws Exception{
+        //given
+        CheckNicknameDto checkNicknameDto = new CheckNicknameDto("nickname");
+
+
+        // when
+        doReturn(new RedunCheckDto(true)).when(memberService).existsByNickname(any());
+
+        // then
+        mockMvc.perform(post("/auth/check-nickname")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(checkNicknameDto)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("auth/check-nickname/success", requestFields(
+                        fieldWithPath("nickname").description("nickname to check redundance")
+                ), responseFields(
+                        fieldWithPath("exists").description("boolean value of existence")
+                )));
+    }
+
+    @Test
+    @DisplayName("닉네임 중복 확인 실패 테스트 - false 리턴")
+    public void checkDuplicateNicknameTestReturnFalse() throws Exception{
+        //given
+        CheckNicknameDto checkNicknameDto = new CheckNicknameDto("nickname");
+
+
+        // when
+        doReturn(new RedunCheckDto(false)).when(memberService).existsByNickname(any());
+
+        // then
+        mockMvc.perform(post("/auth/check-nickname")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(checkNicknameDto)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("auth/check-nickname/success", requestFields(
+                        fieldWithPath("nickname").description("nickname to check redundance")
+                ), responseFields(
+                        fieldWithPath("exists").description("boolean value of existence")
+                )));
+    }
 }

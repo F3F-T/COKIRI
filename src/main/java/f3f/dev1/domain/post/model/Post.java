@@ -38,6 +38,8 @@ public class Post extends BaseTimeEntity {
     @OneToOne(mappedBy = "post")
     private Trade trade;
 
+    private Long price;
+
     @ManyToOne
     @JoinColumn(name = "productCategory_id")
     private Category productCategory;
@@ -62,26 +64,38 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
-    public void updatePostInfos(UpdatePostRequest updatePostRequest) {
+    public void updatePostInfos(UpdatePostRequest updatePostRequest, Category productCategory, Category wishCategory, List<PostTag> postTags) {
         this.title = updatePostRequest.getTitle();
         this.content = updatePostRequest.getContent();
-        this.postTags = updatePostRequest.getPostTags();
-        this.productCategory = updatePostRequest.getProductCategory();
-        this.wishCategory = updatePostRequest.getWishCategory();
+        this.postTags = postTags;
+        this.productCategory = productCategory;
+        this.wishCategory = wishCategory;
+    }
+
+    // 연관관계 편의 메소드
+    public void addToPostTags(PostTag postTag) {
+        this.postTags.add(postTag);
     }
 
     @Builder
-    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author) {
+    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.tradeEachOther = tradeEachOther;
         this.productCategory = productCategory;
         this.wishCategory = wishCategory;
+        this.postTags = postTags;
         this.author = author;
     }
 
     public PostInfoDto toInfoDto() {
+        TradeStatus tradeStatus;
+        if (this.trade == null) {
+            tradeStatus = TradeStatus.TRADABLE;
+        } else {
+            tradeStatus = this.trade.getTradeStatus();
+        }
         return PostInfoDto.builder()
                 .id(this.id)
                 .authorNickname(this.author.getNickname())
@@ -90,7 +104,7 @@ public class Post extends BaseTimeEntity {
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
                 .tradeEachOther(this.tradeEachOther)
-                .tradeStatus(this.trade.getTradeStatus())
+                .tradeStatus(tradeStatus)
                 .build();
     }
 
