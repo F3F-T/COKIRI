@@ -24,12 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@RunWith(SpringRunner.class)
+@Transactional
 @SpringBootTest
 public class CategoryServiceTest {
     @Autowired
@@ -121,7 +122,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    @DisplayName("카테고리 생성 테스트")
+    @DisplayName("카테고리 생성 테스트:루트 생성 및 요청된 카테고리 만들기 ")
     public void saveCategoryTest() throws Exception{
         //given
         MemberDTO.SignUpRequest signUpRequest = createSignUpRequest();
@@ -132,7 +133,8 @@ public class CategoryServiceTest {
         Long cid = categoryService.createCategory(categoryDTO);
         Category category = categoryRepository.findById(cid).get();
         //then
-        assertThat(categoryRepository.findCategoryByName("root"));
+        assertThat(categoryRepository.existsByName("root")).isEqualTo(true);
+        assertThat(categoryRepository.existsByName("물물교환")).isEqualTo(true);
     }
 
 }
