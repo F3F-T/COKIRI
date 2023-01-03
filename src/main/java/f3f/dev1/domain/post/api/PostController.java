@@ -4,6 +4,7 @@ import f3f.dev1.domain.category.application.CategoryService;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dto.TagDTO;
 import f3f.dev1.global.util.SecurityUtil;
@@ -29,28 +30,24 @@ public class PostController {
 
     private final TagService tagService;
 
-//    private final CategoryService categoryService;
+    private final PostTagService postTagService;
 
-//    private final TagService tagService;
-
-    // TODO 조회 필터링은 post에서 하는 걸로
-    // => 안되겠다. 컨트롤러같은 웹 계층이 없어도 애플리케이션이 동작할 수 있어야 한다.
 
     //게시글 전체 조회
-    // TODO 쿼리스트링 추가 -
+    // TODO 쿼리스트링 추가 - price 추가 예정
     @GetMapping(value = "/post")
-    public ResponseEntity<List<PostInfoDto>> getAllPostInfo(
+    public ResponseEntity<List<PostInfoDtoWithTag>> getAllPostInfo(
             @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames) {
 
-        List<PostInfoDto> responseList = new ArrayList<>();
+        List<PostInfoDtoWithTag> responseList = new ArrayList<>();
 
         if(productCategoryName.equals("") && wishCategoryName.equals("") && !tagNames.isEmpty()) {
-            List<PostInfoDto> postInfoDtoList = tagService.getPostsByTagNames(tagNames);
+            List<PostInfoDtoWithTag> postInfoDtoList = tagService.getPostsByTagNames(tagNames);
             responseList.addAll(postInfoDtoList);
         } else {
-            List<PostInfoDto> allPosts = postService.findAllPosts();
+            List<PostInfoDtoWithTag> allPosts = postService.findAllPosts();
             responseList.addAll(allPosts);
         }
         return new ResponseEntity<>(responseList, HttpStatus.OK);
@@ -67,8 +64,8 @@ public class PostController {
 
     // 게시글 정보 조회
     @GetMapping(value = "/post/{postId}")
-    public ResponseEntity<PostInfoDto> getPostInfo(@PathVariable(name = "postId") Long postId) {
-        PostInfoDto postInfoDto = postService.findPostById(postId);
+    public ResponseEntity<PostInfoDtoWithTag> getPostInfo(@PathVariable(name = "postId") Long postId) {
+        PostInfoDtoWithTag postInfoDto = postService.findPostById(postId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
 
@@ -82,17 +79,18 @@ public class PostController {
 
     // 게시글 정보 수정
     // 기존 PathVariable 에서 RequestBody로 변경
+    // TODO 태그가 업데이트DTO로 들어오면 생성때랑 마찬가지로 추가를 해줘야 한다. 그리고 원래 있던 PostTag는 지워줘야 한다...
     @PatchMapping(value = "/post/{postId}")
-    public ResponseEntity<PostInfoDto> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
+    public ResponseEntity<PostInfoDtoWithTag> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        PostInfoDto postInfoDto = postService.updatePost(updatePostRequest, currentMemberId);
+        postTagService.deletePostTagFromPost(postId);
+        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, currentMemberId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
 
     // 게시글 삭제
     // TODO delete method의 경우 body를 거절하는 서버가 많다고 한다. 그리고 query string 보다는 보안이 좋은 requestHeader의 사용을 추천한다고 한다.
     // TODO @RequestHeader로 했는데 테스트 방법을 모르겠다. 나중에 물어봐야겠다.
-    // pathVariable로 하기 위해 일단 매개변수를 2개 받는 형식으로 갔는데, 이게 맞을지 모르겠네..?
     @DeleteMapping(value = "/post/{postId}")
     public ResponseEntity<String> deletePost(@RequestBody @Valid DeletePostRequest deletePostRequest,@PathVariable(name = "postId") Long postId) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();

@@ -64,14 +64,18 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
-    public void updatePostInfos(UpdatePostRequest updatePostRequest, Category productCategory, Category wishCategory) {
+    public void updatePostInfos(UpdatePostRequest updatePostRequest, Category productCategory, Category wishCategory, List<PostTag> postTags) {
         this.title = updatePostRequest.getTitle();
         this.content = updatePostRequest.getContent();
-        this.postTags = updatePostRequest.getPostTags();
+        this.postTags = postTags;
         this.productCategory = productCategory;
         this.wishCategory = wishCategory;
     }
 
+    // 연관관계 편의 메소드
+    public void addToPostTags(PostTag postTag) {
+        this.postTags.add(postTag);
+    }
 
     @Builder
     public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags) {
@@ -101,6 +105,26 @@ public class Post extends BaseTimeEntity {
                 .wishCategory(this.wishCategory.getName())
                 .tradeEachOther(this.tradeEachOther)
                 .tradeStatus(tradeStatus)
+                .build();
+    }
+
+    public PostInfoDtoWithTag toInfoDtoWithTag(List<String> tagNames) {
+        TradeStatus tradeStatus;
+        if (this.trade == null) {
+            tradeStatus = TradeStatus.TRADABLE;
+        } else {
+            tradeStatus = this.trade.getTradeStatus();
+        }
+        return PostInfoDtoWithTag.builder()
+                .id(this.id)
+                .authorNickname(this.author.getNickname())
+                .content(this.content)
+                .title(this.title)
+                .productCategory(this.productCategory.getName())
+                .wishCategory(this.wishCategory.getName())
+                .tradeEachOther(this.tradeEachOther)
+                .tradeStatus(tradeStatus)
+                .tagNames(tagNames)
                 .build();
     }
 
