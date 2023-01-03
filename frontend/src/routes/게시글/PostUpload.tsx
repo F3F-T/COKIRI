@@ -8,11 +8,16 @@ import PriceBox from "../../component/trade/PriceBox";
 import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
 // import "@yaireo/tagify/src/tagify.scss"
 import "../../styles/scss/main.scss"
+import Button from "../../component/common/Button";
+import Api from "../../utils/api";
+import {setToken} from "../../store/jwtTokenReducer";
+import {setUserInfo} from "../../store/userInfoReducer";
+import {Rootstate, store} from "../../index";
+import {useSelector} from "react-redux";
 //https://github.com/yairEO/tagify 에서 tagify 참조
 
 const PostUpload = () => {
 
-    const tagifyRef = useRef()
     interface UploadData {
         title: string;
         price: string;
@@ -23,6 +28,9 @@ const PostUpload = () => {
     }
 
     const [uploadData, setUploadData] = useState<UploadData>()
+    const [tradeEachOther,setTradeEachOther] = useState<boolean>();
+    const store = useSelector((state:Rootstate) => state);
+
 
     const categories: string[] =
         ['전체', '도서', '생활가전', '의류', '유아도서', '유아동', '여성의류', '남성의류', '뷰티/미용', '스포츠/레저',
@@ -75,11 +83,6 @@ const PostUpload = () => {
 
     // on tag add/edit/remove
     const onChange = useCallback((e) => {
-        // console.log("CHANGED:"
-        //     , e.detail.tagify.value // Array where each tag includes tagify's (needed) extra properties
-        //     , e.detail.tagify.getCleanValue() // Same as above, without the extra properties
-        //     , e.detail.value // a string representing the tags
-        // )
 
         const tagifyCleanValue = e.detail.tagify.getCleanValue()
 
@@ -94,13 +97,49 @@ const PostUpload = () => {
             return {...prevState, tag: tagList}
         })
 
-
-
-        // setUploadData((prevState) => {
-        //     return {...prevState, tag: selectedCategory}
-        // })
-
     }, [])
+
+    async function uploadPost(jsonObj) {
+
+        //interceptor를 사용한 방식 (header에 token값 전달)
+        try{
+            const res = await Api.post('/post',jsonObj);
+            console.log(res)
+
+            alert("업로드 성공")
+            navigate(`/`)
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("업로드 실패")
+        }
+
+
+    }
+
+    const onClickUploadButton = () => {
+        console.log(uploadData);
+
+        if(uploadData.productCategory === uploadData.wishCategory)
+        {
+            setTradeEachOther(true)
+        }else{
+            setTradeEachOther(false)
+        }
+
+        const jsonObj = {
+            "title": uploadData.title,
+            "content":uploadData.content,
+            "tradeEachOther":tradeEachOther,
+            "authorId": store.userInfoReducer.id,
+            "productCategoryName" : uploadData.productCategory,
+            "wishCategoryName" : uploadData.wishCategory,
+            "tagNames" : uploadData.tag
+        };
+        uploadPost(jsonObj);
+
+    }
 
 
     return (
@@ -145,21 +184,21 @@ const PostUpload = () => {
                         ))}
                     </select>
                 </div>
-                <div className={styles.item2}>
-                   <input type="text" className={styles.item2_1} placeholder="해시태그를 적어주세요." onBlur={onChangeTag}/>
-                </div>
+
+                    <Tags
+                        className={styles.customLook}
+                        placeholder="해시태그를 적고 엔터를 눌러주세요."
+                        //여기서 자동완성을 설정할수있음, 추후에 서버에서 tag 리스트를 가져와서 넣으면 될듯
+                        whitelist={["스팸","식품","과일존맛","신상품","스팸클래식","이게자동완성이라는건데요"]}
+                        // defaultValue="a,b,c"
+                        onChange={onChange}
+                    />
+
             </div>
             <div className={styles.btnPlace}>
-                <button className={styles.uploadBtn}>내 물건 올리기</button>
+                <button className={styles.uploadBtn} onClick={onClickUploadButton}>내 물건 올리기</button>
             </div>
-            <Tags
-                className={styles.customLook}
-                placeholder="해시태그를 적고 엔터를 눌러주세요."
-                //여기서 자동완성을 설정할수있음, 추후에 서버에서 tag 리스트를 가져와서 넣으면 될듯
-                whitelist={["스팸","식품","과일존맛","신상품","스팸클래식"]}
-                // defaultValue="a,b,c"
-                onChange={onChange}
-            />
+
         </div>
 
         </div>
