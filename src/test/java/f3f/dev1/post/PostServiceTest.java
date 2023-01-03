@@ -802,7 +802,7 @@ public class PostServiceTest {
     }
 
     @Test
-    @DisplayName("게시글 수정 - 태그 변경")
+    @DisplayName("게시글 업데이트 테스트 - 태그 변경")
     public void updatePostWithDifferentTagsTestForSuccess() throws Exception {
         SignUpRequest signUpRequest = createSignUpRequest();
         authService.signUp(signUpRequest);
@@ -855,8 +855,122 @@ public class PostServiceTest {
 
         List<PostTag> tag1PostTags = postTagRepository.findByTagName("해시태그1");
         assertThat(tag1PostTags).isEmpty();
+    }
 
-        // 아니 근데 태그 쪽에서 삭제됐는지를 알고싶은데
+    @Test
+//    @Transactional
+    @DisplayName("게시글 업데이트 테스트 - 태그 변경 심화")
+    public void updatePostWithDifferentTagsDetailedTestForSuccess() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        //when
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+        // 태그 생성
+        CreateTagRequest tagRequest1 = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest tagRequest2 = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest tagRequest3 = createTagRequest("해시태그3", member.getId());
+        Long tag1 = tagService.createTag(tagRequest1);
+        Long tag2 = tagService.createTag(tagRequest2);
+        Long tag3 = tagService.createTag(tagRequest3);
+
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add(tagRequest1.getName());
+        tagNames.add(tagRequest2.getName());
+        // 처음에는 해시태그1, 해시태그2를 적용해서 게시글을 만들고, 업데이트 할때 태그를 1,3으로 수정하겠다.
+        PostSaveRequest postSaveRequest = createPostSaveRequestWithTag(member, false, productCategoryId, wishCategoryId, tagNames);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
+        // 컨트롤러에서는 게시글 생성 직후 아래와 같이 tagService를 호출하여 생성된 게시글에 태그를 추가해준다.
+        // 서비스 테스트에서도 이를 반영하겠다.
+        tagService.addTagsToPost(postId, tagNames);
+        Post beforeUpdatedPost = postRepository.findById(postId).get();
+
+        // 게시글을 하나 더 만들겠다.
+        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithTagAndTitle(member, "두번째 게시글", false, productCategoryId, wishCategoryId, tagNames);
+        Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
+        tagService.addTagsToPost(secondPostId, tagNames);
+
+        List<String> updatedTagNames = new ArrayList<>();
+        updatedTagNames.add(tagRequest1.getName());
+        updatedTagNames.add(tagRequest3.getName());
+        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", productCategoryId, wishCategoryId, updatedTagNames);
+        postTagService.deletePostTagFromPost(postId);
+        PostInfoDto postInfoDto = postService.updatePost(updatePostRequest, member.getId());
+
+        //then
+
+        Post updatedPost = postRepository.findById(postInfoDto.getId()).get();
+        List<PostTag> updatedPostTags = postTagRepository.findByPost(updatedPost);
+        assertThat(updatedPostTags.size()).isEqualTo(2);
+
+        PostTag postTag1 = postTagRepository.findByTagName("해시태그1").get(0);
+        PostTag postTag2 = postTagRepository.findByTagName("해시태그2").get(0);
+        PostTag postTag3 = postTagRepository.findByTagName("해시태그3").get(0);
+
+        assertThat(updatedPostTags.get(0).getTag().getName()).isEqualTo("해시태그1");
+        assertThat(updatedPostTags.get(1).getTag().getName()).isEqualTo("해시태그3");
+        // 아래 코드는 @Transactional 없이는 수행되지 않는다.
+//        List<PostTag> postTagsFromUpdatedPost = updatedPost.getPostTags();
+//        assertThat(postTagsFromUpdatedPost.size()).isEqualTo(2);
+//        List<Tag> tags = new ArrayList<>();
+//        tags.add(postTagsFromUpdatedPost.get(0).getTag());
+//        tags.add(postTagsFromUpdatedPost.get(1).getTag());
+//        assertThat(tags).extracting("name").hasSize(2).contains("해시태그1", "해시태그3");
+    }
+
+    @Test
+    @DisplayName("deletePostTagFromPost 테스트")
+    public void deletePostTagFromPostTest() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        //when
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+        // 태그 생성
+        CreateTagRequest tagRequest1 = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest tagRequest2 = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest tagRequest3 = createTagRequest("해시태그3", member.getId());
+        Long tag1 = tagService.createTag(tagRequest1);
+        Long tag2 = tagService.createTag(tagRequest2);
+        Long tag3 = tagService.createTag(tagRequest3);
+
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add(tagRequest1.getName());
+        tagNames.add(tagRequest2.getName());
+        // 처음에는 해시태그1, 해시태그2를 적용해서 게시글을 만들고, 업데이트 할때 태그를 1,3으로 수정하겠다.
+        PostSaveRequest postSaveRequest = createPostSaveRequestWithTag(member, false, productCategoryId, wishCategoryId, tagNames);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
+        // 컨트롤러에서는 게시글 생성 직후 아래와 같이 tagService를 호출하여 생성된 게시글에 태그를 추가해준다.
+        // 서비스 테스트에서도 이를 반영하겠다.
+        tagService.addTagsToPost(postId, tagNames);
+        postTagService.deletePostTagFromPost(postId);
+
+        //then
+        Post post = postRepository.findById(postId).get();
+        List<PostTag> postTags = postTagRepository.findByPost(post);
+        assertThat(postTags).isEmpty();
 
     }
 
