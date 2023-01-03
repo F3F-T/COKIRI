@@ -74,11 +74,16 @@ public class PostService {
      */
 
     // 게시글 전체 조회
-    public List<PostInfoDto> findAllPosts() {
+    public List<PostInfoDtoWithTag> findAllPosts() {
         List<Post> allPosts = postRepository.findAll();
-        List<PostInfoDto> response = new ArrayList<>();
+        List<PostInfoDtoWithTag> response = new ArrayList<>();
         for (Post post : allPosts) {
-            PostInfoDto responseEach = post.toInfoDto();
+            List<PostTag> postTags = postTagRepository.findByPost(post);
+            List<String> tagNames = new ArrayList<>();
+            for (PostTag postTag : postTags) {
+                tagNames.add(postTag.getTag().getName());
+            }
+            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
             response.add(responseEach);
         }
         return response;

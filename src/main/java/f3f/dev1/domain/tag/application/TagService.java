@@ -104,28 +104,24 @@ public class TagService {
      */
 
     @Transactional(readOnly = true)
-    public List<PostInfoDto> getPostsByTagId(GetPostListByTagIdRequest request) {
+    public List<PostInfoDtoWithTag> getPostsByTagId(GetPostListByTagIdRequest request) {
         // 먼저 postTag 리스트를 찾고 하나하나 포스트를 찾아서 추가해준다.
         if(!tagRepository.existsById(request.getId())) {
             throw new NotFoundByIdException();
         }
         List<PostTag> postTagList = postTagRepository.findByTagId(request.getId());
         List<Post> postList = new ArrayList<>();
-        List<PostInfoDto> response = new ArrayList<>();
+        List<PostInfoDtoWithTag> response = new ArrayList<>();
         for (PostTag postTagEach : postTagList) {
             postList.add(postTagEach.getPost());
         }
         for (Post post : postList) {
-                PostInfoDto responseEach = PostInfoDto.builder()
-                        .title(post.getTitle())
-                        .content(post.getContent())
-                        .tradeEachOther(post.getTradeEachOther())
-                        .authorNickname(post.getAuthor().getNickname())
-                        .wishCategory(post.getWishCategory().getName())
-                        .productCategory(post.getProductCategory().getName())
-                        // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
-//                    .tradeStatus(post.getTrade().getTradeStatus())
-                        .build();
+            List<PostTag> postTags = postTagRepository.findByPost(post);
+            List<String> tagNames = new ArrayList<>();
+            for (PostTag postTag : postTags) {
+                tagNames.add(postTag.getTag().getName());
+            }
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
                 response.add(responseEach);
         }
         return response;
@@ -162,23 +158,19 @@ public class TagService {
     // 고민 : 여러 개의 해시태그가 들어오면 걔네를 다 가지고 있는 게시글만 보여줘야하나? 하나라도 포함이면 보여줘야 하나?
     // ==> 다 가지고 있는 애만 보여주는 걸로
     @Transactional(readOnly = true)
-    public List<PostInfoDto> getPostsByTagNames(List<String> names) {
+    public List<PostInfoDtoWithTag> getPostsByTagNames(List<String> names) {
         List<Post> resultPostList = new ArrayList<>();
-        List<PostInfoDto> response = new ArrayList<>();
+        List<PostInfoDtoWithTag> response = new ArrayList<>();
 
         if(names.isEmpty()) {
             List<Post> all = postRepository.findAll();
             for (Post post : all) {
-                PostInfoDto responseEach = PostInfoDto.builder()
-                        .title(post.getTitle())
-                        .content(post.getContent())
-                        .tradeEachOther(post.getTradeEachOther())
-                        .authorNickname(post.getAuthor().getNickname())
-                        .wishCategory(post.getWishCategory().getName())
-                        .productCategory(post.getProductCategory().getName())
-                        // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
-//                    .tradeStatus(post.getTrade().getTradeStatus())
-                        .build();
+                List<PostTag> postTags = postTagRepository.findByPost(post);
+                List<String> tagNames = new ArrayList<>();
+                for (PostTag postTag : postTags) {
+                    tagNames.add(postTag.getTag().getName());
+                }
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
                 response.add(responseEach);
             }
         } else {
@@ -195,16 +187,12 @@ public class TagService {
             }
 //        List<Post> deduplicatedList = DeduplicationUtils.deduplication(resultPostList, Post::getId);
             for (Post post : resultPostList) {
-                PostInfoDto responseEach = PostInfoDto.builder()
-                        .title(post.getTitle())
-                        .content(post.getContent())
-                        .tradeEachOther(post.getTradeEachOther())
-                        .authorNickname(post.getAuthor().getNickname())
-                        .wishCategory(post.getWishCategory().getName())
-                        .productCategory(post.getProductCategory().getName())
-                        // TODO trade가 지금은 null 이라서 여기서 이렇게 받아와버리면 nullPointerException이 떠버린다.
-//                    .tradeStatus(post.getTrade().getTradeStatus())
-                        .build();
+                List<PostTag> postTags = postTagRepository.findByPost(post);
+                List<String> tagNames = new ArrayList<>();
+                for (PostTag postTag : postTags) {
+                    tagNames.add(postTag.getTag().getName());
+                }
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
                 response.add(responseEach);
             }
         }

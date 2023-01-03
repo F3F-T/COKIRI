@@ -10,6 +10,8 @@ import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.api.PostController;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dto.PostDTO;
+import f3f.dev1.domain.tag.application.PostTagService;
+import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -58,6 +60,12 @@ public class PostControllerTest {
 
     @MockBean
     private MemberService memberService;
+
+    @MockBean
+    private TagService tagService;
+
+    @MockBean
+    private PostTagService postTagService;
 
     @MockBean
     private AuthService authService;
@@ -243,7 +251,7 @@ public class PostControllerTest {
                         fieldWithPath("content").description("content value of post"),
                         fieldWithPath("productCategoryId").description("product category Id value of post"),
                         fieldWithPath("wishCategoryId").description("wish category Id value of post"),
-                        fieldWithPath("postTags").description("postTag values of post")
+                        fieldWithPath("tagNames").description("list values of tag names")
                 ), responseFields(
                         fieldWithPath("id").description("Id value of post"),
                         fieldWithPath("content").description("content value of post"),

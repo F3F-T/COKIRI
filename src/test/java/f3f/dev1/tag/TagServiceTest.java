@@ -77,12 +77,12 @@ public class TagServiceTest {
         postTagRepository.deleteAll();
     }
 
-    public CategorySaveRequest createCategorySaveRequest(String name, Long depth, Category parent, Member author) {
+    public CategorySaveRequest createCategorySaveRequest(String name, Long depth, Long parentId, Member author) {
         return CategorySaveRequest.builder()
                 .name(name)
                 .depth(depth)
-                .parent(parent)
-                .member(author)
+                .parentId(parentId)
+                .memberId(author.getId())
                 .build();
     }
 
@@ -234,8 +234,8 @@ public class TagServiceTest {
         Long rootId = categoryService.createCategory(rootRequest);
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
-        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
@@ -269,8 +269,8 @@ public class TagServiceTest {
         Long rootId = categoryService.createCategory(rootRequest);
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
-        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
@@ -315,8 +315,8 @@ public class TagServiceTest {
         Long rootId = categoryService.createCategory(rootRequest);
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
-        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
@@ -343,7 +343,7 @@ public class TagServiceTest {
         names.add("해시태그2");
         names.add("해시태그3");
 
-        List<PostInfoDto> postInfoDtoList = tagService.getPostsByTagNames(names);
+        List<PostInfoDtoWithTag> postInfoDtoList = tagService.getPostsByTagNames(names);
         assertThat(postInfoDtoList).extracting("title")
                 .hasSize(1)
                 .contains("3년 신은 양말 거래 희망합니다");
@@ -372,8 +372,8 @@ public class TagServiceTest {
         Long rootId = categoryService.createCategory(rootRequest);
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
-        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
@@ -417,7 +417,7 @@ public class TagServiceTest {
         names.add("해시태그2");
         names.add("해시태그3");
 
-        List<PostInfoDto> postInfoDtoList = tagService.getPostsByTagNames(names);
+        List<PostInfoDtoWithTag> postInfoDtoList = tagService.getPostsByTagNames(names);
         assertThat(postInfoDtoList).extracting("title")
                 .hasSize(1)
                 .contains("3년 신은 양말 거래 희망합니다");
@@ -430,7 +430,7 @@ public class TagServiceTest {
         secondNames.add("해시태그1");
         secondNames.add("해시태그2");
 
-        List<PostInfoDto> secondPostInfoDtoList = tagService.getPostsByTagNames(secondNames);
+        List<PostInfoDtoWithTag> secondPostInfoDtoList = tagService.getPostsByTagNames(secondNames);
         assertThat(secondPostInfoDtoList).extracting("title")
                 .hasSize(2)
                 .contains("두번째 게시글", "3년 신은 양말 거래 희망합니다");
@@ -438,14 +438,14 @@ public class TagServiceTest {
         List<String> thirdNames = new ArrayList<>();
         thirdNames.add("해시태그1");
 
-        List<PostInfoDto> thirdPostInfoDtoList = tagService.getPostsByTagNames(thirdNames);
+        List<PostInfoDtoWithTag> thirdPostInfoDtoList = tagService.getPostsByTagNames(thirdNames);
         assertThat(thirdPostInfoDtoList).extracting("title")
                 .hasSize(3)
                 .contains("세번째 게시글", "두번째 게시글", "3년 신은 양말 거래 희망합니다");
 
         // 비어있는 태그 이름 리스트를 넘기면 게시글 전체 조회
         List<String> emptyNamesList = new ArrayList<>();
-        List<PostInfoDto> fourthPostInfoDtoList = tagService.getPostsByTagNames(emptyNamesList);
+        List<PostInfoDtoWithTag> fourthPostInfoDtoList = tagService.getPostsByTagNames(emptyNamesList);
         assertThat(fourthPostInfoDtoList).extracting("title")
                 .hasSize(4)
                 .contains("네번째 게시글", "세번째 게시글", "두번째 게시글", "3년 신은 양말 거래 희망합니다");

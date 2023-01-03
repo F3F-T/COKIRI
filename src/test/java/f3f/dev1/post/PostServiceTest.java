@@ -96,11 +96,11 @@ public class PostServiceTest {
     }
 
 
-    public CategorySaveRequest createCategorySaveRequest(String name, Long depth, Category parent, Member author) {
+    public CategorySaveRequest createCategorySaveRequest(String name, Long depth, Long parentId, Member author) {
         return CategorySaveRequest.builder()
                 .name(name)
                 .depth(depth)
-                .parentId(parent.getId())
+                .parentId(parentId)
                 .memberId(author.getId())
                 .build();
     }
@@ -256,8 +256,8 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
@@ -285,8 +285,8 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
@@ -325,8 +325,8 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
@@ -342,7 +342,7 @@ public class PostServiceTest {
         Post post2 = postRepository.findById(postId2).get();
         
         //then
-        List<PostInfoDto> allPosts = postService.findAllPosts();
+        List<PostInfoDtoWithTag> allPosts = postService.findAllPosts();
         assertThat(allPosts).extracting("title")
                 .hasSize(2)
                 .contains("2년 쓴 이불 바꿔요", "3년 신은 양말 거래 희망합니다");
@@ -370,8 +370,8 @@ public class PostServiceTest {
         Long rootId = categoryService.createCategory(rootRequest);
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
-        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
@@ -463,13 +463,13 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
         // 구분을 두기 위해 다른 product 하나 더 생성
-        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, root, member);
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, rootId, member);
         Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
 
         //when
@@ -514,12 +514,12 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
-        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, root, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, rootId, member);
         Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
 
         //when
@@ -569,13 +569,13 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
-        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, root, member);
-        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, root, member);
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, rootId, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, rootId, member);
         Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
         Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
 
@@ -667,13 +667,13 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
-        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, root, member);
-        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, root, member);
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, rootId, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, rootId, member);
         Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
         Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
 
@@ -778,8 +778,8 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
@@ -814,8 +814,8 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
@@ -873,8 +873,8 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
         // 태그 생성
@@ -944,8 +944,8 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
         // 태그 생성
@@ -988,8 +988,8 @@ public class PostServiceTest {
         Category root = categoryRepository.findById(rootId).get();
         // product, wish 생성
 
-        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, root, member);
-        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, root, member);
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
         Long productCategoryId = categoryService.createCategory(productRequest);
         Long wishCategoryId = categoryService.createCategory(wishRequest);
 
@@ -1010,7 +1010,7 @@ public class PostServiceTest {
         String result = postService.deletePost(deletePostRequest, member.getId());
 
         // 모든 게시글 조회
-        List<PostInfoDto> allPosts = postService.findAllPosts();
+        List<PostInfoDtoWithTag> allPosts = postService.findAllPosts();
 
         //then
         // 게시글이 삭제된 뒤 하나만 조회됨

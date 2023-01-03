@@ -36,18 +36,18 @@ public class PostController {
     //게시글 전체 조회
     // TODO 쿼리스트링 추가 - price 추가 예정
     @GetMapping(value = "/post")
-    public ResponseEntity<List<PostInfoDto>> getAllPostInfo(
+    public ResponseEntity<List<PostInfoDtoWithTag>> getAllPostInfo(
             @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames) {
 
-        List<PostInfoDto> responseList = new ArrayList<>();
+        List<PostInfoDtoWithTag> responseList = new ArrayList<>();
 
         if(productCategoryName.equals("") && wishCategoryName.equals("") && !tagNames.isEmpty()) {
-            List<PostInfoDto> postInfoDtoList = tagService.getPostsByTagNames(tagNames);
+            List<PostInfoDtoWithTag> postInfoDtoList = tagService.getPostsByTagNames(tagNames);
             responseList.addAll(postInfoDtoList);
         } else {
-            List<PostInfoDto> allPosts = postService.findAllPosts();
+            List<PostInfoDtoWithTag> allPosts = postService.findAllPosts();
             responseList.addAll(allPosts);
         }
         return new ResponseEntity<>(responseList, HttpStatus.OK);

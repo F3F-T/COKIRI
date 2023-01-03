@@ -108,5 +108,25 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
+    public PostInfoDtoWithTag toInfoDtoWithTag(List<String> tagNames) {
+        TradeStatus tradeStatus;
+        if (this.trade == null) {
+            tradeStatus = TradeStatus.TRADABLE;
+        } else {
+            tradeStatus = this.trade.getTradeStatus();
+        }
+        return PostInfoDtoWithTag.builder()
+                .id(this.id)
+                .authorNickname(this.author.getNickname())
+                .content(this.content)
+                .title(this.title)
+                .productCategory(this.productCategory.getName())
+                .wishCategory(this.wishCategory.getName())
+                .tradeEachOther(this.tradeEachOther)
+                .tradeStatus(tradeStatus)
+                .tagNames(tagNames)
+                .build();
+    }
+
 
 }

@@ -122,4 +122,28 @@ public class PostDTO {
 
         private TradeStatus tradeStatus;
     }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostInfoDtoWithTag{
+
+        private Long id;
+        private String title;
+
+        private String content;
+
+        private Boolean tradeEachOther;
+
+        private String authorNickname;
+
+        private String wishCategory;
+
+        private String productCategory;
+
+        private TradeStatus tradeStatus;
+
+        private List<String> tagNames;
+    }
 }
