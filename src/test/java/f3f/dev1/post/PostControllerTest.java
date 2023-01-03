@@ -229,7 +229,7 @@ public class PostControllerTest {
     @WithMockCustomUser
     public void updatePostSuccessTest() throws Exception {
         //given
-        PostInfoDto postInfoDto = PostInfoDto.builder().title("제목 맘에 안들어서 바꿈").build();
+        PostInfoDtoWithTag postInfoDto = PostInfoDtoWithTag.builder().title("제목 맘에 안들어서 바꿈").build();
         doReturn(postInfoDto).when(postService).updatePost(any(), any());
         Member member = createMember();
 
@@ -260,6 +260,7 @@ public class PostControllerTest {
                         fieldWithPath("wishCategory").description("wishCategory name value of post"),
                         fieldWithPath("productCategory").description("productCategory name value of post"),
                         fieldWithPath("title").description("title name value of post"),
+                        fieldWithPath("tagNames").description("list values of tag names"),
                         fieldWithPath("tradeStatus").description("tradeStatus value of post")
                 )));
     }
@@ -270,7 +271,7 @@ public class PostControllerTest {
         //given
         Member member = new Member();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        PostInfoDto postInfoDto = PostInfoDto.builder().title(postSaveRequest.getTitle()).build();
+        PostInfoDtoWithTag postInfoDto = PostInfoDtoWithTag.builder().title(postSaveRequest.getTitle()).build();
         postService.savePost(postSaveRequest, member.getId());
         doReturn(postInfoDto).when(postService).findPostById(any());
 
@@ -289,7 +290,8 @@ public class PostControllerTest {
                         fieldWithPath("wishCategory").description("wishCategory name value of post"),
                         fieldWithPath("productCategory").description("productCategory name value of post"),
                         fieldWithPath("title").description("title name value of post"),
-                        fieldWithPath("tradeStatus").description("tradeStatus value of post")
+                        fieldWithPath("tradeStatus").description("tradeStatus value of post"),
+                        fieldWithPath("tagNames").description("tag name list value of post")
                 )));
     }
 

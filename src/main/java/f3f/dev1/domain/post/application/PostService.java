@@ -92,23 +92,28 @@ public class PostService {
 
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     @Transactional(readOnly = true)
-    public List<PostInfoDto> findPostByAuthor(Long authorId) {
+    public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
         if(!postRepository.existsByAuthorId(authorId)) {
             throw new NotFoundPostListByAuthor("해당 작성자의 게시글이 없습니다.");
         }
-        List<PostInfoDto> response = new ArrayList<>();
+        List<PostInfoDtoWithTag> response = new ArrayList<>();
         List<Post> byAuthor = postRepository.findByAuthorId(authorId);
         for (Post post : byAuthor) {
-            PostInfoDto responseEach = post.toInfoDto();
+            List<PostTag> postTags = postTagRepository.findByPost(post);
+            List<String> tagNames = new ArrayList<>();
+            for (PostTag postTag : postTags) {
+                tagNames.add(postTag.getTag().getName());
+            }
+            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
             response.add(responseEach);
         }
         return response;
     }
 
     @Transactional(readOnly = true)
-    public List<PostInfoDto> findPostsWithConditions(String productCategoryName, String wishCategoryName, List<String> tagNames) {
+    public List<PostInfoDtoWithTag> findPostsWithConditions(String productCategoryName, String wishCategoryName, List<String> tagNames) {
         List<Post> resultPostList = new ArrayList<>();
-        List<PostInfoDto> response = new ArrayList<>();
+        List<PostInfoDtoWithTag> response = new ArrayList<>();
 
         if(!tagNames.isEmpty()) {
             // 카테고리 정보는 없고 태그로만 검색하는 경우
@@ -178,7 +183,12 @@ public class PostService {
             // 지금까지 resultPostList를 위에서 필터링하여 만들었다.
             // 여기서부터는 필터링된 resultPostList를 postInfoDto로 바꿔서 리스트에 추가하는 파트
             for (Post post : resultPostList) {
-                PostInfoDto responseEach = post.toInfoDto();
+                List<PostTag> postTags = postTagRepository.findByPost(post);
+                List<String> tagNamesOfPost = new ArrayList<>();
+                for (PostTag postTag : postTags) {
+                    tagNamesOfPost.add(postTag.getTag().getName());
+                }
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNamesOfPost);
                 response.add(responseEach);
             }
         return response;
@@ -187,11 +197,16 @@ public class PostService {
     // TODO 거래 가능한 게시글만 검색하기
 
     @Transactional(readOnly = true)
-    public PostInfoDto findPostById(Long id) {
+    public PostInfoDtoWithTag findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
 //        // TODO 거래 가능 상태인지 확인하기
+        List<String> tagNames = new ArrayList<>();
+        List<PostTag> postTags = postTagRepository.findByPost(post);
+        for (PostTag postTag : postTags) {
+            tagNames.add(postTag.getTag().getName());
+        }
 //        Trade trade = tradeRepository.findByPostId(post.getId()).orElseThrow(NotFoundByIdException::new);
-        PostInfoDto response = post.toInfoDto();
+        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames);
         return response;
     }
 
@@ -200,7 +215,7 @@ public class PostService {
      */
 
     @Transactional
-    public PostInfoDto updatePost(UpdatePostRequest updatePostRequest, Long memberId) {
+    public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long memberId) {
         Post post = postRepository.findById(updatePostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         Category productCategory = categoryRepository.findById(updatePostRequest.getProductCategoryId()).orElseThrow(NotFoundByIdException::new);
         Category wishCategory = categoryRepository.findById(updatePostRequest.getWishCategoryId()).orElseThrow(NotFoundByIdException::new);
@@ -235,7 +250,12 @@ public class PostService {
             }
             post.updatePostInfos(updatePostRequest, productCategory, wishCategory, postTags);
         }
-        PostInfoDto response = post.toInfoDto();
+        List<PostTag> postTagsOfPost = postTagRepository.findByPost(post);
+        List<String> tagNames = new ArrayList<>();
+        for (PostTag postTag : postTagsOfPost) {
+            tagNames.add(postTag.getTag().getName());
+        }
+        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames);
         return response;
     }
 

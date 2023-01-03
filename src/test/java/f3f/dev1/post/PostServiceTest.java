@@ -302,7 +302,7 @@ public class PostServiceTest {
         Post post2 = postRepository.findById(postId2).get();
 
         //then
-        List<PostInfoDto> postsByAuthor = postService.findPostByAuthor(member.getId());
+        List<PostInfoDtoWithTag> postsByAuthor = postService.findPostByAuthor(member.getId());
         assertThat(postsByAuthor).extracting("title")
                 .hasSize(2)
                 .contains("2년 쓴 이불 바꿔요", "3년 신은 양말 거래 희망합니다");
@@ -415,7 +415,7 @@ public class PostServiceTest {
         names.add("해시태그2");
         names.add("해시태그3");
 
-        List<PostInfoDto> postInfoDtoList = postService.findPostsWithConditions("", "", names);
+        List<PostInfoDtoWithTag> postInfoDtoList = postService.findPostsWithConditions("", "", names);
         assertThat(postInfoDtoList).extracting("title")
                 .hasSize(1)
                 .contains("3년 신은 양말 거래 희망합니다");
@@ -428,7 +428,7 @@ public class PostServiceTest {
         secondNames.add("해시태그1");
         secondNames.add("해시태그2");
 
-        List<PostInfoDto> secondPostInfoDtoList = postService.findPostsWithConditions("", "", secondNames);
+        List<PostInfoDtoWithTag> secondPostInfoDtoList = postService.findPostsWithConditions("", "", secondNames);
         assertThat(secondPostInfoDtoList).extracting("title")
                 .hasSize(2)
                 .contains("두번째 게시글", "3년 신은 양말 거래 희망합니다");
@@ -436,14 +436,14 @@ public class PostServiceTest {
         List<String> thirdNames = new ArrayList<>();
         thirdNames.add("해시태그1");
 
-        List<PostInfoDto> thirdPostInfoDtoList = postService.findPostsWithConditions("", "", thirdNames);
+        List<PostInfoDtoWithTag> thirdPostInfoDtoList = postService.findPostsWithConditions("", "", thirdNames);
         assertThat(thirdPostInfoDtoList).extracting("title")
                 .hasSize(3)
                 .contains("세번째 게시글", "두번째 게시글", "3년 신은 양말 거래 희망합니다");
 
         // 비어있는 태그 이름 리스트를 넘기면 게시글 전체 조회
         List<String> emptyNamesList = new ArrayList<>();
-        List<PostInfoDto> fourthPostInfoDtoList = postService.findPostsWithConditions("", "", emptyNamesList);
+        List<PostInfoDtoWithTag> fourthPostInfoDtoList = postService.findPostsWithConditions("", "", emptyNamesList);
         assertThat(fourthPostInfoDtoList).extracting("title")
                 .hasSize(4)
                 .contains("네번째 게시글", "세번째 게시글", "두번째 게시글", "3년 신은 양말 거래 희망합니다");
@@ -480,8 +480,8 @@ public class PostServiceTest {
         PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, secondProductCategoryId, wishCategoryId);
         Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
 
-        List<PostInfoDto> postsWithConditions = postService.findPostsWithConditions(productRequest.getName(), "", new ArrayList<>());
-        List<PostInfoDto> secondPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), "", new ArrayList<>());
+        List<PostInfoDtoWithTag> postsWithConditions = postService.findPostsWithConditions(productRequest.getName(), "", new ArrayList<>());
+        List<PostInfoDtoWithTag> secondPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), "", new ArrayList<>());
 
         //then
         assertThat(postsWithConditions).extracting("title")
@@ -534,8 +534,8 @@ public class PostServiceTest {
         PostSaveRequest thirdPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "세번째 게시글", false, productCategoryId, secondWishCategoryId);
         Long thirdPostId = postService.savePost(thirdPostSaveRequest, member.getId());
 
-        List<PostInfoDto> postsWithConditions = postService.findPostsWithConditions("", wishRequest.getName(), new ArrayList<>());
-        List<PostInfoDto> secondPostsWithConditions = postService.findPostsWithConditions("", secondWishRequest.getName(), new ArrayList<>());
+        List<PostInfoDtoWithTag> postsWithConditions = postService.findPostsWithConditions("", wishRequest.getName(), new ArrayList<>());
+        List<PostInfoDtoWithTag> secondPostsWithConditions = postService.findPostsWithConditions("", secondWishRequest.getName(), new ArrayList<>());
 
         //then
         assertThat(postsWithConditions).extracting("title")
@@ -598,23 +598,23 @@ public class PostServiceTest {
         Long fourthPostId = postService.savePost(fourthPostSaveRequest, member.getId());
 
         // 첫번째 게시글만 조회되어야 한다.
-        List<PostInfoDto> firstPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), wishRequest.getName(), new ArrayList<>());
+        List<PostInfoDtoWithTag> firstPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), wishRequest.getName(), new ArrayList<>());
         // 두번째 게시글만 조회되어야 한다.
-        List<PostInfoDto> secondPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), wishRequest.getName(), new ArrayList<>());
+        List<PostInfoDtoWithTag> secondPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), wishRequest.getName(), new ArrayList<>());
         // 세번째 게시글만 조회되어야 한다.
-        List<PostInfoDto> thirdPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), secondWishRequest.getName(), new ArrayList<>());
+        List<PostInfoDtoWithTag> thirdPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), secondWishRequest.getName(), new ArrayList<>());
         // 네번째 게시글만 조회되어야 한다.
-        List<PostInfoDto> fourthPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), secondWishRequest.getName(), new ArrayList<>());
+        List<PostInfoDtoWithTag> fourthPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), secondWishRequest.getName(), new ArrayList<>());
         // 첫번째, 세번째 게시글만 조회되어야 한다.
-        List<PostInfoDto> firstAndThirdPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), "", new ArrayList<>());
+        List<PostInfoDtoWithTag> firstAndThirdPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), "", new ArrayList<>());
         // 두번째, 네번째 게시글만 조회되어야 한다.
-        List<PostInfoDto> secondAndFourthPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), "", new ArrayList<>());
+        List<PostInfoDtoWithTag> secondAndFourthPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), "", new ArrayList<>());
         // 첫번째, 두번째 게시글만 조회되어야 한다.
-        List<PostInfoDto> firstAndSecondPostsWithConditions = postService.findPostsWithConditions("", wishRequest.getName(), new ArrayList<>());
+        List<PostInfoDtoWithTag> firstAndSecondPostsWithConditions = postService.findPostsWithConditions("", wishRequest.getName(), new ArrayList<>());
         // 세번째, 네번째 게시글만 조회되어야 한다.
-        List<PostInfoDto> thirdAndFourthPostsWithConditions = postService.findPostsWithConditions("", secondWishRequest.getName(), new ArrayList<>());
+        List<PostInfoDtoWithTag> thirdAndFourthPostsWithConditions = postService.findPostsWithConditions("", secondWishRequest.getName(), new ArrayList<>());
         // 조건이 전달되지 않았으므로 모든 게시글이 조회되어야 한다.
-        List<PostInfoDto> allPostsWithNoConditions = postService.findPostsWithConditions("", "", new ArrayList<>());
+        List<PostInfoDtoWithTag> allPostsWithNoConditions = postService.findPostsWithConditions("", "", new ArrayList<>());
         //then
         assertThat(firstPostsWithConditions).extracting("title").hasSize(1).contains("첫번째 게시글");
         assertThat(firstPostsWithConditions).extracting("productCategory").hasSize(1).contains("product");
@@ -719,24 +719,24 @@ public class PostServiceTest {
 
         // then
         // 첫번째 검증 : 태그와 희망 카테고리 없이 상품 카테고리 만으로 조회 : 두번째, 세번째 게시글이 조회되어야 한다.
-        List<PostInfoDto> firstResult = postService.findPostsWithConditions(secondProductRequest.getName(), "", new ArrayList<>());
+        List<PostInfoDtoWithTag> firstResult = postService.findPostsWithConditions(secondProductRequest.getName(), "", new ArrayList<>());
         // 두번째 검증 : 태그와 상품 카테고리 없이 희망 카테고리 만으로 조회 : 첫번째, 두번째 게시글이 조회되어야 한다.
-        List<PostInfoDto> secondResult = postService.findPostsWithConditions("", wishRequest.getName(), new ArrayList<>());
+        List<PostInfoDtoWithTag> secondResult = postService.findPostsWithConditions("", wishRequest.getName(), new ArrayList<>());
         // 세번째 검증 : 태그1 만으로 조회 : 첫번째, 세번째 게시글이 조회되어야 한다.
         List<String> firstTagName = new ArrayList<>();
         firstTagName.add("해시태그1");
-        List<PostInfoDto> thirdResult = postService.findPostsWithConditions("", "", firstTagName);
+        List<PostInfoDtoWithTag> thirdResult = postService.findPostsWithConditions("", "", firstTagName);
         // 네번째 검증 - 1: 모든 정보를 활용해 조회 - 상품 카테고리1, 희망 카테고리1, 해시태그1 - 첫번째 게시글이 조회되어야 한다.
-        List<PostInfoDto> fourth_Result1 = postService.findPostsWithConditions(productRequest.getName(), wishRequest.getName(), firstTagName);
+        List<PostInfoDtoWithTag> fourth_Result1 = postService.findPostsWithConditions(productRequest.getName(), wishRequest.getName(), firstTagName);
         // 네번째 검증 - 2: 모든 정보를 활용해 조회 - 상품 카테고리1, 희망 카테고리1, 해시태그1, 2 - 첫번째 게시글이 조회되어야 한다.
-        List<PostInfoDto> fourth_Result2 = postService.findPostsWithConditions(productRequest.getName(), wishRequest.getName(), firstTagNames);
+        List<PostInfoDtoWithTag> fourth_Result2 = postService.findPostsWithConditions(productRequest.getName(), wishRequest.getName(), firstTagNames);
         // 네번째 검증 - 3: 모든 정보를 활용해 조회 - 상품 카테고리2, 희망 카테고리1, 해시태그2, 3 - 두번째 게시글이 조회되어야 한다.
-        List<PostInfoDto> fourth_Result3 = postService.findPostsWithConditions(secondProductRequest.getName(), wishRequest.getName(), secondTagNames);
+        List<PostInfoDtoWithTag> fourth_Result3 = postService.findPostsWithConditions(secondProductRequest.getName(), wishRequest.getName(), secondTagNames);
         // 네번째 검증 - 4: 모든 정보를 활용해 조회 - 상품 카테고리2, 희망 카테고리2, 해시태그1, 3 - 세번째 게시글이 조회되어야 한다.
-        List<PostInfoDto> fourth_Result4 = postService.findPostsWithConditions(secondProductRequest.getName(), secondWishRequest.getName(), thirdTagNames);
+        List<PostInfoDtoWithTag> fourth_Result4 = postService.findPostsWithConditions(secondProductRequest.getName(), secondWishRequest.getName(), thirdTagNames);
 
         // 마지막 검증 : 조건 없이 조회 - 모든 게시글이 다 조회되어야 한다.
-        List<PostInfoDto> lastResult = postService.findPostsWithConditions("", "", new ArrayList<>());
+        List<PostInfoDtoWithTag> lastResult = postService.findPostsWithConditions("", "", new ArrayList<>());
 
         assertThat(firstResult).extracting("title").hasSize(2).contains("두번째 게시글", "세번째 게시글");
         assertThat(firstResult).extracting("productCategory").hasSize(2).contains("product2");
@@ -788,7 +788,7 @@ public class PostServiceTest {
         Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getId(), post.getWishCategory().getId(), new ArrayList<>());
-        PostInfoDto postInfoDto = postService.updatePost(updatePostRequest, member.getId());
+        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
 
         //then
         assertThat(postInfoDto.getTitle()).isEqualTo(updatePostRequest.getTitle());
@@ -840,7 +840,7 @@ public class PostServiceTest {
         UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getId(), post.getWishCategory().getId(), secondTagNameList);
         // 컨트롤러에서는 update 하기 전에 postTagService에서 레포지토리를 삭제한다. 똑같은 환경으로 테스트 하기 위해 여기서도 그렇게 하겠다.
         postTagService.deletePostTagFromPost(postId);
-        PostInfoDto postInfoDto = postService.updatePost(updatePostRequest, member.getId());
+        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
 
         //then
         Post updatedPost = postRepository.findById(postInfoDto.getId()).get();
@@ -906,7 +906,7 @@ public class PostServiceTest {
         updatedTagNames.add(tagRequest3.getName());
         UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", productCategoryId, wishCategoryId, updatedTagNames);
         postTagService.deletePostTagFromPost(postId);
-        PostInfoDto postInfoDto = postService.updatePost(updatePostRequest, member.getId());
+        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
 
         //then
 
