@@ -70,7 +70,7 @@ const Login = () => {
             //interceptor를 사용한 방식 (header에 token값 전달)
         try{
             const res = await Api.post('/auth/login',userInfo);
-
+            console.log(res)
             const accessToken = res.data;
 
             //jwt 토큰 redux에 넣기

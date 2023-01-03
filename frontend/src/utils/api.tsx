@@ -81,9 +81,7 @@ Api.interceptors.response.use(
                             if (jwtToken) {
                                 store.dispatch(setToken(jwtToken));
                                 console.log("reissue 성공")
-                                return new Promise(() => {
-                                    console.log("Promise Chain Destroyed")
-                                });
+                                return new Promise(() => {});
                                 // return await Api.request(err.config);
                             }
 
@@ -109,13 +107,11 @@ Api.interceptors.response.use(
 
                 }
                 case 404: {
-
                     return new Promise(() => {
                     });
                 }
 
                 case 409: {
-
                     return new Promise(() => {
                     });
                 }
