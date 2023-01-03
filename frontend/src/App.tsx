@@ -22,6 +22,8 @@ import PostDetail from "./routes/PostDetail";
 import MulmulTrade1 from "./routes/MulMulTrade1";
 import KokiriTalk from "./routes/KokiriTalk";
 import GoogleButton from "./routes/로그인 & 회원가입/GoogleButton.js";
+import { GoogleOAuthProvider } from '@react-oauth/google'
+
 
 function App() {
     return (
@@ -30,7 +32,9 @@ function App() {
             <div className={styles.content}>
             <Routes>
                 <Route path="/" element={<Home/>} />
+                {/*<GoogleOAuthProvider clientId={'502345601007-gv64iag1rq1un755oo06q126ghmfgkqk.apps.googleusercontent.com'}>*/}
                 <Route path="/login" element={<Login/>}/>
+                {/*</GoogleOAuthProvider>*/}
 
                 <Route path="/signup" element={<SignUp/>}/>
                 <Route path="/signup/emailcheck" element={<EmailCheck/>}/>
@@ -55,6 +59,9 @@ function App() {
                 <Route path='/googlelogin' element={<GoogleButton/>}/>
 
             </Routes>
+
+
+
 
         </div>
         </div>

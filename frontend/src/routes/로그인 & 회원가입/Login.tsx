@@ -7,18 +7,20 @@ import Button from "../../component/common/Button";
 import axios from "axios";
 import Modal from "../../routes/로그인 & 회원가입/GoogleLoginModal"
 import GoogleButton from "./GoogleButton.js"
-import {gapi} from "gapi-script"
-import GoogleLogin from "react-google-login";
-// import GoogleLogin from 'react-google-login'
-// import {gapi} from 'gapi-script';
+import { useGoogleLogin } from '@react-oauth/google'
 
-const Login= () =>{
+function Login() {
 
     const [isOpenModal, setOpenModal] = useState<boolean>(false);
 
     const onClickToggleModal = useCallback(() => {
         setOpenModal(!isOpenModal);
     }, [isOpenModal]);
+
+    // const googleSocialLogin = useGoogleLogin({
+    //     onSuccess: (codeResponse) => console.log(codeResponse),
+    //     flow: 'auth-code',
+    // })
 
 
 
@@ -100,11 +102,26 @@ const Login= () =>{
     // googleLogin();
     const url = google;
 
+    const login2 =  useGoogleLogin({
+        onSuccess: async respose => {
+            try {
+                const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+                    headers: {
+                        "Authorization": `Bearer ${respose.access_token}`
+                    }
+                })
 
+                console.log("datatatta",res.data)
+            } catch (err) {
+                console.log(err)
+            }
 
-        return (
+        }
+    });
+
+    return (
         <><div className={styles.box}>
-            <button onClick={()=>{window.open(url)}}>2324234</button>
+            {/*<button onClick={()=>{window.open(url)}}>2324234</button>*/}
             {/*<GoogleButton/>*/}
             {isOpenModal && (
                 <Modal onClickToggleModal={onClickToggleModal}>
@@ -139,15 +156,20 @@ const Login= () =>{
                         <span>비밀번호 찾기</span>
                     </div>
                 </section>
-                <Button className={"white"} onClick={()=>{ googleClick(); onClickToggleModal(); }} content={"구글 로그인"}/>
-                {/*<GoogleLogin clientId={url} buttonText={"구글아이디로 로그인하기"}/>*/}
-                    {/*onClickToggleModal*/}
+                {/*<Button className={"white"} onClick={()=>{ googleClick(); onClickToggleModal(); }} content={"구글 로그인"}/>*/}
+                {/*<GoogleButton/>*/}
+                {/*@ts-ignore*/}
+                <Button className={"white"} onClick={login2} content={"구글 로그인"}/>
             </div>
+
+
         </div>
         </>
     );
+
 }
 //
+
 
 function Modal2(){
     return(

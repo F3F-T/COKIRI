@@ -10,7 +10,7 @@ import PostContainer from "../component/trade/PostContainer";
 import TradeCategory from "../component/trade/TradeCategory";
 import {useOutletContext} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {Rootstate} from "../index";
+import {Rootstate} from "../index.js";
 import {resetCategory} from "../store/categoryReducer";
 import Button from "../component/common/Button";
 

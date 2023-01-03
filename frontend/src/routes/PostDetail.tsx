@@ -10,7 +10,7 @@ import talk from "../img/send.png"
 
 import Comments from "../component/comments/Comments";
 import {useSelector} from "react-redux";
-import {Rootstate} from "../index";
+import {Rootstate} from "../index.js";
 
 const PostDetail = () => {
 

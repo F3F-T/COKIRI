@@ -10,7 +10,7 @@ import {storeCategory} from "../../store/categoryReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {storePostDetail} from "../../store/postDetailReducer";
 import TalkList from "../talk/TalkList";
-import {Rootstate} from "../../index";
+import {Rootstate} from "../../index.js";
 import tradeEx from "../../img/tradeEx.jpeg";
 import transfer from "../../img/transfer.png";
 import styled from "../../styles/card/cards.module.scss";

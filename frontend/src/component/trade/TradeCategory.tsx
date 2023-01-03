@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 
-import {Rootstate} from "../../index";
+import {Rootstate} from "../../index.js";
 import {useDispatch, useSelector} from "react-redux";
 import {Root} from "react-dom/client";
 import {resetCategory, storeCategory} from "../../store/categoryReducer";

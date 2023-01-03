@@ -9,6 +9,7 @@ import {configureStore} from "@reduxjs/toolkit";
 import {Provider} from "react-redux";
 import categoryReducer from "./store/categoryReducer";
 import postDetailReducer from "./store/postDetailReducer";
+import {GoogleOAuthProvider} from "@react-oauth/google";
 /**
  * configureStore을 import해온다.
  * store을 configureStore을 통해서 생성, reducer에는 만들 reducer을 객체형태로 저장한다.
@@ -27,23 +28,31 @@ export const store = configureStore({
     }
 })
 
-export type Rootstate = ReturnType<typeof store.getState>
+// export type Rootstate = ReturnType<typeof store.getState>
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <Provider store={store}>
+    <React.StrictMode>
+        <GoogleOAuthProvider clientId={'502345601007-gv64iag1rq1un755oo06q126ghmfgkqk.apps.googleusercontent.com'}>
+        <Provider store={store}>
         <BrowserRouter>
             <App/>
         </BrowserRouter>
-    </Provider>
+         </Provider>
+        </GoogleOAuthProvider>
+
+    </React.StrictMode>
+
+
+
 );
 //
-// window.React1 = require('react');
-//
-// // Add this in your component file
-// require('react-dom');
-// window.React2 = require('react');
-// console.log(window.React1 === window.React2);
+window.React1 = require('react');
+
+// Add this in your component file
+require('react-dom');
+window.React2 = require('react');
+console.log(window.React1 === window.React2);
 
 
 // If you want to start measuring performance in your app, pass a function
