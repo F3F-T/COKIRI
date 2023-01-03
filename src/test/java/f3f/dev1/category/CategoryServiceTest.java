@@ -167,7 +167,7 @@ public class CategoryServiceTest {
         assertThat(categoryRepository.existsByName("root")).isEqualTo(true);
         assertThat(categoryRepository.existsByName("물물교환")).isEqualTo(true);
         //2번째 요청 시에 잘 만들어지는지
-        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("끼리끼리", admin.getId(), 1L, categoryRepository.findCategoryByName("root").get().getId());
+        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("끼리끼리", admin.getId(), 1L, null);
 
         //when & then
         Assertions.assertThrows(CategoryException.class, () -> {

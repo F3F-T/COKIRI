@@ -78,7 +78,7 @@ public class CategoryService {
             //부모 카테고리가 있다면
 
                 //질문)depth를 NonNUll로 했는데 그럼 parent에서 deth+1을 안해도 되지 않나?
-                if (category.getDepth()!=category.getParent().getDepth() + 1) { //왜 !=로 비교 안돼?
+                if (!category.getDepth().equals(category.getParent().getDepth() + 1)) { //왜 !=로 비교 안돼?객체
                     throw new CategoryException("카테고리 depth 오류 : (1,2)중에서 확인");
                 }
 //            if(parentCategory.getName().equals("root")){
