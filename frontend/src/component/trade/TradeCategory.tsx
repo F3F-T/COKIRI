@@ -8,6 +8,8 @@ import {Rootstate} from "../../index";
 import {useDispatch, useSelector} from "react-redux";
 import {Root} from "react-dom/client";
 import {resetCategory, storeCategory} from "../../store/categoryReducer";
+import { ReactTagify } from "react-tagify";
+
 
 //TODO: REFACTORING) categories를 배열로 미리 만들고 map함수로 생성
 const TradeCategory = () => {

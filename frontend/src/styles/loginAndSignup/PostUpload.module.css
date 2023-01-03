@@ -88,6 +88,7 @@
 .categoryBox2{
 
     border-bottom: 2px solid rgba(150, 150, 150, 0.2);
+    margin-bottom: 1rem;
 }
 .categoryText{
     width: 100%;
@@ -103,11 +104,16 @@
 }
 .btnPlace{
     margin-top: 3rem;
-    width: 30%;
-    margin-bottom: 3rem;
 }
 .uploadBtn{
-    width: 55%;
+
+    font-size: 1.2rem;
     border-radius: 10px;
     border: none;
+    padding: 1.5rem;
+}
+
+.customLook{
+    width: 100%;
+    height: 3rem;
 }

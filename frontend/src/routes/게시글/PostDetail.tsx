@@ -1,16 +1,16 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../styles/post/PostDetail.module.css"
-import profileImg from "../img/profileImg.png"
-import spamImg from "../img/spam.png"
-import coatImg from "../img/coat.png"
-import transfer from "../img/transfer.png"
-import clock from "../img/clock.png"
-import like from "../img/heart.png"
-import talk from "../img/send.png"
+import styles from "../../styles/post/PostDetail.module.css"
+import profileImg from "../../img/profileImg.png"
+import spamImg from "../../img/spam.png"
+import coatImg from "../../img/coat.png"
+import transfer from "../../img/transfer.png"
+import clock from "../../img/clock.png"
+import like from "../../img/heart.png"
+import talk from "../../img/send.png"
 
-import Comments from "../component/comments/Comments";
+import Comments from "../../component/comments/Comments";
 import {useSelector} from "react-redux";
-import {Rootstate} from "../index";
+import {Rootstate} from "../../index";
 
 const PostDetail = () => {
 
