@@ -139,8 +139,8 @@ public class PostControllerTest {
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
                 .tagNames(new ArrayList<>())
-                .productCategoryId(null)
-                .wishCategoryId(null)
+                .productCategoryName(null)
+                .wishCategoryName(null)
                 .build();
     }
 
@@ -150,8 +150,8 @@ public class PostControllerTest {
                 .title("3년 신은 양말 거래 희망합니다")
                 .tradeEachOther(tradeEachOther)
                 .tagNames(new ArrayList<>())
-                .productCategoryId(null)
-                .wishCategoryId(null)
+                .productCategoryName(null)
+                .wishCategoryName(null)
                 .authorId(authorId)
                 .build();
     }
@@ -181,9 +181,9 @@ public class PostControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("post/create/successful",requestFields(
-                        fieldWithPath("productCategoryId").description("productCategory Id value of post"),
+                        fieldWithPath("productCategoryName").description("productCategory name value of post"),
                         fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
-                        fieldWithPath("wishCategoryId").description("wishCategory Id value of post"),
+                        fieldWithPath("wishCategoryName").description("wishCategory name value of post"),
                         fieldWithPath("tagNames").description("tag names list value of post"),
                         fieldWithPath("authorId").description("author id value of post"),
                         fieldWithPath("content").description("content value of post"),

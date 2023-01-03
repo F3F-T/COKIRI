@@ -83,8 +83,8 @@ public class TradeServiceTest {
     public PostSaveRequest createPostSaveRequest(Long authorId) {
 
         return PostSaveRequest.builder()
-                .productCategoryId(null)
-                .wishCategoryId(null)
+                .productCategoryName(null)
+                .wishCategoryName(null)
                 .tradeEachOther(false)
                 .title("title")
                 .content("content")

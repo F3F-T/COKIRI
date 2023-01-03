@@ -30,8 +30,8 @@ public class PostDTO {
         private Boolean tradeEachOther;
         @NotNull
         private Long authorId;
-        private Long productCategoryId;
-        private Long wishCategoryId;
+        private String productCategoryName;
+        private String wishCategoryName;
         @NotNull
         private List<String> tagNames;
 

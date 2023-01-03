@@ -1,6 +1,7 @@
 package f3f.dev1.domain.post.application;
 
 import f3f.dev1.domain.category.dao.CategoryRepository;
+import f3f.dev1.domain.category.exception.NotFoundCategoryByNameException;
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
@@ -42,11 +43,10 @@ public class PostService {
     @Transactional
     public Long savePost(PostSaveRequest postSaveRequest, Long currentMemberId) {
 
-        // TODO memberId를 추가로 받기 때문에 관련 로직 작성해야함
         Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         List<PostTag> resultsList = new ArrayList<>();
-        Category productCategory = categoryRepository.findById(postSaveRequest.getProductCategoryId()).orElseThrow(NotFoundByIdException::new);
-        Category wishCategory = categoryRepository.findById(postSaveRequest.getWishCategoryId()).orElseThrow(NotFoundByIdException::new);
+        Category productCategory = categoryRepository.findCategoryByName(postSaveRequest.getProductCategoryName()).orElseThrow(NotFoundCategoryByNameException::new);
+        Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategoryName()).orElseThrow(NotFoundCategoryByNameException::new);
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         if(!member.getId().equals(currentMemberId)) {
             throw new NotMatchingAuthorException("요청자가 현재 로그인한 유저가 아닙니다");

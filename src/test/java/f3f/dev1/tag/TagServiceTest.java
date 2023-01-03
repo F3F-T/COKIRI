@@ -131,39 +131,39 @@ public class TagServiceTest {
                 .build();
     }
 
-    public PostSaveRequest createPostSaveRequest(Member author, boolean tradeEachOther, Long productId, Long wishId) {
+    public PostSaveRequest createPostSaveRequest(Member author, boolean tradeEachOther, String productName, String wishName) {
         return PostSaveRequest.builder()
                 .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
                 .title("3년 신은 양말 거래 희망합니다")
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
-                .productCategoryId(productId)
+                .productCategoryName(productName)
                 .tagNames(new ArrayList<>())
-                .wishCategoryId(wishId)
+                .wishCategoryName(wishName)
                 .build();
     }
 
-    public PostSaveRequest createPostSaveRequestWithTag(Member author, boolean tradeEachOther, Long productId, Long wishId, List<String> tagNames) {
+    public PostSaveRequest createPostSaveRequestWithTag(Member author, boolean tradeEachOther, String productName, String wishName, List<String> tagNames) {
         return PostSaveRequest.builder()
                 .content("태그 게시글 content")
                 .title("태그 게시글 title")
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
-                .productCategoryId(productId)
-                .wishCategoryId(wishId)
+                .productCategoryName(productName)
+                .wishCategoryName(wishName)
                 .tagNames(tagNames)
                 .build();
     }
 
-    public PostSaveRequest createPostSaveRequestWithDynamicTitle(Member author, String title, boolean tradeEachOther, Long productId, Long wishId) {
+    public PostSaveRequest createPostSaveRequestWithDynamicTitle(Member author, String title, boolean tradeEachOther, String productName, String wishName) {
         return PostSaveRequest.builder()
                 .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
                 .title(title)
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
-                .productCategoryId(productId)
+                .productCategoryName(productName)
                 .tagNames(new ArrayList<>())
-                .wishCategoryId(wishId)
+                .wishCategoryName(wishName)
                 .build();
     }
 
@@ -173,8 +173,8 @@ public class TagServiceTest {
                 .title("3년 신은 양말 거래 희망합니다")
                 .tradeEachOther(tradeEachOther)
                 .authorId(authorId)
-                .productCategoryId(null)
-                .wishCategoryId(null)
+                .productCategoryName(null)
+                .wishCategoryName(null)
                 .build();
     }
 
@@ -241,7 +241,7 @@ public class TagServiceTest {
 
         //when
         // 게시글 추가 + 게시글에 태그 추가
-        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false,productRequest.getName(), wishRequest.getName());
         Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
@@ -276,14 +276,14 @@ public class TagServiceTest {
 
         //when
         // 게시글 추가 + 게시글에 태그 추가
-        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productRequest.getName(), wishRequest.getName());
         Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
         Long postTagId = tagService.addTagToPost(addTagToPostRequest);
         PostTag postTag = postTagRepository.findById(postTagId).get();
 
-        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productCategoryId, wishCategoryId);
+        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productRequest.getName(), wishRequest.getName());
         Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
         Post secondPost = postRepository.findById(secondPostId).get();
 
@@ -323,7 +323,7 @@ public class TagServiceTest {
         //when
         // 게시글 추가 + 게시글에 태그 추가
         // 첫번째 게시글에 해시태그 1, 2, 3이 모두 추가되어있다.
-        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productRequest.getName(), wishRequest.getName());
         Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
@@ -333,7 +333,7 @@ public class TagServiceTest {
         tagService.addTagToPost(addTagToPostSecondRequest);
         tagService.addTagToPost(addTagToPostThirdRequest);
 
-        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productCategoryId, wishCategoryId);
+        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productRequest.getName(), wishRequest.getName());
         Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
         Post secondPost = postRepository.findById(secondPostId).get();
 
@@ -380,7 +380,7 @@ public class TagServiceTest {
         //when
         // 게시글 추가 + 게시글에 태그 추가
         // 첫번째 게시글에 해시태그 1, 2, 3이 모두 추가되어있다.
-        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productCategoryId, wishCategoryId);
+        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false, productRequest.getName(), wishRequest.getName());
         Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         AddTagToPostRequest addTagToPostRequest = createAddTagToPostRequest(tagId, postId);
@@ -391,7 +391,7 @@ public class TagServiceTest {
         tagService.addTagToPost(addTagToPostThirdRequest);
 
         // 두번째 게시글에 해시태그 1, 2가 추가됐다.
-        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productCategoryId, wishCategoryId);
+        PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, productRequest.getName(), wishRequest.getName());
         Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
         Post secondPost = postRepository.findById(secondPostId).get();
         AddTagToPostRequest addTagToSecondPostRequest = createAddTagToPostRequest(tagId, secondPostId);
@@ -400,14 +400,14 @@ public class TagServiceTest {
         tagService.addTagToPost(addSecondTagToSecondPostRequest);
 
         // 세번째 게시글에 해시태그1이 추가되었다.
-        PostSaveRequest thirdPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "세번째 게시글", false, productCategoryId, wishCategoryId);
+        PostSaveRequest thirdPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "세번째 게시글", false, productRequest.getName(), wishRequest.getName());
         Long thirdPostId = postService.savePost(thirdPostSaveRequest, member.getId());
         Post thirdPost = postRepository.findById(thirdPostId).get();
         AddTagToPostRequest addTagToThirdPostRequest = createAddTagToPostRequest(tagId, thirdPostId);
         tagService.addTagToPost(addTagToThirdPostRequest);
 
         // 네번째 게시글에는 해시태그를 추가하지 않겠다.
-        PostSaveRequest fourthPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "네번째 게시글", false, productCategoryId, wishCategoryId);
+        PostSaveRequest fourthPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "네번째 게시글", false, productRequest.getName(), wishRequest.getName());
         Long fourthPostId = postService.savePost(fourthPostSaveRequest, member.getId());
         Post fourthPost = postRepository.findById(fourthPostId).get();
 
