@@ -11,6 +11,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {setToken, deleteToken} from "../../store/jwtTokenReducer";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api"
+import {setUserInfo} from "../../store/userInfoReducer";
 
 const Login = () => {
     const store = useSelector((state:Rootstate) => state);
@@ -78,6 +79,8 @@ const Login = () => {
             console.log(jwtToken)
 
             dispatch(setToken(jwtToken));
+            dispatch(setUserInfo(res.data.userInfo))
+            console.log(store)
             alert("로그인 성공")
             navigate(`/`)
             }

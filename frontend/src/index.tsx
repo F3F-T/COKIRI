@@ -10,6 +10,7 @@ import {Provider} from "react-redux";
 import categoryReducer from "./store/categoryReducer";
 import postDetailReducer from "./store/postDetailReducer";
 import jwtTokenReducer from "./store/jwtTokenReducer";
+import userInfoReducer from "./store/userInfoReducer";
 //interceptor에서 redux store 사용을 위한 injection
 import {injectStore} from "./utils/api";
 //interceptor에서 navigate 사용을 위함
@@ -31,8 +32,8 @@ export const store = configureStore({
     reducer: {
         categoryReducer: categoryReducer,
         postDetailReducer: postDetailReducer,
-        jwtTokenReducer: jwtTokenReducer
-
+        jwtTokenReducer: jwtTokenReducer,
+        userInfoReducer: userInfoReducer,
     }
 })
 
