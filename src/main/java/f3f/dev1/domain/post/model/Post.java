@@ -72,6 +72,10 @@ public class Post extends BaseTimeEntity {
         this.wishCategory = wishCategory;
     }
 
+    // 연관관계 편의 메소드
+    public void addToPostTags(PostTag postTag) {
+        this.postTags.add(postTag);
+    }
 
     @Builder
     public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags) {

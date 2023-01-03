@@ -4,6 +4,7 @@ import f3f.dev1.domain.category.application.CategoryService;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dto.TagDTO;
 import f3f.dev1.global.util.SecurityUtil;
@@ -29,12 +30,8 @@ public class PostController {
 
     private final TagService tagService;
 
-//    private final CategoryService categoryService;
+    private final PostTagService postTagService;
 
-//    private final TagService tagService;
-
-    // TODO 조회 필터링은 post에서 하는 걸로
-    // => 안되겠다. 컨트롤러같은 웹 계층이 없어도 애플리케이션이 동작할 수 있어야 한다.
 
     //게시글 전체 조회
     // TODO 쿼리스트링 추가 - price 추가 예정
@@ -86,7 +83,7 @@ public class PostController {
     @PatchMapping(value = "/post/{postId}")
     public ResponseEntity<PostInfoDto> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-
+        postTagService.deletePostTagFromPost(postId);
         PostInfoDto postInfoDto = postService.updatePost(updatePostRequest, currentMemberId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }

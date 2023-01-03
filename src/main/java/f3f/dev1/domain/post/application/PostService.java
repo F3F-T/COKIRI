@@ -204,7 +204,7 @@ public class PostService {
 
         // postTag에서 post는 아래의 코드로 지울 수 있지만, post 단에서 postTag는 여기서 지울 수 없다.
         // 따라서 컨트롤러에서 tag 서비스에 먼저 들러 관련 postTag를 다 지우고 현재의 메소드를 호출하도록 하겠다.
-        postTagRepository.deletePostTagByPost(post);
+//        postTagRepository.deletePostTagByPost(post);
 
 
         if(tags.isEmpty()) {

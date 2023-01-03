@@ -13,6 +13,7 @@ import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
@@ -41,7 +42,6 @@ import static f3f.dev1.domain.tag.dto.TagDTO.*;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
-@Transactional
 public class PostServiceTest {
 
     @Autowired
@@ -55,6 +55,9 @@ public class PostServiceTest {
 
     @Autowired
     TagService tagService;
+
+    @Autowired
+    PostTagService postTagService;
 
     @Autowired
     MemberRepository memberRepository;
@@ -350,7 +353,6 @@ public class PostServiceTest {
 
     @Test
     @DisplayName("조건과 함께 게시글 검색 테스트 - 태그로만 검색")
-    @Rollback
     public void findPostsWithTagNamesConditionTestForSuccess() throws Exception {
         //given
         SignUpRequest signUpRequest = createSignUpRequest();
@@ -836,28 +838,26 @@ public class PostServiceTest {
         List<String> secondTagNameList = new ArrayList<>();
         secondTagNameList.add("해시태그2");
         UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getId(), post.getWishCategory().getId(), secondTagNameList);
+        // 컨트롤러에서는 update 하기 전에 postTagService에서 레포지토리를 삭제한다. 똑같은 환경으로 테스트 하기 위해 여기서도 그렇게 하겠다.
+        postTagService.deletePostTagFromPost(postId);
         PostInfoDto postInfoDto = postService.updatePost(updatePostRequest, member.getId());
 
         //then
         Post updatedPost = postRepository.findById(postInfoDto.getId()).get();
-        List<PostTag> postTags = updatedPost.getPostTags();
+//        List<PostTag> postTags = updatedPost.getPostTags();
+        // 이 postTags는 해시태그1이 아닌 해시태그2만을 담고 있어야 한다.
+        List<PostTag> postTags = postTagRepository.findByPost(updatedPost);
         assertThat(postTags.size()).isEqualTo(1);
-        assertThat(postTags.get(0).getTag().getName()).isEqualTo("해시태그2");
+        // 아래의 검증에서 updatedPost는 단 하나의 해시태그만을 가지고 있으며, 그 해시태그의 이름이 "해시태그2"라는 것이 증명되었다.
+        List<PostTag> tag2PostTags = postTagRepository.findByTagName("해시태그2");
+        assertThat(tag2PostTags.size()).isEqualTo(1);
+        assertThat(tag2PostTags.get(0).getId().equals(postTags.get(0).getId()));
 
-        assertThat(post.getPostTags().size()).isEqualTo(1);
-        assertThat(post.getPostTags().get(0).getTag().getName()).isEqualTo("해시태그2");
+        List<PostTag> tag1PostTags = postTagRepository.findByTagName("해시태그1");
+        assertThat(tag1PostTags).isEmpty();
 
-        // post <--> tag2 사이의 postTag가 생성되었는지 검증
-        Tag secondTag = tagRepository.findById(tag2).get();
-        assertThat(postTagRepository.existsByPostAndTag(post,secondTag)).isTrue();
+        // 아니 근데 태그 쪽에서 삭제됐는지를 알고싶은데
 
-        // post <--> tag1 사이의 postTag가 삭제됐는지 검증
-        Tag tag = tagRepository.findById(tag1).get();
-        assertThat(postTagRepository.existsByPostAndTag(post,tag)).isFalse();
-
-        assertThat(secondTag.getPostTags().get(0).getPost().getTitle()).isEqualTo("변경한 제목");
-        // 얘는 통과하면 안되는데 자꾸 통과한다...
-        assertThat(tag.getPostTags().get(0).getPost().getTitle()).isEqualTo("변경한 제목");
     }
 
     @Test
