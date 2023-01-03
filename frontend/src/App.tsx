@@ -13,12 +13,12 @@ import NotFound from "./component/NotFound";
 import Login from "./routes/로그인 & 회원가입/Login";
 import SignUp from "./routes/로그인 & 회원가입/SignUp";
 import EmailCheck from "./routes/로그인 & 회원가입/EmailCheck";
-import PostUpload from "./routes/PostUpload";
+import PostUpload from "./routes/게시글/PostUpload";
 import Zzim from "./routes/Zzim";
 
 import styles from "./styles/App.module.css";
 import EmailCheckOK from "./routes/로그인 & 회원가입/EmailCheckOK";
-import PostDetail from "./routes/PostDetail";
+import PostDetail from "./routes/게시글/PostDetail";
 import MulmulTrade1 from "./routes/MulMulTrade1";
 import KokiriTalk from "./routes/KokiriTalk";
 import {useDispatch, useSelector} from "react-redux";
