@@ -5,7 +5,7 @@
  */
 
 import {createSlice,PayloadAction} from "@reduxjs/toolkit";
-
+//TODO: 로그인을 하면 유저 정보가 여기 담기게 되니까 이걸 이용해서 마이페이지를 구성하면 됨
 interface UserInfo {
     id: Number;
     email: string;

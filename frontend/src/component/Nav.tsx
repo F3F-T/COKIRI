@@ -26,12 +26,11 @@ const Nav1 = () => {
                     <input className={styles.search} type="search" placeholder=" #해시태그를 검색하세요!" aria-disabled="true"/>
                 </form>
                 {(store.jwtTokenReducer.authenticated  ?
-                    <button className={styles.signBtn} onClick={()=>navigate('/login')}>로그인/회원가입</button>
-                    ://TODO:
-                    <button className={styles.signBtn} onClick={()=>navigate('/login')}>회원 정보 구현 예정이야</button>)
+                    <button className={styles.signBtn} onClick={()=>navigate('/login')}>{store.userInfoReducer.nickname}님</button>
+                    :
+                    <button className={styles.signBtn} onClick={()=>navigate('/login')}>로그인/회원가입</button>)
                 }
 
-                <button className={styles.signBtn} onClick={()=>navigate('/login')}>로그인/회원가입</button>
                 <div>
                 <img className={styles.mypageI} onClick={()=>navigate('/')}  src = {mypage}/>
                 <button className={styles.signBtn2} onClick={()=>navigate('/mypage')}>내 상점</button>

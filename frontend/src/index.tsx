@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 // import {Router} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {configureStore} from "@reduxjs/toolkit";
+import {configureStore,combineReducers} from "@reduxjs/toolkit";
 import {Provider} from "react-redux";
 import categoryReducer from "./store/categoryReducer";
 import postDetailReducer from "./store/postDetailReducer";
@@ -16,7 +16,18 @@ import {injectStore} from "./utils/api";
 //interceptor에서 navigate 사용을 위함
 import {createBrowserHistory} from "history";
 import {unstable_HistoryRouter as HistoryRouter} from "react-router-dom";
-
+import storage from 'redux-persist/lib/storage';
+import {
+    persistStore,
+        persistReducer,
+        FLUSH,
+        REHYDRATE,
+        PAUSE,
+        PERSIST,
+        PURGE,
+        REGISTER,
+} from 'redux-persist';
+import {PersistGate} from "redux-persist/integration/react";
 
 /**
  * configureStore을 import해온다.
@@ -28,14 +39,35 @@ import {unstable_HistoryRouter as HistoryRouter} from "react-router-dom";
 
 
 //store/counterReducer에서 만든 reducer, action, state, 초기 설정값등을 reducer에 묶어주고, counter로 선언해준다
+
+
+const persistConfig = {
+    key: 'root',
+    storage,
+};
+
+const rootReducer = combineReducers({
+    categoryReducer: categoryReducer,
+    postDetailReducer: postDetailReducer,
+    jwtTokenReducer: jwtTokenReducer,
+    userInfoReducer: userInfoReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig,rootReducer);
+
+
 export const store = configureStore({
-    reducer: {
-        categoryReducer: categoryReducer,
-        postDetailReducer: postDetailReducer,
-        jwtTokenReducer: jwtTokenReducer,
-        userInfoReducer: userInfoReducer,
-    }
+    reducer: persistedReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+            // }).concat(logger),
+        }),
 })
+
+export const persistor = persistStore(store);
 
 injectStore(store);
 
@@ -49,7 +81,9 @@ root.render(
     // @ts-expect-error
     <HistoryRouter history={history}>
         <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
             <App/>
+            </PersistGate>
         </Provider>
     </HistoryRouter>
 );
