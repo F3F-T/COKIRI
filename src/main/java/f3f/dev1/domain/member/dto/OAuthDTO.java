@@ -41,4 +41,13 @@ public class OAuthDTO {
         public String locale;
     }
 
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class GoogleLoginRequest {
+        public String email;
+        public String name;
+    }
+
 }

@@ -13,6 +13,7 @@ import f3f.dev1.global.common.constants.OAuthConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.LoginRequest;
 import static f3f.dev1.domain.member.dto.MemberDTO.SignUpRequest;
+import static f3f.dev1.domain.member.dto.OAuthDTO.*;
 
 @RequiredArgsConstructor
 @Service
@@ -31,8 +33,32 @@ public class OAuth2UserService {
 
     private final MemberRepository memberRepository;
 
+    @Transactional
+    public UserLoginDto googleLogin(GoogleLoginRequest googleLoginRequest) {
+        Optional<Member> byEmail = memberRepository.findByEmail(googleLoginRequest.getEmail());
+        if (byEmail.isPresent()) {
+            Member member = byEmail.get();
+            // 구글 로그인으로 생성된 유저
+            if (member.getUserLoginType() != UserLoginType.GOOGLE) {
 
+                throw new IllegalArgumentException("디비 이메일 중복");
+            }
 
+        } else {
+
+            SignUpRequest signUpRequest = SignUpRequest.builder()
+                    .email(googleLoginRequest.getEmail())
+                    .userName(googleLoginRequest.getName())
+                    .userLoginType(UserLoginType.GOOGLE)
+                    .nickname("코끼리 사용자 " + Long.toString(System.currentTimeMillis()))
+                    .password(System.getenv("GOOGLE_USER_PWD")).build();
+            authService.signUp(signUpRequest);
+
+        }
+        return authService.login(LoginRequest.builder().email(googleLoginRequest.getEmail()).password(System.getenv("GOOGLE_USER_PWD")).build());
+    }
+
+    @Transactional
     public SocialLoginUrlDto request(String loginType) {
         String redirectUrl;
         switch (loginType) {
@@ -44,9 +70,9 @@ public class OAuth2UserService {
             }
 
         }
-        return OAuthDTO.SocialLoginUrlDto.builder().url(redirectUrl).build();
+        return SocialLoginUrlDto.builder().url(redirectUrl).build();
     }
-
+    @Transactional
     public UserLoginDto oAuthLogin(String loginType, String code) throws IOException {
 
         switch (loginType) {
@@ -58,7 +84,7 @@ public class OAuth2UserService {
                 // 액세스 토큰을 다시 구글로 보내 사용자 정보가 담긴 응답 객체를 받아옴
                 ResponseEntity<String> userInfoResponse = googleAuth.requestUserInfo(oAuthToken);
                 // 다시 Json 형식의 응답 객체를 자바 객체로 역 직렬화
-                OAuthDTO.GoogleUser googleUser = googleAuth.getUserInfo(userInfoResponse);
+                GoogleUser googleUser = googleAuth.getUserInfo(userInfoResponse);
                 Optional<Member> byEmail = memberRepository.findByEmail(googleUser.getEmail());
                 // 이메일로 디비에 유저 존재
                 if (byEmail.isPresent()) {
