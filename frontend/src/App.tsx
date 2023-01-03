@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, {useEffect} from "react";
 
 import Home from "./routes/Home";
 import { Route, Routes } from "react-router-dom";
@@ -21,8 +21,22 @@ import EmailCheckOK from "./routes/로그인 & 회원가입/EmailCheckOK";
 import PostDetail from "./routes/PostDetail";
 import MulmulTrade1 from "./routes/MulMulTrade1";
 import KokiriTalk from "./routes/KokiriTalk";
+import {useDispatch, useSelector} from "react-redux";
+import {Rootstate} from "./index";
 
 function App() {
+
+    const store = useSelector((state:Rootstate) => state);
+    const dispatch = useDispatch();
+
+    //로그인 상태 변경에 따라 rendering 해주기 위함
+    useEffect(()=>{
+        console.log("jwt 토큰 effect 바뀜")
+        console.log(store)
+        console.log(store.jwtTokenReducer.authenticated);
+
+    },[store.jwtTokenReducer.authenticated])
+
     return (
         <div className="App">
             <Nav />

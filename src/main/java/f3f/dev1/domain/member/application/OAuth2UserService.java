@@ -15,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.LoginRequest;
@@ -68,10 +70,12 @@ public class OAuth2UserService {
                     }
 
                 } else {
+
                     SignUpRequest signUpRequest = SignUpRequest.builder()
                             .email(googleUser.getEmail())
                             .userName(googleUser.getName())
                             .userLoginType(UserLoginType.GOOGLE)
+                            .nickname("코끼리 사용자 " + Long.toString(System.currentTimeMillis()))
                             .password(System.getenv("GOOGLE_USER_PWD")).build();
                     authService.signUp(signUpRequest);
 

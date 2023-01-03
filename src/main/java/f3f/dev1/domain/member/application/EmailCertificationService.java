@@ -95,7 +95,6 @@ public class EmailCertificationService {
             throw new IllegalArgumentException("메일 전송중 오류 발생");
         }
 
-
     }
 
     // 코드 검증
@@ -106,7 +105,7 @@ public class EmailCertificationService {
             throw new EmailCertificationExpireException();
         }
         if (!code.equals(emailConfirmCodeDto.getCode())) {
-            throw new InvalidCertificationCodeException();
+            return CodeConfirmDto.builder().matches(false).build();
         }
         return CodeConfirmDto.builder().matches(true).build();
 

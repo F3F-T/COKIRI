@@ -6,9 +6,14 @@ import Navbar from 'react-bootstrap/Navbar';
 import myImage from "../img/cokkiriLogo.png";
 import mypage from "../img/mypage.png";
 import talk from "../img/talk.png";
-
+import Message from "./로그인 & 회원가입/Message";
+import {Rootstate} from "../index";
+import {useDispatch, useSelector} from "react-redux";
 const Nav1 = () => {
-    let navigate = useNavigate();
+
+    const store = useSelector((state:Rootstate) => state);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     return (
         <div className={styles.navBarBar}>
@@ -20,6 +25,11 @@ const Nav1 = () => {
                 <form className={styles.searchBox}>
                     <input className={styles.search} type="search" placeholder=" #해시태그를 검색하세요!" aria-disabled="true"/>
                 </form>
+                {(store.jwtTokenReducer.authenticated  ?
+                    <button className={styles.signBtn} onClick={()=>navigate('/login')}>로그인/회원가입</button>
+                    ://TODO:
+                    <button className={styles.signBtn} onClick={()=>navigate('/login')}>회원 정보 구현 예정이야</button>)
+                }
 
                 <button className={styles.signBtn} onClick={()=>navigate('/login')}>로그인/회원가입</button>
                 <div>

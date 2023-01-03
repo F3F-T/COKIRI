@@ -219,10 +219,11 @@ const SignUp = () => {
 
     //입력완료하면 값이 state에 저장된다.
     const onChangeEmail = (e) => {
-        let inputEmail = e.target.value;
+        const inputEmail = e.target.value;
 
         //이메일 유효성 검사
-        let emailValidationCheck = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
+        //eslint-disable-next-line
+        const emailValidationCheck = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
 
         //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
         if (emailValidationCheck.test(inputEmail)) {
@@ -234,7 +235,7 @@ const SignUp = () => {
             } else { //일반 이메일일때
                 //이메일 중복체크 백엔드 통신
                 //string인 inputEmail을 json형태의 객체로 변환
-                let jsonObj = {"email": inputEmail};
+                const jsonObj = {"email": inputEmail};
 
                 //변환한 json 객체로 이메일 중복체크
                 CheckEmailDuplicated(jsonObj);
@@ -249,7 +250,7 @@ const SignUp = () => {
 
     const onChangePassword = (e) => {
 
-        let inputPassword = e.target.value;
+        const inputPassword = e.target.value;
 
         //숫자+영문자+특수문자 조합으로 8자리 이상 입력
         const passwordValidation = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/
@@ -278,7 +279,7 @@ const SignUp = () => {
     }
 
     const onChangeName = (e) => {
-        let inputName = e.target.value;
+        const inputName = e.target.value;
         //한글자 이상 작성했을때
         if (inputName.length > 0) {
             setuserInfo((prevState) => {
@@ -300,7 +301,7 @@ const SignUp = () => {
     }
 
     const onChangeBirth = (e) => {
-        let inputBirth = e.target.value;
+        const inputBirth = e.target.value;
         //생일 6자리 입력했을때 올바른 값
         if (inputBirth.length === 6) {
             setuserInfo((prevState) => {
@@ -321,14 +322,14 @@ const SignUp = () => {
     }
 
     const onChangeNickname = (e) => {
-        let inputNickname = e.target.value;
+        const inputNickname = e.target.value;
 
         //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
         if (inputNickname.length > 0) {
 
             //닉네임 중복체크 백엔드 통신
             //string인 inputNickname을 json형태의 객체로 변환
-            let jsonObj = {"nickname": inputNickname};
+            const jsonObj = {"nickname": inputNickname};
 
             //변환한 json 객체로 이메일 중복체크
             CheckNickNameDuplicated(jsonObj);
@@ -343,14 +344,14 @@ const SignUp = () => {
     }
 
     const onChangePhoneNumber = (e) => {
-        let inputPhoneNumber = e.target.value;
+        const inputPhoneNumber = e.target.value;
 
-        let phoneNumberValidation = /^(01[016789]{1})[0-9]{3,4}[0-9]{4}$/;
+        const phoneNumberValidation = /^(01[016789]{1})[0-9]{3,4}[0-9]{4}$/;
         //핸드폰번호 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
         if (phoneNumberValidation.test(inputPhoneNumber)) {
             //중복체크 백엔드 통신
             //string type인 inputPhonenumber을 json형태의 객체로 변환
-            let jsonObj = {"phoneNumber": inputPhoneNumber};
+            const jsonObj = {"phoneNumber": inputPhoneNumber};
 
             //변환한 json 객체로 이메일 중복체크
             CheckPhoneNumberDuplicated(jsonObj);

@@ -17,11 +17,12 @@ public class TagDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CreateTagRequest {
-        @NotNull
-        private Long id;
+
         @NotNull
         @Size(max = 10, message = "태그는 10글자 이하로 작성해주세요")
         private String name;
+
+        private Long authorId;
 
         public Tag toEntity() {
             return Tag.builder()
@@ -35,9 +36,9 @@ public class TagDTO {
     @AllArgsConstructor
     public static class AddTagToPostRequest {
         @NotNull
-        private Long id;
+        private Long tagId;
         @NotNull
-        private Post post;
+        private Long postId;
     }
 
     @Getter
@@ -48,21 +49,21 @@ public class TagDTO {
         private Long id;
     }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GetPostListByTagNameRequest {
-        @NotNull
-        private String name;
-    }
+//    @Getter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class GetPostListByTagNameRequest {
+//        @NotNull
+//        private String name;
+//    }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class GetPostListByTagResponse {
-        @NotNull
-        private List<Post> postList;
-    }
+//    @Getter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class GetPostListByTagResponse {
+//        @NotNull
+//        private List<Post> postList;
+//    }
 
     @Getter
     @NoArgsConstructor
