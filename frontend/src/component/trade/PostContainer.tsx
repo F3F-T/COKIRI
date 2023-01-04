@@ -14,9 +14,28 @@ import {Rootstate} from "../../index";
 import tradeEx from "../../img/tradeEx.jpeg";
 import transfer from "../../img/transfer.png";
 import styled from "../../styles/card/cards.module.scss";
+import Api from "../../utils/api";
+import {setToken} from "../../store/jwtTokenReducer";
+import {setUserInfo} from "../../store/userInfoReducer";
+import {log} from "util";
+
+interface PostType {
+    postId : number;
+    title : string;
+    content : string;
+    tradeEachOther : boolean;
+    authorNickname : string;
+    wishCategory : string;
+    productCategory : string;
+    tradeStatus : string;
+    tagNames : string[];
+}
 
 
 const PostContainer = () => {
+
+    // const [postList,setPostList] = useState<PostType[]>()
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const onClickTotalTalkList = (key) => {
@@ -88,7 +107,66 @@ const PostContainer = () => {
             category: "가구"
         },
     ]
+
     const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
+
+    const store = useSelector((state:Rootstate) => state);
+
+    const [postList,setPostList] = useState<PostType[]>()
+    async function getPostList() {
+
+        //interceptor를 사용한 방식 (header에 token값 전달)
+        try{
+            const res = await Api.get('/post');
+            console.log(res.data)
+
+            setPostList(prevState => {
+                return [...res.data];
+            })
+
+            // let newData = res.data.map((post:PostType) => {
+            //     setPostList(prevState => {
+            //         return [...prevState];
+            //     })
+            // });
+
+            // let newData = res.data.map((data) => {
+            //     setTest(prevState => {
+            //         return [...prevState, "hi"];
+            //     })
+            // });
+
+            // setTest(["hi","hi2"])
+            // setTest(prevState => {
+            //     return [...prevState, "hi3"]
+            // })
+            //
+            // setTest2({key1: "hi1", key2 : "hi2"})
+            // setTest2(prevState => {
+            //     return [{...prevState, key3: "hi3"}, {key3 : "hi3"}]
+            // })
+
+
+            console.log(postList);
+
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("get 실패");
+        }
+
+    }
+
+    useEffect(()=>{
+        getPostList();
+    },[])
+
+    const onClickTest = () => {
+
+        console.log(postList)
+
+    }
 
     const onClickPostDetail = (i)  => {
         dispatch(storePostDetail(postDetail[i].postTitle))
@@ -104,44 +182,20 @@ const PostContainer = () => {
 
         return (
         <div className={styles.postContainer}>
+            <button onClick={onClickTest}/>
 
             {
+                postList.map((post:object)=>(
+                    <Card className={"forTrade"} postTitle={SingleObject["postTitle"]} postContent={SingleObject["postContent"]} like={SingleObject["like"]} comment={SingleObject["comment"]} category={SingleObject["category"]} />
+                ))
+
+
                 postDetail.map((SingleObject:object)=>(
                     <Card className={"forTrade"} postTitle={SingleObject["postTitle"]} postContent={SingleObject["postContent"]} like={SingleObject["like"]} comment={SingleObject["comment"]} category={SingleObject["category"]} />
                 ))
             }
             <Card className={"forTrade"} postTitle={detail.postTitle} postContent={detail.postContent} like={detail.like} comment={detail.comment} category={detail.category} />
-            {/*얘는 그냥 디폴트값*/}
-            {/*{*/}
-            {/*    postDetail.map((SingleObject:object,i)=>(*/}
 
-            {/*        <div className={styled.postItem}>*/}
-            {/*            <img className={styled.postImage} src = {tradeEx}/>*/}
-            {/*            <p className={styled.postTitle}>{postDetail[i].postTitle}</p>*/}
-            {/*            <p className={styled.postContent}>{SingleObject["postContent"]}</p>*/}
-            {/*            <div className={styled.detail}>*/}
-            {/*                <p className={styled.like}>좋아요 {SingleObject["like"]}개</p>*/}
-            {/*                <div className={styled.detail2}>*/}
-            {/*                    <img className={styled.tradeImage} src = {transfer}/>*/}
-            {/*                    <p className={styled.like}>{SingleObject["category"]}</p>*/}
-            {/*                </div>*/}
-            {/*            </div>*/}
-            {/*        </div>                ))*/}
-            {/*}*/}
-
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
-            {/*<Card className={"forTrade"} postTitle={"스팸씨발아"} postContent={"스패애애ㅐㅇㅁ"} like={3} comment={5} category={"가구"} />*/}
         </div>
     );
 }

@@ -143,7 +143,7 @@ const PostUpload = () => {
             "wishCategoryName" : uploadData.wishCategory,
             "tagNames" : uploadData.tag
         };
-        console.log(jsonObj)
+
         uploadPost(jsonObj);
 
     }
