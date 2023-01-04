@@ -47,27 +47,46 @@ public class MessageService {
     private final TradeRepository tradeRepository;
 
     @Transactional
-    public Long createMessage(MessageSaveRequest saveRequest) {
+    public Long createMessage(MessageSaveRequest messageSaveRequest) {
 
-        Member sender = memberRepository.findByEmail(saveRequest.getSender().getEmail()).orElseThrow(UserNotFoundException::new);
-        Member receiver = memberRepository.findByEmail(saveRequest.getReceiver().getEmail()).orElseThrow(UserNotFoundException::new);
+        Member sender = memberRepository.findByEmail(messageSaveRequest.getSender().getEmail()).orElseThrow(UserNotFoundException::new);
+        Member receiver = memberRepository.findByEmail(messageSaveRequest.getReceiver().getEmail()).orElseThrow(UserNotFoundException::new);
         //포스트가 있는지 확인 포스트 레포지토리에서 findByAuthor쓰고 싶었는데 유저에서 확인하기도 하고 리스트가 와서 존재하는지만 확인하면 receiver는 당연히 자동적으로 연결되니까 확인 안해도 될듯?
-       // Post post = postRepository.findById(saveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
-        Trade trade = tradeRepository.findById(saveRequest.getPost().getTrade().getId()).orElseThrow(NotFoundByIdException::new);
-        MessageRoom messageRoom = messageRoomRepository.findById(saveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(messageSaveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(messageSaveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+
+        MessageRoom messageRoom = messageRoomRepository.findById(messageSaveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
 
 
         //포스트에 메시지를 보낼 수 있는 상태인지 확인. (거래중이거나 완료이면 메시지를 보내짐 못함.)
-        //메시지 룸에서도 확인해주나, 방이 만들어 진 뒤에는 확인을 못하니까 얘도 학인해주는게 좋을 듯 ->
         if(trade.getTradeStatus() != TradeStatus.TRADABLE){
             throw new CanNotSendMessageByTradeStatus();
         }
 
-        Message message = saveRequest.toEntity();
+        Message message = messageSaveRequest.toEntity();
         messageRepository.save(message);
         messageRoom.getMessages().add(message);
+        sender.getSendMessages().add(message);
+        receiver.getReceivedMessages().add(message);
 
         return message.getId();
     }
 
+    //TODO 메시지 삭제는 카톡과 같이 5분 내에 전송시 삭제해야되나?
+    //TODO 채팅방 지우는 형식은 카톡과 동일하게 양쪽 따로 관리하도록 해야할듯.
+    @Transactional
+    public String deleteMessage(DeleteMessageRequest deleteMessageRequest){
+        Member sender = memberRepository.findById(deleteMessageRequest.getSenderId()).orElseThrow(NotFoundByIdException::new);
+        MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRequest.getMessageRoom().getId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(deleteMessageRequest.getMessageRoom().getPost().getId()).orElseThrow(NotFoundByIdException::new);
+
+        //TODO 7일 뒤 시간 추가
+        //거래가 완료되면,
+        if(trade.getTradeStatus() == TradeStatus.TRADED){
+            for(Message message : messageRoom.getMessages()){
+                memberRepository.deleteById(message.getId());
+            }
+        }
+        return "DELETE";
+    }
 }

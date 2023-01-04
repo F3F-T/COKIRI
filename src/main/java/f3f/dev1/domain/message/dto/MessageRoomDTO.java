@@ -1,5 +1,6 @@
 package f3f.dev1.domain.message.dto;
 
+import f3f.dev1.domain.message.model.Message;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.model.Member;
@@ -10,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class MessageRoomDTO {
 
@@ -43,8 +45,10 @@ public class MessageRoomDTO {
     @AllArgsConstructor
     public static class DeleteMessageRoomRequest{
         private Long Id;
-        private Long senderId;
+        private Long sellerId;
+        private Long buyerId;
         private Post post;
+        private List<Message> messages;
     }
 
 
