@@ -80,18 +80,16 @@ public class MessageRoomService {
 //        return messageRoom.getMessages();
 //    }
     @Transactional(readOnly = true)
-    public List<Message> ReadMessageRoomByMessageRoomId(Long id){
+    public List<Message> ReadMessagesByMessageRoomId(Long id){
        MessageRoom messageRoom = messageRoomRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         return messageRoom.getMessages();
     }
 
-    @Transactional(readOnly = true)
-    public List<Message> ReadMessageRoomByMessageRoomId(MessageRoom messageRoom){
-        if(!messageRoomRepository.existsById(messageRoom.getId())){
-            throw new NoMessageRoomException();
-        }
-        //findById
-        return messageRoom.getMessages();
+    //포스트에 포함된 메시지룸 수수
+   @Transactional(readOnly = true)
+    public int ReadMessageRoomsByPostId(Long postId){
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
+        return post.getMessageRooms().size();
     }
     //유저 클릭하고 채팅방 조회는 유저에서 할듯?
 //    public List<MessageRoom> ReadMessageRoomsBySenderId(Long s){

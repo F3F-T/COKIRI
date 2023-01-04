@@ -3,6 +3,7 @@ package f3f.dev1.domain.message.application;
 import f3f.dev1.domain.message.dao.MessageRepository;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.dto.MessageDTO;
+import f3f.dev1.domain.message.exception.CanNotDeleteMessage;
 import f3f.dev1.domain.message.exception.CanNotSendMessageByTradeStatus;
 import f3f.dev1.domain.message.model.Message;
 import f3f.dev1.domain.message.model.MessageRoom;
@@ -72,21 +73,31 @@ public class MessageService {
         return message.getId();
     }
 
-    //TODO 메시지 삭제는 카톡과 같이 5분 내에 전송시 삭제해야되나?
+    //TODO 메시지 삭제는 카톡과 같이 5분 내에 전송시 삭제해야되나?(양방향 삭제 논의)!!!!!
+    //자기가 보낸것만 삭제할 수 있음.
     //TODO 채팅방 지우는 형식은 카톡과 동일하게 양쪽 따로 관리하도록 해야할듯.
     @Transactional
     public String deleteMessage(DeleteMessageRequest deleteMessageRequest){
         Member sender = memberRepository.findById(deleteMessageRequest.getSenderId()).orElseThrow(NotFoundByIdException::new);
         MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRequest.getMessageRoom().getId()).orElseThrow(NotFoundByIdException::new);
         Trade trade = tradeRepository.findByPostId(deleteMessageRequest.getMessageRoom().getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        Message message = messageRepository.findById(deleteMessageRequest.getSenderId()).orElseThrow(NotFoundByIdException::new);
+        //작성자만 자신의 메시지를 지울 수 있음.
+        if(message.getSender().getId().equals(deleteMessageRequest.getSenderId())) {
+            messageRepository.delete(message);
+        }
+        else{
+            throw new CanNotDeleteMessage();
+        }
+
 
         //TODO 7일 뒤 시간 추가
         //거래가 완료되면,
-        if(trade.getTradeStatus() == TradeStatus.TRADED){
-            for(Message message : messageRoom.getMessages()){
-                memberRepository.deleteById(message.getId());
-            }
-        }
+//        if(trade.getTradeStatus() == TradeStatus.TRADED){
+//            for(Message message : messageRoom.getMessages()){
+//                memberRepository.deleteById(message.getId());
+//            }
+//        }
         return "DELETE";
     }
 }
