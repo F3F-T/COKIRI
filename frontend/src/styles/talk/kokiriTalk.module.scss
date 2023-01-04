@@ -1,0 +1,99 @@
+//받은 쪽지 보낸 쪽지 앞전의 방식이랑 동일한 방법으로 컴포넌트화
+//프롭스로 받을 데이터는 receiveContent하나
+
+//talkContent도 컴포넌트화해서 대화상대랑 마지막대화내용
+//프롭스로 전달
+
+//right_header1이 그 사진이랑 사진타이틀인데 이거도 프롭스로 전달해야됨
+//
+
+
+//왼쪽 talkContent에서 onClick정보 받아와서 클릭된
+// talkContent의 대화 내용을 띄워줘야돼
+
+//message컴포넌트 하나 send와 receive분리
+//card컴퍼넌트를 forTalk으로 유니온하나 추가
+//talklist에 있는 애들도 컴포넌트화 props로 값 넘겨야되니까
+
+.kokiritalk{
+
+  width: 1200px;
+  height: 600px;
+  display: flex;
+  padding-top: 2rem;
+  margin: auto;
+  justify-content: left;
+}
+
+.left {
+  height: 40rem;
+  width: 25%;
+  border: 0.5px solid rgba(200, 200, 200);
+  margin-right: 1rem;
+  border-radius: 13px;
+}
+.left2{
+  overflow: auto;
+  height: 36rem;
+
+}
+.leftHeader{
+  font-size: 2rem;
+  font-weight: bolder;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.8rem;
+  border-bottom: 0.5px solid rgba(200, 200, 200);
+  height: 4rem;
+
+}
+.right {
+  height: 40rem;
+  width: 75%;
+  border-radius: 13px;
+  border: 0.5px solid rgba(200, 200, 200);
+}
+
+
+
+.talkContainer{
+  display: grid;
+
+}
+
+
+
+.right_header{
+  display: flex;
+  justify-content: space-between;
+
+}
+
+.right_header1{
+  justify-content: left;
+}
+.right_header1_1{
+  display: flex;
+}
+.right_header1_2{
+  margin-left: 0.9rem ;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+
+}
+.right_header2{
+  display: flex;
+  margin-top: 0.5rem;
+  margin-right: 1rem;
+  justify-content: space-evenly;
+  gap: 0.7rem;
+  color: gray;
+  font-size: 0.9rem;
+}
+
+.talkContainer2{
+  overflow: auto;
+  height: 25rem;
+  border-bottom: 0.5px solid rgba(200, 200, 200);
+}
+

@@ -1,53 +1,140 @@
 
-.outerNavbar {
-    background-color: white;
-    position: fixed;
-    top: 0;
-    left: 0;
+/*.outerNavbar {*/
+/*    background-color: white;*/
+/*    position: fixed;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    width: 100%;*/
+/*    max-width: 100vw;*/
+/*    z-index: 999;*/
+/*    border: 1px ;*/
+/*    border-style: outset;*/
+/*    height: 72px;*/
+/*}*/
+
+
+/*.outerNavbar > div,a {*/
+/*    width: 100%;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+/*    text-decoration: none;*/
+/*    color: black;*/
+/*}*/
+
+/*.logo{*/
+/*    display: inline-block;*/
+/*    fill: none;*/
+
+/*}*/
+
+/*.nav{*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    width: 100%;*/
+/*    padding-top: 0;*/
+/*    padding-right: 4rem;*/
+/*    padding-bottom: 0;*/
+/*    padding-left: 0;*/
+
+/*}*/
+
+/*ul{*/
+/*    list-style: none;*/
+/*}*/
+
+/*li{*/
+/*    float: left;*/
+/*    font-weight: 700;*/
+/*    line-height: 1.4;*/
+/*    font-size: 1.4rem;*/
+/*    font-style: normal;*/
+/*    margin-right: 3rem;*/
+/*}*/
+
+/*.navbarBrand{*/
+/*    width : 10%;*/
+/*}*/
+.navBarBar{
     width: 100%;
-    max-width: 100vw;
+    height: 72px;
+    position: fixed;
+    background-color: white;
     z-index: 999;
-    border: 1px ;
-    border-style: outset;
+    border-bottom-color: #e5e8eb;
+}
+.navBar {
+    border-bottom : 1px solid lightgray;
+    width: 100%;
+    height: 74px;
+
+}
+.meauto {
+    /*border: 1px solid red;*/
+    width: 100%;
+}
+.homeLogo {
+    /*border: 1px solid red;*/
+    margin-left : 3rem;
+    width: 72px;
     height: 72px;
 }
 
-
-.outerNavbar > div,a {
-    width: 100%;
+.meauto{
     display: flex;
+    /*border: 1px solid blue;*/
+    justify-content: space-evenly;
+}
+.mulBtn{
+    /*border: 1px solid red;*/
+    width: 5rem;
+}
+.kiriBtn{
+    width: 5rem;
+}
+.searchBox{
+    display: flex;
+    /*border: 1px solid red;*/
+    width: 30%;
+}
+.search{
+    /*border: 1px solid red;*/
+    width: 100%;
     justify-content: center;
-    align-items: center;
-    text-decoration: none;
-    color: black;
+    border-radius: 10px;
+    background-color: lightgray;
+    border-color: transparent;
 }
+.signBtn{
+    margin-left:0rem;
+    border-radius: 10px;
+    height: 40px;
+    background-color: lightgray;
+    border-color: transparent;
+    /*border: 1px solid red;*/
+}
+.signBtn2{
+    border-radius: 10px;
+    height: 40px;
 
-.logo{
-    display: inline-block;
-    fill: none;
+    background-color: lightgray;
+    border-color: transparent;
 
 }
+.signBtn3{
+    border-radius: 10px;
+    height: 40px;
 
-.nav{
+    background-color: lightgray;
+    border-color: transparent;
+
+}
+.searchAndSign{
     display: flex;
-    align-items: center;
-    width: 100%;
-    padding-top: 0;
-    padding-right: 4rem;
-    padding-bottom: 0;
-    padding-left: 0;
 
 }
-
-ul{
-    list-style: none;
-}
-
-li{
-    float: left;
-    font-weight: 700;
-    line-height: 1.4;
-    font-size: 1.4rem;
-    font-style: normal;
-    margin-right: 3rem;
+.mypageI{
+    width: 36px;
+    height: 36px;
+    margin-right: 0.5rem;
 }

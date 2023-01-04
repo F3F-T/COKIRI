@@ -1,0 +1,62 @@
+.signup {
+    padding-top: 3rem;
+    width : 460px;
+    /*height: 650px;*/
+    text-align: center;
+    /*border: 1px solid red;*/
+    margin : auto; /*가운데 정렬*/
+}
+.signupHeader{
+    height: 20%;
+    /*border: 1px solid red;*/
+}
+.signup_1{
+    font-size : 2rem;
+    text-align: center;
+    height: 50%;
+    width: 80%;
+    margin : auto; /*가운데 정렬*/
+
+
+    border-bottom: 2px solid rgba(150, 150, 150, 0.2);
+
+}
+.signup_2{
+
+}
+.signup_3{
+    font-size: 1.4rem;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.userInfo {
+    height: 60%;
+    /*border: 1px solid red;*/
+    border-radius: 10px;
+    width: 100%;
+    /*display: grid;*/
+    /*grid-template-rows: repeat(6,1fr);*/
+    /*gap: 10px;*/
+}
+
+.userInfo div{
+    margin-bottom: 1rem;
+}
+
+
+.btnPlace{
+    height: 10%;
+    /*border: 1px solid red;*/
+
+}
+.userNameBirth{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.btn{
+    width : 87%;
+    height: 3rem;
+    text-align: center;
+}
