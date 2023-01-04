@@ -88,6 +88,7 @@ public class Member extends MemberBase {
                 .imageUrl(this.imageUrl)
                 .id(this.getId())
                 .scrapId(scrapId)
+                .birthDate(this.birthDate)
                 .build();
     }
 
