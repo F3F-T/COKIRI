@@ -47,8 +47,8 @@ public class PostService {
 
         Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         List<PostTag> resultsList = new ArrayList<>();
-        Category productCategory = categoryRepository.findCategoryByName(postSaveRequest.getProductCategoryName()).orElseThrow(NotFoundProductCategoryNameException::new);
-        Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategoryName()).orElseThrow(NotFoundWishCategoryNameException::new);
+        Category productCategory = categoryRepository.findCategoryByName(postSaveRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
+        Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         if(!member.getId().equals(currentMemberId)) {
             throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
@@ -213,9 +213,9 @@ public class PostService {
     public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long currentMemberId) {
 
 
-        Post post = postRepository.findById(updatePostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
-        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategoryName()).orElseThrow(NotFoundProductCategoryNameException::new);
-        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategoryName()).orElseThrow(NotFoundWishCategoryNameException::new);
+        Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
+        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         List<Tag> tags = tagRepository.findByNameIn(updatePostRequest.getTagNames());
         List<PostTag> postTags = new ArrayList<>();
         if(!updatePostRequest.getAuthorId().equals(currentMemberId)) {
@@ -262,7 +262,7 @@ public class PostService {
     @Transactional
     public String deletePost(DeletePostRequest deletePostRequest, Long currentMemberId) {
         // 먼저 해당 게시글이 존재하는지 검증
-        Post post = postRepository.findById(deletePostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(deletePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         // 그 후 작성자가 요청자와 동일인물인지 검증
         Member author = post.getAuthor();
         if(!author.getId().equals(currentMemberId)) {
@@ -272,7 +272,7 @@ public class PostService {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
         }
 
-        postRepository.deleteById(deletePostRequest.getPostId());
+        postRepository.deleteById(deletePostRequest.getId());
         return "DELETE";
     }
 

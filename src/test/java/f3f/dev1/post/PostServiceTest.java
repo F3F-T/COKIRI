@@ -135,11 +135,11 @@ public class PostServiceTest {
 
     public UpdatePostRequest createUpdatePostRequest() {
         return UpdatePostRequest.builder()
-                .postId(1L)
+                .id(1L)
                 .title("제목 맘에 안들어서 바꿈")
                 .content("내용도 바꿀래요")
-                .productCategoryName(null)
-                .wishCategoryName(null)
+                .productCategory(null)
+                .wishCategory(null)
                 .build();
     }
 
@@ -149,9 +149,9 @@ public class PostServiceTest {
                 .title("3년 신은 양말 거래 희망합니다")
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
-                .productCategoryName(productName)
+                .productCategory(productName)
                 .tagNames(new ArrayList<>())
-                .wishCategoryName(wishName)
+                .wishCategory(wishName)
                 .build();
     }
 
@@ -161,8 +161,8 @@ public class PostServiceTest {
                 .title("태그 게시글 title")
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
-                .productCategoryName(productName)
-                .wishCategoryName(wishName)
+                .productCategory(productName)
+                .wishCategory(wishName)
                 .tagNames(tagNames)
                 .build();
     }
@@ -173,8 +173,8 @@ public class PostServiceTest {
                 .title(title)
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
-                .productCategoryName(productName)
-                .wishCategoryName(wishName)
+                .productCategory(productName)
+                .wishCategory(wishName)
                 .tagNames(tagNames)
                 .build();
     }
@@ -185,9 +185,9 @@ public class PostServiceTest {
                 .title(title)
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
-                .productCategoryName(productName)
+                .productCategory(productName)
                 .tagNames(new ArrayList<>())
-                .wishCategoryName(wishName)
+                .wishCategory(wishName)
                 .build();
     }
 
@@ -199,12 +199,12 @@ public class PostServiceTest {
     // 업데이트 요청
     public UpdatePostRequest createUpdatePostRequest(Long postId, Long authorId, String title, String content, String productCategoryName, String wishCategoryName, List<String> tagNames) {
         return UpdatePostRequest.builder()
-                .postId(postId)
+                .id(postId)
                 .authorId(authorId)
                 .title(title)
                 .content(content)
-                .productCategoryName(productCategoryName)
-                .wishCategoryName(wishCategoryName)
+                .productCategory(productCategoryName)
+                .wishCategory(wishCategoryName)
                 .tagNames(tagNames)
                 .build();
     }
@@ -821,7 +821,7 @@ public class PostServiceTest {
         //then
         assertThat(postInfoDto.getTitle()).isEqualTo(updatePostRequest.getTitle());
         assertThat(postInfoDto.getContent()).isEqualTo(updatePostRequest.getContent());
-        assertThat(postInfoDto.getId()).isEqualTo(updatePostRequest.getPostId());
+        assertThat(postInfoDto.getId()).isEqualTo(updatePostRequest.getId());
 
         // then +
         Post updatedPost = postRepository.findById(postInfoDto.getId()).get();

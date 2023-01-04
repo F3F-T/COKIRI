@@ -30,8 +30,8 @@ public class PostDTO {
         private Boolean tradeEachOther;
         @NotNull
         private Long authorId;
-        private String productCategoryName;
-        private String wishCategoryName;
+        private String productCategory;
+        private String wishCategory;
         @NotNull
         private List<String> tagNames;
 
@@ -58,15 +58,15 @@ public class PostDTO {
         // 태그도 수정될 수 있으니 태그 리스트를 받은 뒤 Post의 UpdatePostTags에서 수정하도록 하겠다.
         // 카테고리도 같은 맥락
         @NotNull
-        private Long postId;
+        private Long id;
         @NotNull
         private Long authorId;
         @Size(min=2, max=20, message = "제목은 2글자 이상, 20자 이하로 설정해주세요")
         private String title;
         @NotBlank(message = "내용문을 작성해주세요")
         private String content;
-        private String productCategoryName;
-        private String wishCategoryName;
+        private String productCategory;
+        private String wishCategory;
         private List<String> tagNames;
     }
 
@@ -75,7 +75,7 @@ public class PostDTO {
     @AllArgsConstructor
     public static class DeletePostRequest {
         @NotNull
-        private Long postId;
+        private Long id;
         @NotNull
         private Long authorId;
     }

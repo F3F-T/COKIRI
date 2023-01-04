@@ -112,8 +112,8 @@ public class CommentControllerTest {
                 .title("12번 사용한 마스크 교환해요~")
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
-                .productCategoryName(null)
-                .wishCategoryName(null)
+                .productCategory(null)
+                .wishCategory(null)
                 .build();
     }
 
@@ -123,8 +123,8 @@ public class CommentControllerTest {
                 .title("12번 사용한 마스크 교환해요~")
                 .tradeEachOther(tradeEachOther)
                 .authorId(authorId)
-                .productCategoryName(null)
-                .wishCategoryName(null)
+                .productCategory(null)
+                .wishCategory(null)
                 .build();
     }
 

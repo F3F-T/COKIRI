@@ -124,12 +124,12 @@ public class PostControllerTest {
 
     public UpdatePostRequest createUpdatePostRequest() {
         return UpdatePostRequest.builder()
-                .postId(1L)
+                .id(1L)
                 .authorId(1L)
                 .title("제목 맘에 안들어서 바꿈")
                 .content("내용도 바꿀래요")
-                .productCategoryName(null)
-                .wishCategoryName(null)
+                .productCategory(null)
+                .wishCategory(null)
                 .build();
     }
 
@@ -140,8 +140,8 @@ public class PostControllerTest {
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
                 .tagNames(new ArrayList<>())
-                .productCategoryName(null)
-                .wishCategoryName(null)
+                .productCategory(null)
+                .wishCategory(null)
                 .build();
     }
 
@@ -151,8 +151,8 @@ public class PostControllerTest {
                 .title("3년 신은 양말 거래 희망합니다")
                 .tradeEachOther(tradeEachOther)
                 .tagNames(new ArrayList<>())
-                .productCategoryName(null)
-                .wishCategoryName(null)
+                .productCategory(null)
+                .wishCategory(null)
                 .authorId(authorId)
                 .build();
     }
@@ -182,9 +182,9 @@ public class PostControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("post/create/successful",requestFields(
-                        fieldWithPath("productCategoryName").description("productCategory name value of post"),
+                        fieldWithPath("productCategory").description("productCategory name value of post"),
                         fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
-                        fieldWithPath("wishCategoryName").description("wishCategory name value of post"),
+                        fieldWithPath("wishCategory").description("wishCategory name value of post"),
                         fieldWithPath("tagNames").description("tag names list value of post"),
                         fieldWithPath("authorId").description("author id value of post"),
                         fieldWithPath("content").description("content value of post"),
@@ -247,12 +247,12 @@ public class PostControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(updatePostRequest.getTitle()))
                 .andDo(document("post/update/successful", requestFields(
-                        fieldWithPath("postId").description("Id value of post"),
+                        fieldWithPath("id").description("Id value of post"),
                         fieldWithPath("authorId").description("Id value of auhor (requester)"),
                         fieldWithPath("title").description("title value of post"),
                         fieldWithPath("content").description("content value of post"),
-                        fieldWithPath("productCategoryName").description("product category name value of post"),
-                        fieldWithPath("wishCategoryName").description("wish category name value of post"),
+                        fieldWithPath("productCategory").description("product category name value of post"),
+                        fieldWithPath("wishCategory").description("wish category name value of post"),
                         fieldWithPath("tagNames").description("list values of tag names")
                 ), responseFields(
                         fieldWithPath("id").description("Id value of post"),
@@ -319,7 +319,7 @@ public class PostControllerTest {
                 .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andDo(document("post/delete/succssful", requestFields(
-                        fieldWithPath("postId").description("postId value of post"),
+                        fieldWithPath("id").description("postId value of post"),
                         fieldWithPath("authorId").description("delete requester Id value")
                 )));
         // TODO responseFields 완성해야함
