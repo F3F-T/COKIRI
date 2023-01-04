@@ -342,6 +342,50 @@ public class PostServiceTest {
     }
 
     @Test
+    @DisplayName("프론트 요구사항 변경 테스트 - PostInfoDtoWithTags return type")
+    public void postInfoDtoWithTagsTestForSuccess() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        // 태그 생성
+        CreateTagRequest tagRequest1 = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest tagRequest2 = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest tagRequest3 = createTagRequest("해시태그3", member.getId());
+        tagService.createTag(tagRequest1);
+        tagService.createTag(tagRequest2);
+        tagService.createTag(tagRequest3);
+
+        //when
+        List<String> tagNamesToBeAdded = new ArrayList<>();
+        tagNamesToBeAdded.add(tagRequest1.getName());
+        tagNamesToBeAdded.add(tagRequest2.getName());
+        tagNamesToBeAdded.add(tagRequest3.getName());
+        PostSaveRequest postSaveRequest = createPostSaveRequestWithTagAndTitle(member, "제목", false, productRequest.getName(), wishRequest.getName(), tagNamesToBeAdded);
+        Long postId = postService.savePost(postSaveRequest, member.getId());
+        tagService.addTagsToPost(postId, tagNamesToBeAdded);
+
+        //then
+        // 컨트롤러에서 사용하는 포스트 서비스 로직을 그대로 사용하여 테스트해보겠음.
+        PostInfoDtoWithTag postInfoDtoWithTag = postService.findPostById(postId);
+        assertThat(postInfoDtoWithTag.getTitle()).isEqualTo("제목");
+        assertThat(postInfoDtoWithTag.getTagNames().size()).isEqualTo(3);
+        assertThat(postInfoDtoWithTag.getTagNames().containsAll(tagNamesToBeAdded)).isTrue();
+    }
+
+    @Test
     @DisplayName("조건과 함께 게시글 검색 테스트 - 태그로만 검색")
     public void findPostsWithTagNamesConditionTestForSuccess() throws Exception {
         //given
