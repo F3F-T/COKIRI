@@ -9,7 +9,7 @@ import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.token.dto.TokenDTO.AccessTokenDTO;
 import f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
-import f3f.dev1.domain.token.exception.InvalidAccessTokenException;
+import f3f.dev1.domain.token.exception.ExpireRefreshTokenException;
 import f3f.dev1.domain.token.exception.InvalidRefreshTokenException;
 import f3f.dev1.domain.token.exception.LogoutUserException;
 import f3f.dev1.domain.token.exception.TokenNotMatchException;
@@ -88,7 +88,7 @@ public class AuthService {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         String accessByRefresh = valueOperations.get(accessTokenDTO.getAccessToken());
         if (accessByRefresh == null) {
-            throw new InvalidAccessTokenException();
+            throw new ExpireRefreshTokenException();
         }
 //        RefreshToken tokenByAccess = tokenService.findByAccessToken(accessTokenDTO.getAccessToken());
         // 1. refresh token 검증

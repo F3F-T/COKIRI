@@ -1,0 +1,104 @@
+.primary {
+
+  .Profile {
+    display: flex;
+    padding-top: 0.3rem;
+    margin-left: 0.3rem;
+  }
+
+  .ProfileImg {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .ProfileInfo {
+
+    display: inline-block;
+    font-size: 0.8rem;
+    font-width: 700;
+    margin-left: 0.3rem;
+    vertical-align: center;
+
+  }
+
+  .ProfileActionList {
+
+    margin-left: auto;
+    list-style: none;
+  }
+
+  .ProfileActionList li {
+    float: left;
+    font-size: 0.5rem;
+    margin-right: 0.5rem;
+
+  }
+
+  .comments {
+    margin-left: 0.3rem;
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+  }
+
+  .time {
+    padding-left: 0.3rem;
+    padding-bottom: 0.3rem;
+    margin-top: 0.3rem;
+    font-size: 0.5rem;
+  }
+
+}
+
+.secondary {
+margin-right: 0.8rem;
+  margin-left: 3rem;
+  border : 1px #e5e8eb solid ;
+  margin-top: 0.8rem;
+  border-radius: 10px;
+
+
+  .Profile {
+    display: flex;
+  }
+
+  .ProfileImg {
+    width: 2rem;
+    height: 2rem;
+    margin-left:0.3rem;
+    margin-top: 0.3rem;
+  }
+
+  .ProfileInfo {
+    display: inline-block;
+    font-size: 0.8rem;
+    font-width: 700;
+    margin-left: 0.3rem;
+    margin-top: 0.2rem;
+    vertical-align: center;
+
+  }
+
+  .ProfileActionList {
+    margin-left: auto;
+    list-style: none;
+  }
+
+  .ProfileActionList li {
+    float: left;
+    margin-top: 0.3rem;
+    margin-right: 0.5rem;
+    font-size: 0.5rem;
+  }
+
+  .comments {
+    margin-left: 0.3rem;
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+  }
+
+  .time {
+    margin: 0.3rem;
+    font-size: 0.5rem;
+
+  }
+}

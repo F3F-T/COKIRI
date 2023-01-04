@@ -1,17 +1,9 @@
 
 .postContainer{
-    height: 60%;
-    width: 94.6%;
-    margin: auto;
+    width: 1200px;
     border-radius: 10px;
-    border: 0.5px solid red;
+    /*border: 0.5px solid red;*/
     display: grid;
     grid-template-columns: repeat(4,1fr);
-    gap: 7%;
-}
-.postImage{
-    border: 0.5px solid rgba(255,0,0,5);
-    margin-left: 0rem;
-    border-radius: 10px;
-
+    gap: 4rem;
 }

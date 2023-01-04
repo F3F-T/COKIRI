@@ -1,0 +1,102 @@
+.forTrade{
+  .postItem{
+    border: 1px solid rgba(200, 200, 200);
+    border-radius: 10px;
+  }
+  .postImage{
+    width: 15rem;
+    height: 12rem;
+    margin: 0.2rem;
+    border-radius: 10px;
+  }
+  .postTitle{
+    width: 15rem;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1rem;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    margin:0.3rem;
+  }
+  .postContent{
+    text-align: left;
+    font-weight: bold;
+    color : gray;
+    margin:0.3rem;
+  }
+  .detail{
+    display: flex;
+    justify-content: space-between;
+  }
+  .like{
+    font-weight: bold;
+    margin-left:0.3rem;
+  }
+  .tradeImage{
+    width: 1.4rem;
+    height: 1.4rem;
+  }
+  .detail2{
+    width: 4rem;
+    display: flex;
+    justify-content: space-evenly;
+    margin-right: 1rem;
+  }
+}
+
+
+
+
+.forMypage{
+  .postItem{
+    border: 1px solid rgba(200, 200, 200);
+    width: 10.6rem;
+    height: 10rem;
+    border-radius: 10px;
+    margin-bottom: 0.9rem;
+  }
+  .postImage{
+    width: 10rem;
+    height: 6rem;
+    margin: 0.2rem;
+    border-radius: 10px;
+  }
+  .postTitle{
+    width: 15rem;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1rem;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    margin:0.3rem;
+  }
+  .detail{
+    display: flex;
+    justify-content: space-between;
+  }
+  .like{
+    font-weight: bold;
+    margin-left:0.3rem;
+    font-size: 0.5rem;
+  }
+  .tradeImage{
+    width: 1rem;
+    height: 1rem;
+  }
+  .detail2{
+    width: 4rem;
+    display: flex;
+    justify-content: space-evenly;
+    margin-right: 1rem;
+  }
+  //.postImage{
+  //  width: 5rem;
+  //  margin-left: 0rem;
+  //  border-radius: 10px;
+  //}
+  //.postItem{
+  //  border: 0.5px solid rgba(0,255,5);
+  //}
+}

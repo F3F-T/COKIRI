@@ -1,24 +1,33 @@
-
 /************************************************************************
  시작하기 Component
  현재 크기를 줄일때 띠껍게 되는 문제 발생하는데 미디어 쿼리를 이용해서 해야하는듯
  ************************************************************************/
 /*시작하기 전체*/
 
-.start{
-    width : 75%;
+/*시작하기 왼쪽*/
+.startLeft {
+    /*padding-left: 6rem; !*left padding*!*/
+    /*padding-top: calc(var( --start-height) /2 - 3.7rem); !*추후 height를 변경할시에 동적으로 변경될수 있게 calc 사용, -2.5는 startLeft의 font-size를 고려한것*!*/
+    padding-top: 6rem;
+    flex: 4.0; /*div 안에서 start left와 start right의 비율로 분할해준다*/
+    font-size: 4.5rem;
+
+}
+
+.start {
+    width: 75%;
     margin: auto; /* content를 중앙으로 보낸다*/
     min-width: 5vw; /*최소를 정해줬는데 이건 적용이 안된듯*/
     /*border-style: solid;*/
-    height: var( --start-height);  /* start 전체크기 200px */
-    display: flex;  /*div 안에서 start left와 start right의 비율로 분할해준다*/
+    height: var(--start-height); /* start 전체크기 200px */
+    display: flex; /*div 안에서 start left와 start right의 비율로 분할해준다*/
     font-size: 1.5rem;
 
 }
 
 
 /*시작하기 왼쪽*/
-.startLeft{
+.startLeft {
     /*padding-left: 6rem; !*left padding*!*/
     /*padding-top: calc(var( --start-height) /2 - 3.7rem); !*추후 height를 변경할시에 동적으로 변경될수 있게 calc 사용, -2.5는 startLeft의 font-size를 고려한것*!*/
     padding-top: 6rem;
@@ -28,7 +37,7 @@
 }
 
 /*시작하기 오른쪽 전체*/
-.startRight{
+.startRight {
     padding-top: 6rem;
     padding-left: 5rem;
     flex: 5;
@@ -36,13 +45,13 @@
 }
 
 /*시작하기 설명 폰트 사이즈*/
-.startRight1{
+.startRight1 {
     font-size: 1em;
 
 }
 
 /*시작하기 버튼*/
-.startRight2 button{
+.startRight2 button {
     margin-top: 1.5rem;
     margin-right: 1.5rem;
     font-size: 0.75em;
