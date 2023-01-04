@@ -15,27 +15,30 @@ import java.util.List;
 public class CommentDTO {
 
 
+    // TODO 문제 생길 여지 있어보임
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CreateCommentRequest {
         @NotNull
-        private Long authorId;
+        private Long id;
         @NotNull
-        private Long postId;
+        private Member author;
+        @NotNull
+        private Post post;
         private Long depth;
         @Size(min = 1, message = "댓글은 한글자 이상 작성해주세요")
         private String content;
-        private Long parentCommentId;
+        private Comment parentComment;
 
-        public Comment toEntity(Post post, Member author, Comment parentComment) {
+        public Comment toEntity() {
             return Comment.builder()
-                    .post(post)
-                    .author(author)
+                    .post(this.post)
+                    .author(this.author)
                     .content(this.content)
                     .depth(this.depth)
-                    .parent(parentComment)
+                    .parent(this.parentComment)
                     .build();
         }
     }
@@ -48,18 +51,18 @@ public class CommentDTO {
         @NotNull
         private Long id;
         @NotNull
-        private Long authorId;
+        private Member author;
         @NotNull
-        private Long postId;
+        private Post post;
         @Size(min = 1, message = "댓글은 한글자 이상 작성해주세요")
         private String content;
 
         // child는 생성 시점에는 반드시 비어있으므로 따로 처리해주지 않음
         // TODO 피드백 : 이전에 피드백 받았을 때는 null을 할당하는걸 지양하라고 했는데, parent에 다이렉트로 null을 넣어도 문제가 없는지
-        public Comment ToParentEntity(Post post, Member author) {
+        public Comment ToParentEntity() {
             return Comment.builder()
-                    .post(post)
-                    .author(author)
+                    .post(this.post)
+                    .author(this.author)
                     .content(this.content)
                     .depth(0L)
                     .parent(null)
@@ -74,23 +77,23 @@ public class CommentDTO {
         @NotNull
         private Long id;
         @NotNull
-        private Long authorId;
+        private Member author;
         @NotNull
-        private Long postId;
+        private Post post;
         @Size(min = 1, message = "댓글은 한 글자 이상 작성해주세요")
         private String content;
         @NotNull
-        private Long parentCommentId;
+        private Comment parent;
         private Long depth;
 
 
-        public Comment ToChildEntity(Post post, Member author, Comment parentComment) {
+        public Comment ToChildEntity() {
             return Comment.builder()
-                    .post(post)
-                    .author(author)
+                    .post(this.post)
+                    .author(this.author)
                     .content(this.content)
                     .depth(this.depth)
-                    .parent(parentComment)
+                    .parent(this.parent)
                     .build();
         }
     }
@@ -102,9 +105,9 @@ public class CommentDTO {
         @NotNull
         private Long id;
         @NotNull
-        private Long authorId;
+        private Member author;
         @NotNull
-        private Long postId;
+        private Post post;
         @Size(min = 1, message = "수정할 댓글을 한 글자 이상 적어주세요")
         private String content;
     }
@@ -120,25 +123,21 @@ public class CommentDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class FindByPostIdCommentListResponse {
+        @NotNull
+        private List<Comment> results;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class DeleteCommentRequest {
         @NotNull
         private Long id;
         @NotNull
-        private Long authorId;
+        private Member author;
         @NotNull
-        private Long postId;
-    }
-
-    @Getter
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CommentInfoDto{
-        private Long id;
-        private Long postId;
-        private Long memberId;
-        private String content;
-        private Long depth;
-        private Long parentCommentId;
+        private Post post;
+        // TODO 로그인 (토큰) 정보?
     }
 }
