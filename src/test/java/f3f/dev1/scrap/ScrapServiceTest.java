@@ -95,8 +95,8 @@ public class ScrapServiceTest {
                 .title("이건 테스트 게시글 제목이야")
                 .content("이건 테스트 게시글 내용이지 하하")
                 .tradeEachOther(false)
-                .wishCategoryId(null)
-                .productCategoryId(null)
+                .wishCategoryName(null)
+                .productCategoryName(null)
                 .build();
     }
 

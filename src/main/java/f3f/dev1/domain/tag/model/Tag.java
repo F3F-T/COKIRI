@@ -18,8 +18,13 @@ public class Tag {
 
     private String name;
 
-    @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "tag", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<PostTag> postTags = new ArrayList<>();
+
+    // 연관관계 편의 메소드
+    public void addToPostTags(PostTag postTag) {
+        this.postTags.add(postTag);
+    }
 
     @Builder
     public Tag(Long id, String name) {

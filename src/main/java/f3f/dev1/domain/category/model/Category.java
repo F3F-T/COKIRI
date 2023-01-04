@@ -44,4 +44,10 @@ public class Category {
     public void setDepth(Long depth){
         this.depth = depth;
     }
+
+    public void updateCategoryName(String name){
+        this.name = name;
+    }
+
+    public void updateCategoryDepth(Long depth) { this.depth = depth; }
 }
