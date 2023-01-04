@@ -112,12 +112,26 @@ public class PostService {
         List<String> tagNames = searchPostRequest.getTagNames();
         String productCategoryName = searchPostRequest.getProductCategory();
         String wishCategoryName = searchPostRequest.getWishCategory();
-//        Long price = searchPostRequest.getPrice();;
+        String minPrice = searchPostRequest.getMinPrice();
+        String maxPrice = searchPostRequest.getMaxPrice();
+        boolean flag = false;
 
-        // 가격 정보가 존재하면 먼저 resultPostList에 가격으로 필터링된 정보를 넣어놓는다.
-//        if(price != null) {
-//            List<Post> postsByPrice = postRepository.findByPrice(price);
-//        }
+        if(minPrice != null && maxPrice != null) {
+            if(minPrice.chars().allMatch(Character::isDigit)) {
+                flag = true;
+                if(!maxPrice.chars().allMatch(Character::isDigit)) {
+                    List<Post> postsFromMinPrice = postRepository.findByPriceGreaterThanEqual(Long.parseLong(minPrice));
+                    resultPostList.addAll(postsFromMinPrice);
+                } else {
+                    List<Post> postsFromBoth = postRepository.findByPriceBetween(Long.parseLong(minPrice), Long.parseLong(maxPrice));
+                    resultPostList.addAll(postsFromBoth);
+                }
+            } else if(maxPrice.chars().allMatch(Character::isDigit)){
+                flag = true;
+                List<Post> postsFromMaxPrice = postRepository.findByPriceLessThanEqual(Long.parseLong(maxPrice));
+                resultPostList.addAll(postsFromMaxPrice);
+            }
+        }
 
         if(!tagNames.isEmpty()) {
             // 카테고리 정보는 없고 태그로만 검색하는 경우
@@ -126,7 +140,11 @@ public class PostService {
                     List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
                     List<Post> posts = postRepository.findByPostTagsIn(postTags);
                     if(i == 0) {
-                        resultPostList.addAll(posts);
+                        if(flag) {
+                            resultPostList.retainAll(posts);
+                        } else {
+                            resultPostList.addAll(posts);
+                        }
                     } else {
                         resultPostList.retainAll(posts);
                     }
@@ -137,7 +155,11 @@ public class PostService {
                     List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
                     List<Post> posts = postRepository.findByProductCategoryNameAndPostTagsIn(productCategoryName, postTags);
                     if(i == 0) {
-                        resultPostList.addAll(posts);
+                        if(flag) {
+                            resultPostList.retainAll(posts);
+                        } else {
+                            resultPostList.addAll(posts);
+                        }
                     } else {
                         resultPostList.retainAll(posts);
                     }
@@ -148,7 +170,11 @@ public class PostService {
                     List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
                     List<Post> posts = postRepository.findByWishCategoryNameAndPostTagsIn(wishCategoryName, postTags);
                     if(i == 0) {
-                        resultPostList.addAll(posts);
+                        if(flag) {
+                            resultPostList.retainAll(posts);
+                        } else {
+                            resultPostList.addAll(posts);
+                        }
                     } else {
                         resultPostList.retainAll(posts);
                     }
@@ -159,7 +185,11 @@ public class PostService {
                     List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
                     List<Post> posts = postRepository.findByProductCategoryNameAndWishCategoryNameAndPostTagsIn(productCategoryName, wishCategoryName, postTags);
                     if(i == 0) {
-                        resultPostList.addAll(posts);
+                        if(flag) {
+                            resultPostList.retainAll(posts);
+                        } else {
+                            resultPostList.addAll(posts);
+                        }
                     } else {
                         resultPostList.retainAll(posts);
                     }
@@ -170,18 +200,34 @@ public class PostService {
             // 올린 상품 카테고리와 희망 상품 카테고리, 태그정보 모두 없이 검색한 경우 - 전체 조회 결과로 반환
             if(productCategoryName.equals("") && wishCategoryName.equals("")) {
                 List<Post> all = postRepository.findAll();
-                resultPostList.addAll(all);
+                if(flag) {
+                    resultPostList.retainAll(all);
+                } else {
+                    resultPostList.addAll(all);
+                }
             // 올린 상품 카테고리만 있고 희망 상품 카테고리와 태그는 없이 검색하는 경우
             } else if(!productCategoryName.equals("") && wishCategoryName.equals("")) {
                 List<Post> postsFromProductCategoryName = postRepository.findByProductCategoryName(productCategoryName);
-                resultPostList.addAll(postsFromProductCategoryName);
+                if(flag) {
+                    resultPostList.retainAll(postsFromProductCategoryName);
+                } else {
+                    resultPostList.addAll(postsFromProductCategoryName);
+                }
                 // 올린 상품 카테고리와 태그는 없고 희망 상품 카테고리만 사용하여 검색하는 경우
             } else if(productCategoryName.equals("") && !wishCategoryName.equals("")) {
                 List<Post> postsFromWishProductCategoryName = postRepository.findByWishCategoryName(wishCategoryName);
-                resultPostList.addAll(postsFromWishProductCategoryName);
+                if(flag) {
+                    resultPostList.retainAll(postsFromWishProductCategoryName);
+                } else {
+                    resultPostList.addAll(postsFromWishProductCategoryName);
+                }
             } else if(!productCategoryName.equals("") && !wishCategoryName.equals("")) {
                 List<Post> posts = postRepository.findByProductCategoryNameAndWishCategoryName(productCategoryName, wishCategoryName);
-                resultPostList.addAll(posts);
+                if(flag) {
+                    resultPostList.retainAll(posts);
+                } else {
+                    resultPostList.addAll(posts);
+                }
             }
         }
             // 지금까지 resultPostList를 위에서 필터링하여 만들었다.
