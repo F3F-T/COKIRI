@@ -9,6 +9,7 @@ import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
 import Message from "../../component/로그인 & 회원가입/Message";
 import {stringify} from "querystring";
+import useGeoLocation from "../../hooks/useGeolocation"
 
 import axios from "axios";
 import {forEach} from "list";
@@ -23,6 +24,8 @@ const SignUp = () => {
         nickname: string;
         phoneNumber: string;
         userLoginType: string;
+        latitude:string;
+        longitude:string;
     }
 
     /**
@@ -55,7 +58,7 @@ const SignUp = () => {
         phoneNumberCheckBoolean: boolean;
 
     }
-
+    const location = useGeoLocation();
     const [validationCheck, setValidationCheck] = useState<ValidationCheck>(
         {
             emailCheck: undefined,
@@ -196,9 +199,12 @@ const SignUp = () => {
                 })
                 setuserInfo((prevState) => {
                     return {
-                        ...prevState, phoneNumber: phoneNumber["phoneNumber"]
+                        ...prevState, phoneNumber: phoneNumber["phoneNumber"],
+                        latitude: (JSON.stringify(location.coordinates.lat)) ,
+                        longitude: (JSON.stringify(location.coordinates.lng))
                     }
                 })
+
             }
 
         } catch (err) {
