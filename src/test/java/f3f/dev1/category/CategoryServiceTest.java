@@ -3,6 +3,7 @@ package f3f.dev1.category;
 import f3f.dev1.domain.category.application.CategoryService;
 import f3f.dev1.domain.category.dao.CategoryRepository;
 import f3f.dev1.domain.category.dto.CategoryDTO;
+import f3f.dev1.domain.category.exception.CanNotDeleteCategoryException;
 import f3f.dev1.domain.category.exception.CategoryException;
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.member.application.AuthService;
@@ -31,6 +32,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @SpringBootTest
@@ -168,7 +170,7 @@ public class CategoryServiceTest {
         CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("끼리끼리", admin.getId(), 1L, null);
 
         //when & then
-        Assertions.assertThrows(CategoryException.class, () -> {
+        assertThrows(CategoryException.class, () -> {
             Long cid2 = categoryService.createCategory(categoryDTO2);
         });
 
@@ -251,7 +253,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    @DisplayName("카테고리 삭제 테스트:자식 있음")
+    @DisplayName("(삭제 불가)카테고리 삭제 테스트:자식 있음")
     public void deleteParentCategoryTest() throws Exception {
         //given
         MemberDTO.SignUpRequest signUpRequest = createSignUpRequest();
@@ -270,14 +272,12 @@ public class CategoryServiceTest {
         CategoryDTO.CategorySaveRequest categoryDTO4 = createCategoryDto("주방", admin.getId(), 2L, category1.getId());
         Long cid4 = categoryService.createCategory(categoryDTO4);
         Category category4 = categoryRepository.findById(cid4).get();
-        //when
-        categoryService.deleteCategoryByID(cid1);
-        //then
-        assertThat(categoryRepository.findAll().size()).isEqualTo(2);
-        assertThat(categoryRepository.findByParentId(root.getId()).size()).isEqualTo(1);
-        assertThat(categoryRepository.existsById(cid1)).isEqualTo(false);
-        assertThat(categoryRepository.existsById(cid3)).isEqualTo(false);
-        assertThat(categoryRepository.existsById(cid4)).isEqualTo(false);
+
+        //when,then
+        assertThrows(CanNotDeleteCategoryException.class, ()-> {
+            categoryService.deleteCategoryByID(cid1);
+        });
+        assertThat(categoryRepository.findAll().size()).isEqualTo(5);
     }
 
 }
