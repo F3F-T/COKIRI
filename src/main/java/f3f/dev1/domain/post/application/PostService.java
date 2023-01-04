@@ -112,12 +112,12 @@ public class PostService {
         List<String> tagNames = searchPostRequest.getTagNames();
         String productCategoryName = searchPostRequest.getProductCategory();
         String wishCategoryName = searchPostRequest.getWishCategory();
-        Long price = searchPostRequest.getPrice();;
+//        Long price = searchPostRequest.getPrice();;
 
         // 가격 정보가 존재하면 먼저 resultPostList에 가격으로 필터링된 정보를 넣어놓는다.
-        if(price != null) {
-            List<Post> postsByPrice = postRepository.findByPrice(price);
-        }
+//        if(price != null) {
+//            List<Post> postsByPrice = postRepository.findByPrice(price);
+//        }
 
         if(!tagNames.isEmpty()) {
             // 카테고리 정보는 없고 태그로만 검색하는 경우

@@ -61,7 +61,8 @@ public class PostDTO {
         String productCategory;
         String wishCategory;
         private List<String> tagNames;
-        Long price;
+        String minPrice;
+        String maxPrice;
     }
 
     // U : Update 담당 DTO들
