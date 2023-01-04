@@ -7,7 +7,7 @@ import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.exception.NotFoundPostListByAuthor;
+import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
@@ -18,8 +18,6 @@ import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
-import f3f.dev1.global.util.DeduplicationUtils;
-import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,7 +87,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
         if(!postRepository.existsByAuthorId(authorId)) {
-            throw new NotFoundPostListByAuthor("해당 작성자의 게시글이 없습니다.");
+            throw new NotFoundPostListByAuthorException("해당 작성자의 게시글이 없습니다.");
         }
         List<PostInfoDtoWithTag> response = new ArrayList<>();
         List<Post> byAuthor = postRepository.findByAuthorId(authorId);
