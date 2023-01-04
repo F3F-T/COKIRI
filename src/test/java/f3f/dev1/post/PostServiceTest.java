@@ -197,9 +197,10 @@ public class PostServiceTest {
     }
 
     // 업데이트 요청
-    public UpdatePostRequest createUpdatePostRequest(Long postId, String title, String content, String productCategoryName, String wishCategoryName, List<String> tagNames) {
+    public UpdatePostRequest createUpdatePostRequest(Long postId, Long authorId, String title, String content, String productCategoryName, String wishCategoryName, List<String> tagNames) {
         return UpdatePostRequest.builder()
                 .postId(postId)
+                .authorId(authorId)
                 .title(title)
                 .content(content)
                 .productCategoryName(productCategoryName)
@@ -814,7 +815,7 @@ public class PostServiceTest {
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false,productRequest.getName(), wishRequest.getName());
         Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
-        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getName(), post.getWishCategory().getName(), new ArrayList<>());
+        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, member.getId(), "변경한 제목", "변경한 내용", post.getProductCategory().getName(), post.getWishCategory().getName(), new ArrayList<>());
         PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
 
         //then
@@ -864,7 +865,7 @@ public class PostServiceTest {
         // PostTag에 추가됐는지 확인하는 것이 핵심이다.
         List<String> secondTagNameList = new ArrayList<>();
         secondTagNameList.add("해시태그2");
-        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getName(), post.getWishCategory().getName(), secondTagNameList);
+        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, member.getId(),"변경한 제목", "변경한 내용", post.getProductCategory().getName(), post.getWishCategory().getName(), secondTagNameList);
         // 컨트롤러에서는 update 하기 전에 postTagService에서 레포지토리를 삭제한다. 똑같은 환경으로 테스트 하기 위해 여기서도 그렇게 하겠다.
         postTagService.deletePostTagFromPost(postId);
         PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
@@ -931,7 +932,7 @@ public class PostServiceTest {
         List<String> updatedTagNames = new ArrayList<>();
         updatedTagNames.add(tagRequest1.getName());
         updatedTagNames.add(tagRequest3.getName());
-        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", productRequest.getName(), wishRequest.getName(), updatedTagNames);
+        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, member.getId(),"변경한 제목", "변경한 내용", productRequest.getName(), wishRequest.getName(), updatedTagNames);
         postTagService.deletePostTagFromPost(postId);
         PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
 

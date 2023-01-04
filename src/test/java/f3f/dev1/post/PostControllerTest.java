@@ -125,6 +125,7 @@ public class PostControllerTest {
     public UpdatePostRequest createUpdatePostRequest() {
         return UpdatePostRequest.builder()
                 .postId(1L)
+                .authorId(1L)
                 .title("제목 맘에 안들어서 바꿈")
                 .content("내용도 바꿀래요")
                 .productCategoryName(null)
@@ -247,10 +248,11 @@ public class PostControllerTest {
                 .andExpect(jsonPath("$.title").value(updatePostRequest.getTitle()))
                 .andDo(document("post/update/successful", requestFields(
                         fieldWithPath("postId").description("Id value of post"),
+                        fieldWithPath("authorId").description("Id value of auhor (requester)"),
                         fieldWithPath("title").description("title value of post"),
                         fieldWithPath("content").description("content value of post"),
-                        fieldWithPath("productCategoryId").description("product category Id value of post"),
-                        fieldWithPath("wishCategoryId").description("wish category Id value of post"),
+                        fieldWithPath("productCategoryName").description("product category name value of post"),
+                        fieldWithPath("wishCategoryName").description("wish category name value of post"),
                         fieldWithPath("tagNames").description("list values of tag names")
                 ), responseFields(
                         fieldWithPath("id").description("Id value of post"),
@@ -318,7 +320,7 @@ public class PostControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andDo(document("post/delete/succssful", requestFields(
                         fieldWithPath("postId").description("postId value of post"),
-                        fieldWithPath("requesterId").description("delete requesterId")
+                        fieldWithPath("authorId").description("delete requester Id value")
                 )));
         // TODO responseFields 완성해야함
     }
