@@ -30,6 +30,7 @@ public class PostDTO {
         private Boolean tradeEachOther;
         @NotNull
         private Long authorId;
+        private Long price;
         private String productCategory;
         private String wishCategory;
         @NotNull
@@ -46,6 +47,21 @@ public class PostDTO {
                     .postTags(postTags)
                     .build();
         }
+    }
+
+    // R : read 담당 DTO들
+
+
+    // 메인화면에서 조회에 사용될 DTO.
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SearchPostRequest {
+        String productCategory;
+        String wishCategory;
+        private List<String> tagNames;
+        Long price;
     }
 
     // U : Update 담당 DTO들
@@ -65,6 +81,7 @@ public class PostDTO {
         private String title;
         @NotBlank(message = "내용문을 작성해주세요")
         private String content;
+        private Long price;
         private String productCategory;
         private String wishCategory;
         private List<String> tagNames;
@@ -96,6 +113,8 @@ public class PostDTO {
 
         private String wishCategory;
 
+        private Long price;
+
         private String productCategory;
 
         private TradeStatus tradeStatus;
@@ -119,6 +138,8 @@ public class PostDTO {
         private String wishCategory;
 
         private String productCategory;
+
+        private Long price;
 
         private TradeStatus tradeStatus;
 

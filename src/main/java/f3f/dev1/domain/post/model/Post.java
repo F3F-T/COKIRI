@@ -67,14 +67,10 @@ public class Post extends BaseTimeEntity {
     public void updatePostInfos(UpdatePostRequest updatePostRequest, Category productCategory, Category wishCategory, List<PostTag> postTags) {
         this.title = updatePostRequest.getTitle();
         this.content = updatePostRequest.getContent();
+        this.price = updatePostRequest.getPrice();
         this.postTags = postTags;
         this.productCategory = productCategory;
         this.wishCategory = wishCategory;
-    }
-
-    // 연관관계 편의 메소드
-    public void addToPostTags(PostTag postTag) {
-        this.postTags.add(postTag);
     }
 
     @Builder
@@ -89,6 +85,7 @@ public class Post extends BaseTimeEntity {
         this.author = author;
     }
 
+
     public PostInfoDto toInfoDto() {
         TradeStatus tradeStatus;
         if (this.trade == null) {
@@ -101,6 +98,7 @@ public class Post extends BaseTimeEntity {
                 .authorNickname(this.author.getNickname())
                 .content(this.content)
                 .title(this.title)
+                .price(this.price)
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
                 .tradeEachOther(this.tradeEachOther)
@@ -120,6 +118,7 @@ public class Post extends BaseTimeEntity {
                 .authorNickname(this.author.getNickname())
                 .content(this.content)
                 .title(this.title)
+                .price(this.price)
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
                 .tradeEachOther(this.tradeEachOther)

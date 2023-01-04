@@ -67,6 +67,7 @@ public class PostService {
      */
 
     // 게시글 전체 조회
+    // 컨트롤러에서는 쓰이지 않음. 컨트롤러에서는 findPostsWithConditions를 사용하고 아무 조건이 건네지지 않으면 전체조회를 수행함.
     public List<PostInfoDtoWithTag> findAllPosts() {
         List<Post> allPosts = postRepository.findAll();
         List<PostInfoDtoWithTag> response = new ArrayList<>();
@@ -86,6 +87,7 @@ public class PostService {
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     @Transactional(readOnly = true)
     public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
+        // TODO 없애도 될 예외같음. 게시글이 없으면 빈 리스트를 반환해주면 된다.
         if(!postRepository.existsByAuthorId(authorId)) {
             throw new NotFoundPostListByAuthorException("해당 작성자의 게시글이 없습니다.");
         }
@@ -104,9 +106,18 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostInfoDtoWithTag> findPostsWithConditions(String productCategoryName, String wishCategoryName, List<String> tagNames) {
+    public List<PostInfoDtoWithTag> findPostsWithConditions(SearchPostRequest searchPostRequest) {
         List<Post> resultPostList = new ArrayList<>();
         List<PostInfoDtoWithTag> response = new ArrayList<>();
+        List<String> tagNames = searchPostRequest.getTagNames();
+        String productCategoryName = searchPostRequest.getProductCategory();
+        String wishCategoryName = searchPostRequest.getWishCategory();
+        Long price = searchPostRequest.getPrice();;
+
+        // 가격 정보가 존재하면 먼저 resultPostList에 가격으로 필터링된 정보를 넣어놓는다.
+        if(price != null) {
+            List<Post> postsByPrice = postRepository.findByPrice(price);
+        }
 
         if(!tagNames.isEmpty()) {
             // 카테고리 정보는 없고 태그로만 검색하는 경우

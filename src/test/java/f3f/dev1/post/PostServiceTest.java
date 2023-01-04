@@ -191,6 +191,21 @@ public class PostServiceTest {
                 .build();
     }
 
+    public PostSaveRequest createCompletedPostSaveRequest(Member author, String title, String content, boolean tradeEachOther,
+                                                          String productName, String wishName, List<String> tagNames, Long price) {
+        // 최종 테스트에서 사용될 완성형 포스트 생성 요청 메소드
+        return PostSaveRequest.builder()
+                .tradeEachOther(tradeEachOther)
+                .productCategory(productName)
+                .authorId(author.getId())
+                .wishCategory(wishName)
+                .tagNames(tagNames)
+                .content(content)
+                .title(title)
+                .price(price)
+                .build();
+    }
+
 
     public DeletePostRequest createDeletePostRequest(Long postId, Long authorId) {
         return new DeletePostRequest(postId, authorId);
