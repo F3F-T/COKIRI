@@ -63,14 +63,14 @@ const MyPage = () =>  {
                     <button className={styles.zzim} onClick={()=>{ setDealTab('next')}}>관심 상품</button>
                 </div>
                 <div className={styles.container}>
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={3} comment={5} category={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={4} comment={8} category={"음식"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={7} comment={5} category={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={3} comment={5} category={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={3} comment={5} category={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={3} comment={5} category={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={3} comment={5} category={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={3} comment={5} category={"가구"} />
+                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={3} comment={5} wishCategory={"가구"} />
+                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={4} comment={8} wishCategory={"음식"} />
+                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={7} comment={5} wishCategory={"가구"} />
+                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={3} comment={5} wishCategory={"가구"} />
+                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={3} comment={5} wishCategory={"가구"} />
+                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={3} comment={5} wishCategory={"가구"} />
+                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={3} comment={5} wishCategory={"가구"} />
+                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={3} comment={5} wishCategory={"가구"} />
 
                 </div>
             </div>

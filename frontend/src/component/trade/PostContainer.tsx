@@ -20,15 +20,15 @@ import {setUserInfo} from "../../store/userInfoReducer";
 import {log} from "util";
 
 interface PostType {
-    postId : number;
-    title : string;
-    content : string;
-    tradeEachOther : boolean;
-    authorNickname : string;
-    wishCategory : string;
-    productCategory : string;
-    tradeStatus : string;
-    tagNames : string[];
+    postId? : number;
+    title? : string;
+    content? : string;
+    tradeEachOther? : boolean;
+    authorNickname? : string;
+    wishCategory? : string;
+    productCategory? : string;
+    tradeStatus? : string;
+    tagNames? : string[];
 }
 
 
@@ -112,7 +112,8 @@ const PostContainer = () => {
 
     const store = useSelector((state:Rootstate) => state);
 
-    const [postList,setPostList] = useState<PostType[]>()
+    const [postList,setPostList] = useState<PostType[]>(null)
+    const [loading,setLoading] = useState(false);
     async function getPostList() {
 
         //interceptor를 사용한 방식 (header에 token값 전달)
@@ -123,29 +124,6 @@ const PostContainer = () => {
             setPostList(prevState => {
                 return [...res.data];
             })
-
-            // let newData = res.data.map((post:PostType) => {
-            //     setPostList(prevState => {
-            //         return [...prevState];
-            //     })
-            // });
-
-            // let newData = res.data.map((data) => {
-            //     setTest(prevState => {
-            //         return [...prevState, "hi"];
-            //     })
-            // });
-
-            // setTest(["hi","hi2"])
-            // setTest(prevState => {
-            //     return [...prevState, "hi3"]
-            // })
-            //
-            // setTest2({key1: "hi1", key2 : "hi2"})
-            // setTest2(prevState => {
-            //     return [{...prevState, key3: "hi3"}, {key3 : "hi3"}]
-            // })
-
 
             console.log(postList);
 
@@ -166,6 +144,7 @@ const PostContainer = () => {
 
         console.log(postList)
 
+
     }
 
     const onClickPostDetail = (i)  => {
@@ -180,21 +159,29 @@ const PostContainer = () => {
         //category : categoryReducer.ts 안에 있는 categorySlice에 담긴 category이다. 이는 initialState : 안에 선언이 되어있다.
     }
 
+    /**
+     * 중요) postList를 async로 받긴 하지만 받아오는 시간 전까지는 postList가 null이기 때문에 밑에있는 render 에서 postList.map 이 null을 접근하게 돼서 오류가 발생하고, 켜지지 않는다
+     * 이렇게 예외처리를 꼭 해야한다.
+     */
+    if (!postList) {
+        return null
+    }
+
         return (
         <div className={styles.postContainer}>
             <button onClick={onClickTest}/>
-
             {
-                postList.map((post:object)=>(
-                    <Card className={"forTrade"} postTitle={SingleObject["postTitle"]} postContent={SingleObject["postContent"]} like={SingleObject["like"]} comment={SingleObject["comment"]} category={SingleObject["category"]} />
+                postList.map((post)=>(
+                    <Card key = {post.postId} className={"forTrade"} postTitle={post.title} postContent={post.content} wishCategory={post.wishCategory} />
+
                 ))
 
-
-                postDetail.map((SingleObject:object)=>(
-                    <Card className={"forTrade"} postTitle={SingleObject["postTitle"]} postContent={SingleObject["postContent"]} like={SingleObject["like"]} comment={SingleObject["comment"]} category={SingleObject["category"]} />
-                ))
+                // postDetail.map((SingleObject:object)=>(
+                //     <Card className={"forTrade"} postTitle={SingleObject["postTitle"]} postContent={SingleObject["postContent"]} like={SingleObject["like"]}
+                //           comment={SingleObject["comment"]} category={SingleObject["category"]} />
+                // ))
             }
-            <Card className={"forTrade"} postTitle={detail.postTitle} postContent={detail.postContent} like={detail.like} comment={detail.comment} category={detail.category} />
+            <Card className={"forTrade"} postTitle={detail.postTitle} postContent={detail.postContent} like={detail.like} comment={detail.comment} wishCategory={detail.category} />
 
         </div>
     );
