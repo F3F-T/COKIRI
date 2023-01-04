@@ -140,12 +140,6 @@ const PostContainer = () => {
         getPostList();
     },[])
 
-    const onClickTest = () => {
-
-        console.log(postList)
-
-
-    }
 
     const onClickPostDetail = (i)  => {
         dispatch(storePostDetail(postDetail[i].postTitle))
@@ -169,7 +163,6 @@ const PostContainer = () => {
 
         return (
         <div className={styles.postContainer}>
-            <button onClick={onClickTest}/>
             {
                 postList.map((post)=>(
                     <Card key = {post.postId} className={"forTrade"} postTitle={post.title} postContent={post.content} wishCategory={post.wishCategory} />
