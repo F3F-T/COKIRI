@@ -85,7 +85,7 @@ public class MessageRoomService {
         return messageRoom.getMessages();
     }
 
-    //포스트에 포함된 메시지룸 수수
+    //포스트에 포함된 메시지룸 수
    @Transactional(readOnly = true)
     public int ReadMessageRoomsByPostId(Long postId){
         Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
