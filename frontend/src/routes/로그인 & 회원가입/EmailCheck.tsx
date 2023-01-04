@@ -58,6 +58,7 @@ const EmailCheck = () => {
             if(result.data.matches)
             {
                 console.log("코드가 일치합니다")
+                navigate(`/signup/emailcheck/ok`)
             }
             else{
                 alert("코드가 일치하지않습니다")
@@ -65,13 +66,13 @@ const EmailCheck = () => {
 
         } catch (err) {
             console.log(err);
-            alert('코드가 일치하지않습니다2');
+            alert('코드가 일치하지않습니다');
 
         }
     }
 
     const onChangeCode = (e) => {
-        let inputCode = e.target.value;
+        const inputCode = e.target.value;
         setCode(inputCode);
         console.log(inputCode);
     }

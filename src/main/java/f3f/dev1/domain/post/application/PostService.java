@@ -1,6 +1,7 @@
 package f3f.dev1.domain.post.application;
 
 import f3f.dev1.domain.category.dao.CategoryRepository;
+import f3f.dev1.domain.category.exception.NotFoundCategoryByNameException;
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
@@ -9,7 +10,10 @@ import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
+import f3f.dev1.domain.tag.dao.TagRepository;
+import f3f.dev1.domain.tag.exception.NotFoundByPostAndTagException;
 import f3f.dev1.domain.tag.model.PostTag;
+import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import f3f.dev1.global.util.DeduplicationUtils;
@@ -32,17 +36,17 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final TradeRepository tradeRepository;
+    private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final PostTagRepository postTagRepository;
 
     @Transactional
     public Long savePost(PostSaveRequest postSaveRequest, Long currentMemberId) {
 
-        // TODO memberId를 추가로 받기 때문에 관련 로직 작성해야함
         Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         List<PostTag> resultsList = new ArrayList<>();
-        Category productCategory = categoryRepository.findById(postSaveRequest.getProductCategoryId()).orElseThrow(NotFoundByIdException::new);
-        Category wishCategory = categoryRepository.findById(postSaveRequest.getWishCategoryId()).orElseThrow(NotFoundByIdException::new);
+        Category productCategory = categoryRepository.findCategoryByName(postSaveRequest.getProductCategoryName()).orElseThrow(NotFoundCategoryByNameException::new);
+        Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategoryName()).orElseThrow(NotFoundCategoryByNameException::new);
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         if(!member.getId().equals(currentMemberId)) {
             throw new NotMatchingAuthorException("요청자가 현재 로그인한 유저가 아닙니다");
@@ -70,11 +74,16 @@ public class PostService {
      */
 
     // 게시글 전체 조회
-    public List<PostInfoDto> findAllPosts() {
+    public List<PostInfoDtoWithTag> findAllPosts() {
         List<Post> allPosts = postRepository.findAll();
-        List<PostInfoDto> response = new ArrayList<>();
+        List<PostInfoDtoWithTag> response = new ArrayList<>();
         for (Post post : allPosts) {
-            PostInfoDto responseEach = post.toInfoDto();
+            List<PostTag> postTags = postTagRepository.findByPost(post);
+            List<String> tagNames = new ArrayList<>();
+            for (PostTag postTag : postTags) {
+                tagNames.add(postTag.getTag().getName());
+            }
+            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
             response.add(responseEach);
         }
         return response;
@@ -83,23 +92,28 @@ public class PostService {
 
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     @Transactional(readOnly = true)
-    public List<PostInfoDto> findPostByAuthor(Long authorId) {
+    public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
         if(!postRepository.existsByAuthorId(authorId)) {
             throw new NotFoundPostListByAuthor("해당 작성자의 게시글이 없습니다.");
         }
-        List<PostInfoDto> response = new ArrayList<>();
+        List<PostInfoDtoWithTag> response = new ArrayList<>();
         List<Post> byAuthor = postRepository.findByAuthorId(authorId);
         for (Post post : byAuthor) {
-            PostInfoDto responseEach = post.toInfoDto();
+            List<PostTag> postTags = postTagRepository.findByPost(post);
+            List<String> tagNames = new ArrayList<>();
+            for (PostTag postTag : postTags) {
+                tagNames.add(postTag.getTag().getName());
+            }
+            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
             response.add(responseEach);
         }
         return response;
     }
 
     @Transactional(readOnly = true)
-    public List<PostInfoDto> findPostsWithConditions(String productCategoryName, String wishCategoryName, List<String> tagNames) {
+    public List<PostInfoDtoWithTag> findPostsWithConditions(String productCategoryName, String wishCategoryName, List<String> tagNames) {
         List<Post> resultPostList = new ArrayList<>();
-        List<PostInfoDto> response = new ArrayList<>();
+        List<PostInfoDtoWithTag> response = new ArrayList<>();
 
         if(!tagNames.isEmpty()) {
             // 카테고리 정보는 없고 태그로만 검색하는 경우
@@ -169,7 +183,12 @@ public class PostService {
             // 지금까지 resultPostList를 위에서 필터링하여 만들었다.
             // 여기서부터는 필터링된 resultPostList를 postInfoDto로 바꿔서 리스트에 추가하는 파트
             for (Post post : resultPostList) {
-                PostInfoDto responseEach = post.toInfoDto();
+                List<PostTag> postTags = postTagRepository.findByPost(post);
+                List<String> tagNamesOfPost = new ArrayList<>();
+                for (PostTag postTag : postTags) {
+                    tagNamesOfPost.add(postTag.getTag().getName());
+                }
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNamesOfPost);
                 response.add(responseEach);
             }
         return response;
@@ -178,11 +197,16 @@ public class PostService {
     // TODO 거래 가능한 게시글만 검색하기
 
     @Transactional(readOnly = true)
-    public PostInfoDto findPostById(Long id) {
+    public PostInfoDtoWithTag findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
 //        // TODO 거래 가능 상태인지 확인하기
+        List<String> tagNames = new ArrayList<>();
+        List<PostTag> postTags = postTagRepository.findByPost(post);
+        for (PostTag postTag : postTags) {
+            tagNames.add(postTag.getTag().getName());
+        }
 //        Trade trade = tradeRepository.findByPostId(post.getId()).orElseThrow(NotFoundByIdException::new);
-        PostInfoDto response = post.toInfoDto();
+        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames);
         return response;
     }
 
@@ -191,16 +215,47 @@ public class PostService {
      */
 
     @Transactional
-    public PostInfoDto updatePost(UpdatePostRequest updatePostRequest, Long memberId) {
+    public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long memberId) {
         Post post = postRepository.findById(updatePostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
-        // 게시글 변경 정보가 기존이랑 똑같다면 (변화가 없다면) 예외를 터트리려 했는데, 그럴 필요가 없어보여서 일단은 검증하지 않겠다
-        // 근데 또 예외는 던져놓고 처리를 안하는 방법도 있으니 이건 피드백을 받아 볼 예정
-        // post.updatePostInfos(updatePostRequest);
         Category productCategory = categoryRepository.findById(updatePostRequest.getProductCategoryId()).orElseThrow(NotFoundByIdException::new);
         Category wishCategory = categoryRepository.findById(updatePostRequest.getWishCategoryId()).orElseThrow(NotFoundByIdException::new);
-        post.updatePostInfos(updatePostRequest, productCategory, wishCategory);
+        List<Tag> tags = tagRepository.findByNameIn(updatePostRequest.getTagNames());
+        List<PostTag> postTags = new ArrayList<>();
 
-        PostInfoDto response = post.toInfoDto();
+        // postTag에서 post는 아래의 코드로 지울 수 있지만, post 단에서 postTag는 여기서 지울 수 없다.
+        // 따라서 컨트롤러에서 tag 서비스에 먼저 들러 관련 postTag를 다 지우고 현재의 메소드를 호출하도록 하겠다.
+//        postTagRepository.deletePostTagByPost(post);
+
+
+        if(tags.isEmpty()) {
+            post.updatePostInfos(updatePostRequest, productCategory, wishCategory, new ArrayList<>());
+        } else {
+            // PostTag가 없으면 여기서 새로 만들어서 추가까지 해줘야 한다.
+            for (Tag tag : tags) {
+                if(!postTagRepository.existsByPostAndTag(post,tag)) {
+                    // 업데이트 요청으로 넘어온 태그가 기존에 포스트에 존재하지 않는 태그라면 새로 추가해주기
+                    PostTag postTag = PostTag.builder()
+                            .post(post)
+                            .tag(tag)
+                            .build();
+                    postTagRepository.save(postTag);
+                    tag.getPostTags().add(postTag);
+                    postTags.add(postTag);
+                } else {
+                    // 기존에 존재하는 태그라면 다시 클리어된 리스트에 추가해주기
+                    PostTag postTag = postTagRepository.findByPostAndTag(post, tag).orElseThrow(NotFoundByPostAndTagException::new);
+                    tag.getPostTags().add(postTag);
+                    postTags.add(postTag);
+                }
+            }
+            post.updatePostInfos(updatePostRequest, productCategory, wishCategory, postTags);
+        }
+        List<PostTag> postTagsOfPost = postTagRepository.findByPost(post);
+        List<String> tagNames = new ArrayList<>();
+        for (PostTag postTag : postTagsOfPost) {
+            tagNames.add(postTag.getTag().getName());
+        }
+        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames);
         return response;
     }
 

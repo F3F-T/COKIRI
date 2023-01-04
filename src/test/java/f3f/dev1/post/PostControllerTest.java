@@ -10,6 +10,8 @@ import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.api.PostController;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dto.PostDTO;
+import f3f.dev1.domain.tag.application.PostTagService;
+import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -58,6 +60,12 @@ public class PostControllerTest {
 
     @MockBean
     private MemberService memberService;
+
+    @MockBean
+    private TagService tagService;
+
+    @MockBean
+    private PostTagService postTagService;
 
     @MockBean
     private AuthService authService;
@@ -121,7 +129,6 @@ public class PostControllerTest {
                 .content("내용도 바꿀래요")
                 .productCategoryId(null)
                 .wishCategoryId(null)
-                .postTags(null)
                 .build();
     }
 
@@ -132,8 +139,8 @@ public class PostControllerTest {
                 .tradeEachOther(tradeEachOther)
                 .authorId(author.getId())
                 .tagNames(new ArrayList<>())
-                .productCategoryId(null)
-                .wishCategoryId(null)
+                .productCategoryName(null)
+                .wishCategoryName(null)
                 .build();
     }
 
@@ -143,8 +150,8 @@ public class PostControllerTest {
                 .title("3년 신은 양말 거래 희망합니다")
                 .tradeEachOther(tradeEachOther)
                 .tagNames(new ArrayList<>())
-                .productCategoryId(null)
-                .wishCategoryId(null)
+                .productCategoryName(null)
+                .wishCategoryName(null)
                 .authorId(authorId)
                 .build();
     }
@@ -174,9 +181,9 @@ public class PostControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("post/create/successful",requestFields(
-                        fieldWithPath("productCategoryId").description("productCategory Id value of post"),
+                        fieldWithPath("productCategoryName").description("productCategory name value of post"),
                         fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
-                        fieldWithPath("wishCategoryId").description("wishCategory Id value of post"),
+                        fieldWithPath("wishCategoryName").description("wishCategory name value of post"),
                         fieldWithPath("tagNames").description("tag names list value of post"),
                         fieldWithPath("authorId").description("author id value of post"),
                         fieldWithPath("content").description("content value of post"),
@@ -222,7 +229,7 @@ public class PostControllerTest {
     @WithMockCustomUser
     public void updatePostSuccessTest() throws Exception {
         //given
-        PostInfoDto postInfoDto = PostInfoDto.builder().title("제목 맘에 안들어서 바꿈").build();
+        PostInfoDtoWithTag postInfoDto = PostInfoDtoWithTag.builder().title("제목 맘에 안들어서 바꿈").build();
         doReturn(postInfoDto).when(postService).updatePost(any(), any());
         Member member = createMember();
 
@@ -244,7 +251,7 @@ public class PostControllerTest {
                         fieldWithPath("content").description("content value of post"),
                         fieldWithPath("productCategoryId").description("product category Id value of post"),
                         fieldWithPath("wishCategoryId").description("wish category Id value of post"),
-                        fieldWithPath("postTags").description("postTag values of post")
+                        fieldWithPath("tagNames").description("list values of tag names")
                 ), responseFields(
                         fieldWithPath("id").description("Id value of post"),
                         fieldWithPath("content").description("content value of post"),
@@ -253,6 +260,7 @@ public class PostControllerTest {
                         fieldWithPath("wishCategory").description("wishCategory name value of post"),
                         fieldWithPath("productCategory").description("productCategory name value of post"),
                         fieldWithPath("title").description("title name value of post"),
+                        fieldWithPath("tagNames").description("list values of tag names"),
                         fieldWithPath("tradeStatus").description("tradeStatus value of post")
                 )));
     }
@@ -263,7 +271,7 @@ public class PostControllerTest {
         //given
         Member member = new Member();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        PostInfoDto postInfoDto = PostInfoDto.builder().title(postSaveRequest.getTitle()).build();
+        PostInfoDtoWithTag postInfoDto = PostInfoDtoWithTag.builder().title(postSaveRequest.getTitle()).build();
         postService.savePost(postSaveRequest, member.getId());
         doReturn(postInfoDto).when(postService).findPostById(any());
 
@@ -282,7 +290,8 @@ public class PostControllerTest {
                         fieldWithPath("wishCategory").description("wishCategory name value of post"),
                         fieldWithPath("productCategory").description("productCategory name value of post"),
                         fieldWithPath("title").description("title name value of post"),
-                        fieldWithPath("tradeStatus").description("tradeStatus value of post")
+                        fieldWithPath("tradeStatus").description("tradeStatus value of post"),
+                        fieldWithPath("tagNames").description("tag name list value of post")
                 )));
     }
 

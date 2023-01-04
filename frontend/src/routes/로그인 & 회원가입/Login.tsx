@@ -8,19 +8,22 @@ import axios from "axios";
 import Modal from "../../routes/로그인 & 회원가입/GoogleLoginModal"
 import GoogleButton from "./GoogleButton.js"
 import { useGoogleLogin } from '@react-oauth/google'
+import {useDispatch, useSelector} from "react-redux";
+// import {gapi} from 'gapi-script';
+import {setToken, deleteToken} from "../../store/jwtTokenReducer";
+import {Rootstate} from "../../index";
+import Api from "../../utils/api"
+import {setUserInfo} from "../../store/userInfoReducer";
 
-function Login() {
+const Login = () => {
+    const store = useSelector((state:Rootstate) => state);
+    const dispatch = useDispatch();
 
     const [isOpenModal, setOpenModal] = useState<boolean>(false);
 
     const onClickToggleModal = useCallback(() => {
         setOpenModal(!isOpenModal);
     }, [isOpenModal]);
-
-    // const googleSocialLogin = useGoogleLogin({
-    //     onSuccess: (codeResponse) => console.log(codeResponse),
-    //     flow: 'auth-code',
-    // })
 
 
 
@@ -66,15 +69,29 @@ function Login() {
         }
     }
     async function postLoginData() {
-        try {
 
-            const res = await axios.post("http://localhost:8080/auth/login", userInfo);
-            console.log("res",res);
+            //interceptor를 사용한 방식 (header에 token값 전달)
+        try{
+            const res = await Api.post('/auth/login',userInfo);
+            console.log(res)
             const accessToken = res.data;
 
-            axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-            console.log("토큰값")
-            console.log(accessToken);
+            //jwt 토큰 redux에 넣기
+            const jwtToken = accessToken.tokenInfo;
+            console.log(jwtToken)
+
+            dispatch(setToken(jwtToken));
+            dispatch(setUserInfo(res.data.userInfo))
+            console.log(store)
+            alert("로그인 성공")
+            navigate(`/`)
+            }
+            catch (err)
+            {
+                console.log(err)
+                alert("로그인에 실패하였습니다." + `\n` +
+                    "아이디 혹은 비밀번호를 다시 확인해주세요")
+            }
 
             const result = {
                 status: res.status + "-" + res.statusText,
@@ -82,13 +99,11 @@ function Login() {
                 data: res.data,
             };
 
-            alert('로그인 성공');
-            // setPostResult(formatResponse(result));
-        } catch (err) {
-            console.log(err); ///
-            alert('로그인 실패');
+            // console.log(store.jwtTokenReducer);
+            // console.log(store.jwtTokenReducer.accessToken);
+            // console.log(store.jwtTokenReducer.authenticated);
+            // console.log(store.jwtTokenReducer.accessTokenExpiresIn);
 
-        }
     }
 
     const handleClick= () => {
@@ -161,15 +176,11 @@ function Login() {
                 {/*@ts-ignore*/}
                 <Button className={"white"} onClick={login2} content={"구글 로그인"}/>
             </div>
-
-
         </div>
         </>
     );
-
 }
 //
-
 
 function Modal2(){
     return(

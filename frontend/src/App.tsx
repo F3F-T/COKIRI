@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, {useEffect} from "react";
 
 import Home from "./routes/Home";
 import { Route, Routes } from "react-router-dom";
@@ -13,28 +13,40 @@ import NotFound from "./component/NotFound";
 import Login from "./routes/로그인 & 회원가입/Login";
 import SignUp from "./routes/로그인 & 회원가입/SignUp";
 import EmailCheck from "./routes/로그인 & 회원가입/EmailCheck";
-import PostUpload from "./routes/PostUpload";
+import PostUpload from "./routes/게시글/PostUpload";
 import Zzim from "./routes/Zzim";
 
 import styles from "./styles/App.module.css";
 import EmailCheckOK from "./routes/로그인 & 회원가입/EmailCheckOK";
-import PostDetail from "./routes/PostDetail";
+import PostDetail from "./routes/게시글/PostDetail";
 import MulmulTrade1 from "./routes/MulMulTrade1";
 import KokiriTalk from "./routes/KokiriTalk";
 import GoogleButton from "./routes/로그인 & 회원가입/GoogleButton.js";
 import { GoogleOAuthProvider } from '@react-oauth/google'
 
+import {useDispatch, useSelector} from "react-redux";
+import {Rootstate} from "./index";
 
 function App() {
+
+    const store = useSelector((state:Rootstate) => state);
+    const dispatch = useDispatch();
+
+    //로그인 상태 변경에 따라 rendering 해주기 위함
+    useEffect(()=>{
+        console.log("jwt 토큰 effect 바뀜")
+        console.log(store)
+        console.log(store.jwtTokenReducer.authenticated);
+
+    },[store.jwtTokenReducer.authenticated])
+
     return (
         <div className="App">
             <Nav />
             <div className={styles.content}>
             <Routes>
                 <Route path="/" element={<Home/>} />
-                {/*<GoogleOAuthProvider clientId={'502345601007-gv64iag1rq1un755oo06q126ghmfgkqk.apps.googleusercontent.com'}>*/}
                 <Route path="/login" element={<Login/>}/>
-                {/*</GoogleOAuthProvider>*/}
 
                 <Route path="/signup" element={<SignUp/>}/>
                 <Route path="/signup/emailcheck" element={<EmailCheck/>}/>
@@ -56,12 +68,7 @@ function App() {
                 <Route path="/upload" element={<PostUpload/>}/>
 
                 <Route path='*' element={<NotFound />}/>
-                <Route path='/googlelogin' element={<GoogleButton/>}/>
-
             </Routes>
-
-
-
 
         </div>
         </div>

@@ -30,8 +30,8 @@ public class PostDTO {
         private Boolean tradeEachOther;
         @NotNull
         private Long authorId;
-        private Long productCategoryId;
-        private Long wishCategoryId;
+        private String productCategoryName;
+        private String wishCategoryName;
         @NotNull
         private List<String> tagNames;
 
@@ -87,7 +87,9 @@ public class PostDTO {
         private String content;
         private Long productCategoryId;
         private Long wishCategoryId;
-        private List<PostTag> postTags;
+        // TODO 태그 이름 리스트?
+        // private List<PostTag> postTags;
+        private List<String> tagNames;
     }
 
     @Getter
@@ -119,5 +121,29 @@ public class PostDTO {
         private String productCategory;
 
         private TradeStatus tradeStatus;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostInfoDtoWithTag{
+
+        private Long id;
+        private String title;
+
+        private String content;
+
+        private Boolean tradeEachOther;
+
+        private String authorNickname;
+
+        private String wishCategory;
+
+        private String productCategory;
+
+        private TradeStatus tradeStatus;
+
+        private List<String> tagNames;
     }
 }

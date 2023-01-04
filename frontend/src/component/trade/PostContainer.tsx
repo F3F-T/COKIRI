@@ -18,7 +18,7 @@ import styled from "../../styles/card/cards.module.scss";
 
 const PostContainer = () => {
     const dispatch = useDispatch();
-    let navigate = useNavigate();
+    const navigate = useNavigate();
     const onClickTotalTalkList = (key) => {
         return (event: React.MouseEvent) => {
             onClickPostDetail(key)
@@ -88,7 +88,7 @@ const PostContainer = () => {
             category: "가구"
         },
     ]
-    let detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
+    const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
 
     const onClickPostDetail = (i)  => {
         dispatch(storePostDetail(postDetail[i].postTitle))
