@@ -10,7 +10,7 @@ import {storeCategory} from "../../store/categoryReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {storePostDetail} from "../../store/postDetailReducer";
 import TalkList from "../talk/TalkList";
-import {Rootstate} from "../../index.js";
+import {Rootstate} from "../../index";
 import tradeEx from "../../img/tradeEx.jpeg";
 import transfer from "../../img/transfer.png";
 import styled from "../../styles/card/cards.module.scss";
@@ -18,7 +18,7 @@ import styled from "../../styles/card/cards.module.scss";
 
 const PostContainer = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+    let navigate = useNavigate();
     const onClickTotalTalkList = (key) => {
         return (event: React.MouseEvent) => {
             onClickPostDetail(key)
@@ -88,7 +88,7 @@ const PostContainer = () => {
             category: "가구"
         },
     ]
-    const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
+    let detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
 
     const onClickPostDetail = (i)  => {
         dispatch(storePostDetail(postDetail[i].postTitle))

@@ -16,6 +16,7 @@ import Api from "../../utils/api"
 import {setUserInfo} from "../../store/userInfoReducer";
 
 const Login = () => {
+
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
 
@@ -93,11 +94,6 @@ const Login = () => {
                     "아이디 혹은 비밀번호를 다시 확인해주세요")
             }
 
-            const result = {
-                status: res.status + "-" + res.statusText,
-                headers: res.headers,
-                data: res.data,
-            };
 
             // console.log(store.jwtTokenReducer);
             // console.log(store.jwtTokenReducer.accessToken);
@@ -116,23 +112,53 @@ const Login = () => {
     }
     // googleLogin();
     const url = google;
+    interface googleUserInfo {
+        email: string;
+        name: string;
+    }
+    const [userInfoG, setUserInfoG] = useState<googleUserInfo>(null);
 
-    const login2 =  useGoogleLogin({
+    const login2 = useGoogleLogin({
         onSuccess: async respose => {
             try {
                 const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
                     headers: {
                         "Authorization": `Bearer ${respose.access_token}`
                     }
+                }).then((data) => {
+                    // console.log(data)
+                    setUserInfoG((prevState) => {
+                        return {
+                            ...prevState, email:data.data.email , name:data.data.name
+                        }
+
+                    })
+
                 })
 
-                console.log("datatatta",res.data)
-            } catch (err) {
+                console.log("유저정보",userInfoG)
+                // if(userInfoG != null){
+                //     console.log("유저정보",userInfoG)
+                //     const res1 = await axios.post("http://localhost:8080/auth/google_login",userInfoG)
+                //     console.log("res2...",res1)
+                // }
+                Login3(userInfoG)
+                }
+            catch (err) {
                 console.log(err)
             }
-
         }
     });
+    async function Login3(userInfoG) {
+        try {
+            const res1 = await axios.post("http://localhost:8080/auth/google_login", userInfoG)
+            console.log("res2...", res1)
+        } catch(err) {
+            console.log("err",err)
+        }
+
+    }
+
 
     return (
         <><div className={styles.box}>

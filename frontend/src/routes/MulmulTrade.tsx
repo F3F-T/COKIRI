@@ -10,13 +10,13 @@ import PostContainer from "../component/trade/PostContainer";
 import TradeCategory from "../component/trade/TradeCategory";
 import {useOutletContext} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {Rootstate} from "../index.js";
+import {Rootstate} from "../index";
 import {resetCategory} from "../store/categoryReducer";
 import Button from "../component/common/Button";
 
 
 const MulmulTrade = () => {
-    const navigate = useNavigate();
+    let navigate = useNavigate();
 
     //index에서 선언해준 Rootstate를 state로 받는다, store에 저장한다.
     const store = useSelector((state: Rootstate) => state);

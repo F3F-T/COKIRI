@@ -8,7 +8,7 @@ import TradeCategory from "../component/trade/TradeCategory";
 import PriceBox from "../component/trade/PriceBox";
 import PostContainer from "../component/trade/PostContainer";
 import {useDispatch, useSelector} from "react-redux";
-import {Rootstate} from "../index.js";
+import {Rootstate} from "../index";
 import {resetCategory} from "../store/categoryReducer";
 import Button from "../component/common/Button";
 
