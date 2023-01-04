@@ -127,8 +127,8 @@ public class PostControllerTest {
                 .postId(1L)
                 .title("제목 맘에 안들어서 바꿈")
                 .content("내용도 바꿀래요")
-                .productCategoryId(null)
-                .wishCategoryId(null)
+                .productCategoryName(null)
+                .wishCategoryName(null)
                 .build();
     }
 

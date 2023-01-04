@@ -2,12 +2,10 @@ package f3f.dev1.post;
 
 import f3f.dev1.domain.category.application.CategoryService;
 import f3f.dev1.domain.category.dao.CategoryRepository;
-import f3f.dev1.domain.category.dto.CategoryDTO;
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.dao.MemberRepository;
-import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.application.PostService;
@@ -17,18 +15,13 @@ import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
-import f3f.dev1.domain.tag.dto.TagDTO;
 import f3f.dev1.domain.tag.model.PostTag;
-import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,8 +138,8 @@ public class PostServiceTest {
                 .postId(1L)
                 .title("제목 맘에 안들어서 바꿈")
                 .content("내용도 바꿀래요")
-                .productCategoryId(null)
-                .wishCategoryId(null)
+                .productCategoryName(null)
+                .wishCategoryName(null)
                 .build();
     }
 
@@ -204,13 +197,13 @@ public class PostServiceTest {
     }
 
     // 업데이트 요청
-    public UpdatePostRequest createUpdatePostRequest(Long postId, String title, String content, Long productCategoryId, Long wishCategoryId, List<String> tagNames) {
+    public UpdatePostRequest createUpdatePostRequest(Long postId, String title, String content, String productCategoryName, String wishCategoryName, List<String> tagNames) {
         return UpdatePostRequest.builder()
                 .postId(postId)
                 .title(title)
                 .content(content)
-                .productCategoryId(productCategoryId)
-                .wishCategoryId(wishCategoryId)
+                .productCategoryName(productCategoryName)
+                .wishCategoryName(wishCategoryName)
                 .tagNames(tagNames)
                 .build();
     }
@@ -821,7 +814,7 @@ public class PostServiceTest {
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false,productRequest.getName(), wishRequest.getName());
         Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
-        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getId(), post.getWishCategory().getId(), new ArrayList<>());
+        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getName(), post.getWishCategory().getName(), new ArrayList<>());
         PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
 
         //then
@@ -871,7 +864,7 @@ public class PostServiceTest {
         // PostTag에 추가됐는지 확인하는 것이 핵심이다.
         List<String> secondTagNameList = new ArrayList<>();
         secondTagNameList.add("해시태그2");
-        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getId(), post.getWishCategory().getId(), secondTagNameList);
+        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", post.getProductCategory().getName(), post.getWishCategory().getName(), secondTagNameList);
         // 컨트롤러에서는 update 하기 전에 postTagService에서 레포지토리를 삭제한다. 똑같은 환경으로 테스트 하기 위해 여기서도 그렇게 하겠다.
         postTagService.deletePostTagFromPost(postId);
         PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
@@ -938,7 +931,7 @@ public class PostServiceTest {
         List<String> updatedTagNames = new ArrayList<>();
         updatedTagNames.add(tagRequest1.getName());
         updatedTagNames.add(tagRequest3.getName());
-        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", productCategoryId, wishCategoryId, updatedTagNames);
+        UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, "변경한 제목", "변경한 내용", productRequest.getName(), wishRequest.getName(), updatedTagNames);
         postTagService.deletePostTagFromPost(postId);
         PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
 

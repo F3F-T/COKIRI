@@ -85,10 +85,8 @@ public class PostDTO {
         private String title;
         @NotBlank(message = "내용문을 작성해주세요")
         private String content;
-        private Long productCategoryId;
-        private Long wishCategoryId;
-        // TODO 태그 이름 리스트?
-        // private List<PostTag> postTags;
+        private String productCategoryName;
+        private String wishCategoryName;
         private List<String> tagNames;
     }
 

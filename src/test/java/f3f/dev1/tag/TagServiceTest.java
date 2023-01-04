@@ -126,8 +126,8 @@ public class TagServiceTest {
                 .postId(1L)
                 .title("제목 맘에 안들어서 바꿈")
                 .content("내용도 바꿀래요")
-                .productCategoryId(null)
-                .wishCategoryId(null)
+                .productCategoryName(null)
+                .wishCategoryName(null)
                 .build();
     }
 
@@ -183,13 +183,13 @@ public class TagServiceTest {
     }
 
     // 업데이트 요청, postTags 제외
-    public UpdatePostRequest createUpdatePostRequest(Long postId, String title, String content, Long productCategoryId, Long wishCategoryId) {
+    public UpdatePostRequest createUpdatePostRequest(Long postId, String title, String content, String productCategoryName, String wishCategoryName) {
         return UpdatePostRequest.builder()
                 .postId(postId)
                 .title(title)
                 .content(content)
-                .productCategoryId(productCategoryId)
-                .wishCategoryId(wishCategoryId)
+                .productCategoryName(productCategoryName)
+                .wishCategoryName(wishCategoryName)
                 .build();
     }
 
