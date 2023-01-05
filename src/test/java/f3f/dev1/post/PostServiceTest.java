@@ -17,6 +17,7 @@ import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -902,6 +903,69 @@ public class PostServiceTest {
         SearchPostRequest requestForFail = createPostSearchRequest(productRequest.getName(), "", hashTag1, "35000", "100000");
         List<PostInfoDtoWithTag> emptyList = postService.findPostsWithConditions(requestForFail);
         assertThat(emptyList).isEmpty();
+
+        // 게시글1, 게시글2가 모두 검색되어야 한다.
+        SearchPostRequest forBothRequest = createPostSearchRequest("", "", hashTag1, "3000", "50000");
+        List<PostInfoDtoWithTag> bothList = postService.findPostsWithConditions(forBothRequest);
+        assertThat(bothList).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+    }
+
+    @Test
+    @DisplayName("가격대로 검색 - 가격 문자열 이상 테스트")
+    public void invalidPriceStringTestForFail() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
+
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, rootId, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, rootId, member);
+        Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
+        Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
+
+        //when
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("해시태그1");
+        tagNames.add("해시태그2");
+        PostSaveRequest firstRequest = createCompletedPostSaveRequest(member, "첫번째 게시글", "첫번째 내용", false, productRequest.getName(), wishRequest.getName(), tagNames, 7500L);
+        List<String> secondTagNames = new ArrayList<>();
+        secondTagNames.add("해시태그2");
+        secondTagNames.add("해시태그3");
+        PostSaveRequest secondRequest = createCompletedPostSaveRequest(member, "두번째 게시글", "두번째 내용", false, secondProductRequest.getName(), secondWishRequest.getName(), secondTagNames, 30000L);
+        Long firstPostId = postService.savePost(firstRequest, member.getId());
+        Long secondPostId = postService.savePost(secondRequest, member.getId());
+        tagService.addTagsToPost(firstPostId, tagNames);
+        tagService.addTagsToPost(secondPostId, secondTagNames);
+
+        //then
+        // 최소가격, 최대가격 2개 모두 전달이 됐지만 최소가격은 사용 불가능한 형태, 따라서 최대 가격만 고려해서 검색한다.
+        // 게시글1이 검색되어야 한다.
+        SearchPostRequest minPriceStringError = createPostSearchRequest("", "", new ArrayList<>(), "3000문자섞임+_)(", "7500");
+        List<PostInfoDtoWithTag> firstPostList = postService.findPostsWithConditions(minPriceStringError);
+
+        // 게시글 1,2가 검색되어야 한다.
+        SearchPostRequest maxPriceStringError = createPostSearchRequest("", "", new ArrayList<>(), "3000", "7500문자섞임+_)(");
+        List<PostInfoDtoWithTag> secondPostList = postService.findPostsWithConditions(maxPriceStringError);
+
+
+        assertThat(firstPostList).extracting("title").hasSize(1).contains("첫번째 게시글");
+        assertThat(secondPostList).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
     }
 
     @Test

@@ -105,7 +105,6 @@ public class PostService {
         return response;
     }
 
-    // TODO 추가된 가격대 검색 기능 반드시 테스트 해봐야 한다.
     @Transactional(readOnly = true)
     public List<PostInfoDtoWithTag> findPostsWithConditions(SearchPostRequest searchPostRequest) {
         List<Post> resultPostList = new ArrayList<>();
@@ -117,6 +116,8 @@ public class PostService {
         String maxPrice = searchPostRequest.getMaxPrice();
         boolean flag = false;
 
+        // 넘어오는 가격대 문자열이 숫자로 변환할 수 없는 구조라면 현재는 그냥 무시해버린다.
+        // 예외를 터뜨리게 바꿔야 할까??
         if(minPrice != null && maxPrice != null) {
             if(minPrice.chars().allMatch(Character::isDigit)) {
                 flag = true;
