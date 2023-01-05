@@ -1,11 +1,13 @@
 package f3f.dev1.domain.post.application;
 
 import f3f.dev1.domain.category.dao.CategoryRepository;
-import f3f.dev1.domain.category.exception.NotFoundCategoryByNameException;
+import f3f.dev1.domain.category.exception.NotFoundProductCategoryNameException;
+import f3f.dev1.domain.category.exception.NotFoundWishCategoryNameException;
 import f3f.dev1.domain.category.model.Category;
+import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.exception.NotFoundPostListByAuthor;
+import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
@@ -16,8 +18,6 @@ import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
-import f3f.dev1.global.util.DeduplicationUtils;
-import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,19 +45,12 @@ public class PostService {
 
         Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         List<PostTag> resultsList = new ArrayList<>();
-        Category productCategory = categoryRepository.findCategoryByName(postSaveRequest.getProductCategoryName()).orElseThrow(NotFoundCategoryByNameException::new);
-        Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategoryName()).orElseThrow(NotFoundCategoryByNameException::new);
+        Category productCategory = categoryRepository.findCategoryByName(postSaveRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
+        Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         if(!member.getId().equals(currentMemberId)) {
-            throw new NotMatchingAuthorException("요청자가 현재 로그인한 유저가 아닙니다");
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
-        // 여기서는 PostTags만 추가해준다.
-        // 넘어온 이름으로 존재하는 태그를 찾아서 추가해주는 작업은 컨트롤러에서 tag 서비스를 호출해서 수행해준다.
-//        List<String> tagNames = postSaveRequest.getTagNames();
-//        for (String tagName : tagNames) {
-//            List<PostTag> postTags = postTagRepository.findByTagName(tagName);
-//            resultsList.addAll(postTags);
-//        }
         // resultList가 postService의 save 에서는 항상 비어있는 리스트로 들어간다.
         // 컨트롤러에서 postService.save 이후에 tagService를 호출해 addTagToPost로 태그를 추가해주는데,
         // 그때 포스트가 호출되어 리스트에 PostTag가 추가되게 된다.
@@ -94,7 +87,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
         if(!postRepository.existsByAuthorId(authorId)) {
-            throw new NotFoundPostListByAuthor("해당 작성자의 게시글이 없습니다.");
+            throw new NotFoundPostListByAuthorException("해당 작성자의 게시글이 없습니다.");
         }
         List<PostInfoDtoWithTag> response = new ArrayList<>();
         List<Post> byAuthor = postRepository.findByAuthorId(authorId);
@@ -215,18 +208,23 @@ public class PostService {
      */
 
     @Transactional
-    public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long memberId) {
-        Post post = postRepository.findById(updatePostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
-        Category productCategory = categoryRepository.findById(updatePostRequest.getProductCategoryId()).orElseThrow(NotFoundByIdException::new);
-        Category wishCategory = categoryRepository.findById(updatePostRequest.getWishCategoryId()).orElseThrow(NotFoundByIdException::new);
+    public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long currentMemberId) {
+
+
+        Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
+        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         List<Tag> tags = tagRepository.findByNameIn(updatePostRequest.getTagNames());
         List<PostTag> postTags = new ArrayList<>();
-
+        if(!updatePostRequest.getAuthorId().equals(currentMemberId)) {
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
+        }
+        if(!post.getAuthor().getId().equals(updatePostRequest.getAuthorId())) {
+            throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
+        }
         // postTag에서 post는 아래의 코드로 지울 수 있지만, post 단에서 postTag는 여기서 지울 수 없다.
         // 따라서 컨트롤러에서 tag 서비스에 먼저 들러 관련 postTag를 다 지우고 현재의 메소드를 호출하도록 하겠다.
-//        postTagRepository.deletePostTagByPost(post);
-
-
+        // postTagRepository.deletePostTagByPost(post);
         if(tags.isEmpty()) {
             post.updatePostInfos(updatePostRequest, productCategory, wishCategory, new ArrayList<>());
         } else {
@@ -260,16 +258,19 @@ public class PostService {
     }
 
     @Transactional
-    public String deletePost(DeletePostRequest deletePostRequest, Long memberId) {
+    public String deletePost(DeletePostRequest deletePostRequest, Long currentMemberId) {
         // 먼저 해당 게시글이 존재하는지 검증
-        Post post = postRepository.findById(deletePostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(deletePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         // 그 후 작성자가 요청자와 동일인물인지 검증
         Member author = post.getAuthor();
-        // TODO Id로만 비교하는게 좀 걸린다. 그렇다고 비밀번호 검증은 너무 투머치 같기도 하다
-        if(!author.getId().equals(deletePostRequest.getRequesterId())) {
+        if(!author.getId().equals(currentMemberId)) {
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
+        }
+        if(!author.getId().equals(deletePostRequest.getAuthorId())) {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
         }
-        postRepository.deleteById(deletePostRequest.getPostId());
+
+        postRepository.deleteById(deletePostRequest.getId());
         return "DELETE";
     }
 
