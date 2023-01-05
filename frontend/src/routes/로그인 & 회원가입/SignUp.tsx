@@ -199,6 +199,8 @@ const SignUp = () => {
             console.log(err);
             alert('서버와 통신 실패');
 
+
+
         }
     }
 

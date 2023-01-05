@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
+import static f3f.dev1.domain.member.dto.OAuthDTO.*;
 import static f3f.dev1.domain.token.dto.TokenDTO.AccessTokenDTO;
 import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 
@@ -93,12 +94,18 @@ public class MemberAuthController {
     // 로그인
     @PostMapping(value = "/login")
     public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest) {
+        log.info("로그인 호출됐음");
         return ResponseEntity.ok(authService.login(loginRequest));
+    }
+
+    @PostMapping(value = "/google_login")
+    public ResponseEntity<UserLoginDto> googleLogin(@RequestBody GoogleLoginRequest googleLoginRequest) {
+        return ResponseEntity.ok(oAuth2UserService.googleLogin(googleLoginRequest));
     }
 
     // 외부 API 로그인 요청
     @GetMapping(value = "/social_login/{loginType}")
-    public ResponseEntity<OAuthDTO.SocialLoginUrlDto> socialLogin(@PathVariable(name = "loginType") String loginType) {
+    public ResponseEntity<SocialLoginUrlDto> socialLogin(@PathVariable(name = "loginType") String loginType) {
         return ResponseEntity.ok(oAuth2UserService.request(loginType.toUpperCase()));
 
     }
@@ -106,6 +113,9 @@ public class MemberAuthController {
     // 구글 로그인 콜백 처리
     @GetMapping(value = "/social_login/{loginType}/callback")
     public ResponseEntity<UserLoginDto> callback(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
+        log.debug("code " + code);
+        System.out.println("code = " + code);
+
         UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code);
         if (userLoginDto.getUserInfo().getNickname() == null) {
             return new ResponseEntity<>(userLoginDto, HttpStatus.CREATED);

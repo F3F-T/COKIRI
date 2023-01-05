@@ -28,7 +28,7 @@ const PostUpload = () => {
     }
 
     const [uploadData, setUploadData] = useState<UploadData>()
-    const [tradeEachOther,setTradeEachOther] = useState<boolean>();
+    let tradeEachOther : boolean = undefined;
     const store = useSelector((state:Rootstate) => state);
 
 
@@ -103,6 +103,7 @@ const PostUpload = () => {
 
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
+            console.log(jsonObj)
             const res = await Api.post('/post',jsonObj);
             console.log(res)
 
@@ -123,20 +124,27 @@ const PostUpload = () => {
 
         if(uploadData.productCategory === uploadData.wishCategory)
         {
-            setTradeEachOther(true)
+            tradeEachOther = true;
+
+            console.log(tradeEachOther);
+            console.log("true")
         }else{
-            setTradeEachOther(false)
+            tradeEachOther = false;
+
+            console.log(tradeEachOther);
+            console.log("false")
         }
 
         const jsonObj = {
             "title": uploadData.title,
             "content":uploadData.content,
-            "tradeEachOther":tradeEachOther,
+            "tradeEachOther": tradeEachOther,
             "authorId": store.userInfoReducer.id,
-            "productCategoryName" : uploadData.productCategory,
-            "wishCategoryName" : uploadData.wishCategory,
-            "tagNames" : uploadData.tag
+            "productCategory" : uploadData.productCategory,
+            "wishCategory" : uploadData.wishCategory,
+            "tagNames" : [...uploadData.tag]
         };
+
         uploadPost(jsonObj);
 
     }
@@ -193,6 +201,8 @@ const PostUpload = () => {
                         // defaultValue="a,b,c"
                         onChange={onChange}
                     />
+
+
 
             </div>
             <div className={styles.btnPlace}>

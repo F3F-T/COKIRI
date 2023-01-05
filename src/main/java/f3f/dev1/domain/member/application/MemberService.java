@@ -14,6 +14,7 @@ import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static f3f.dev1.global.common.constants.RandomCharacter.RandomCharacters;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -61,11 +63,10 @@ public class MemberService {
     // 아이디로 유저 정보 조회
     @Transactional(readOnly = true)
     public UserInfo getUserInfo(Long userId) {
+        log.info("유저 정보 조회 호출됐음");
         Member byId = memberRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
-        Scrap scrap = scrapRepository.findScrapByMemberId(byId.getId()).orElseThrow(UserScrapNotFoundException::new);
 
-
-        return byId.toUserInfo(scrap.getId());
+        return byId.toUserInfo(byId.getScrap().getId());
 
     }
 

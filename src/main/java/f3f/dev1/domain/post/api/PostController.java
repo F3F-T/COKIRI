@@ -41,15 +41,7 @@ public class PostController {
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames) {
 
-        List<PostInfoDtoWithTag> responseList = new ArrayList<>();
-
-        if(productCategoryName.equals("") && wishCategoryName.equals("") && !tagNames.isEmpty()) {
-            List<PostInfoDtoWithTag> postInfoDtoList = tagService.getPostsByTagNames(tagNames);
-            responseList.addAll(postInfoDtoList);
-        } else {
-            List<PostInfoDtoWithTag> allPosts = postService.findAllPosts();
-            responseList.addAll(allPosts);
-        }
+        List<PostInfoDtoWithTag> responseList = postService.findPostsWithConditions(productCategoryName, wishCategoryName, tagNames);
         return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 

@@ -2,6 +2,7 @@ package f3f.dev1.domain.category.application;
 
 import f3f.dev1.domain.category.dao.CategoryRepository;
 import f3f.dev1.domain.category.dto.CategoryDTO;
+import f3f.dev1.domain.category.exception.CanNotDeleteCategoryException;
 import f3f.dev1.domain.category.exception.CategoryException;
 import f3f.dev1.domain.category.exception.NotFoundCategoryByNameException;
 import f3f.dev1.domain.category.model.Category;
@@ -154,32 +155,23 @@ public class CategoryService {
 
     //카테고리 삭제
     //카테고리를 삭제하면 관련 포스트도 다 삭제된다.
+    //TODO 포스트 상위에 속하게 하기, 상위 삭제시 하위 카테고리 삭제 여부 결정
     @Transactional
     public String deleteCategoryByID(Long id){
         Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        Category parentCat = categoryRepository.findById(category.getParent().getId()).orElseThrow(NotFoundByIdException::new);
+
         //자식 카테고리가 있다면, 자식 카테고리를 지운다.(계속 반복)
-        if(!category.getChild().isEmpty()){
+        //수정)하위카테고리가 있으면 지우지 않음.
+        if(category.getChild().isEmpty()){
             for(Category childCategory : category.getChild()){
-                //자식 카테고리에 포스트가 있다면, 포스트를 다 지움.
-                if(!childCategory.getProducts().isEmpty()){
-                    for(Post post : childCategory.getProducts()) {
-                        postRepository.delete(post); //deleteAll, deleteAllInBatch()다시 찾아보기
-                    }
-                }
                 categoryRepository.delete(childCategory);
             }
-           // category.getChild().clear();
+            categoryRepository.delete(category);
         }
-        categoryRepository.delete(category);
+        else{
+            throw new CanNotDeleteCategoryException();
+        }
         return "DELETE";
     }
-
-
-
-
-
-
-
-
-
 }

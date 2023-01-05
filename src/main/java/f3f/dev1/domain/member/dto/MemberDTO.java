@@ -3,6 +3,7 @@ package f3f.dev1.domain.member.dto;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.model.TradeStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,6 +33,8 @@ public class MemberDTO {
 
         private String phoneNumber;
 
+        private Address address;
+
         private String email;
 
         private String password;
@@ -53,6 +56,7 @@ public class MemberDTO {
                     .birthDate(birthDate)
                     .email(email)
                     .password(password)
+                    .address(address)
                     .userLoginType(userLoginType)
                     .build();
         }
@@ -98,6 +102,8 @@ public class MemberDTO {
         private String phoneNumber;
 
         private String email;
+
+        private String birthDate;
 
         private UserLoginType loginType;
     }
@@ -283,6 +289,10 @@ public class MemberDTO {
         private Long postId;
 
         private String opponentNickname;
+
+        private String lastMessage;
+
+        private TradeStatus tradeStatus;
 
     }
 

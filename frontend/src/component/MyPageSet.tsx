@@ -7,6 +7,7 @@ import photo from "../img/photoSelect.png"
 import PriceBox from "../component/trade/PriceBox";
 import profile from "../img/profile.jpeg"
 import PostContainer from "../component/trade/PostContainer";
+import Api from "../utils/api";
 
 // interface TextInputProps {
 //     init: string;
@@ -23,9 +24,22 @@ const MyPage = () =>  {
         // return tab
     }
 
+    async function readNickName(){
+        try{
+            const res = await  Api.get("/user")
+            console.log("유저정보",res)
+            alert("전송")
+        }
+        catch (err){
+            console.log(err);
+            alert("실패")
+        }
+    }
+
     return (
             <>
             <div className={styles.profile}>
+                <button onClick={readNickName}/>
                 <div className={styles.profileImage}>
                     <img className={styles.Image} src={profile}/>
                 </div>
