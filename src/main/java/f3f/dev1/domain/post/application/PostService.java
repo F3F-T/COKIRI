@@ -118,17 +118,33 @@ public class PostService {
 
         // 넘어오는 가격대 문자열이 숫자로 변환할 수 없는 구조라면 현재는 그냥 무시해버린다.
         // 예외를 터뜨리게 바꿔야 할까??
+        // 이전 로직. 일단 유지하겠음
+//            if(minPrice.chars().allMatch(Character::isDigit)) {
+//                flag = true;
+//                if(!maxPrice.chars().allMatch(Character::isDigit)) {
+//                    List<Post> postsFromMinPrice = postRepository.findByPriceGreaterThanEqual(Long.parseLong(minPrice));
+//                    resultPostList.addAll(postsFromMinPrice);
+//                } else {
+//                    List<Post> postsFromBoth = postRepository.findByPriceBetween(Long.parseLong(minPrice), Long.parseLong(maxPrice));
+//                    resultPostList.addAll(postsFromBoth);
+//                }
+//            } else if(maxPrice.chars().allMatch(Character::isDigit)){
+//                flag = true;
+//                List<Post> postsFromMaxPrice = postRepository.findByPriceLessThanEqual(Long.parseLong(maxPrice));
+//                resultPostList.addAll(postsFromMaxPrice);
+//            }
+
         if(minPrice != null && maxPrice != null) {
-            if(minPrice.chars().allMatch(Character::isDigit)) {
+            if (!minPrice.equals("")) {
                 flag = true;
-                if(!maxPrice.chars().allMatch(Character::isDigit)) {
+                if (maxPrice.equals("")) {
                     List<Post> postsFromMinPrice = postRepository.findByPriceGreaterThanEqual(Long.parseLong(minPrice));
                     resultPostList.addAll(postsFromMinPrice);
                 } else {
                     List<Post> postsFromBoth = postRepository.findByPriceBetween(Long.parseLong(minPrice), Long.parseLong(maxPrice));
                     resultPostList.addAll(postsFromBoth);
                 }
-            } else if(maxPrice.chars().allMatch(Character::isDigit)){
+            } else if (!maxPrice.equals("")) {
                 flag = true;
                 List<Post> postsFromMaxPrice = postRepository.findByPriceLessThanEqual(Long.parseLong(maxPrice));
                 resultPostList.addAll(postsFromMaxPrice);

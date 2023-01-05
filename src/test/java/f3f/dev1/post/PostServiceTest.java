@@ -956,16 +956,20 @@ public class PostServiceTest {
         //then
         // 최소가격, 최대가격 2개 모두 전달이 됐지만 최소가격은 사용 불가능한 형태, 따라서 최대 가격만 고려해서 검색한다.
         // 게시글1이 검색되어야 한다.
-        SearchPostRequest minPriceStringError = createPostSearchRequest("", "", new ArrayList<>(), "3000문자섞임+_)(", "7500");
+        SearchPostRequest minPriceStringError = createPostSearchRequest("", "", new ArrayList<>(), "", "7500");
         List<PostInfoDtoWithTag> firstPostList = postService.findPostsWithConditions(minPriceStringError);
 
         // 게시글 1,2가 검색되어야 한다.
-        SearchPostRequest maxPriceStringError = createPostSearchRequest("", "", new ArrayList<>(), "3000", "7500문자섞임+_)(");
+        SearchPostRequest maxPriceStringError = createPostSearchRequest("", "", new ArrayList<>(), "3000", "");
         List<PostInfoDtoWithTag> secondPostList = postService.findPostsWithConditions(maxPriceStringError);
 
+        // 모든 게시글이 다 조회되어야 한다.
+        SearchPostRequest emptyRequest = createPostSearchRequest("", "", new ArrayList<>(), "", "");
+        List<PostInfoDtoWithTag> totalList = postService.findPostsWithConditions(emptyRequest);
 
         assertThat(firstPostList).extracting("title").hasSize(1).contains("첫번째 게시글");
         assertThat(secondPostList).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+        assertThat(totalList).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
     }
 
     @Test
