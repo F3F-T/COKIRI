@@ -136,8 +136,6 @@ public class MemberControllerTest {
     public void signUpTestSuccess() throws Exception{
         //given
         SignUpRequest signUpRequest = createSignUpRequest();
-        authService.signUp(signUpRequest);
-//        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
 
         // then
         mockMvc.perform(post("/auth/signup")

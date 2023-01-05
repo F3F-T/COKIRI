@@ -30,8 +30,8 @@ public class PostDTO {
         private Boolean tradeEachOther;
         @NotNull
         private Long authorId;
-        private String productCategoryName;
-        private String wishCategoryName;
+        private String productCategory;
+        private String wishCategory;
         @NotNull
         private List<String> tagNames;
 
@@ -48,28 +48,6 @@ public class PostDTO {
         }
     }
 
-
-    // R : Read 담당 DTO들
-
-    // Id로 찾아진 객체를 감싸서 뱉어주는 DTO
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class FindByAuthorPostEachResponse {
-        private Post postEach;
-        private Trade tradeEach;
-//        private List<TradeStatus> tradeStatuses;
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class FindByIdPostResponse {
-        private Post byIdPost;
-        private Trade trade;
-//        private TradeStatus tradeStatus;
-    }
-
     // U : Update 담당 DTO들
 
     @Getter
@@ -80,15 +58,15 @@ public class PostDTO {
         // 태그도 수정될 수 있으니 태그 리스트를 받은 뒤 Post의 UpdatePostTags에서 수정하도록 하겠다.
         // 카테고리도 같은 맥락
         @NotNull
-        private Long postId;
+        private Long id;
+        @NotNull
+        private Long authorId;
         @Size(min=2, max=20, message = "제목은 2글자 이상, 20자 이하로 설정해주세요")
         private String title;
         @NotBlank(message = "내용문을 작성해주세요")
         private String content;
-        private Long productCategoryId;
-        private Long wishCategoryId;
-        // TODO 태그 이름 리스트?
-        // private List<PostTag> postTags;
+        private String productCategory;
+        private String wishCategory;
         private List<String> tagNames;
     }
 
@@ -97,9 +75,9 @@ public class PostDTO {
     @AllArgsConstructor
     public static class DeletePostRequest {
         @NotNull
-        private Long postId;
+        private Long id;
         @NotNull
-        private Long requesterId;
+        private Long authorId;
     }
     @Getter
     @Builder

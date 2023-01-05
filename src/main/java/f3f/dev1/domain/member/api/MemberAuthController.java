@@ -94,6 +94,7 @@ public class MemberAuthController {
     // 로그인
     @PostMapping(value = "/login")
     public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest) {
+        log.info("로그인 호출됐음");
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 

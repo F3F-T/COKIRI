@@ -87,6 +87,7 @@ public class EmailCertificationService {
         MimeMessage message = createMessage(to);
         try {
             emailSender.send(message);
+            log.info("secret code = " + ePw);
             ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
             valueOperations.set(to, ePw);
             redisTemplate.expire(to, EMIAL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
