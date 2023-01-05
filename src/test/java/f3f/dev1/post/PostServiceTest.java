@@ -282,6 +282,49 @@ public class PostServiceTest {
     }
 
     @Test
+    @DisplayName("게시글 생성 - 태그 생성 테스트")
+    public void postSaveTestWithTagForSuccess() throws Exception {
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
+
+        //when
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add(tagRequest.getName());
+        tagNames.add(secondTagRequest.getName());
+        tagNames.add(thirdTagRequest.getName());
+        PostSaveRequest postSaveRequestWithTag = createPostSaveRequestWithTag(member, false, productRequest.getName(), wishRequest.getName(), tagNames);
+        Long postId = postService.savePost(postSaveRequestWithTag, member.getId());
+        tagService.addTagsToPost(postId, tagNames);
+
+        //then
+        Post post = postRepository.findById(postId).get();
+        List<PostTag> postTagList = postTagRepository.findByPost(post);
+        assertThat(postTagList.size()).isEqualTo(3);
+        assertThat(postTagList.get(0).getTag().getName()).isEqualTo(tagRequest.getName());
+        assertThat(postTagList.get(1).getTag().getName()).isEqualTo(secondTagRequest.getName());
+        assertThat(postTagList.get(2).getTag().getName()).isEqualTo(thirdTagRequest.getName());
+    }
+
+    @Test
     @DisplayName("작성자로 게시글 조회 테스트")
     public void findPostByAuthorSuccess() throws Exception {
         //given
