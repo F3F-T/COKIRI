@@ -103,6 +103,7 @@ const PostUpload = () => {
 
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
+            console.log(jsonObj)
             const res = await Api.post('/post',jsonObj);
             console.log(res)
 
@@ -141,7 +142,7 @@ const PostUpload = () => {
             "authorId": store.userInfoReducer.id,
             "productCategory" : uploadData.productCategory,
             "wishCategory" : uploadData.wishCategory,
-            "tagNames" : uploadData.tag
+            "tagNames" : [...uploadData.tag]
         };
 
         uploadPost(jsonObj);

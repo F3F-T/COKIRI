@@ -23,6 +23,7 @@ interface props{
     like?: number;
     comment?: number;
     wishCategory? : string; //나중에 enum사용해서 다시 해보던가 할듯 없는 카테고리 못들어오게 막아야지
+    onClick?: any;
 }
 
 const TradeCard = (props1:props)=>{
@@ -68,7 +69,7 @@ const Card = (props1: props)=>{
     return(
         <>
             {props1.className === "forTrade" &&
-                <div className={ ck(props1.className)}>
+                <div className={ ck(props1.className)} onClick={props1.onClick}>
                     <TradeCard postTitle={props1.postTitle} postContent={props1.postContent} like={props1.like} comment={props1.comment} wishCategory={props1.wishCategory}/>
                 </div>}
             {props1.className === "forMypage" &&
