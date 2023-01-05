@@ -82,9 +82,10 @@ public class AuthService {
         // 5. 토큰 발급
 
         Member member = memberRepository.findById(Long.parseLong(authenticate.getName())).orElseThrow(NotFoundByIdException::new);
+        Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).orElseThrow(NotFoundByIdException::new);
 
 
-        return UserLoginDto.builder().userInfo(member.toUserInfo(member.getScrap().getId())).tokenInfo(tokenInfoDTO.toTokenIssueDTO()).build();
+        return UserLoginDto.builder().userInfo(member.toUserInfo(scrap.getId())).tokenInfo(tokenInfoDTO.toTokenIssueDTO()).build();
     }
 
     @Transactional
@@ -94,7 +95,6 @@ public class AuthService {
         if (accessByRefresh == null) {
             throw new ExpireRefreshTokenException();
         }
-//        RefreshToken tokenByAccess = tokenService.findByAccessToken(accessTokenDTO.getAccessToken());
         // 1. refresh token 검증
         if (!jwtTokenProvider.validateToken(accessByRefresh)) {
             throw new InvalidRefreshTokenException();
