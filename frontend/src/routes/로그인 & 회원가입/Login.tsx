@@ -6,6 +6,8 @@ import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
 import axios from "axios";
 import Modal from "../../routes/로그인 & 회원가입/GoogleLoginModal"
+import GoogleButton from "./GoogleButton.js"
+import { useGoogleLogin } from '@react-oauth/google'
 import {useDispatch, useSelector} from "react-redux";
 // import {gapi} from 'gapi-script';
 import {setToken, deleteToken} from "../../store/jwtTokenReducer";
@@ -14,6 +16,7 @@ import Api from "../../utils/api"
 import {setUserInfo} from "../../store/userInfoReducer";
 
 const Login = () => {
+
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
 
@@ -108,13 +111,80 @@ const Login = () => {
         googleLogin();
     }
     // googleLogin();
-    const url = google
+    const url = google;
+    interface googleUserInfo {
+        email: string;
+        name: string;
+    }
+    const [userInfoG, setUserInfoG] = useState<googleUserInfo>(null);
+
+    const login2 = useGoogleLogin({
+        onSuccess: async response => {
+            try {
+                const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+                    headers: {
+                        "Authorization": `Bearer ${response.access_token}`
+                    }
+                })
+                const data = res.data
+                console.log("d",data);
+
+                setUserInfoG((prevState) => {
+                    return {
+                        ...prevState, email:data.email , name:data.name
+                    }
+
+                })
+                console.log("유저정보",userInfoG)
+                setUserInfoG((prevState) => {
+                    return {
+                        ...prevState, email:data.email , name:data.name
+                    }
+
+                })
+                const res1 = await axios.post("http://localhost:8080/auth/google_login", userInfoG)
+                console.log("res2...", res1)
+                // if(userInfoG != null){
+                //     console.log("유저정보",userInfoG)
+                //     const res1 = await axios.post("http://localhost:8080/auth/google_login",userInfoG)
+                //     console.log("res2...",res1)
+                // }
+                }
+            catch (err) {
+                console.log(err)
+            }
+        }
+    });
+    // async function Login3(data) {
+    //     try {
+    //         console.log("erㅇㅇㅇㅇr")
+    //
+    //         setUserInfoG((prevState) => {
+    //             return {
+    //                 ...prevState, email:data.email , name:data.name
+    //             }
+    //
+    //         })
+    //         const res1 = await axios.post("http://localhost:8080/auth/google_login", userInfoG)
+    //         console.log("res2...", res1)
+    //     } catch(err) {
+    //         console.log("err",err)
+    //     }
+    //
+    // }
+    // const f3 =()=>{
+    //     return new Promise((res,rej)=>{
+    //         setTimeout(()=>{
+    //             res("ㄴㅇㄹㅁㄴㅇㄹ");
+    //         },5000)
+    //     })
+    // }
 
 
     return (
         <><div className={styles.box}>
-            <button onClick={()=>{window.open(url)}}>2324234</button>
-
+            {/*<button onClick={()=>{window.open(url)}}>2324234</button>*/}
+            {/*<GoogleButton/>*/}
             {isOpenModal && (
                 <Modal onClickToggleModal={onClickToggleModal}>
                     <embed type="text/html" src={url} width="800" height="608"/>
@@ -148,9 +218,10 @@ const Login = () => {
                         <span>비밀번호 찾기</span>
                     </div>
                 </section>
-                <Button className={"white"} onClick={()=>{ googleClick(); onClickToggleModal(); }} content={"구글 로그인"}/>
-                {/*<GoogleLogin clientId={url} buttonText={"구글아이디로 로그인하기"}/>*/}
-                    {/*onClickToggleModal*/}
+                {/*<Button className={"white"} onClick={()=>{ googleClick(); onClickToggleModal(); }} content={"구글 로그인"}/>*/}
+                {/*<GoogleButton/>*/}
+                {/*@ts-ignore*/}
+                <Button className={"white"} onClick={login2} content={"구글 로그인"}/>
             </div>
         </div>
         </>
@@ -158,4 +229,11 @@ const Login = () => {
 }
 //
 
+function Modal2(){
+    return(
+        <div className={styles.modal}>
+            모달창입니다.
+        </div>
+    )
+}
 export default Login;

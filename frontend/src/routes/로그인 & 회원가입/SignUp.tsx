@@ -9,6 +9,7 @@ import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
 import Message from "../../component/로그인 & 회원가입/Message";
 import {stringify} from "querystring";
+import useGeoLocation from "../../hooks/useGeolocation"
 
 import axios from "axios";
 import {forEach} from "list";
@@ -23,6 +24,13 @@ const SignUp = () => {
         nickname: string;
         phoneNumber: string;
         userLoginType: string;
+        // latitude:string;
+        // longitude:string;
+        address: {
+            addressName: string,
+            postalAddress: string,
+            latitude : string,
+            longitude: string}
     }
 
     /**
@@ -55,7 +63,7 @@ const SignUp = () => {
         phoneNumberCheckBoolean: boolean;
 
     }
-
+    const location = useGeoLocation();
     const [validationCheck, setValidationCheck] = useState<ValidationCheck>(
         {
             emailCheck: undefined,
@@ -111,11 +119,16 @@ const SignUp = () => {
             const res = await axios.post("http://localhost:8080/auth/check-email", email);
 
             const result = res.data;
+            console.log("리절트",result)
             const duplicated = result.exists
+            console.log("중복이니",duplicated)
+
 
             if (duplicated) //중복인 경우 -> true 반환
             {
                 setValidationCheck((prevState) => {
+                    console.log("프리베이트 슽이트",prevState)
+
                     return {...prevState, emailCheck: "duplicated", emailCheckBoolean: false}
                 })
             } else //중복이 아닌 경우 -> false 반환
@@ -144,7 +157,9 @@ const SignUp = () => {
 
         try {
             const res = await axios.post("http://localhost:8080/auth/check-nickname", nickname);
+            console.log("dd닉ㄴ아럼닏ㄴㄹ",res);
             const result = res.data;
+            console.log("dd닉네임ㅇㄴ아럼닏ㄴㄹ",result);
             const duplicated = result.exists
 
             if (duplicated) //중복인 경우 -> true 반환
@@ -190,17 +205,21 @@ const SignUp = () => {
                 })
                 setuserInfo((prevState) => {
                     return {
-                        ...prevState, phoneNumber: phoneNumber["phoneNumber"]
+                        ...prevState,
+                        // address : {
+                        //     addressName: "wd",
+                        //     postalAddress:"99",
+                        //     latitude: JSON.stringify(location.coordinates.lat) ,
+                        //     longitude: JSON.stringify(location.coordinates.lng),
+                        // }
+                        phoneNumber: phoneNumber["phoneNumber"],
                     }
                 })
-            }
 
+            }
         } catch (err) {
             console.log(err);
             alert('서버와 통신 실패');
-
-
-
         }
     }
 
@@ -221,11 +240,10 @@ const SignUp = () => {
 
     //입력완료하면 값이 state에 저장된다.
     const onChangeEmail = (e) => {
-        const inputEmail = e.target.value;
+        let inputEmail = e.target.value;
 
         //이메일 유효성 검사
-        //eslint-disable-next-line
-        const emailValidationCheck = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
+        let emailValidationCheck = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i
 
         //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
         if (emailValidationCheck.test(inputEmail)) {
@@ -237,7 +255,7 @@ const SignUp = () => {
             } else { //일반 이메일일때
                 //이메일 중복체크 백엔드 통신
                 //string인 inputEmail을 json형태의 객체로 변환
-                const jsonObj = {"email": inputEmail};
+                let jsonObj = {"email": inputEmail};
 
                 //변환한 json 객체로 이메일 중복체크
                 CheckEmailDuplicated(jsonObj);
@@ -252,7 +270,7 @@ const SignUp = () => {
 
     const onChangePassword = (e) => {
 
-        const inputPassword = e.target.value;
+        let inputPassword = e.target.value;
 
         //숫자+영문자+특수문자 조합으로 8자리 이상 입력
         const passwordValidation = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,25}$/
@@ -281,12 +299,20 @@ const SignUp = () => {
     }
 
     const onChangeName = (e) => {
-        const inputName = e.target.value;
+        let inputName = e.target.value;
         //한글자 이상 작성했을때
         if (inputName.length > 0) {
             setuserInfo((prevState) => {
-                return {...prevState, userName: e.target.value}
+                return {...prevState, userName: e.target.value,
+                    address : {
+                        addressName: "wd",
+                        postalAddress:"99",
+                        latitude: JSON.stringify(location.coordinates.lat) ,
+                        longitude: JSON.stringify(location.coordinates.lng),
+                    }}
             })
+            console.log("sdfasdf",userInfo.address)
+
 
             setValidationCheck((prevState) => {
                 return {...prevState, nameAndBirthCheck: true, nameAndBirthCheckBoolean: true}
@@ -303,7 +329,7 @@ const SignUp = () => {
     }
 
     const onChangeBirth = (e) => {
-        const inputBirth = e.target.value;
+        let inputBirth = e.target.value;
         //생일 6자리 입력했을때 올바른 값
         if (inputBirth.length === 6) {
             setuserInfo((prevState) => {
@@ -324,20 +350,20 @@ const SignUp = () => {
     }
 
     const onChangeNickname = (e) => {
-        const inputNickname = e.target.value;
+        let inputNickname = e.target.value;
 
         //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
         if (inputNickname.length > 0) {
 
             //닉네임 중복체크 백엔드 통신
             //string인 inputNickname을 json형태의 객체로 변환
-            const jsonObj = {"nickname": inputNickname};
+            let jsonObj = {"nickname": inputNickname};
 
             //변환한 json 객체로 이메일 중복체크
             CheckNickNameDuplicated(jsonObj);
 
 
-        } else //이메일 유효성 검사 실패했을때
+        } else //닉네임 유효성 검사 실패했을때
         {
             setValidationCheck((prevState) => {
                 return {...prevState, nicknameCheck: "invalid", nicknameCheckBoolean: false}
@@ -346,14 +372,15 @@ const SignUp = () => {
     }
 
     const onChangePhoneNumber = (e) => {
-        const inputPhoneNumber = e.target.value;
+        let inputPhoneNumber = e.target.value;
 
-        const phoneNumberValidation = /^(01[016789]{1})[0-9]{3,4}[0-9]{4}$/;
+        let phoneNumberValidation = /^(01[016789]{1})[0-9]{3,4}[0-9]{4}$/;
         //핸드폰번호 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
         if (phoneNumberValidation.test(inputPhoneNumber)) {
             //중복체크 백엔드 통신
             //string type인 inputPhonenumber을 json형태의 객체로 변환
-            const jsonObj = {"phoneNumber": inputPhoneNumber};
+            let jsonObj =
+                {"phoneNumber": inputPhoneNumber};
 
             //변환한 json 객체로 이메일 중복체크
             CheckPhoneNumberDuplicated(jsonObj);
@@ -377,14 +404,14 @@ const SignUp = () => {
                 headers: res.headers,
                 data: res.data,
             };
-            console.log(res)
-            console.log(result);
+            console.log("에메일",res)
+            console.log("에메일22",result);
             if(result.data.success)
             {
                 console.log("이메일 전송")
             }
             else{
-                console.log("이메일 전송 실패")
+                console.log("이메일 전송 실패2")
             }
 
         } catch (err) {

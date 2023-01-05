@@ -16,7 +16,7 @@ import Button from "../component/common/Button";
 
 
 const MulmulTrade = () => {
-    const navigate = useNavigate();
+    let navigate = useNavigate();
 
     //index에서 선언해준 Rootstate를 state로 받는다, store에 저장한다.
     const store = useSelector((state: Rootstate) => state);
