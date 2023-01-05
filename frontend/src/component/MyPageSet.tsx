@@ -7,7 +7,10 @@ import photo from "../img/photoSelect.png"
 import PriceBox from "../component/trade/PriceBox";
 import profile from "../img/profile.jpeg"
 import PostContainer from "../component/trade/PostContainer";
-import Api from "../utils/api";
+import axios from "axios";
+import Api from "../utils/api"
+import {useSelector} from "react-redux";
+import {Rootstate} from "../index";
 
 // interface TextInputProps {
 //     init: string;
@@ -15,19 +18,13 @@ import Api from "../utils/api";
 
 const MyPage = () =>  {
     const [tab1, setTab] = useState<string>('curr');
-
     const navigate = useNavigate();
-
-    function setDealTab(tab) {
-        setTab(tab)
-        console.log(tab1)
-        // return tab
-    }
-
+    const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
+    console.log("닉네임입니다.", info.nickname)
     async function readNickName(){
         try{
             const res = await  Api.get("/user")
-            console.log("유저정보",res)
+            console.log("유저정보",res.data.nickname)
             alert("전송")
         }
         catch (err){
@@ -36,15 +33,16 @@ const MyPage = () =>  {
         }
     }
 
+
+
     return (
             <>
             <div className={styles.profile}>
-                <button onClick={readNickName}/>
                 <div className={styles.profileImage}>
                     <img className={styles.Image} src={profile}/>
                 </div>
                 <div className={styles.userInfo}>
-                    <input className={styles.nickName} placeholder={"닉네임"}></input>
+                    <div className={styles.nickName} placeholder={"닉네임"}>{info.nickname}</div>
                     <input className={styles.intro} placeholder={"한 줄 소개를 입력하세요."}></input>
                     <div className={styles.intro2}>
                         <div className={styles.i1}>

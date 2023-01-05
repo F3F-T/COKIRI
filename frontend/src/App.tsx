@@ -21,6 +21,9 @@ import EmailCheckOK from "./routes/로그인 & 회원가입/EmailCheckOK";
 import PostDetail from "./routes/게시글/PostDetail";
 import MulmulTrade1 from "./routes/MulMulTrade1";
 import KokiriTalk from "./routes/KokiriTalk";
+import GoogleButton from "./routes/로그인 & 회원가입/GoogleButton.js";
+import { GoogleOAuthProvider } from '@react-oauth/google'
+
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "./index";
 

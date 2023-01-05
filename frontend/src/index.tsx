@@ -9,6 +9,7 @@ import {configureStore,combineReducers} from "@reduxjs/toolkit";
 import {Provider} from "react-redux";
 import categoryReducer from "./store/categoryReducer";
 import postDetailReducer from "./store/postDetailReducer";
+import {GoogleOAuthProvider} from "@react-oauth/google";
 import jwtTokenReducer from "./store/jwtTokenReducer";
 import userInfoReducer from "./store/userInfoReducer";
 //interceptor에서 redux store 사용을 위한 injection
@@ -78,14 +79,22 @@ export const history = createBrowserHistory();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    // @ts-expect-error
-    <HistoryRouter history={history}>
-        <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-            <App/>
-            </PersistGate>
-        </Provider>
-    </HistoryRouter>
+    <GoogleOAuthProvider clientId={'502345601007-gv64iag1rq1un755oo06q126ghmfgkqk.apps.googleusercontent.com'}>
+        {/*@ts-ignore*/}
+        <HistoryRouter history={history}>
+
+            <Provider store={store}>
+                <PersistGate loading={null} persistor={persistor}>
+                    <App/>
+                </PersistGate>
+            </Provider>
+        </HistoryRouter>
+
+    </GoogleOAuthProvider>
+
+
+
+
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -8,8 +8,6 @@ import {Rootstate} from "../../index";
 import {useDispatch, useSelector} from "react-redux";
 import {Root} from "react-dom/client";
 import {resetCategory, storeCategory} from "../../store/categoryReducer";
-import { ReactTagify } from "react-tagify";
-
 
 //TODO: REFACTORING) categories를 배열로 미리 만들고 map함수로 생성
 const TradeCategory = () => {
@@ -41,7 +39,7 @@ const TradeCategory = () => {
 
         <div className={styles.category}>
                 {categories.map((category:string)=> (
-                        <button key={category} className={styles.itemC} onClick={() => onClickCategoryButton(category)}>{category}</button>
+                        <button className={styles.itemC} onClick={() => onClickCategoryButton(category)}>{category}</button>
                 ))}
         <div>
             {/*각 버튼을 눌렀을 때, 00를 올린 사람들이에요.를 하단에 띄워줄거임*/}

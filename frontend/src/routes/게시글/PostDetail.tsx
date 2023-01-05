@@ -15,7 +15,7 @@ import {Rootstate} from "../../index";
 const PostDetail = () => {
 
     const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
-    console.log(detail)
+    console.log("asdfasdfa",detail)
 
 
 
