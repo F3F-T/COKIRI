@@ -119,45 +119,66 @@ const Login = () => {
     const [userInfoG, setUserInfoG] = useState<googleUserInfo>(null);
 
     const login2 = useGoogleLogin({
-        onSuccess: async respose => {
+        onSuccess: async response => {
             try {
                 const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
                     headers: {
-                        "Authorization": `Bearer ${respose.access_token}`
+                        "Authorization": `Bearer ${response.access_token}`
                     }
-                }).then((data) => {
-                    // console.log(data)
-                    setUserInfoG((prevState) => {
-                        return {
-                            ...prevState, email:data.data.email , name:data.data.name
-                        }
+                })
+                const data = res.data
+                console.log("d",data);
 
-                    })
+                setUserInfoG((prevState) => {
+                    return {
+                        ...prevState, email:data.email , name:data.name
+                    }
 
                 })
-
                 console.log("유저정보",userInfoG)
+                setUserInfoG((prevState) => {
+                    return {
+                        ...prevState, email:data.email , name:data.name
+                    }
+
+                })
+                const res1 = await axios.post("http://localhost:8080/auth/google_login", userInfoG)
+                console.log("res2...", res1)
                 // if(userInfoG != null){
                 //     console.log("유저정보",userInfoG)
                 //     const res1 = await axios.post("http://localhost:8080/auth/google_login",userInfoG)
                 //     console.log("res2...",res1)
                 // }
-                Login3(userInfoG)
                 }
             catch (err) {
                 console.log(err)
             }
         }
     });
-    async function Login3(userInfoG) {
-        try {
-            const res1 = await axios.post("http://localhost:8080/auth/google_login", userInfoG)
-            console.log("res2...", res1)
-        } catch(err) {
-            console.log("err",err)
-        }
-
-    }
+    // async function Login3(data) {
+    //     try {
+    //         console.log("erㅇㅇㅇㅇr")
+    //
+    //         setUserInfoG((prevState) => {
+    //             return {
+    //                 ...prevState, email:data.email , name:data.name
+    //             }
+    //
+    //         })
+    //         const res1 = await axios.post("http://localhost:8080/auth/google_login", userInfoG)
+    //         console.log("res2...", res1)
+    //     } catch(err) {
+    //         console.log("err",err)
+    //     }
+    //
+    // }
+    // const f3 =()=>{
+    //     return new Promise((res,rej)=>{
+    //         setTimeout(()=>{
+    //             res("ㄴㅇㄹㅁㄴㅇㄹ");
+    //         },5000)
+    //     })
+    // }
 
 
     return (

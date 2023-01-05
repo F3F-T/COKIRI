@@ -80,6 +80,7 @@ export const history = createBrowserHistory();
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <GoogleOAuthProvider clientId={'502345601007-gv64iag1rq1un755oo06q126ghmfgkqk.apps.googleusercontent.com'}>
+        {/*@ts-ignore*/}
         <HistoryRouter history={history}>
 
             <Provider store={store}>

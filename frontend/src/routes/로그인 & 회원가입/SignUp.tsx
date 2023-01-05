@@ -24,8 +24,13 @@ const SignUp = () => {
         nickname: string;
         phoneNumber: string;
         userLoginType: string;
-        latitude:string;
-        longitude:string;
+        // latitude:string;
+        // longitude:string;
+        address: {
+            addressName: string,
+            postalAddress: string,
+            latitude : string,
+            longitude: string}
     }
 
     /**
@@ -152,8 +157,9 @@ const SignUp = () => {
 
         try {
             const res = await axios.post("http://localhost:8080/auth/check-nickname", nickname);
+            console.log("dd닉ㄴ아럼닏ㄴㄹ",res);
             const result = res.data;
-            console.log("닉네임ㅇㄴ아럼닏ㄴㄹ",result);
+            console.log("dd닉네임ㅇㄴ아럼닏ㄴㄹ",result);
             const duplicated = result.exists
 
             if (duplicated) //중복인 경우 -> true 반환
@@ -199,18 +205,21 @@ const SignUp = () => {
                 })
                 setuserInfo((prevState) => {
                     return {
-                        ...prevState, phoneNumber: phoneNumber["phoneNumber"],
-                        latitude: (JSON.stringify(location.coordinates.lat)) ,
-                        longitude: (JSON.stringify(location.coordinates.lng))
+                        ...prevState,
+                        // address : {
+                        //     addressName: "wd",
+                        //     postalAddress:"99",
+                        //     latitude: JSON.stringify(location.coordinates.lat) ,
+                        //     longitude: JSON.stringify(location.coordinates.lng),
+                        // }
+                        phoneNumber: phoneNumber["phoneNumber"],
                     }
                 })
 
             }
-
         } catch (err) {
             console.log(err);
             alert('서버와 통신 실패');
-
         }
     }
 
@@ -294,8 +303,16 @@ const SignUp = () => {
         //한글자 이상 작성했을때
         if (inputName.length > 0) {
             setuserInfo((prevState) => {
-                return {...prevState, userName: e.target.value}
+                return {...prevState, userName: e.target.value,
+                    address : {
+                        addressName: "wd",
+                        postalAddress:"99",
+                        latitude: JSON.stringify(location.coordinates.lat) ,
+                        longitude: JSON.stringify(location.coordinates.lng),
+                    }}
             })
+            console.log("sdfasdf",userInfo.address)
+
 
             setValidationCheck((prevState) => {
                 return {...prevState, nameAndBirthCheck: true, nameAndBirthCheckBoolean: true}
@@ -362,7 +379,8 @@ const SignUp = () => {
         if (phoneNumberValidation.test(inputPhoneNumber)) {
             //중복체크 백엔드 통신
             //string type인 inputPhonenumber을 json형태의 객체로 변환
-            let jsonObj = {"phoneNumber": inputPhoneNumber};
+            let jsonObj =
+                {"phoneNumber": inputPhoneNumber};
 
             //변환한 json 객체로 이메일 중복체크
             CheckPhoneNumberDuplicated(jsonObj);
