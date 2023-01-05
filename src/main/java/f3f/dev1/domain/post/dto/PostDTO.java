@@ -11,6 +11,7 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -146,5 +147,11 @@ public class PostDTO {
         private TradeStatus tradeStatus;
 
         private List<String> tagNames;
+
+        private Long scrapCount;
+
+        private Long messageRoomCount;
+
+        private LocalDateTime createdTime;
     }
 }

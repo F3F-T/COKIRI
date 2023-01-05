@@ -1,9 +1,13 @@
 package f3f.dev1.domain.tag.application;
 
 import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.message.dao.MessageRoomRepository;
+import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.dao.PostRepository;
+import f3f.dev1.domain.post.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.exception.DuplicateTagException;
@@ -36,6 +40,8 @@ public class TagService {
     private final PostRepository postRepository;
     private final PostTagRepository postTagRepository;
     private final MemberRepository memberRepository;
+    private final MessageRoomRepository messageRoomRepository;
+    private final ScrapPostRepository scrapPostRepository;
 
     /*
         C : create
@@ -138,8 +144,10 @@ public class TagService {
             for (PostTag postTag : postTags) {
                 tagNames.add(postTag.getTag().getName());
             }
-                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
-                response.add(responseEach);
+            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
+            response.add(responseEach);
         }
         return response;
     }
@@ -187,7 +195,9 @@ public class TagService {
                 for (PostTag postTag : postTags) {
                     tagNames.add(postTag.getTag().getName());
                 }
-                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
+                List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+                List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
                 response.add(responseEach);
             }
         } else {
@@ -209,7 +219,9 @@ public class TagService {
                 for (PostTag postTag : postTags) {
                     tagNames.add(postTag.getTag().getName());
                 }
-                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
+                List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+                List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
                 response.add(responseEach);
             }
         }

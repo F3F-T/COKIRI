@@ -107,7 +107,7 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
-    public PostInfoDtoWithTag toInfoDtoWithTag(List<String> tagNames) {
+    public PostInfoDtoWithTag toInfoDtoWithTag(List<String> tagNames, Long scrapCount, Long messageRoomCount) {
         TradeStatus tradeStatus;
         if (this.trade == null) {
             tradeStatus = TradeStatus.TRADABLE;
@@ -115,16 +115,19 @@ public class Post extends BaseTimeEntity {
             tradeStatus = this.trade.getTradeStatus();
         }
         return PostInfoDtoWithTag.builder()
-                .id(this.id)
-                .authorNickname(this.author.getNickname())
-                .content(this.content)
-                .title(this.title)
-                .price(this.price)
                 .productCategory(this.productCategory.getName())
+                .authorNickname(this.author.getNickname())
                 .wishCategory(this.wishCategory.getName())
                 .tradeEachOther(this.tradeEachOther)
+                .createdTime(super.getCreateDate())
+                .messageRoomCount(messageRoomCount)
                 .tradeStatus(tradeStatus)
+                .scrapCount(scrapCount)
+                .content(this.content)
                 .tagNames(tagNames)
+                .title(this.title)
+                .price(this.price)
+                .id(this.id)
                 .build();
     }
 

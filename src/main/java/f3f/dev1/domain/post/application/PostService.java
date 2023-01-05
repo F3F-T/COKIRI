@@ -6,11 +6,15 @@ import f3f.dev1.domain.category.exception.NotFoundWishCategoryNameException;
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.message.dao.MessageRoomRepository;
+import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.dao.PostRepository;
+import f3f.dev1.domain.post.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.exception.NotFoundByPostAndTagException;
@@ -36,6 +40,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final TradeRepository tradeRepository;
+    private final ScrapPostRepository scrapPostRepository;
+    private final MessageRoomRepository messageRoomRepository;
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final PostTagRepository postTagRepository;
@@ -77,7 +83,9 @@ public class PostService {
             for (PostTag postTag : postTags) {
                 tagNames.add(postTag.getTag().getName());
             }
-            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
+            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
             response.add(responseEach);
         }
         return response;
@@ -99,7 +107,9 @@ public class PostService {
             for (PostTag postTag : postTags) {
                 tagNames.add(postTag.getTag().getName());
             }
-            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
+            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
             response.add(responseEach);
         }
         return response;
@@ -252,11 +262,13 @@ public class PostService {
             // 여기서부터는 필터링된 resultPostList를 postInfoDto로 바꿔서 리스트에 추가하는 파트
             for (Post post : resultPostList) {
                 List<PostTag> postTags = postTagRepository.findByPost(post);
+                List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+                List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
                 List<String> tagNamesOfPost = new ArrayList<>();
                 for (PostTag postTag : postTags) {
                     tagNamesOfPost.add(postTag.getTag().getName());
                 }
-                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNamesOfPost);
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNamesOfPost, (long) scrapPosts.size(), (long) messageRooms.size());
                 response.add(responseEach);
             }
         return response;
@@ -274,7 +286,9 @@ public class PostService {
             tagNames.add(postTag.getTag().getName());
         }
 //        Trade trade = tradeRepository.findByPostId(post.getId()).orElseThrow(NotFoundByIdException::new);
-        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames);
+        List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+        List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
         return response;
     }
 
@@ -284,7 +298,6 @@ public class PostService {
 
     @Transactional
     public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long currentMemberId) {
-
 
         Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
@@ -328,7 +341,9 @@ public class PostService {
         for (PostTag postTag : postTagsOfPost) {
             tagNames.add(postTag.getTag().getName());
         }
-        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames);
+        List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+        List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
         return response;
     }
 
