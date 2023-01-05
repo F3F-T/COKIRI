@@ -15,9 +15,6 @@ spring:
       token_request : "https://oauth2.googleapis.com/token"
       userinfo_request: "https://www.googleapis.com/oauth2/v1/userinfo"
 
-
-
-
   jpa:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     open-in-view: false

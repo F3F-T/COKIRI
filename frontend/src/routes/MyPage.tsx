@@ -41,14 +41,14 @@ const MyPage = () =>  {
                     <button className={styles.zzimactive} onClick={()=>{navigate('/mypage/zzim')}}>관심 상품</button>
                 </div>
               <div className={styles.container}>
-                  <Card className={"forMypage"} postTitle={"스팸아"} like={3} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"고추참치"} like={4} comment={8} category={"음식"} />
-                  <Card className={"forMypage"} postTitle={"홍"}  like={7} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"홍라면"}  like={3} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"김치찌개"} like={3} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"그만"}  like={3} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"그만"}  like={3} comment={5} category={"가구"} />
-                  <Card className={"forMypage"} postTitle={"아직"} like={3} comment={5} category={"가구"} />
+                  <Card className={"forMypage"} postTitle={"스팸아"} like={3} comment={5} wishCategory={"가구"} />
+                  <Card className={"forMypage"} postTitle={"고추참치"} like={4} comment={8} wishCategory={"음식"} />
+                  <Card className={"forMypage"} postTitle={"홍"}  like={7} comment={5} wishCategory={"가구"} />
+                  <Card className={"forMypage"} postTitle={"홍라면"}  like={3} comment={5} wishCategory={"가구"} />
+                  <Card className={"forMypage"} postTitle={"김치찌개"} like={3} comment={5} wishCategory={"가구"} />
+                  <Card className={"forMypage"} postTitle={"그만"}  like={3} comment={5} wishCategory={"가구"} />
+                  <Card className={"forMypage"} postTitle={"그만"}  like={3} comment={5} wishCategory={"가구"} />
+                  <Card className={"forMypage"} postTitle={"아직"} like={3} comment={5} wishCategory={"가구"} />
 
               </div>
 
