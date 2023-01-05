@@ -721,7 +721,7 @@ public class PostServiceTest {
     }
 
     @Test
-    @DisplayName("조건과 함께 테스트 - 모든 조건들 고려한 최종 조회 테스트")
+    @DisplayName("조건과 함께 테스트 - 가격을 제외한 모든 요소 고려")
     public void findPostsWithProductCategoryNameAndTagsConditionTestForSuccess() throws Exception {
         //given
         SignUpRequest signUpRequest = createSignUpRequest();
@@ -845,6 +845,63 @@ public class PostServiceTest {
         assertThat(fourth_Result4).extracting("wishCategory").hasSize(1).contains("wish2");
 
         assertThat(lastResult).extracting("title").hasSize(3).contains("첫번째 게시글", "두번째 게시글", "세번째 게시글");
+    }
+    
+    @Test
+    @DisplayName("조건과 함께 테스트 - 가격 고려")
+    public void searchPostWithPriceTestForSuccess() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
+
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, rootId, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, rootId, member);
+        Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
+        Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
+
+        //when
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("해시태그1");
+        tagNames.add("해시태그2");
+        PostSaveRequest firstRequest = createCompletedPostSaveRequest(member, "첫번째 게시글", "첫번째 내용", false, productRequest.getName(), wishRequest.getName(), tagNames, 7500L);
+        List<String> secondTagNames = new ArrayList<>();
+        secondTagNames.add("해시태그2");
+        secondTagNames.add("해시태그3");
+        PostSaveRequest secondRequest = createCompletedPostSaveRequest(member, "두번째 게시글", "두번째 내용", false, secondProductRequest.getName(), secondWishRequest.getName(), secondTagNames, 30000L);
+        Long firstPostId = postService.savePost(firstRequest, member.getId());
+        Long secondPostId = postService.savePost(secondRequest, member.getId());
+        tagService.addTagsToPost(firstPostId, tagNames);
+        tagService.addTagsToPost(secondPostId, secondTagNames);
+
+        //then
+        List<String> hashTag1 = new ArrayList<>();
+        hashTag1.add("해시태그2");
+        // 게시글1이 검색되어야 한다.
+        SearchPostRequest firstSearchRequest = createPostSearchRequest(productRequest.getName(), "", hashTag1, "3000", "10000");
+        List<PostInfoDtoWithTag> postsWithConditions = postService.findPostsWithConditions(firstSearchRequest);
+        assertThat(postsWithConditions).extracting("title").hasSize(1).contains("첫번째 게시글");
+
+        // 아무 게시글도 검색되선 안된다.
+        SearchPostRequest requestForFail = createPostSearchRequest(productRequest.getName(), "", hashTag1, "35000", "100000");
+        List<PostInfoDtoWithTag> emptyList = postService.findPostsWithConditions(requestForFail);
+        assertThat(emptyList).isEmpty();
     }
 
     @Test

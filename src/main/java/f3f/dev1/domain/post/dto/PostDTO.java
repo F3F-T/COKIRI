@@ -38,13 +38,14 @@ public class PostDTO {
 
         public Post toEntity(Member author, Category product, Category wish, List<PostTag> postTags) {
             return Post.builder()
-                    .title(this.title)
-                    .content(this.content)
                     .tradeEachOther(tradeEachOther)
-                    .author(author)
                     .productCategory(product)
+                    .content(this.content)
                     .wishCategory(wish)
                     .postTags(postTags)
+                    .title(this.title)
+                    .author(author)
+                    .price(price)
                     .build();
         }
     }

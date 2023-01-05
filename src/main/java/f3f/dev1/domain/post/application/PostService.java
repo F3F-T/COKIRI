@@ -105,6 +105,7 @@ public class PostService {
         return response;
     }
 
+    // TODO 추가된 가격대 검색 기능 반드시 테스트 해봐야 한다.
     @Transactional(readOnly = true)
     public List<PostInfoDtoWithTag> findPostsWithConditions(SearchPostRequest searchPostRequest) {
         List<Post> resultPostList = new ArrayList<>();
