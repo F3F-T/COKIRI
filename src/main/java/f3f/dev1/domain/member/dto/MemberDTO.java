@@ -33,6 +33,8 @@ public class MemberDTO {
 
         private String phoneNumber;
 
+        private Address address;
+
         private String email;
 
         private String password;
@@ -54,6 +56,7 @@ public class MemberDTO {
                     .birthDate(birthDate)
                     .email(email)
                     .password(password)
+                    .address(address)
                     .userLoginType(userLoginType)
                     .build();
         }
