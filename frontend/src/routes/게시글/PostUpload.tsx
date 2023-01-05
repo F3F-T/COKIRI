@@ -139,8 +139,8 @@ const PostUpload = () => {
             "content":uploadData.content,
             "tradeEachOther": tradeEachOther,
             "authorId": store.userInfoReducer.id,
-            "productCategoryName" : uploadData.productCategory,
-            "wishCategoryName" : uploadData.wishCategory,
+            "productCategory" : uploadData.productCategory,
+            "wishCategory" : uploadData.wishCategory,
             "tagNames" : uploadData.tag
         };
 
