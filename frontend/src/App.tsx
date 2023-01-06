@@ -64,7 +64,7 @@ function App() {
 
                 <Route path="/kokiritalk" element={<KokiriTalk/>} />
 
-                <Route path="/post" element={<PostDetail/>}/>
+                <Route path="/post/:id" element={<PostDetail/>}/>
                 <Route path="/upload" element={<PostUpload/>}/>
 
                 <Route path='*' element={<NotFound />}/>

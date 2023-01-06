@@ -17,11 +17,14 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findById(Long id);
     List<Post> findAll();
     boolean existsById(Long id);
+    List<Post> findByPrice(Long price);
     boolean existsByAuthorId(Long authorId);
     List<Post> findByAuthorId(Long authorId);
-    List<Post> findByPostTagsId(Long postTagsId);
+    List<Post> findByPriceLessThanEqual(Long maxPrice);
     List<Post> findByPostTagsIn(List<PostTag> postTags);
+    List<Post> findByPriceGreaterThanEqual(Long minPrice);
     List<Post> findByWishCategoryName(String wishCategoryName);
+    List<Post> findByPriceBetween(Long minPrice, Long maxPrice);
     List<Post> findByProductCategoryName(String productCategoryName);
     List<Post> findByWishCategoryNameAndPostTagsIn(String wishCategoryName, List<PostTag> postTags);
     List<Post> findByProductCategoryNameAndPostTagsIn(String productCategoryName, List<PostTag> postTags);

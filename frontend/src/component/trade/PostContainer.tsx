@@ -18,9 +18,10 @@ import Api from "../../utils/api";
 import {setToken} from "../../store/jwtTokenReducer";
 import {setUserInfo} from "../../store/userInfoReducer";
 import {log} from "util";
+import nav from "../Nav";
 
 interface PostType {
-    postId? : number;
+    id? : number;
     title? : string;
     content? : string;
     tradeEachOther? : boolean;
@@ -34,79 +35,8 @@ interface PostType {
 
 const PostContainer = () => {
 
-    // const [postList,setPostList] = useState<PostType[]>()
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const onClickTotalTalkList = (key) => {
-        return (event: React.MouseEvent) => {
-            onClickPostDetail(key)
-            event.preventDefault();
-        }
-    }
-    const postDetail =[
-        {
-            keys: 1,
-            postTitle : "21fw쿠어 MTR 발마칸 코트Msdfsdkbkhug",
-            postContent : "남성의류",
-            like : "3",
-            comment : "8",
-            category: "가구"
-        },
-        {
-            keys: 2,
-            postTitle : "코트",
-            postContent : "남성의류",
-            like : "1",
-            comment : "4",
-            category: "의류"
-        },
-        {
-            keys: 3,
-            postTitle : "스팸",
-            postContent : "남성의류",
-            like : "3",
-            comment : "8",
-            category: "가구"
-        },
-        {
-            keys: 4,
-            postTitle : "스팸",
-            postContent : "남성의류",
-            like : "3",
-            comment : "8",
-            category: "가구"
-        },
-        {
-            keys: 5,
-            postTitle : "스팸",
-            postContent : "남성의류",
-            like : "3",
-            comment : "8",
-            category: "가구"
-        },        {
-            keys: 6,
-            postTitle : "스팸",
-            postContent : "남성의류",
-            like : "3",
-            comment : "8",
-            category: "가구"
-        },        {
-            keys: 7,
-            postTitle : "스팸",
-            postContent : "남성의류",
-            like : "3",
-            comment : "8",
-            category: "가구"
-        },        {
-            keys: 8,
-            postTitle : "스팸",
-            postContent : "남성의류",
-            like : "3",
-            comment : "8",
-            category: "가구"
-        },
-    ]
 
     const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
 
@@ -136,22 +66,12 @@ const PostContainer = () => {
 
     }
 
+
+    // getPostList();
     useEffect(()=>{
         getPostList();
     },[])
 
-
-    const onClickPostDetail = (i)  => {
-        dispatch(storePostDetail(postDetail[i].postTitle))
-        dispatch(storePostDetail(postDetail[i].like))
-        dispatch(storePostDetail(postDetail[i].comment))
-        dispatch(storePostDetail(postDetail[i].category))
-
-        //확인하고 싶을때 : console.log(store.categoryReducer.category)
-        //store : index.tsx에 있는 store
-        //categoryReducer : store ->  reducer안에 선언한 categoryReducer, 이는 categoryReducer.ts를 참조한다.
-        //category : categoryReducer.ts 안에 있는 categorySlice에 담긴 category이다. 이는 initialState : 안에 선언이 되어있다.
-    }
 
     /**
      * 중요) postList를 async로 받긴 하지만 받아오는 시간 전까지는 postList가 null이기 때문에 밑에있는 render 에서 postList.map 이 null을 접근하게 돼서 오류가 발생하고, 켜지지 않는다
@@ -161,21 +81,21 @@ const PostContainer = () => {
         return null
     }
 
+    const onClickPost = (post) => {
+        console.log(post)
+        console.log(post.id)
+        navigate(`/post/${post.id}`)
+    }
+
         return (
         <div className={styles.postContainer}>
             {
                 postList.map((post)=>(
-                    <Card key = {post.postId} className={"forTrade"} postTitle={post.title} postContent={post.content} wishCategory={post.wishCategory} />
+                    <Card key = {post.id} className={"forTrade"} postTitle={post.title} postContent={post.content} wishCategory={post.wishCategory}
+                          onClick={() => {onClickPost(post)}}/>
 
                 ))
-
-                // postDetail.map((SingleObject:object)=>(
-                //     <Card className={"forTrade"} postTitle={SingleObject["postTitle"]} postContent={SingleObject["postContent"]} like={SingleObject["like"]}
-                //           comment={SingleObject["comment"]} category={SingleObject["category"]} />
-                // ))
             }
-            <Card className={"forTrade"} postTitle={detail.postTitle} postContent={detail.postContent} like={detail.like} comment={detail.comment} wishCategory={detail.category} />
-
         </div>
     );
 }

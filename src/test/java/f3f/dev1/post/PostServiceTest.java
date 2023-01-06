@@ -17,6 +17,7 @@ import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -191,6 +192,31 @@ public class PostServiceTest {
                 .build();
     }
 
+    public PostSaveRequest createCompletedPostSaveRequest(Member author, String title, String content, boolean tradeEachOther,
+                                                          String productName, String wishName, List<String> tagNames, Long price) {
+        // 최종 테스트에서 사용될 완성형 포스트 생성 요청 메소드
+        return PostSaveRequest.builder()
+                .tradeEachOther(tradeEachOther)
+                .productCategory(productName)
+                .authorId(author.getId())
+                .wishCategory(wishName)
+                .tagNames(tagNames)
+                .content(content)
+                .title(title)
+                .price(price)
+                .build();
+    }
+
+    public SearchPostRequest createPostSearchRequest(String productName, String wishName, List<String> tagNames, String minPrice, String maxPrice) {
+        return SearchPostRequest.builder()
+                .productCategory(productName)
+                .wishCategory(wishName)
+                .tagNames(tagNames)
+                .minPrice(minPrice)
+                .maxPrice(maxPrice)
+                .build();
+    }
+
 
     public DeletePostRequest createDeletePostRequest(Long postId, Long authorId) {
         return new DeletePostRequest(postId, authorId);
@@ -256,6 +282,49 @@ public class PostServiceTest {
     }
 
     @Test
+    @DisplayName("게시글 생성 - 태그 생성 테스트")
+    public void postSaveTestWithTagForSuccess() throws Exception {
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
+
+        //when
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add(tagRequest.getName());
+        tagNames.add(secondTagRequest.getName());
+        tagNames.add(thirdTagRequest.getName());
+        PostSaveRequest postSaveRequestWithTag = createPostSaveRequestWithTag(member, false, productRequest.getName(), wishRequest.getName(), tagNames);
+        Long postId = postService.savePost(postSaveRequestWithTag, member.getId());
+        tagService.addTagsToPost(postId, tagNames);
+
+        //then
+        Post post = postRepository.findById(postId).get();
+        List<PostTag> postTagList = postTagRepository.findByPost(post);
+        assertThat(postTagList.size()).isEqualTo(3);
+        assertThat(postTagList.get(0).getTag().getName()).isEqualTo(tagRequest.getName());
+        assertThat(postTagList.get(1).getTag().getName()).isEqualTo(secondTagRequest.getName());
+        assertThat(postTagList.get(2).getTag().getName()).isEqualTo(thirdTagRequest.getName());
+    }
+
+    @Test
     @DisplayName("작성자로 게시글 조회 테스트")
     public void findPostByAuthorSuccess() throws Exception {
         //given
@@ -294,7 +363,7 @@ public class PostServiceTest {
         assertThat(postsByAuthor).extracting("content")
                 .hasSize(2);
     }
-    
+
     @Test
     @DisplayName("게시글 전체 조회 테스트")
     public void findAllPostTestForSuccess() throws Exception {
@@ -324,7 +393,7 @@ public class PostServiceTest {
         PostSaveRequest postSaveRequest2 = createPostSaveRequestWithDynamicTitle(member, "2년 쓴 이불 바꿔요",false, productRequest.getName(), wishRequest.getName());
         Long postId2 = postService.savePost(postSaveRequest2, member.getId());
         Post post2 = postRepository.findById(postId2).get();
-        
+
         //then
         List<PostInfoDtoWithTag> allPosts = postService.findAllPosts();
         assertThat(allPosts).extracting("title")
@@ -443,7 +512,8 @@ public class PostServiceTest {
         names.add("해시태그2");
         names.add("해시태그3");
 
-        List<PostInfoDtoWithTag> postInfoDtoList = postService.findPostsWithConditions("", "", names);
+        SearchPostRequest searchPostRequest = createPostSearchRequest("", "", names, null, null);
+        List<PostInfoDtoWithTag> postInfoDtoList = postService.findPostsWithConditions(searchPostRequest);
         assertThat(postInfoDtoList).extracting("title")
                 .hasSize(1)
                 .contains("3년 신은 양말 거래 희망합니다");
@@ -456,7 +526,8 @@ public class PostServiceTest {
         secondNames.add("해시태그1");
         secondNames.add("해시태그2");
 
-        List<PostInfoDtoWithTag> secondPostInfoDtoList = postService.findPostsWithConditions("", "", secondNames);
+        SearchPostRequest postSearchSecondRequest = createPostSearchRequest("", "", secondNames, null, null);
+        List<PostInfoDtoWithTag> secondPostInfoDtoList = postService.findPostsWithConditions(postSearchSecondRequest);
         assertThat(secondPostInfoDtoList).extracting("title")
                 .hasSize(2)
                 .contains("두번째 게시글", "3년 신은 양말 거래 희망합니다");
@@ -464,14 +535,16 @@ public class PostServiceTest {
         List<String> thirdNames = new ArrayList<>();
         thirdNames.add("해시태그1");
 
-        List<PostInfoDtoWithTag> thirdPostInfoDtoList = postService.findPostsWithConditions("", "", thirdNames);
+        SearchPostRequest postSearchThirdRequest = createPostSearchRequest("", "", thirdNames, null, null);
+        List<PostInfoDtoWithTag> thirdPostInfoDtoList = postService.findPostsWithConditions(postSearchThirdRequest);
         assertThat(thirdPostInfoDtoList).extracting("title")
                 .hasSize(3)
                 .contains("세번째 게시글", "두번째 게시글", "3년 신은 양말 거래 희망합니다");
 
         // 비어있는 태그 이름 리스트를 넘기면 게시글 전체 조회
         List<String> emptyNamesList = new ArrayList<>();
-        List<PostInfoDtoWithTag> fourthPostInfoDtoList = postService.findPostsWithConditions("", "", emptyNamesList);
+        SearchPostRequest postSearchEmptyRequest = createPostSearchRequest("", "", emptyNamesList, null, null);
+        List<PostInfoDtoWithTag> fourthPostInfoDtoList = postService.findPostsWithConditions(postSearchEmptyRequest);
         assertThat(fourthPostInfoDtoList).extracting("title")
                 .hasSize(4)
                 .contains("네번째 게시글", "세번째 게시글", "두번째 게시글", "3년 신은 양말 거래 희망합니다");
@@ -508,8 +581,11 @@ public class PostServiceTest {
         PostSaveRequest secondPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "두번째 게시글", false, secondProductRequest.getName(), wishRequest.getName());
         Long secondPostId = postService.savePost(secondPostSaveRequest, member.getId());
 
-        List<PostInfoDtoWithTag> postsWithConditions = postService.findPostsWithConditions(productRequest.getName(), "", new ArrayList<>());
-        List<PostInfoDtoWithTag> secondPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), "", new ArrayList<>());
+        SearchPostRequest searchPostRequest = createPostSearchRequest(productRequest.getName(), "", new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> postsWithConditions = postService.findPostsWithConditions(searchPostRequest);
+
+        SearchPostRequest postSearchSecondRequest = createPostSearchRequest(secondProductRequest.getName(), "", new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> secondPostsWithConditions = postService.findPostsWithConditions(postSearchSecondRequest);
 
         //then
         assertThat(postsWithConditions).extracting("title")
@@ -562,8 +638,12 @@ public class PostServiceTest {
         PostSaveRequest thirdPostSaveRequest = createPostSaveRequestWithDynamicTitle(member, "세번째 게시글", false, productRequest.getName(), secondWishRequest.getName());
         Long thirdPostId = postService.savePost(thirdPostSaveRequest, member.getId());
 
-        List<PostInfoDtoWithTag> postsWithConditions = postService.findPostsWithConditions("", wishRequest.getName(), new ArrayList<>());
-        List<PostInfoDtoWithTag> secondPostsWithConditions = postService.findPostsWithConditions("", secondWishRequest.getName(), new ArrayList<>());
+
+        SearchPostRequest searchPostRequest = createPostSearchRequest("", wishRequest.getName(), new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> postsWithConditions = postService.findPostsWithConditions(searchPostRequest);
+
+        SearchPostRequest postSearchSecondRequest = createPostSearchRequest("", secondWishRequest.getName(), new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> secondPostsWithConditions = postService.findPostsWithConditions(postSearchSecondRequest);
 
         //then
         assertThat(postsWithConditions).extracting("title")
@@ -626,23 +706,32 @@ public class PostServiceTest {
         Long fourthPostId = postService.savePost(fourthPostSaveRequest, member.getId());
 
         // 첫번째 게시글만 조회되어야 한다.
-        List<PostInfoDtoWithTag> firstPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), wishRequest.getName(), new ArrayList<>());
+        SearchPostRequest searchPostRequest = createPostSearchRequest(productRequest.getName(), wishRequest.getName(), new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> firstPostsWithConditions = postService.findPostsWithConditions(searchPostRequest);
         // 두번째 게시글만 조회되어야 한다.
-        List<PostInfoDtoWithTag> secondPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), wishRequest.getName(), new ArrayList<>());
+        SearchPostRequest postSearchSecondRequest = createPostSearchRequest(secondProductRequest.getName(), wishRequest.getName(), new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> secondPostsWithConditions = postService.findPostsWithConditions(postSearchSecondRequest);
         // 세번째 게시글만 조회되어야 한다.
-        List<PostInfoDtoWithTag> thirdPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), secondWishRequest.getName(), new ArrayList<>());
+        SearchPostRequest postSearchThirdRequest = createPostSearchRequest(productRequest.getName(), secondWishRequest.getName(), new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> thirdPostsWithConditions = postService.findPostsWithConditions(postSearchThirdRequest);
         // 네번째 게시글만 조회되어야 한다.
-        List<PostInfoDtoWithTag> fourthPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), secondWishRequest.getName(), new ArrayList<>());
+        SearchPostRequest postSearchFourthRequest = createPostSearchRequest(secondProductRequest.getName(), secondWishRequest.getName(), new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> fourthPostsWithConditions = postService.findPostsWithConditions(postSearchFourthRequest);
         // 첫번째, 세번째 게시글만 조회되어야 한다.
-        List<PostInfoDtoWithTag> firstAndThirdPostsWithConditions = postService.findPostsWithConditions(productRequest.getName(), "", new ArrayList<>());
+        SearchPostRequest postSearchFifthRequest = createPostSearchRequest(productRequest.getName(), "", new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> firstAndThirdPostsWithConditions = postService.findPostsWithConditions(postSearchFifthRequest);
         // 두번째, 네번째 게시글만 조회되어야 한다.
-        List<PostInfoDtoWithTag> secondAndFourthPostsWithConditions = postService.findPostsWithConditions(secondProductRequest.getName(), "", new ArrayList<>());
+        SearchPostRequest postSearchSixthRequest = createPostSearchRequest(secondProductRequest.getName(), "", new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> secondAndFourthPostsWithConditions = postService.findPostsWithConditions(postSearchSixthRequest);
         // 첫번째, 두번째 게시글만 조회되어야 한다.
-        List<PostInfoDtoWithTag> firstAndSecondPostsWithConditions = postService.findPostsWithConditions("", wishRequest.getName(), new ArrayList<>());
+        SearchPostRequest postSearchSeventhRequest = createPostSearchRequest("", wishRequest.getName(), new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> firstAndSecondPostsWithConditions = postService.findPostsWithConditions(postSearchSeventhRequest);
         // 세번째, 네번째 게시글만 조회되어야 한다.
-        List<PostInfoDtoWithTag> thirdAndFourthPostsWithConditions = postService.findPostsWithConditions("", secondWishRequest.getName(), new ArrayList<>());
+        SearchPostRequest postSearchEightthRequest = createPostSearchRequest("", secondWishRequest.getName(), new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> thirdAndFourthPostsWithConditions = postService.findPostsWithConditions(postSearchEightthRequest);
         // 조건이 전달되지 않았으므로 모든 게시글이 조회되어야 한다.
-        List<PostInfoDtoWithTag> allPostsWithNoConditions = postService.findPostsWithConditions("", "", new ArrayList<>());
+        SearchPostRequest postSearchNinethRequest = createPostSearchRequest("", "", new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> allPostsWithNoConditions = postService.findPostsWithConditions(postSearchNinethRequest);
         //then
         assertThat(firstPostsWithConditions).extracting("title").hasSize(1).contains("첫번째 게시글");
         assertThat(firstPostsWithConditions).extracting("productCategory").hasSize(1).contains("product");
@@ -676,7 +765,7 @@ public class PostServiceTest {
     }
 
     @Test
-    @DisplayName("조건과 함께 테스트 - 모든 조건들 고려한 최종 조회 테스트")
+    @DisplayName("조건과 함께 테스트 - 가격을 제외한 모든 요소 고려")
     public void findPostsWithProductCategoryNameAndTagsConditionTestForSuccess() throws Exception {
         //given
         SignUpRequest signUpRequest = createSignUpRequest();
@@ -747,24 +836,33 @@ public class PostServiceTest {
 
         // then
         // 첫번째 검증 : 태그와 희망 카테고리 없이 상품 카테고리 만으로 조회 : 두번째, 세번째 게시글이 조회되어야 한다.
-        List<PostInfoDtoWithTag> firstResult = postService.findPostsWithConditions(secondProductRequest.getName(), "", new ArrayList<>());
+
+        SearchPostRequest searchPostRequest = createPostSearchRequest(secondProductRequest.getName(), "", new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> firstResult = postService.findPostsWithConditions(searchPostRequest);
         // 두번째 검증 : 태그와 상품 카테고리 없이 희망 카테고리 만으로 조회 : 첫번째, 두번째 게시글이 조회되어야 한다.
-        List<PostInfoDtoWithTag> secondResult = postService.findPostsWithConditions("", wishRequest.getName(), new ArrayList<>());
+        SearchPostRequest postSearchSecondRequest = createPostSearchRequest("", wishRequest.getName(), new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> secondResult = postService.findPostsWithConditions(postSearchSecondRequest);
         // 세번째 검증 : 태그1 만으로 조회 : 첫번째, 세번째 게시글이 조회되어야 한다.
         List<String> firstTagName = new ArrayList<>();
         firstTagName.add("해시태그1");
-        List<PostInfoDtoWithTag> thirdResult = postService.findPostsWithConditions("", "", firstTagName);
+        SearchPostRequest postSearchThirdRequest = createPostSearchRequest("", "", firstTagName, null, null);
+        List<PostInfoDtoWithTag> thirdResult = postService.findPostsWithConditions(postSearchThirdRequest);
         // 네번째 검증 - 1: 모든 정보를 활용해 조회 - 상품 카테고리1, 희망 카테고리1, 해시태그1 - 첫번째 게시글이 조회되어야 한다.
-        List<PostInfoDtoWithTag> fourth_Result1 = postService.findPostsWithConditions(productRequest.getName(), wishRequest.getName(), firstTagName);
+        SearchPostRequest postSearchFourthRequest = createPostSearchRequest(productRequest.getName(), wishRequest.getName(), firstTagName, null, null);
+        List<PostInfoDtoWithTag> fourth_Result1 = postService.findPostsWithConditions(postSearchFourthRequest);
         // 네번째 검증 - 2: 모든 정보를 활용해 조회 - 상품 카테고리1, 희망 카테고리1, 해시태그1, 2 - 첫번째 게시글이 조회되어야 한다.
-        List<PostInfoDtoWithTag> fourth_Result2 = postService.findPostsWithConditions(productRequest.getName(), wishRequest.getName(), firstTagNames);
+        SearchPostRequest postSearchFifthRequest = createPostSearchRequest(productRequest.getName(), wishRequest.getName(), firstTagNames, null, null);
+        List<PostInfoDtoWithTag> fourth_Result2 = postService.findPostsWithConditions(postSearchFifthRequest);
         // 네번째 검증 - 3: 모든 정보를 활용해 조회 - 상품 카테고리2, 희망 카테고리1, 해시태그2, 3 - 두번째 게시글이 조회되어야 한다.
-        List<PostInfoDtoWithTag> fourth_Result3 = postService.findPostsWithConditions(secondProductRequest.getName(), wishRequest.getName(), secondTagNames);
+        SearchPostRequest postSearchSixthRequest = createPostSearchRequest(secondProductRequest.getName(), wishRequest.getName(), secondTagNames, null, null);
+        List<PostInfoDtoWithTag> fourth_Result3 = postService.findPostsWithConditions(postSearchSixthRequest);
         // 네번째 검증 - 4: 모든 정보를 활용해 조회 - 상품 카테고리2, 희망 카테고리2, 해시태그1, 3 - 세번째 게시글이 조회되어야 한다.
-        List<PostInfoDtoWithTag> fourth_Result4 = postService.findPostsWithConditions(secondProductRequest.getName(), secondWishRequest.getName(), thirdTagNames);
+        SearchPostRequest postSearchSeventhRequest = createPostSearchRequest(secondProductRequest.getName(), secondWishRequest.getName(), thirdTagNames, null, null);
+        List<PostInfoDtoWithTag> fourth_Result4 = postService.findPostsWithConditions(postSearchSeventhRequest);
 
         // 마지막 검증 : 조건 없이 조회 - 모든 게시글이 다 조회되어야 한다.
-        List<PostInfoDtoWithTag> lastResult = postService.findPostsWithConditions("", "", new ArrayList<>());
+        SearchPostRequest postSearchEighthRequest = createPostSearchRequest("", "", new ArrayList<>(), null, null);
+        List<PostInfoDtoWithTag> lastResult = postService.findPostsWithConditions(postSearchEighthRequest);
 
         assertThat(firstResult).extracting("title").hasSize(2).contains("두번째 게시글", "세번째 게시글");
         assertThat(firstResult).extracting("productCategory").hasSize(2).contains("product2");
@@ -791,6 +889,130 @@ public class PostServiceTest {
         assertThat(fourth_Result4).extracting("wishCategory").hasSize(1).contains("wish2");
 
         assertThat(lastResult).extracting("title").hasSize(3).contains("첫번째 게시글", "두번째 게시글", "세번째 게시글");
+    }
+    
+    @Test
+    @DisplayName("조건과 함께 테스트 - 가격 고려")
+    public void searchPostWithPriceTestForSuccess() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
+
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, rootId, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, rootId, member);
+        Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
+        Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
+
+        //when
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("해시태그1");
+        tagNames.add("해시태그2");
+        PostSaveRequest firstRequest = createCompletedPostSaveRequest(member, "첫번째 게시글", "첫번째 내용", false, productRequest.getName(), wishRequest.getName(), tagNames, 7500L);
+        List<String> secondTagNames = new ArrayList<>();
+        secondTagNames.add("해시태그2");
+        secondTagNames.add("해시태그3");
+        PostSaveRequest secondRequest = createCompletedPostSaveRequest(member, "두번째 게시글", "두번째 내용", false, secondProductRequest.getName(), secondWishRequest.getName(), secondTagNames, 30000L);
+        Long firstPostId = postService.savePost(firstRequest, member.getId());
+        Long secondPostId = postService.savePost(secondRequest, member.getId());
+        tagService.addTagsToPost(firstPostId, tagNames);
+        tagService.addTagsToPost(secondPostId, secondTagNames);
+
+        //then
+        List<String> hashTag1 = new ArrayList<>();
+        hashTag1.add("해시태그2");
+        // 게시글1이 검색되어야 한다.
+        SearchPostRequest firstSearchRequest = createPostSearchRequest(productRequest.getName(), "", hashTag1, "3000", "10000");
+        List<PostInfoDtoWithTag> postsWithConditions = postService.findPostsWithConditions(firstSearchRequest);
+        assertThat(postsWithConditions).extracting("title").hasSize(1).contains("첫번째 게시글");
+
+        // 아무 게시글도 검색되선 안된다.
+        SearchPostRequest requestForFail = createPostSearchRequest(productRequest.getName(), "", hashTag1, "35000", "100000");
+        List<PostInfoDtoWithTag> emptyList = postService.findPostsWithConditions(requestForFail);
+        assertThat(emptyList).isEmpty();
+
+        // 게시글1, 게시글2가 모두 검색되어야 한다.
+        SearchPostRequest forBothRequest = createPostSearchRequest("", "", hashTag1, "3000", "50000");
+        List<PostInfoDtoWithTag> bothList = postService.findPostsWithConditions(forBothRequest);
+        assertThat(bothList).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+    }
+
+    @Test
+    @DisplayName("가격대로 검색 - 가격 문자열 이상 테스트")
+    public void invalidPriceStringTestForFail() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
+
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, rootId, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, rootId, member);
+        Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
+        Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
+
+        //when
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("해시태그1");
+        tagNames.add("해시태그2");
+        PostSaveRequest firstRequest = createCompletedPostSaveRequest(member, "첫번째 게시글", "첫번째 내용", false, productRequest.getName(), wishRequest.getName(), tagNames, 7500L);
+        List<String> secondTagNames = new ArrayList<>();
+        secondTagNames.add("해시태그2");
+        secondTagNames.add("해시태그3");
+        PostSaveRequest secondRequest = createCompletedPostSaveRequest(member, "두번째 게시글", "두번째 내용", false, secondProductRequest.getName(), secondWishRequest.getName(), secondTagNames, 30000L);
+        Long firstPostId = postService.savePost(firstRequest, member.getId());
+        Long secondPostId = postService.savePost(secondRequest, member.getId());
+        tagService.addTagsToPost(firstPostId, tagNames);
+        tagService.addTagsToPost(secondPostId, secondTagNames);
+
+        //then
+        // 최소가격, 최대가격 2개 모두 전달이 됐지만 최소가격은 사용 불가능한 형태, 따라서 최대 가격만 고려해서 검색한다.
+        // 게시글1이 검색되어야 한다.
+        SearchPostRequest minPriceStringError = createPostSearchRequest("", "", new ArrayList<>(), "", "7500");
+        List<PostInfoDtoWithTag> firstPostList = postService.findPostsWithConditions(minPriceStringError);
+
+        // 게시글 1,2가 검색되어야 한다.
+        SearchPostRequest maxPriceStringError = createPostSearchRequest("", "", new ArrayList<>(), "3000", "");
+        List<PostInfoDtoWithTag> secondPostList = postService.findPostsWithConditions(maxPriceStringError);
+
+        // 모든 게시글이 다 조회되어야 한다.
+        SearchPostRequest emptyRequest = createPostSearchRequest("", "", new ArrayList<>(), "", "");
+        List<PostInfoDtoWithTag> totalList = postService.findPostsWithConditions(emptyRequest);
+
+        assertThat(firstPostList).extracting("title").hasSize(1).contains("첫번째 게시글");
+        assertThat(secondPostList).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+        assertThat(totalList).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
     }
 
     @Test
