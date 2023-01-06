@@ -13,6 +13,7 @@ public class MessageDTO {
     @NoArgsConstructor
     @Getter
     public static class MessageSaveRequest{
+        //TODO ID로 다 바꾸기
 
         @NonNull
         private String content;
