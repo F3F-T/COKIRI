@@ -12,7 +12,7 @@ import Comments from "../../component/comments/Comments";
 import {useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
 
 
@@ -20,6 +20,7 @@ const PostDetail = () => {
 
     // const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
     // console.log("asdfasdfa",detail)
+    const navigate = useNavigate();
 
     interface PostType {
         id? : number;
@@ -61,6 +62,12 @@ const PostDetail = () => {
             console.log(err)
             alert("get 실패");
         }
+    }
+
+    //TODO:함민혁) 코끼리톡 구현할때 이걸 누르면 메시지룸이 생성되게 구현하고, navigate에서 매개변수를 전달해주면 될거야
+    //예시 : navigate('/signup/emailcheck', {state : userInfo})
+    const talkButton = () => {
+        navigate('/kokiritalk' )
     }
 
     useEffect(()=>{
@@ -118,7 +125,7 @@ const PostDetail = () => {
                             <p className={styles.timeNum}>4분전</p>
                         </div>
                     </div>
-                    <button className={styles.exchangeBtn}>코끼리톡으로 교환하기</button>
+                    <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
                 </section>
             </article>
             <section className={styles.comments}>//
