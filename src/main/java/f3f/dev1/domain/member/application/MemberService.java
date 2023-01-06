@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
@@ -86,6 +87,27 @@ public class MemberService {
         Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).orElseThrow(UserScrapNotFoundException::new);
 
         return member.toUserInfo(scrap.getId());
+    }
+
+    @Transactional
+    public NewNicknameDto updateUserNickname(Long memberId,UpdateMemberNicknameDto updateMemberNicknameDto) {
+        if (!Objects.equals(memberId, updateMemberNicknameDto.getUserId())) {
+            throw new NotAuthorizedException();
+        }
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        member.updateNickname(updateMemberNicknameDto.getNewNickname());
+        return NewNicknameDto.builder().newNickname(updateMemberNicknameDto.getNewNickname()).build();
+    }
+
+    @Transactional
+    public NewPhoneNumberDto updateUserPhoneNumber(Long memberId, UpdateMemberPhoneNumberDto updateMemberPhoneNumberDto) {
+        if (!Objects.equals(memberId, updateMemberPhoneNumberDto.getUserId())) {
+            throw new NotAuthorizedException();
+        }
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        member.updatePhoneNumber(updateMemberPhoneNumberDto.getNewPhoneNumber());
+        return NewPhoneNumberDto.builder().newPhoneNumber(updateMemberPhoneNumberDto.getNewPhoneNumber()).build();
+
     }
 
     // 주소 업데이트 메소드

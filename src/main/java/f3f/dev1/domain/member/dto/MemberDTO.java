@@ -305,5 +305,41 @@ public class MemberDTO {
         private Boolean exists;
     }
 
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UpdateMemberNicknameDto {
+        private Long userId;
+
+        private String newNickname;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UpdateMemberPhoneNumberDto {
+        private Long userId;
+
+        private String newPhoneNumber;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class NewNicknameDto {
+        private String newNickname;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class NewPhoneNumberDto {
+        private String newPhoneNumber;
+    }
+
 
 }

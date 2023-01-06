@@ -111,6 +111,16 @@ public class Member extends MemberBase {
         this.imageUrl = imageUrl;
     }
 
+    public void updateNickname(String nickname){
+        this.nickname = nickname;
+    }
+
+    public void updatePhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+
+
     public EncryptEmailDto encryptEmail() {
         String[] subEmail = this.getEmail().split("@");
         int asteriskNum = subEmail[0].length() - 3;
