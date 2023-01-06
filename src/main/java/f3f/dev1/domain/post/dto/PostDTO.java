@@ -11,6 +11,7 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -30,6 +31,7 @@ public class PostDTO {
         private Boolean tradeEachOther;
         @NotNull
         private Long authorId;
+        private Long price;
         private String productCategory;
         private String wishCategory;
         @NotNull
@@ -37,15 +39,32 @@ public class PostDTO {
 
         public Post toEntity(Member author, Category product, Category wish, List<PostTag> postTags) {
             return Post.builder()
-                    .title(this.title)
-                    .content(this.content)
                     .tradeEachOther(tradeEachOther)
-                    .author(author)
                     .productCategory(product)
+                    .content(this.content)
                     .wishCategory(wish)
                     .postTags(postTags)
+                    .title(this.title)
+                    .author(author)
+                    .price(price)
                     .build();
         }
+    }
+
+    // R : read 담당 DTO들
+
+
+    // 메인화면에서 조회에 사용될 DTO.
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SearchPostRequest {
+        String productCategory;
+        String wishCategory;
+        private List<String> tagNames;
+        String minPrice;
+        String maxPrice;
     }
 
     // U : Update 담당 DTO들
@@ -65,6 +84,7 @@ public class PostDTO {
         private String title;
         @NotBlank(message = "내용문을 작성해주세요")
         private String content;
+        private Long price;
         private String productCategory;
         private String wishCategory;
         private List<String> tagNames;
@@ -96,6 +116,8 @@ public class PostDTO {
 
         private String wishCategory;
 
+        private Long price;
+
         private String productCategory;
 
         private TradeStatus tradeStatus;
@@ -120,8 +142,16 @@ public class PostDTO {
 
         private String productCategory;
 
+        private Long price;
+
         private TradeStatus tradeStatus;
 
         private List<String> tagNames;
+
+        private Long scrapCount;
+
+        private Long messageRoomCount;
+
+        private LocalDateTime createdTime;
     }
 }

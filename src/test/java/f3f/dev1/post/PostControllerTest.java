@@ -188,6 +188,7 @@ public class PostControllerTest {
                         fieldWithPath("tagNames").description("tag names list value of post"),
                         fieldWithPath("authorId").description("author id value of post"),
                         fieldWithPath("content").description("content value of post"),
+                        fieldWithPath("price").description("price value of post"),
                         fieldWithPath("title").description("title value of post")
                 )));
     }
@@ -251,6 +252,7 @@ public class PostControllerTest {
                         fieldWithPath("authorId").description("Id value of auhor (requester)"),
                         fieldWithPath("title").description("title value of post"),
                         fieldWithPath("content").description("content value of post"),
+                        fieldWithPath("price").description("price value of post"),
                         fieldWithPath("productCategory").description("product category name value of post"),
                         fieldWithPath("wishCategory").description("wish category name value of post"),
                         fieldWithPath("tagNames").description("list values of tag names")
@@ -261,6 +263,10 @@ public class PostControllerTest {
                         fieldWithPath("authorNickname").description("authorNickname value of post"),
                         fieldWithPath("wishCategory").description("wishCategory name value of post"),
                         fieldWithPath("productCategory").description("productCategory name value of post"),
+                        fieldWithPath("scrapCount").description("scrap count value of post"),
+                        fieldWithPath("messageRoomCount").description("message room count value of post"),
+                        fieldWithPath("createdTime").description("created time value of post"),
+                        fieldWithPath("price").description("price value of post"),
                         fieldWithPath("title").description("title name value of post"),
                         fieldWithPath("tagNames").description("list values of tag names"),
                         fieldWithPath("tradeStatus").description("tradeStatus value of post")
@@ -287,10 +293,14 @@ public class PostControllerTest {
                 .andDo(document("post/readPostById/successful", responseFields(
                         fieldWithPath("id").description("Id value of post"),
                         fieldWithPath("content").description("content value of post"),
+                        fieldWithPath("scrapCount").description("scrap count value of post"),
+                        fieldWithPath("messageRoomCount").description("message room count value of post"),
+                        fieldWithPath("createdTime").description("created time value of post"),
                         fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
                         fieldWithPath("authorNickname").description("authorNickname value of post"),
                         fieldWithPath("wishCategory").description("wishCategory name value of post"),
                         fieldWithPath("productCategory").description("productCategory name value of post"),
+                        fieldWithPath("price").description("price value of post"),
                         fieldWithPath("title").description("title name value of post"),
                         fieldWithPath("tradeStatus").description("tradeStatus value of post"),
                         fieldWithPath("tagNames").description("tag name list value of post")

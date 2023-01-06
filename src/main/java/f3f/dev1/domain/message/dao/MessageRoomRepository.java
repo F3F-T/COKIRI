@@ -10,9 +10,10 @@ import java.util.Optional;
 public interface MessageRoomRepository extends JpaRepository<MessageRoom, Long> {
 
     boolean existsById(Long id);
-    Optional<MessageRoom> findById(Long aLong);
-
-    List<MessageRoom> findByPostId(Long id);
+    Optional<MessageRoom> findById(Long id);
+    List<MessageRoom> findByPostId(Long postId);
+    List<MessageRoom> findBySellerId(Long sellerId);
+    List<MessageRoom> findByBuyerId(Long buyerId);
 
 
 }

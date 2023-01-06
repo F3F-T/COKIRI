@@ -67,27 +67,25 @@ public class Post extends BaseTimeEntity {
     public void updatePostInfos(UpdatePostRequest updatePostRequest, Category productCategory, Category wishCategory, List<PostTag> postTags) {
         this.title = updatePostRequest.getTitle();
         this.content = updatePostRequest.getContent();
+        this.price = updatePostRequest.getPrice();
         this.postTags = postTags;
         this.productCategory = productCategory;
         this.wishCategory = wishCategory;
-    }
-
-    // 연관관계 편의 메소드
-    public void addToPostTags(PostTag postTag) {
-        this.postTags.add(postTag);
     }
 
     @Builder
-    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.tradeEachOther = tradeEachOther;
+    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags, Long price) {
         this.productCategory = productCategory;
+        this.tradeEachOther = tradeEachOther;
         this.wishCategory = wishCategory;
         this.postTags = postTags;
+        this.content = content;
         this.author = author;
+        this.price = price;
+        this.title = title;
+        this.id = id;
     }
+
 
     public PostInfoDto toInfoDto() {
         TradeStatus tradeStatus;
@@ -101,6 +99,7 @@ public class Post extends BaseTimeEntity {
                 .authorNickname(this.author.getNickname())
                 .content(this.content)
                 .title(this.title)
+                .price(this.price)
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
                 .tradeEachOther(this.tradeEachOther)
@@ -108,7 +107,7 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
-    public PostInfoDtoWithTag toInfoDtoWithTag(List<String> tagNames) {
+    public PostInfoDtoWithTag toInfoDtoWithTag(List<String> tagNames, Long scrapCount, Long messageRoomCount) {
         TradeStatus tradeStatus;
         if (this.trade == null) {
             tradeStatus = TradeStatus.TRADABLE;
@@ -116,15 +115,19 @@ public class Post extends BaseTimeEntity {
             tradeStatus = this.trade.getTradeStatus();
         }
         return PostInfoDtoWithTag.builder()
-                .id(this.id)
-                .authorNickname(this.author.getNickname())
-                .content(this.content)
-                .title(this.title)
                 .productCategory(this.productCategory.getName())
+                .authorNickname(this.author.getNickname())
                 .wishCategory(this.wishCategory.getName())
                 .tradeEachOther(this.tradeEachOther)
+                .createdTime(super.getCreateDate())
+                .messageRoomCount(messageRoomCount)
                 .tradeStatus(tradeStatus)
+                .scrapCount(scrapCount)
+                .content(this.content)
                 .tagNames(tagNames)
+                .title(this.title)
+                .price(this.price)
+                .id(this.id)
                 .build();
     }
 
