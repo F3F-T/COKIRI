@@ -61,6 +61,23 @@ public class MemberController {
         return ResponseEntity.ok(memberService.updateUserImage(updateUserImage, currentMemberId));
     }
 
+    // 유저 닉네임 업데이트
+    @PatchMapping(value = "/user/nickname")
+    public ResponseEntity<NewNicknameDto> updateUserNickname(@RequestBody UpdateMemberNicknameDto updateMemberNicknameDto) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.updateUserNickname(currentMemberId, updateMemberNicknameDto));
+
+    }
+
+    // 유저 폰번호 업데이트
+    @PatchMapping(value = "/user/phone")
+    public ResponseEntity<NewPhoneNumberDto> updateUserPhoneNumber(@RequestBody UpdateMemberPhoneNumberDto updateMemberPhoneNumberDto) {
+
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.updateUserPhoneNumber(currentMemberId, updateMemberPhoneNumberDto));
+
+    }
+
     // 유저 주소 업데이트
     @PatchMapping(value = "/user/address")
     public ResponseEntity<Address> updateUserAddress(@RequestBody UpdateUserAddress address) {
