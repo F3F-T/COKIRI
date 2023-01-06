@@ -11,11 +11,66 @@ import talk from "../../img/send.png"
 import Comments from "../../component/comments/Comments";
 import {useSelector} from "react-redux";
 import {Rootstate} from "../../index";
+import Api from "../../utils/api";
+import {useParams} from "react-router-dom";
+
+
 
 const PostDetail = () => {
 
-    const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
-    console.log("asdfasdfa",detail)
+    // const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
+    // console.log("asdfasdfa",detail)
+
+    interface PostType {
+        id? : number;
+        title? : string;
+        content? : string;
+        price: string;
+        tradeEachOther? : boolean;
+        authorNickname? : string;
+        wishCategory? : string;
+        productCategory? : string;
+        tradeStatus? : string;
+        tagNames? : string[];
+        scrapCount? : number;
+        messageRoomCount? : number;
+        createdTime? : string;
+    }
+
+    const params = useParams();
+    console.log(params)
+    const postId = params.id;
+
+    const [post,setPost] = useState<PostType>(null)
+
+    async function getPost() {
+
+        //interceptor를 사용한 방식 (header에 token값 전달)
+        try{
+            const res = await Api.get(`/post/${postId}`);
+
+            console.log(res)
+            setPost(prevState => {
+                return {...prevState, ...res.data};
+            })
+            console.log(post)
+
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("get 실패");
+        }
+    }
+
+    useEffect(()=>{
+        getPost();
+    },[])
+
+    if(!post)
+    {
+        return null;
+    }
 
 
 
@@ -26,7 +81,7 @@ const PostDetail = () => {
                     <div className={styles.postTopProfile}>
                         <img className={styles.postTopProfileImg} src={profileImg}></img>
                         <div className={styles.postTopProfileInfo}>
-                            <div className={styles.postTopNickname}>상도동팔이피플</div>
+                            <div className={styles.postTopNickname}>{post.authorNickname}</div>
                             <div className={styles.postTopAddress}>상도 1동 33길</div>
                         </div>
                     </div>
@@ -34,20 +89,16 @@ const PostDetail = () => {
                 <section className={styles.postBody}>
                     <div className={styles.postImg}>
                         <img className={styles.postBodyImg} src={coatImg}></img>
-                        {/*<button></button>*/}
-                        {/*<button>오른쪽으로 가기</button>*/}
                     </div>
                     <div className={styles.postDetailInfo}>
-                        <h2 className={styles.postDetailTitle}>21fw 쿠어 MTR 발마칸 코트M (멜란지토프)</h2>
-                        <div className={styles.postDetailCategory}>남성의류</div>
-                        <div className={styles.postDetailPrice}>120,000원</div>
-                        <div className={styles.postDetailContent}>3개월 전에 산 스팸 클래식 중간크기에요.<br/>
-                            다른 통조림 류랑 교환하실분 !! 꼭 식품이 아니더라도 관심있으신 분 연락주세요 ㅎㅎ
-                        </div>
-                        <div className={styles.postDetailTag}>#스팸 #통조림 #고기 #스팸클래식</div>
+                        <h2 className={styles.postDetailTitle}>{post.title}</h2>
+                        <div className={styles.postDetailCategory}>{post.productCategory}</div>
+                        <div className={styles.postDetailPrice}></div>
+                        <div className={styles.postDetailContent}>{post.content}</div>
+                        <div className={styles.postDetailTag}>{post.tagNames}</div>
                         <div className={styles.postDetailSwapCategoryBox}>
                             <img className={styles.transfer} src={transfer}/>
-                            <div className={styles.postDetailSwapCategory}> 식품</div>
+                            <div className={styles.postDetailSwapCategory}> {post.wishCategory}</div>
                         </div>
                     </div>
 
@@ -56,11 +107,11 @@ const PostDetail = () => {
                     <div className={styles.metaBox}>
                         <div className={styles.imgBox}>
                             <img className={styles.likeImg} src={like} onClick={()=>{}}/>
-                            <p className={styles.likeNum}>4</p>
+                            <p className={styles.likeNum}>{post.scrapCount}</p>
                         </div>
                         <div className={styles.commentBox}>
                             <img className={styles.commentImg} src={talk}/>
-                            <p className={styles.commmentNum}>4</p>
+                            <p className={styles.commmentNum}>{post.messageRoomCount}</p>
                         </div>
                         <div className={styles.timeBox}>
                             <img className={styles.timeImg} src={clock}/>
