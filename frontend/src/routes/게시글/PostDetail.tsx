@@ -121,7 +121,7 @@ const PostDetail = () => {
                     <button className={styles.exchangeBtn}>코끼리톡으로 교환하기</button>
                 </section>
             </article>
-            <section className={styles.comments}>
+            <section className={styles.comments}>//
                 <Comments className={"primary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
                 <Comments className={"secondary"}  userID={"함민혁"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
                 <Comments className={"secondary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
