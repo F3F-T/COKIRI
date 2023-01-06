@@ -18,9 +18,10 @@ import Api from "../../utils/api";
 import {setToken} from "../../store/jwtTokenReducer";
 import {setUserInfo} from "../../store/userInfoReducer";
 import {log} from "util";
+import nav from "../Nav";
 
 interface PostType {
-    postId? : number;
+    id? : number;
     title? : string;
     content? : string;
     tradeEachOther? : boolean;
@@ -82,14 +83,16 @@ const PostContainer = () => {
 
     const onClickPost = (post) => {
         console.log(post)
+        console.log(post.id)
+        navigate(`/post/${post.id}`)
     }
 
         return (
         <div className={styles.postContainer}>
             {
                 postList.map((post)=>(
-                    <Card key = {post.postId} className={"forTrade"} postTitle={post.title} postContent={post.content} wishCategory={post.wishCategory}
-                    onClick={() => onClickPost(post.postId)}/>
+                    <Card key = {post.id} className={"forTrade"} postTitle={post.title} postContent={post.content} wishCategory={post.wishCategory}
+                          onClick={() => {onClickPost(post)}}/>
 
                 ))
             }
