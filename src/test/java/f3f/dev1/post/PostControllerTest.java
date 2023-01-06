@@ -279,7 +279,7 @@ public class PostControllerTest {
         //given
         Member member = new Member();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        PostInfoDtoWithTag postInfoDto = PostInfoDtoWithTag.builder().title(postSaveRequest.getTitle()).build();
+        SinglePostInfoDto postInfoDto = SinglePostInfoDto.builder().title(postSaveRequest.getTitle()).build();
         postService.savePost(postSaveRequest, member.getId());
         doReturn(postInfoDto).when(postService).findPostById(any());
 
@@ -297,10 +297,11 @@ public class PostControllerTest {
                         fieldWithPath("messageRoomCount").description("message room count value of post"),
                         fieldWithPath("createdTime").description("created time value of post"),
                         fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
-                        fieldWithPath("authorNickname").description("authorNickname value of post"),
                         fieldWithPath("wishCategory").description("wishCategory name value of post"),
                         fieldWithPath("productCategory").description("productCategory name value of post"),
                         fieldWithPath("price").description("price value of post"),
+                        fieldWithPath("userInfo").description("userInfo DTO value"),
+                        fieldWithPath("commentInfoDtoList").description("commentInfo DTO list value of post"),
                         fieldWithPath("title").description("title name value of post"),
                         fieldWithPath("tradeStatus").description("tradeStatus value of post"),
                         fieldWithPath("tagNames").description("tag name list value of post")

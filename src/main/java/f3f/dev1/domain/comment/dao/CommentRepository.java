@@ -24,7 +24,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Optional<Comment> findByAuthorIdAndId(Long authorId, Long commentId);
     boolean existsByPostId(Long postId);
 
-    @Query("select new f3f.dev1.domain.comment.dto.CommentDTO.CommentInfoDto(c.id, c.post.id, c.author.id, c.content, c.depth, c.parent.id) " +
-            "from Comment c where c.post.id = :postId")
-    List<CommentInfoDto> findCommentInfoDtoByPostId(@Param("postId") Long postId);
+//    @Query("select new f3f.dev1.domain.comment.dto.CommentDTO.CommentInfoDto(c.id, c.post.id, c.author.id, c.content, c.depth, c.parent.id) " +
+//            "from Comment c where c.post.id = :postId")
+//    List<CommentInfoDto> findCommentInfoDtoByPostId(@Param("postId") Long postId);
 }

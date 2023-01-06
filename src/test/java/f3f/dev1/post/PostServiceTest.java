@@ -442,7 +442,7 @@ public class PostServiceTest {
 
         //then
         // 컨트롤러에서 사용하는 포스트 서비스 로직을 그대로 사용하여 테스트해보겠음.
-        PostInfoDtoWithTag postInfoDtoWithTag = postService.findPostById(postId);
+        SinglePostInfoDto postInfoDtoWithTag = postService.findPostById(postId);
         assertThat(postInfoDtoWithTag.getTitle()).isEqualTo("제목");
         assertThat(postInfoDtoWithTag.getTagNames().size()).isEqualTo(3);
         assertThat(postInfoDtoWithTag.getTagNames().containsAll(tagNamesToBeAdded)).isTrue();

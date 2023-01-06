@@ -4,6 +4,10 @@ import f3f.dev1.domain.category.dao.CategoryRepository;
 import f3f.dev1.domain.category.exception.NotFoundProductCategoryNameException;
 import f3f.dev1.domain.category.exception.NotFoundWishCategoryNameException;
 import f3f.dev1.domain.category.model.Category;
+import f3f.dev1.domain.comment.dao.CommentRepository;
+import f3f.dev1.domain.comment.dto.CommentDTO;
+import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
@@ -15,6 +19,9 @@ import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.post.model.ScrapPost;
+import f3f.dev1.domain.scrap.dao.ScrapRepository;
+import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
+import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.exception.NotFoundByPostAndTagException;
@@ -30,6 +37,8 @@ import org.springframework.validation.annotation.Validated;
 import java.util.ArrayList;
 import java.util.List;
 
+import static f3f.dev1.domain.comment.dto.CommentDTO.*;
+import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 
 @Service
@@ -40,6 +49,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final TradeRepository tradeRepository;
+    private final CommentRepository commentRepository;
+    private final ScrapRepository scrapRepository;
     private final ScrapPostRepository scrapPostRepository;
     private final MessageRoomRepository messageRoomRepository;
     private final TagRepository tagRepository;
@@ -277,7 +288,7 @@ public class PostService {
     // TODO 거래 가능한 게시글만 검색하기
 
     @Transactional(readOnly = true)
-    public PostInfoDtoWithTag findPostById(Long id) {
+    public SinglePostInfoDto findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
 //        // TODO 거래 가능 상태인지 확인하기
         List<String> tagNames = new ArrayList<>();
@@ -285,10 +296,16 @@ public class PostService {
         for (PostTag postTag : postTags) {
             tagNames.add(postTag.getTag().getName());
         }
-//        Trade trade = tradeRepository.findByPostId(post.getId()).orElseThrow(NotFoundByIdException::new);
-        List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+        Scrap scrap = scrapRepository.findScrapByMemberId(post.getAuthor().getId()).orElseThrow(UserScrapNotFoundException::new);
+        List<Comment> comments = commentRepository.findByPostId(post.getId());
+        List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
+        for (Comment comment : comments) {
+            commentInfoDtoList.add(comment.toInfoDto());
+        }
         List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
+        List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+        UserInfo userInfo = post.getAuthor().toUserInfo(scrap.getId());
+        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfo, commentInfoDtoList);
         return response;
     }
 
