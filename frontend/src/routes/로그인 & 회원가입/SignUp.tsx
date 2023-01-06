@@ -103,7 +103,7 @@ const SignUp = () => {
             console.log(userInfo);
             alert('회원가입에 성공했습니다.');
             MailConfirm({"email" : userInfo.email})
-            //이메일 인증으로 넘어가면서 이메일 props 전달
+            //이메일 인증으로 넘어가면서 이메일 props 전달j
             navigate('/signup/emailcheck', {state : userInfo})
 
         } catch (err) {
