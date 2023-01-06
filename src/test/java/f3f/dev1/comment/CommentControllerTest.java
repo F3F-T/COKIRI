@@ -169,7 +169,7 @@ public class CommentControllerTest {
 
         CreateCommentRequest commentRequest = createCommentRequest(member);
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "새로 만든 댓글");
-        doReturn(commentInfoDto).when(commentService).createComment(any());
+        doReturn(commentInfoDto).when(commentService).createComment(any(), any());
         postService.savePost(postSaveRequest, member.getId());
 
         //when & then
@@ -263,6 +263,7 @@ public class CommentControllerTest {
 
     @Test
     @DisplayName("댓글 수정 테스트")
+    @WithMockCustomUser
     public void updateCommentTestForSuccess() throws Exception {
         //given
         doReturn(1L).when(postService).savePost(any(), any());
@@ -272,10 +273,10 @@ public class CommentControllerTest {
 
         //when
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "새로 만든 댓글");
-        doReturn(commentInfoDto).when(commentService).createComment(any());
+        doReturn(commentInfoDto).when(commentService).createComment(any(), any());
         UpdateCommentRequest updateCommentRequest = createUpdateCommentRequest(1L, postId, member.getId(), "수정한 댓글");
         CommentInfoDto updatedCommentInfoDto = createCommentInfoDto(1L, postId, member.getId(), updateCommentRequest.getContent());
-        doReturn(updatedCommentInfoDto).when(commentService).updateComment(any());
+        doReturn(updatedCommentInfoDto).when(commentService).updateComment(any(), any());
 
         //then
         mockMvc.perform(patch("/post/{postId}/comments/{commentId}", 1L, 1L)
@@ -301,6 +302,7 @@ public class CommentControllerTest {
 
     @Test
     @DisplayName("댓글 삭제 테스트")
+    @WithMockCustomUser
     public void deleteCommentTestForSuccess() throws Exception {
         //given
         doReturn(1L).when(postService).savePost(any(), any());
@@ -310,9 +312,9 @@ public class CommentControllerTest {
 
         //when
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "새로 만든 댓글");
-        doReturn(commentInfoDto).when(commentService).createComment(any());
+        doReturn(commentInfoDto).when(commentService).createComment(any(), any());
         DeleteCommentRequest deleteCommentRequest = createDeleteCommentRequest(1L, member.getId(), postId);
-        doReturn("DELETE").when(commentService).deleteComment(any());
+        doReturn("DELETE").when(commentService).deleteComment(any(), any());
 
         //then
         mockMvc.perform(delete("/post/{postId}/comments/{commentId}", 1L, 1L)

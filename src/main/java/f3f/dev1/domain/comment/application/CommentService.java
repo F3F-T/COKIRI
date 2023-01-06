@@ -4,6 +4,7 @@ import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.domain.comment.exception.DuplicateCommentException;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
@@ -44,16 +45,12 @@ public class CommentService {
 
     // 부모 자식 대통합
     @Transactional
-    public CommentInfoDto createComment(CreateCommentRequest createCommentRequest) {
+    public CommentInfoDto createComment(CreateCommentRequest createCommentRequest, Long currentMemberId) {
         Member user = memberRepository.findById(createCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Post post = postRepository.findById(createCommentRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
-        // 유저, 포스트 존재 확인
-
         if(!currentMemberId.equals(user.getId())) {
-            throw new NotMatchingAuthorException("현재 로그인한 사용자가 요청자가 아닙니다.");
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
-
         if(createCommentRequest.getParentCommentId() == null) {
             // 부모 댓글이 null이라면 부모 댓글로 처리
             Comment parentComment = createCommentRequest.toEntity(post, user, null);
@@ -128,12 +125,16 @@ public class CommentService {
      */
 
     @Transactional
-    public CommentInfoDto updateComment(UpdateCommentRequest updateCommentRequest) {
+    public CommentInfoDto updateComment(UpdateCommentRequest updateCommentRequest, Long currentMemberId) {
         Post post = postRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Member user = memberRepository.findById(updateCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
         if(!commentInPost.getId().equals(comment.getId())) {
             throw new NotMatchingCommentException("요청한 게시글에 수정하려는 댓글이 없습니다.");
+        }
+        if(!currentMemberId.equals(updateCommentRequest.getAuthorId())) {
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
         commentInPost.updateContent(updateCommentRequest.getContent());
         CommentInfoDto commentInfoDto = CommentInfoDto.builder()
@@ -146,7 +147,7 @@ public class CommentService {
     }
 
     @Transactional
-    public String deleteComment(DeleteCommentRequest deleteCommentRequest) {
+    public String deleteComment(DeleteCommentRequest deleteCommentRequest, Long currentMemberId) {
         Post post = postRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Member user = memberRepository.findById(deleteCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
@@ -156,6 +157,9 @@ public class CommentService {
         }
         if(commentInPost.getAuthor().getId().equals(deleteCommentRequest.getAuthorId())) {
             throw new NotMatchingAuthorException("댓글 작성자가 아닙니다");
+        }
+        if(!currentMemberId.equals(user.getId())) {
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
         commentRepository.delete(commentInPost);
         return "DELETE";
