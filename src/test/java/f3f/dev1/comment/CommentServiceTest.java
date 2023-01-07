@@ -300,7 +300,7 @@ public class CommentServiceTest {
     @Test
     @WithMockCustomUser
     @DisplayName("댓글 업데이트 테스트 - 부모댓글 수정")
-    public void updateCommentTestForSuccess() throws Exception {
+    public void updateParentCommentTestForSuccess() throws Exception {
         //given
         Long postId = createPost();
         Post post = postRepository.findById(postId).get();
@@ -323,4 +323,61 @@ public class CommentServiceTest {
 
     }
 
+    @Test
+    @DisplayName("댓글 업데이트 테스트 - 자식댓글 수정")
+    public void updateChildCommentTestForSuccess() throws Exception {
+        //given
+        Long postId = createPost();
+        Post post = postRepository.findById(postId).get();
+        Member member = post.getAuthor();
+        CreateCommentRequest commentRequest = createCommentRequest(member, postId, "첫번째 댓글", null);
+        CreateCommentRequest secondCommentRequest = createCommentRequest(member, postId, "두번째 댓글", null);
+        CreateCommentRequest thirdCommentRequest = createCommentRequest(member, postId, "세번째 댓글", null);
+        CommentInfoDto commentInfoDto = commentService.saveComment(commentRequest, member.getId());
+        CommentInfoDto secondCommentInfoDto = commentService.saveComment(secondCommentRequest, member.getId());
+        CommentInfoDto thirdCommentInfoDto = commentService.saveComment(thirdCommentRequest, member.getId());
+
+        //when
+        CreateCommentRequest thirdCommentFirstChildRequest = createCommentRequest(member, postId, "세번째 댓글의 자식 댓글", thirdCommentInfoDto.getId());
+        CommentInfoDto childCommentInfoDto = commentService.saveComment(thirdCommentFirstChildRequest, member.getId());
+        UpdateCommentRequest childCommentUpdateRequest = createUpdateCommentRequest(childCommentInfoDto.getId(), childCommentInfoDto.getParentCommentId(), member.getId(), postId, "세번째 댓글의 자식 댓글 수정");
+        CommentInfoDto updatedCommentInfo = commentService.updateComment(childCommentUpdateRequest, member.getId());
+
+        //then
+        List<Comment> comments = commentRepository.findByPostId(postId);
+        assertThat(comments).extracting("content").hasSize(4)
+                .contains("첫번째 댓글", "두번째 댓글", "세번째 댓글", "세번째 댓글의 자식 댓글 수정");
+
+        List<Comment> childCommentsOfThirdComment = commentRepository.findByParentId(thirdCommentInfoDto.getId());
+        assertThat(childCommentsOfThirdComment).extracting("content").hasSize(1).contains("세번째 댓글의 자식 댓글 수정");
+    }
+
+
+    @Test
+    @DisplayName("댓글 삭제 테스트 - 자식댓글 단일 삭제")
+    public void deleteSingleChildCommentForSuccess() throws Exception {
+        //given
+        Long postId = createPost();
+        Post post = postRepository.findById(postId).get();
+        Member member = post.getAuthor();
+        CreateCommentRequest commentRequest = createCommentRequest(member, postId, "첫번째 댓글", null);
+        CreateCommentRequest secondCommentRequest = createCommentRequest(member, postId, "두번째 댓글", null);
+        CreateCommentRequest thirdCommentRequest = createCommentRequest(member, postId, "세번째 댓글", null);
+        CommentInfoDto commentInfoDto = commentService.saveComment(commentRequest, member.getId());
+        CommentInfoDto secondCommentInfoDto = commentService.saveComment(secondCommentRequest, member.getId());
+        CommentInfoDto thirdCommentInfoDto = commentService.saveComment(thirdCommentRequest, member.getId());
+        CreateCommentRequest thirdCommentFirstChildRequest = createCommentRequest(member, postId, "세번째 댓글의 자식 댓글", thirdCommentInfoDto.getId());
+        CommentInfoDto childCommentInfoDto = commentService.saveComment(thirdCommentFirstChildRequest, member.getId());
+
+        //when
+        DeleteCommentRequest deleteCommentRequest = createDeleteCommentRequest(childCommentInfoDto.getId(), member.getId(), postId);
+        String result = commentService.deleteComment(deleteCommentRequest, member.getId());
+
+        //then
+        List<Comment> comments = commentRepository.findByPostId(postId);
+        assertThat(comments).extracting("content").hasSize(3).contains("첫번째 댓글", "두번째 댓글", "세번째 댓글");
+
+        List<Comment> emptyList = commentRepository.findByParentId(thirdCommentInfoDto.getId());
+        assertThat(emptyList).isEmpty();
+    }
 }

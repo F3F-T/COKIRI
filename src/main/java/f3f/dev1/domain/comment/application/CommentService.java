@@ -119,14 +119,14 @@ public class CommentService {
 
     @Transactional
     public String deleteComment(DeleteCommentRequest deleteCommentRequest, Long currentMemberId) {
-        Post post = postRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(deleteCommentRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         Member user = memberRepository.findById(deleteCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
-        if(commentInPost.getId().equals(comment.getId())) {
+        if(!commentInPost.getId().equals(comment.getId())) {
             throw new NotMatchingCommentException("요청한 게시글에 삭제하려는 댓글이 없습니다.");
         }
-        if(commentInPost.getAuthor().getId().equals(deleteCommentRequest.getAuthorId())) {
+        if(!commentInPost.getAuthor().getId().equals(deleteCommentRequest.getAuthorId())) {
             throw new NotMatchingAuthorException("댓글 작성자가 아닙니다");
         }
         if(!currentMemberId.equals(user.getId())) {
