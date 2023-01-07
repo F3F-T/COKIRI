@@ -1,6 +1,6 @@
 import React, {useState, useRef,useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/loginAndSignup/MyPage.module.css"
-import {useNavigate} from "react-router-dom";
+import {Outlet, useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import photo from "../img/photoSelect.png"
@@ -13,7 +13,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
 import {Simulate} from "react-dom/test-utils";
 import input = Simulate.input;
-import {setUserNick} from "../store/userInfoReducer";
+import {setUserInfo, setUserNick} from "../store/userInfoReducer";
 import {userInfo} from "os";
 import TextInput from "./common/TextInput";
 import Message from "./로그인 & 회원가입/Message";
@@ -28,6 +28,7 @@ const MyPage = () =>  {
         newNickname: string;
 
     }
+
     type checkNicknameTypes = 'invalid' | 'valid' | 'duplicated'
 
     interface ValidationCheck {
@@ -41,6 +42,7 @@ const MyPage = () =>  {
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
     console.log("닉네임입니다.", info.nickname)
     const [userInfo, setuserInfo] = useState<UserInfo>(null);
+
     const [validationCheck, setValidationCheck] = useState<ValidationCheck>(
         {
             nicknameCheck: undefined,
@@ -96,6 +98,8 @@ const MyPage = () =>  {
 
         }
     }
+
+    const [newNick,setNewNick]=useState(info.nickname)
     async function nicknameChange() {
         try {
             const res = await Api.patch("/user/nickname", userInfo);
@@ -107,11 +111,10 @@ const MyPage = () =>  {
             };
             console.log(result);
             console.log("바뀐 유저정보", userInfo);
-            if( await Api.patch("/user/nickname", userInfo)){
-                console.log("컴온");
-                dispatch(setUserNick(userInfo.newNickname));
-                console.log("바뀐 닉네임", userInfo);
-            }
+            console.log("바뀐 닉넴정보", res.data.newNickname);
+            setNewNick(res.data.newNickname)
+            dispatch(setUserInfo(newNick));
+
 
 
         } catch (err) {
@@ -139,7 +142,7 @@ const MyPage = () =>  {
             alert("실패")
         }
     }
-    const [value,setValue]=useState('');
+    const [value,setValue]=useState();
 
     const onChange = useCallback(e=>{
         setValue((e.target.value))
@@ -148,7 +151,24 @@ const MyPage = () =>  {
     useEffect(()=>{
         readNickName()
     },[])
-
+    const [postNum,setNum]=useState('');
+    async function getMyPostList() {
+        //interceptor를 사용한 방식 (header에 token값 전달)
+        try{
+            const res = await Api.get('/user/posts');
+            console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
+            // @ts-ignore
+            setNum(Object.keys(res.data.userPosts).length);
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("get 실패");
+        }
+    }
+    useEffect(()=>{
+        getMyPostList();
+    },[])
     return (
             <>
             <div className={styles.profile}>
@@ -156,9 +176,7 @@ const MyPage = () =>  {
                     <img className={styles.Image} src={profile}/>
                 </div>
                 <div className={styles.userInfo}>
-                    <form className = "TodoInsert">
-                        <input className={styles.nickName} placeholder={info.nickname} value={value} onChange={onChange} />
-                    </form>
+                    <div className={styles.nickName}>{newNick}</div>
                     <TextInput placeholder={info.nickname} onBlur={onChangeNickname}/>
                     {(validationCheck.nicknameCheck === undefined &&
                             <Message validCheck={validationCheck.nicknameCheckBoolean} content={""}/>)
@@ -175,15 +193,16 @@ const MyPage = () =>  {
                     <input className={styles.intro} placeholder={"한 줄 소개를 입력하세요."}></input>
                     <div className={styles.intro2}>
                         <div className={styles.i1}>
-                            <p>게시글</p> <p className={styles.postNum}>5</p>
+                            <p>게시글</p> <p className={styles.postNum}>{postNum}</p>
                         </div>
                         <div className={styles.i1}>
                             <p>상품 거래</p> <p className={styles.tradeNum}>8</p>
                         </div>
                     </div>
-
                 </div>
             </div>
+                <Outlet/>
+
 
             </>
     );

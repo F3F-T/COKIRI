@@ -52,12 +52,14 @@ const MyPage = () =>  {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
             const res = await Api.get('/user/posts');
-            console.log("내 게시글들임",res.data.userPosts[0].title)
+            console.log("내 게시글들임", res.data.userPosts)
             setPostList(prevState => {
                 // return [...res.data.userPosts];
                 return [ ...res.data.userPosts];
             })
             console.log("내 게시글 리스트얌",postList);
+            // console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
+
         }
         catch (err)
         {
@@ -69,6 +71,7 @@ const MyPage = () =>  {
     useEffect(()=>{
         getMyPostList();
     },[])
+        // getMyPostList();
 
     if (!postList) {
         return null
@@ -79,23 +82,14 @@ const MyPage = () =>  {
 
     return (
         <>
+
             <div className={styles.MyPage}>
-            <MyPageSet/>
                 <div className={styles.menu}>
                     <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>
                     <button className={styles.zzimactive} onClick={()=>{navigate('/mypage/zzim')}}>관심 상품</button>
                 </div>
               <div className={styles.container}>
-                  {/*<Card className={"forMypage"} postTitle={"스팸아"} like={3} comment={5} wishCategory={"가구"} />*/}
-                  {/*<Card className={"forMypage"} postTitle={"고추참치"} like={4} comment={8} wishCategory={"음식"} />*/}
-                  {/*<Card className={"forMypage"} postTitle={"홍"}  like={7} comment={5} wishCategory={"가구"} />*/}
-                  {/*<Card className={"forMypage"} postTitle={"홍라면"}  like={3} comment={5} wishCategory={"가구"} />*/}
-                  {/*<Card className={"forMypage"} postTitle={"김치찌개"} like={3} comment={5} wishCategory={"가구"} />*/}
-                  {/*<Card className={"forMypage"} postTitle={"그만"}  like={3} comment={5} wishCategory={"가구"} />*/}
-                  {/*<Card className={"forMypage"} postTitle={"그만"}  like={3} comment={5} wishCategory={"가구"} />*/}
-                  {/*<Card className={"forMypage"} postTitle={"아직"} like={3} comment={5} wishCategory={"가구"} />*/}
                   {
-
                       // postList.map((SingleObject:Object)=>(
                       // <Card  className={"forMypage"} postTitle={SingleObject['title']} like={20} wishCategory={SingleObject['wishCategory']}
                       // onClick={() => {onClickPost(SingleObject)}}/>
@@ -104,8 +98,6 @@ const MyPage = () =>  {
                           <Card  className={"forMypage"} postTitle={post['title']} like={20} wishCategory={postList['wishCategory']}
                                  onClick={() => {onClickPost(post)}}/>
                       ))
-
-
                       // https://velog.io/@op032/%EB%A0%8C%EB%8D%94%EB%A7%81-%EB%AC%B8%EC%A0%9C%EB%A5%BC-%ED%95%B4%EA%B2%B0%ED%95%B4%EB%B3%B4%EC%9E%90-TypeError-Cannot-read-property-title-of-undefined
                   }
               </div>
