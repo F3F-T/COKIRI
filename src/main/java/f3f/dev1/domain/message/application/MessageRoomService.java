@@ -47,13 +47,13 @@ public class MessageRoomService {
     private final MessageService messageService;
 
     public Long createMessageRoom(MessageRoomSaveRequest saveRequest){
-        Post post = postRepository.findById(saveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(saveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         //파는 사람이 유효한지 확인(메시지를 받는 입장임)
-        Member seller = memberRepository.findById(saveRequest.getSeller().getId()).orElseThrow(NotFoundByIdException::new);
+        Member seller = memberRepository.findById(saveRequest.getSellerId()).orElseThrow(NotFoundByIdException::new);
         //메시지를 보내는 사람은 물건을 사고자하는 사람.
-        Member buyer = memberRepository.findById(saveRequest.getBuyer().getId()).orElseThrow(NotFoundByIdException::new);
+        Member buyer = memberRepository.findById(saveRequest.getBuyerId()).orElseThrow(NotFoundByIdException::new);
         //거래 상태 확인을 위해 포스트에 있는 트레이드 아이디로 가져옴.
-        Trade trade = tradeRepository.findByPostId(saveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(saveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
 
         //포스트 작성자는 메시지를 받는 사람. 즉, 자신한테는 메시지를 남기지 못함.
         if(buyer.getId().equals(post.getAuthor())){
@@ -65,7 +65,7 @@ public class MessageRoomService {
             throw new CanNotSendMessageByTradeStatus();
         }
 
-        MessageRoom messageRoom = saveRequest.toEntity();
+        MessageRoom messageRoom = saveRequest.toEntity(post, seller, buyer);
         messageRoomRepository.save(messageRoom);
         //두명의 유저 채팅 리스트에 추가.
         seller.getSellingRooms().add(messageRoom);
@@ -112,8 +112,8 @@ public class MessageRoomService {
         //유저가 센딩 메시지룸과 리시브 메시지룸을 구별하면 되기 때문에 그냥 객체로 두는게 나은가? 메시지 레포지토리가 아니라 멤버에서 지워야해서 헷갈림.
         MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRoomRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Member member = memberRepository.findById(deleteMessageRoomRequest.getMemberId()).orElseThrow(NotFoundByIdException::new);
-        Post post = postRepository.findById(deleteMessageRoomRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
-        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
 
         //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정
         //유저 메시지 방에 있는지 확인해야함.

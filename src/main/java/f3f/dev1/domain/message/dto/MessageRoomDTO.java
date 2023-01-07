@@ -22,19 +22,19 @@ public class MessageRoomDTO {
     public static class MessageRoomSaveRequest{
 
         @NonNull
-        private Post post;
+        private Long postId;
 
         @NotNull
-        private Member seller;
+        private Long sellerId;
 
         @NonNull
-        private Member buyer;
+        private Long buyerId;
 
-        public MessageRoom toEntity(){
+        public MessageRoom toEntity(Post post, Member seller, Member buyer){
             return MessageRoom.builder()
-                    .post(this.post)
-                    .seller(this.seller)
-                    .buyer(this.buyer)
+                    .post(post)
+                    .seller(seller)
+                    .buyer(buyer)
                     .build();
 
         }
@@ -48,7 +48,7 @@ public class MessageRoomDTO {
 //        private Long sellerId;
 //        private Long buyerId;
         private Long memberId;
-        private Post post;
+        private Long postId;
         private List<Message> messages;
     }
 
