@@ -35,7 +35,7 @@ public class CommentService {
 
     // 부모 자식 대통합
     @Transactional
-    public CommentInfoDto createComment(CreateCommentRequest createCommentRequest, Long currentMemberId) {
+    public CommentInfoDto saveComment(CreateCommentRequest createCommentRequest, Long currentMemberId) {
         Member user = memberRepository.findById(createCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(createCommentRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         if(!currentMemberId.equals(user.getId())) {
@@ -51,8 +51,7 @@ public class CommentService {
             // 부모 댓글이 존재한다면 자식 댓글로 처리
             Comment parentComment = commentRepository.findById(createCommentRequest.getParentCommentId()).orElseThrow(NotFoundByIdException::new);
             Comment comment = createCommentRequest.toEntity(post, user, parentComment);
-            // TODO 피드백 부분, 일단은 아래와 같이 작성해두고 나중에 다시 생각해보기로 하자
-            parentComment.getChilds().add(comment);
+            commentRepository.save(comment);
             CommentInfoDto commentInfoDto = comment.toInfoDto();
             return commentInfoDto;
         }

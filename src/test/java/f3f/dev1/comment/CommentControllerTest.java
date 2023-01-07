@@ -3,14 +3,11 @@ package f3f.dev1.comment;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.domain.comment.api.CommentController;
 import f3f.dev1.domain.comment.application.CommentService;
-import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.application.PostService;
-import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -169,7 +166,7 @@ public class CommentControllerTest {
 
         CreateCommentRequest commentRequest = createCommentRequest(member);
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "새로 만든 댓글");
-        doReturn(commentInfoDto).when(commentService).createComment(any(), any());
+        doReturn(commentInfoDto).when(commentService).saveComment(any(), any());
         postService.savePost(postSaveRequest, member.getId());
 
         //when & then
@@ -273,7 +270,7 @@ public class CommentControllerTest {
 
         //when
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "새로 만든 댓글");
-        doReturn(commentInfoDto).when(commentService).createComment(any(), any());
+        doReturn(commentInfoDto).when(commentService).saveComment(any(), any());
         UpdateCommentRequest updateCommentRequest = createUpdateCommentRequest(1L, postId, member.getId(), "수정한 댓글");
         CommentInfoDto updatedCommentInfoDto = createCommentInfoDto(1L, postId, member.getId(), updateCommentRequest.getContent());
         doReturn(updatedCommentInfoDto).when(commentService).updateComment(any(), any());
@@ -312,7 +309,7 @@ public class CommentControllerTest {
 
         //when
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "새로 만든 댓글");
-        doReturn(commentInfoDto).when(commentService).createComment(any(), any());
+        doReturn(commentInfoDto).when(commentService).saveComment(any(), any());
         DeleteCommentRequest deleteCommentRequest = createDeleteCommentRequest(1L, member.getId(), postId);
         doReturn("DELETE").when(commentService).deleteComment(any(), any());
 

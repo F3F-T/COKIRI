@@ -23,6 +23,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -220,7 +221,7 @@ public class CommentServiceTest {
     @Test
     @WithMockCustomUser
     @DisplayName("댓글 생성 테스트 - 부모 댓글")
-    public void createCommentTestForSuccess() throws Exception {
+    public void createParentCommentTestForSuccess() throws Exception {
         //given
         Long postId = createPost();
         Post post = postRepository.findById(postId).get();
@@ -231,13 +232,60 @@ public class CommentServiceTest {
 
         //when
         // 댓글 생성
-        CommentInfoDto commentInfoDto = commentService.createComment(commentRequest, member.getId());
-        CommentInfoDto secondCommentInfoDto = commentService.createComment(secondCommentRequest, member.getId());
-        CommentInfoDto thirdCommentInfoDto = commentService.createComment(thirdCommentRequest, member.getId());
+        CommentInfoDto commentInfoDto = commentService.saveComment(commentRequest, member.getId());
+        CommentInfoDto secondCommentInfoDto = commentService.saveComment(secondCommentRequest, member.getId());
+        CommentInfoDto thirdCommentInfoDto = commentService.saveComment(thirdCommentRequest, member.getId());
 
         //then
         List<Comment> comments = commentRepository.findByPostId(postId);
         assertThat(comments).extracting("content").hasSize(3).contains("첫번째 댓글", "두번째 댓글", "세번째 댓글");
+    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("댓글 생성 테스트 - 자식 댓글")
+    public void createChildCommentTestForSuccess() throws Exception {
+        //given
+        Long postId = createPost();
+        Post post = postRepository.findById(postId).get();
+        Member member = post.getAuthor();
+        CreateCommentRequest commentRequest = createCommentRequest(member, postId, "첫번째 댓글", null);
+        CreateCommentRequest secondCommentRequest = createCommentRequest(member, postId, "두번째 댓글", null);
+        CreateCommentRequest thirdCommentRequest = createCommentRequest(member, postId, "세번째 댓글", null);
+
+        //when
+        // 댓글 생성 - 부모댓글 3개 생성
+        CommentInfoDto commentInfoDto = commentService.saveComment(commentRequest, member.getId());
+        CommentInfoDto secondCommentInfoDto = commentService.saveComment(secondCommentRequest, member.getId());
+        CommentInfoDto thirdCommentInfoDto = commentService.saveComment(thirdCommentRequest, member.getId());
+
+        // 댓글 생성 - 첫번째 댓글에 자식댓글 1개, 세번째 댓글에 자식댓글 2개
+        CreateCommentRequest firstCommentChildRequest = createCommentRequest(member, postId, "첫번째 댓글의 자식 댓글", commentInfoDto.getId());
+        CreateCommentRequest thirdCommentFirstChildRequest = createCommentRequest(member, postId, "세번째 댓글의 첫번째 자식 댓글", thirdCommentInfoDto.getId());
+        CreateCommentRequest thirdCommentSecondChildRequest = createCommentRequest(member, postId, "세번째 댓글의 두번째 자식 댓글", thirdCommentInfoDto.getId());
+
+        CommentInfoDto firstChildInfoDto = commentService.saveComment(firstCommentChildRequest, member.getId());
+        CommentInfoDto secondChildInfoDto = commentService.saveComment(thirdCommentFirstChildRequest, member.getId());
+        CommentInfoDto thirdChildInfoDto = commentService.saveComment(thirdCommentSecondChildRequest, member.getId());
+
+        //then
+        // 검증 1 - 댓글 전체
+        List<Comment> comments = commentRepository.findByPostId(postId);
+        assertThat(comments).extracting("content")
+                .hasSize(6)
+                .contains("첫번째 댓글", "두번째 댓글", "세번째 댓글", "첫번째 댓글의 자식 댓글", "세번째 댓글의 첫번째 자식 댓글", "세번째 댓글의 두번째 자식 댓글");
+
+
+        // 검증 2 - 자식 댓글 1
+        List<Comment> firstCommentChilds = commentRepository.findByParentId(commentInfoDto.getId());
+        assertThat(firstCommentChilds).extracting("content")
+                .hasSize(1).contains("첫번째 댓글의 자식 댓글");
+
+        // 검증 3 - 자식 댓글 2
+        List<Comment> thirdCommentChilds = commentRepository.findByParentId(thirdCommentInfoDto.getId());
+        assertThat(thirdCommentChilds).extracting("content")
+                .hasSize(2).contains("세번째 댓글의 첫번째 자식 댓글", "세번째 댓글의 두번째 자식 댓글");
+
     }
 
 

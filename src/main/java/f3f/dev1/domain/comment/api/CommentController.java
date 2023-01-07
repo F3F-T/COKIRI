@@ -1,7 +1,6 @@
 package f3f.dev1.domain.comment.api;
 
 import f3f.dev1.domain.comment.application.CommentService;
-import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,7 +25,7 @@ public class CommentController {
     @PostMapping(value = "/post/{postId}/comments")
     public ResponseEntity<CommentInfoDto> createComment(@PathVariable(name = "postId") Long postId, @RequestBody @Valid CreateCommentRequest createCommentRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        CommentInfoDto commentInfoDto = commentService.createComment(createCommentRequest, currentMemberId);
+        CommentInfoDto commentInfoDto = commentService.saveComment(createCommentRequest, currentMemberId);
         return new ResponseEntity<>(commentInfoDto, HttpStatus.CREATED);
     }
 
