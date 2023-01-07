@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 
@@ -56,13 +57,14 @@ public class Comment {
     }
 
     public CommentInfoDto toInfoDto() {
+        Long parentCommentId = this.parent == null ? null : this.parent.id;
         return CommentInfoDto.builder()
                 .id(this.id)
                 .postId(this.post.getId())
                 .memberId(this.author.getId())
                 .content(this.content)
                 .depth(this.depth)
-                .parentCommentId(this.parent.id)
+                .parentCommentId(parentCommentId)
                 .build();
     }
 }
