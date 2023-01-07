@@ -23,6 +23,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByParentId(Long parentId);
 
+
+
     // post id랑 comment id를 함께 충족하는 댓글을 찾는다
     Optional<Comment> findByPostIdAndId(Long postId, Long commentId);
     // user id랑 comment id를 함께 충족하는 댓글을 찾는다

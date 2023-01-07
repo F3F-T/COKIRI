@@ -146,8 +146,8 @@ public class CommentControllerTest {
                 .build();
     }
 
-    public UpdateCommentRequest createUpdateCommentRequest(Long commentId, Long authorId, Long postId, String content) {
-        return new UpdateCommentRequest(commentId, authorId, postId, content);
+    public UpdateCommentRequest createUpdateCommentRequest(Long commentId, Long parentId, Long authorId, Long postId, String content) {
+        return new UpdateCommentRequest(commentId, parentId, authorId, postId, content);
     }
 
     public DeleteCommentRequest createDeleteCommentRequest(Long commentId, Long authorId, Long postId) {
@@ -275,7 +275,7 @@ public class CommentControllerTest {
         //when
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "새로 만든 댓글");
         doReturn(commentInfoDto).when(commentService).saveComment(any(), any());
-        UpdateCommentRequest updateCommentRequest = createUpdateCommentRequest(1L, postId, member.getId(), "수정한 댓글");
+        UpdateCommentRequest updateCommentRequest = createUpdateCommentRequest(1L, null, postId, member.getId(), "수정한 댓글");
         CommentInfoDto updatedCommentInfoDto = createCommentInfoDto(1L, postId, member.getId(), updateCommentRequest.getContent());
         doReturn(updatedCommentInfoDto).when(commentService).updateComment(any(), any());
 
@@ -288,6 +288,7 @@ public class CommentControllerTest {
                 .andExpect(jsonPath("$.content").value(updatedCommentInfoDto.getContent()))
                 .andDo(document("comment/update/success", requestFields(
                         fieldWithPath("id").description("id value of comment"),
+                        fieldWithPath("parentId").description("id value of parent comment"),
                         fieldWithPath("authorId").description("id value of author"),
                         fieldWithPath("postId").description("id value of post"),
                         fieldWithPath("content").description("updated content value of comment")

@@ -1,6 +1,7 @@
 package f3f.dev1.domain.comment.application;
 
 import f3f.dev1.domain.comment.dao.CommentRepository;
+import f3f.dev1.domain.comment.exception.DeletedCommentException;
 import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
@@ -95,10 +96,16 @@ public class CommentService {
 
     @Transactional
     public CommentInfoDto updateComment(UpdateCommentRequest updateCommentRequest, Long currentMemberId) {
-        Post post = postRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(updateCommentRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Member user = memberRepository.findById(updateCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
+        // 상위 댓글이 없는 경우까지 고려해주겠다.
+        if(updateCommentRequest.getParentId() != null) {
+            if(!commentRepository.existsById(updateCommentRequest.getParentId())) {
+                throw new DeletedCommentException();
+            }
+        }
         if(!commentInPost.getId().equals(comment.getId())) {
             throw new NotMatchingCommentException("요청한 게시글에 수정하려는 댓글이 없습니다.");
         }

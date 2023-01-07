@@ -180,6 +180,15 @@ public class CommentServiceTest {
                 .content(content)
                 .parentCommentId(parentCommentId)
                 .build();
+
+    }
+
+    public UpdateCommentRequest createUpdateCommentRequest(Long commentId, Long parentId, Long authorId, Long postId, String content) {
+        return new UpdateCommentRequest(commentId, parentId, authorId, postId, content);
+    }
+
+    public DeleteCommentRequest createDeleteCommentRequest(Long commentId, Long authorId, Long postId) {
+        return new DeleteCommentRequest(commentId, authorId, postId);
     }
 
     public Long createPost() {
@@ -220,7 +229,7 @@ public class CommentServiceTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("댓글 생성 테스트 - 부모 댓글")
+    @DisplayName("댓글 생성 테스트 - 부모댓글")
     public void createParentCommentTestForSuccess() throws Exception {
         //given
         Long postId = createPost();
@@ -243,7 +252,7 @@ public class CommentServiceTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("댓글 생성 테스트 - 자식 댓글")
+    @DisplayName("댓글 생성 테스트 - 자식댓글")
     public void createChildCommentTestForSuccess() throws Exception {
         //given
         Long postId = createPost();
@@ -288,5 +297,30 @@ public class CommentServiceTest {
 
     }
 
+    @Test
+    @WithMockCustomUser
+    @DisplayName("댓글 업데이트 테스트 - 부모댓글 수정")
+    public void updateCommentTestForSuccess() throws Exception {
+        //given
+        Long postId = createPost();
+        Post post = postRepository.findById(postId).get();
+        Member member = post.getAuthor();
+        CreateCommentRequest commentRequest = createCommentRequest(member, postId, "첫번째 댓글", null);
+        CreateCommentRequest secondCommentRequest = createCommentRequest(member, postId, "두번째 댓글", null);
+        CreateCommentRequest thirdCommentRequest = createCommentRequest(member, postId, "세번째 댓글", null);
+        CommentInfoDto commentInfoDto = commentService.saveComment(commentRequest, member.getId());
+        CommentInfoDto secondCommentInfoDto = commentService.saveComment(secondCommentRequest, member.getId());
+        CommentInfoDto thirdCommentInfoDto = commentService.saveComment(thirdCommentRequest, member.getId());
+
+        //when
+        UpdateCommentRequest secondCommentUpdate = createUpdateCommentRequest(secondCommentInfoDto.getId(), secondCommentRequest.getParentCommentId(), member.getId(), postId, "두번째 댓글 수정");
+        CommentInfoDto updatedSecondComment = commentService.updateComment(secondCommentUpdate, member.getId());
+
+        //then
+        List<Comment> comments = commentRepository.findByPostId(postId);
+        assertThat(comments).extracting("content")
+                .hasSize(3).contains("첫번째 댓글", "두번째 댓글 수정", "세번째 댓글");
+
+    }
 
 }
