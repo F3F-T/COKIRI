@@ -139,6 +139,7 @@ public class CommentService {
             for (Comment childComment : commentInPost.getChilds()) {
                 commentRepository.delete(childComment);
             }
+            commentRepository.delete(commentInPost);
         }
         return "DELETE";
     }

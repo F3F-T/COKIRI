@@ -380,4 +380,33 @@ public class CommentServiceTest {
         List<Comment> emptyList = commentRepository.findByParentId(thirdCommentInfoDto.getId());
         assertThat(emptyList).isEmpty();
     }
+
+    @Test
+    @DisplayName("댓글 삭제 테스트 - 부모댓글 통합 삭제")
+    public void deleteTotalParentCommentForSuccess() throws Exception {
+        //given
+        Long postId = createPost();
+        Post post = postRepository.findById(postId).get();
+        Member member = post.getAuthor();
+        CreateCommentRequest commentRequest = createCommentRequest(member, postId, "첫번째 댓글", null);
+        CreateCommentRequest secondCommentRequest = createCommentRequest(member, postId, "두번째 댓글", null);
+        CreateCommentRequest thirdCommentRequest = createCommentRequest(member, postId, "세번째 댓글", null);
+        CommentInfoDto commentInfoDto = commentService.saveComment(commentRequest, member.getId());
+        CommentInfoDto secondCommentInfoDto = commentService.saveComment(secondCommentRequest, member.getId());
+        CommentInfoDto thirdCommentInfoDto = commentService.saveComment(thirdCommentRequest, member.getId());
+        CreateCommentRequest thirdCommentFirstChildRequest = createCommentRequest(member, postId, "첫번째 댓글의 첫번째 자식 댓글", commentInfoDto.getId());
+        CreateCommentRequest thirdCommentSecondChildRequest = createCommentRequest(member, postId, "첫번째 댓글의 두번째 자식 댓글", commentInfoDto.getId());
+        CreateCommentRequest thirdCommentThirdChildRequest = createCommentRequest(member, postId, "첫번째 댓글의 세번째 자식 댓글", commentInfoDto.getId());
+        CommentInfoDto childCommentInfoDto = commentService.saveComment(thirdCommentFirstChildRequest, member.getId());
+        CommentInfoDto secondChildCommentInfoDto = commentService.saveComment(thirdCommentSecondChildRequest, member.getId());
+        CommentInfoDto thirdChildCommentInfoDto = commentService.saveComment(thirdCommentThirdChildRequest, member.getId());
+
+        //when
+        DeleteCommentRequest deleteFirstCommentRequest = createDeleteCommentRequest(commentInfoDto.getId(), member.getId(), postId);
+        commentService.deleteComment(deleteFirstCommentRequest, member.getId());
+
+        //then
+        List<Comment> comments = commentRepository.findByPostId(postId);
+        assertThat(comments).extracting("content").hasSize(2).contains("두번째 댓글", "세번째 댓글");
+    }
 }
