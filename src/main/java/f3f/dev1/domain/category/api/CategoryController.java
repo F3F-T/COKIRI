@@ -21,6 +21,7 @@ public class CategoryController {
     //@PostMapping(value = "/category")
     //public ResponseEntity
 
+
     @GetMapping(value = "/category")
     public ResponseEntity<List<Category>> getAllCategory(){
         List<Category> totalCategory = categoryService.readTotalCategory();
