@@ -35,6 +35,7 @@ public class CommentService {
 
 
     // 부모 자식 대통합
+    // TODO : 부모 댓글이 null인데 depth가 1 이상인 요청들 잡아내야함, 비슷한 맥락으로 부모 있는데 depth 0인 요청 잡아내야 함
     @Transactional
     public CommentInfoDto saveComment(CreateCommentRequest createCommentRequest, Long currentMemberId) {
         Member user = memberRepository.findById(createCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
@@ -94,6 +95,7 @@ public class CommentService {
         댓글 수정
      */
 
+    // TODO 요청으로 들어온 애는 부모가 없는데 부모가 지정돼서 오거나 그 반대 경우로 들어오는 요청들 커트하기
     @Transactional
     public CommentInfoDto updateComment(UpdateCommentRequest updateCommentRequest, Long currentMemberId) {
         Post post = postRepository.findById(updateCommentRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
