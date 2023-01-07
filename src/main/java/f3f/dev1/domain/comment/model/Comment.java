@@ -59,12 +59,14 @@ public class Comment {
     public CommentInfoDto toInfoDto() {
         Long parentCommentId = this.parent == null ? null : this.parent.id;
         return CommentInfoDto.builder()
-                .id(this.id)
-                .postId(this.post.getId())
+                .memberNickname(this.author.getNickname())
+                .imageUrl(this.author.getImageUrl())
+                .parentCommentId(parentCommentId)
                 .memberId(this.author.getId())
+                .postId(this.post.getId())
                 .content(this.content)
                 .depth(this.depth)
-                .parentCommentId(parentCommentId)
+                .id(this.id)
                 .build();
     }
 }

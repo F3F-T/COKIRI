@@ -186,6 +186,8 @@ public class CommentControllerTest {
                         fieldWithPath("id").description("Id value of comment"),
                         fieldWithPath("postId").description("Id value of post"),
                         fieldWithPath("memberId").description("Id value of member"),
+                        fieldWithPath("imageUrl").description("image url value of member"),
+                        fieldWithPath("memberNickname").description("nickname value of member"),
                         fieldWithPath("content").description("content of comment"),
                         fieldWithPath("depth").description("depth value of comment"),
                         fieldWithPath("parentCommentId").description("Id value of parent comment")
@@ -221,6 +223,8 @@ public class CommentControllerTest {
                         fieldWithPath("[].id").description("Id value of comment"),
                         fieldWithPath("[].postId").description("Id value of post"),
                         fieldWithPath("[].memberId").description("Id value of member"),
+                        fieldWithPath("[].imageUrl").description("image url value of member"),
+                        fieldWithPath("[].memberNickname").description("nickname value of member"),
                         fieldWithPath("[].content").description("content of comment"),
                         fieldWithPath("[].depth").description("depth value of comment"),
                         fieldWithPath("[].parentCommentId").description("Id value of parent comment")
@@ -291,6 +295,8 @@ public class CommentControllerTest {
                         fieldWithPath("id").description("Id value of comment"),
                         fieldWithPath("postId").description("Id value of post"),
                         fieldWithPath("memberId").description("Id value of member"),
+                        fieldWithPath("imageUrl").description("image url value of member"),
+                        fieldWithPath("memberNickname").description("nickname value of member"),
                         fieldWithPath("content").description("content of comment"),
                         fieldWithPath("depth").description("depth value of comment"),
                         fieldWithPath("parentCommentId").description("Id value of parent comment")

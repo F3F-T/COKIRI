@@ -83,6 +83,10 @@ public class CommentDTO {
 
         private Long memberId;
 
+        private String memberNickname;
+
+        private String imageUrl;
+
         private String content;
 
         private Long depth;
