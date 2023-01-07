@@ -36,13 +36,13 @@ public class MessageService {
     @Transactional
     public Long createMessage(MessageSaveRequest messageSaveRequest) {
 
-        Member sender = memberRepository.findByEmail(messageSaveRequest.getSender().getEmail()).orElseThrow(UserNotFoundException::new);
-        Member receiver = memberRepository.findByEmail(messageSaveRequest.getReceiver().getEmail()).orElseThrow(UserNotFoundException::new);
+        Member sender = memberRepository.findById(messageSaveRequest.getSenderId()).orElseThrow(UserNotFoundException::new);
+        Member receiver = memberRepository.findById(messageSaveRequest.getReceiverId()).orElseThrow(UserNotFoundException::new);
         //포스트가 있는지 확인 포스트 레포지토리에서 findByAuthor쓰고 싶었는데 유저에서 확인하기도 하고 리스트가 와서 존재하는지만 확인하면 receiver는 당연히 자동적으로 연결되니까 확인 안해도 될듯?
-        Post post = postRepository.findById(messageSaveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
-        Trade trade = tradeRepository.findByPostId(messageSaveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(messageSaveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(messageSaveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
 
-        MessageRoom messageRoom = messageRoomRepository.findById(messageSaveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        MessageRoom messageRoom = messageRoomRepository.findById(messageSaveRequest.getMessageRoomId()).orElseThrow(NotFoundByIdException::new);
 
 
         //포스트에 메시지를 보낼 수 있는 상태인지 확인. (거래중이거나 완료이면 메시지를 보내지 못함.)
@@ -50,7 +50,7 @@ public class MessageService {
             throw new CanNotSendMessageByTradeStatus();
         }
         //TODO 테스트로 메시지 생성시, 센더와 리시버 리스트가 맞게 추가되는지 보기
-        Message message = messageSaveRequest.toEntity();
+        Message message = messageSaveRequest.toEntity(sender, receiver, post, messageRoom);
         messageRepository.save(message);
         messageRoom.getMessages().add(message);
         sender.getSendMessages().add(message);
@@ -65,8 +65,8 @@ public class MessageService {
     @Transactional
     public String deleteMessage(DeleteMessageRequest deleteMessageRequest){
         Member sender = memberRepository.findById(deleteMessageRequest.getSenderId()).orElseThrow(NotFoundByIdException::new);
-        MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRequest.getMessageRoom().getId()).orElseThrow(NotFoundByIdException::new);
-        Trade trade = tradeRepository.findByPostId(deleteMessageRequest.getMessageRoom().getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRequest.getMessageRoomId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(messageRoom.getPost().getId()).orElseThrow(NotFoundByIdException::new);
         Message message = messageRepository.findById(deleteMessageRequest.getSenderId()).orElseThrow(NotFoundByIdException::new);
         //작성자만 자신의 메시지를 지울 수 있음.
         if(message.getSender().getId().equals(deleteMessageRequest.getSenderId())) {
