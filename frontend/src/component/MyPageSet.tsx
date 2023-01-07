@@ -107,8 +107,11 @@ const MyPage = () =>  {
             };
             console.log(result);
             console.log("바뀐 유저정보", userInfo);
-            dispatch(setUserNick(userInfo.newNickname));
-            console.log("바뀐 닉네임", info.nickname);
+            if( await Api.patch("/user/nickname", userInfo)){
+                console.log("컴온");
+                dispatch(setUserNick(userInfo.newNickname));
+                console.log("바뀐 닉네임", userInfo);
+            }
 
 
         } catch (err) {
