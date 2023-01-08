@@ -28,6 +28,8 @@ import f3f.dev1.domain.tag.exception.NotFoundByPostAndTagException;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.domain.trade.dao.TradeRepository;
+import f3f.dev1.domain.trade.dto.TradeDTO;
+import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,7 @@ import java.util.List;
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static f3f.dev1.domain.trade.dto.TradeDTO.*;
 
 @Service
 @Validated
@@ -78,8 +81,8 @@ public class PostService {
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
         member.getPosts().add(post);
         postRepository.save(post);
-        // TODO Trade 만들어서 추가해주자
-
+        Trade trade = CreateTradeDto.builder().sellerId(member.getId()).postId(post.getId()).build().toEntity(member, post);
+        tradeRepository.save(trade);
 
         return post.getId();
     }
