@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo, useCallback} from 'react';
+import React, {useState, useEffect, useMemo, useCallback, forwardRef, useImperativeHandle} from 'react';
 import styles from "../../styles/loginAndSignup/Signup.module.css"
 import {useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
@@ -151,7 +151,6 @@ const SignUp = () => {
 
         }
     }
-
 
     async function CheckNickNameDuplicated(nickname: object) {
 
@@ -354,14 +353,11 @@ const SignUp = () => {
 
         //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
         if (inputNickname.length > 0) {
-
             //닉네임 중복체크 백엔드 통신
             //string인 inputNickname을 json형태의 객체로 변환
             let jsonObj = {"nickname": inputNickname};
-
             //변환한 json 객체로 이메일 중복체크
             CheckNickNameDuplicated(jsonObj);
-
 
         } else //닉네임 유효성 검사 실패했을때
         {

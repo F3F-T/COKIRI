@@ -26,6 +26,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "./index";
+import MyPageSet from "./component/MyPageSet";
 
 function App() {
 
@@ -59,8 +60,13 @@ function App() {
 
                 <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
 
-                <Route path="/mypage" element={<MyPage/>} />
-                <Route path="/mypage/zzim" element={<Zzim/>} />
+                <Route path="/mypage" element={<MyPageSet/>} >
+                    <Route path="" element={<MyPage/>}/>
+                    <Route path="zzim" element={<Zzim/>}/>
+                </Route>
+                {/*<Route path="/mypage" element={<MyPage/>}/ >*/}
+
+                {/*<Route path="/mypage/zzim" element={<Zzim/>} />*/}
 
                 <Route path="/kokiritalk" element={<KokiriTalk/>} />
 
