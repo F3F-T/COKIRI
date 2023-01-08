@@ -28,18 +28,14 @@ public class Trade extends BaseTimeEntity {
     @JoinColumn(name = "seller_id")
     private Member seller;
 
-    @ManyToOne
-    @JoinColumn(name = "buyer_id")
-    private Member buyer;
 
     private TradeStatus tradeStatus;
 
     @Builder
-    public Trade(Long id, Post post, Member seller, Member buyer, TradeStatus tradeStatus) {
+    public Trade(Long id, Post post, Member seller, TradeStatus tradeStatus) {
         this.id = id;
         this.post = post;
         this.seller = seller;
-        this.buyer = buyer;
         this.tradeStatus = tradeStatus;
     }
 
@@ -48,10 +44,9 @@ public class Trade extends BaseTimeEntity {
         return tradeStatus;
     }
 
-    public TradeInfoDto tradeInfoDto(String sellerNickname, String buyerNickname) {
+    public TradeInfoDto tradeInfoDto(String sellerNickname) {
         return TradeInfoDto.builder()
                 .sellerNickname(sellerNickname)
-                .buyerNickname(buyerNickname)
                 .tradeStatus(tradeStatus).build();
     }
 

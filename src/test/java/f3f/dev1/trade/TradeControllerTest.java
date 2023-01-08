@@ -144,10 +144,9 @@ public class TradeControllerTest {
                 .password("password").build();
     }
 
-    public CreateTradeDto createTradeDto(Long sellerId, Long buyerId, Long postId) {
+    public CreateTradeDto createTradeDto(Long sellerId, Long postId) {
         return CreateTradeDto.builder()
                 .sellerId(sellerId)
-                .buyerId(buyerId)
                 .postId(postId)
                 .build();
     }
@@ -168,7 +167,7 @@ public class TradeControllerTest {
         // then
         mockMvc.perform(post("/trade")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createTradeDto(1L, 2L, 1L))))
+                        .content(objectMapper.writeValueAsString(createTradeDto(1L,  1L))))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("trade/create/successful",
@@ -189,7 +188,7 @@ public class TradeControllerTest {
         // then
         mockMvc.perform(post("/trade")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createTradeDto(1L, 2L, 1L))))
+                        .content(objectMapper.writeValueAsString(createTradeDto(1L, 1L))))
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andDo(document("trade/create/fail/duplicate-trade", requestFields(
@@ -213,7 +212,7 @@ public class TradeControllerTest {
         // then
         mockMvc.perform(post("/trade")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createTradeDto(1L, 2L, 1L))))
+                        .content(objectMapper.writeValueAsString(createTradeDto(1L, 1L))))
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andDo(document("trade/create/fail/invalid-seller", requestFields(
@@ -232,7 +231,7 @@ public class TradeControllerTest {
         // then
         mockMvc.perform(post("/trade")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createTradeDto(1L, 2L, 1L))))
+                .content(objectMapper.writeValueAsString(createTradeDto(1L, 1L))))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andDo(document("trade/create/fail/non-login", requestFields(
