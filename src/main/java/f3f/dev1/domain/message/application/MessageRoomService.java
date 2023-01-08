@@ -6,6 +6,7 @@ import f3f.dev1.domain.message.dao.MessageRepository;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.dto.MessageDTO;
 import f3f.dev1.domain.message.dto.MessageRoomDTO;
+import f3f.dev1.domain.message.exception.CanNotMakeMessegeRoom;
 import f3f.dev1.domain.message.exception.CanNotSendMessageByTradeStatus;
 import f3f.dev1.domain.message.exception.NoMessageRoomException;
 import f3f.dev1.domain.message.model.Message;
@@ -54,6 +55,10 @@ public class MessageRoomService {
         //거래 상태 확인을 위해 포스트에 있는 트레이드 아이디로 가져옴.
         Trade trade = tradeRepository.findByPostId(saveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
 
+        //포스트 작성자는 메시지를 받는 사람. 즉, 자신한테는 메시지를 남기지 못함.
+        if(buyer.getId().equals(post.getAuthor())){
+            throw new CanNotMakeMessegeRoom("본인 게시물입니다.");
+        }
         //거래 상태 확인하고 메시지 룸 만들기
         //바로 위에서 초기화하고 트레이드를 쓰는 게 나은지 아니면 그냥 포스트에서 타고 가는게 나은지지(post.getTrade().getTradeStatus()
         if(trade.getTradeStatus() != TradeStatus.TRADABLE){
@@ -89,7 +94,7 @@ public class MessageRoomService {
    @Transactional(readOnly = true)
     public int ReadMessageRoomsByPostId(Long postId){
         Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
-        return post.getMessageRooms().size();
+        return post.getMessageRooms().size(); //쪽지 조회이기 때문에 어차피 다시 들어갔다 나옴.
     }
     //유저 클릭하고 채팅방 조회는 유저에서 할듯?
 //    public List<MessageRoom> ReadMessageRoomsBySenderId(Long s){
@@ -98,29 +103,44 @@ public class MessageRoomService {
 
     //지우는 건 없애기
     //TODO 양쪽에서 따로 해야 할듯 메시지와 마찬가지로
-//    @Transactional
-//    public String deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest){
-//        MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRoomRequest.getId()).orElseThrow(NotFoundByIdException::new);
-//        //seller는 메시지를 보낸 사람.
-//        Member seller = memberRepository.findById(deleteMessageRoomRequest.getSellerId()).orElseThrow(NotFoundByIdException::new);
-//        //buyer는 메시지를 받은 사람.
-//        Member buyer = memberRepository.findById(deleteMessageRoomRequest.getBuyerId()).orElseThrow(NotFoundByIdException::new);
-//        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
-//
-//        //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정 -> 레포지토리에서 지우면 안되나?
-//        if(trade.getTradeStatus() == TradeStatus.TRADED){
-//           if(messageRoom.getMessages().isEmpty()){
-//               //TODO 리시버, 센더 따로 해서 지워야되나?-> 테스트코드로 확인해보셈
-//               memberRepository.deleteById(messageRoom.getId());
-//               //messageRoomRepository.delete(messageRoom);
-//           }
-//           else{
-//               //이거 어떻게 해?
-////               messageService.deleteMessage();
-//           }
-//        }
-//    return "DELETE";
-//    }
+    //메시지 룸을 그냥 합치는게 낫지 않을까?
+    //내 메시지 방은 우선 내가 관리할 수 있게 함. - 디비에는 남게!
+    @Transactional
+    public String deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest){
+        //메시지룸을 유저가 가지고 있는것과 비교해야함. -> 멤버에는 메시지 룸 리스트가 있음.
+        //메시지룸은 어차피 디비상에서는 지워지지 않을거지만 유저와 비교 편리하게 하기 위해 가져옴.
+        //유저가 센딩 메시지룸과 리시브 메시지룸을 구별하면 되기 때문에 그냥 객체로 두는게 나은가? 메시지 레포지토리가 아니라 멤버에서 지워야해서 헷갈림.
+        MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRoomRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Member member = memberRepository.findById(deleteMessageRoomRequest.getMemberId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(deleteMessageRoomRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+
+        //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정
+        //유저 메시지 방에 있는지 확인해야함.
+        //TODO 그 전에 어디 메시지 룸인지 확인을 해야되나? - 테스트로 확인해보자
+        //포스트 작성자는 seller이기 때문에 메시지를 받는 사람임. -> 우리는 내가 보낸 메시지방, 리스트로 나눠져있지만 프론트는 아니기때문에 우선 이렇게 구현
+        if(post.getAuthor().equals(member.getId())) {
+            for (MessageRoom mr : member.getSellingRooms()) {//객체 비교 보다 아이디 비교가 빠르려나?
+                //selling 방에 지우고자 하는 채팅방이 있으면 메시지 다 지움
+                    if(mr.getId().equals(messageRoom.getId())) {
+                        mr.getMessages().clear();
+                    }
+                    memberRepository.deleteById(mr.getId());
+                    break;
+                }
+            }
+        //멤버가 포스트 작성자가 아니면 다 buyer
+        else{
+            for(MessageRoom mr : member.getBuyingRooms()){
+                if(mr.getId().equals(messageRoom.getId())){
+                    mr.getMessages().clear();
+                }
+                memberRepository.deleteById(mr.getId());
+                break;
+            }
+        }
+    return "DELETE";
+    }
 
 
 
