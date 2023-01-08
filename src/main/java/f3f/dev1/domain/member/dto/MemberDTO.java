@@ -53,6 +53,7 @@ public class MemberDTO {
                     .username(userName)
                     .nickname(nickname)
                     .phoneNumber(phoneNumber)
+                    .description("")
                     .birthDate(birthDate)
                     .email(email)
                     .password(password)
@@ -341,5 +342,21 @@ public class MemberDTO {
         private String newPhoneNumber;
     }
 
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UpdateDescriptionDto {
+        private Long userId;
+        private String description;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class NewDescriptionDto {
+        private String newDescription;
+    }
 
 }

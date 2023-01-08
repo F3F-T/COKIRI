@@ -110,6 +110,17 @@ public class MemberService {
 
     }
 
+    @Transactional
+    public NewDescriptionDto updateDescription(Long memberId, UpdateDescriptionDto updateDescriptionDto) {
+        if (!Objects.equals(memberId, updateDescriptionDto.getUserId())) {
+            throw new NotAuthorizedException();
+        }
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        member.updateDescription(updateDescriptionDto.getDescription());
+        return NewDescriptionDto.builder().newDescription(updateDescriptionDto.getDescription()).build();
+
+    }
+
     // 주소 업데이트 메소드
     @Transactional
     public void updateUserAddress(UpdateUserAddress address, Long currentMemberId) {

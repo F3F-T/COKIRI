@@ -39,6 +39,8 @@ public class Member extends MemberBase {
 
     private String imageUrl;
 
+    private String description;
+
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Post> posts = new ArrayList<>();
 
@@ -67,13 +69,14 @@ public class Member extends MemberBase {
     private List<Trade> sellingTrades = new ArrayList<>();
 
     @Builder
-    public Member(Long id, String email, String password, String username, Address address, String birthDate, String phoneNumber, String nickname, UserLoginType userLoginType) {
+    public Member(Long id, String email, String password, String username, Address address, String birthDate, String phoneNumber, String nickname, String description, UserLoginType userLoginType) {
         super(id, email, password, ROLE_USER, userLoginType);
         this.userName = username;
         this.address = address;
         this.birthDate = birthDate;
         this.phoneNumber = phoneNumber;
         this.nickname = nickname;
+        this.description = description;
         this.imageUrl = "https://cdn-icons-png.flaticon.com/128/7178/7178514.png";
     }
 
@@ -111,7 +114,7 @@ public class Member extends MemberBase {
         this.imageUrl = imageUrl;
     }
 
-    public void updateNickname(String nickname){
+    public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
@@ -119,6 +122,9 @@ public class Member extends MemberBase {
         this.phoneNumber = phoneNumber;
     }
 
+    public void updateDescription(String description) {
+        this.description = description;
+    }
 
 
     public EncryptEmailDto encryptEmail() {

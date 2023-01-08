@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
@@ -76,6 +75,13 @@ public class MemberController {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(memberService.updateUserPhoneNumber(currentMemberId, updateMemberPhoneNumberDto));
 
+    }
+
+    // 유저 한줄 소개 업데이트
+    @PatchMapping(value = "/user/description")
+    public ResponseEntity<NewDescriptionDto> updateUserDescription(@RequestBody UpdateDescriptionDto updateDescriptionDto) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.updateDescription(currentMemberId, updateDescriptionDto));
     }
 
     // 유저 주소 업데이트
