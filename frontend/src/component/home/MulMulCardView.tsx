@@ -22,7 +22,7 @@ function MulMulCardView() {
         //         </div>
         //     </Card.Body>
         // </Card>
-        <Card className={"forTrade"} postTitle={"21fw쿠어 MTR 발마칸 코트Msdfsdkbkhug"} postContent={"남성의류"} like={3} comment={5} category={"가구"} />
+        <Card className={"forTrade"} postTitle={"21fw쿠어 MTR 발마칸 코트Msdfsdkbkhug"} postContent={"남성의류"} like={3} comment={5} wishCategory={"가구"} />
     );
 }
 
