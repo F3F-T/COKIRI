@@ -93,7 +93,8 @@ public class EmailCertificationService {
             redisTemplate.expire(to, EMIAL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
         } catch (MailException es) {
             es.printStackTrace();
-            throw new IllegalArgumentException("메일 전송중 오류 발생");
+            log.info(es.getLocalizedMessage());
+            throw new IllegalArgumentException(es.getMessage());
         }
 
     }
