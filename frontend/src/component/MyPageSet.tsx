@@ -115,6 +115,7 @@ const MyPage = () =>  {
             setNewNick(res.data.newNickname)
             dispatch(setUserInfo(newNick));
 
+            alert('닉넴 변경 성공');
 
 
         } catch (err) {
@@ -155,6 +156,8 @@ const MyPage = () =>  {
     async function getMyPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
+            dispatch(setUserNick(newNick));
+
             const res = await Api.get('/user/posts');
             console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
             // @ts-ignore
@@ -169,6 +172,7 @@ const MyPage = () =>  {
     useEffect(()=>{
         getMyPostList();
     },[])
+
     return (
             <>
             <div className={styles.profile}>
