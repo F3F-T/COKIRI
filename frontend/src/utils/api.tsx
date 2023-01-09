@@ -73,6 +73,7 @@ Api.interceptors.response.use(
                     const accessToken = store.getState().jwtTokenReducer.accessToken;
                     const jsonObj = {"accessToken": accessToken};
                     //유저 로그인 상태일때
+                    //TODO: 리팩토링, test 검증, 추후에 만료기간을 확인을 하고 만료기간이 임박했을때 미리 reissue를 거치는 방법도 생각중.. 근데 이건 401 오류에서 처리를 할 수 없어 보류
                     if (accessToken) {
                         console.log("accessToken쪽")
                         //accessToken 만료가 되면 백엔드에 있는 refreshToken으로 accessToken을 다시 받아온다.
@@ -84,10 +85,13 @@ Api.interceptors.response.use(
                             console.log(jwtToken)
 
                             if (jwtToken) {
+                                //non component에서 redux dispatch를 사용하는 방법
                                 store.dispatch(setToken(data.data));
+                                //non component에서 redux state를 사용하는 방법
                                 console.log(store.getState().jwtTokenReducer.accessToken);
                                 config.headers.Authorization = `Bearer ${jwtToken}`;
-                                alert("reissue 성공")
+                                alert("accessToken의 만료기간이 지나서 백엔드 accessToken의 검증실패, reissue로 refresh 토큰의 만료기간이 지나지 않아 refresh token을 활용하여 accessToken 재발급 성공")
+                                //성공했으니 err를 반환하지 않고 config 자체를 반환
                                 return Api(config);
                                 // return await Api.request(err.config);
                             }
@@ -107,10 +111,6 @@ Api.interceptors.response.use(
 
                     console.log(err)
 
-
-                    //promise chain을 끊어준다
-                    // return new Promise(() => {
-                    // });
 
                 }
                 case 404: {
