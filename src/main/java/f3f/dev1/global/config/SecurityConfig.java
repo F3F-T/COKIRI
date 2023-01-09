@@ -51,11 +51,10 @@ public class SecurityConfig {
 
 
                 // 로그인, 회원가입 API 는 토큰이 없는 상태에서 요청이 들어오기 때문에 permitAll 설정
-                //prflight 요청을 보낼때 header를 보지 않겠다
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS,"**").permitAll()
-                .antMatchers(HttpMethod.GET, "/post/").permitAll()
+                .antMatchers(HttpMethod.GET, "/post").permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user/**").hasRole("USER")
