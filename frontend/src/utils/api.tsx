@@ -5,11 +5,11 @@
  */
 
 import axios, {AxiosRequestConfig} from 'axios';
-import {setToken} from "../store/jwtTokenReducer";
 import {history} from "../index";
-
+import {setToken} from "../store/jwtTokenReducer";
 
 let store;
+
 
 //이렇게 store을 index파일에서 주입해주는 식으로 하면 순환오류를 막을수있다.
 //https://redux.js.org/faq/code-structure#how-can-i-use-the-redux-store-in-non-component-files
@@ -52,12 +52,11 @@ Api.interceptors.request.use(
 Api.interceptors.response.use(
     //200번 (성공) 범위에 있는 상태 코드는 이 함수에서 트리거 된다
     function (response) {
-        console.log("response 성공 : API 매번 불림")
         return response;
     },
     //200번이 아닌 응답 오류 작업 핸들링
     async function (err) {
-        console.log("response 실패 : API 이거 매번 불려야해")
+        const { config, response: { status } } = err;
         console.log(err);
         console.log(err.resposnse);
         //accessToken이 만료가 돼서 401이 떴을때
@@ -73,18 +72,23 @@ Api.interceptors.response.use(
                     console.log("401 오류 switch문 접근")
                     const accessToken = store.getState().jwtTokenReducer.accessToken;
                     const jsonObj = {"accessToken": accessToken};
-                    console.log(jsonObj)
                     //유저 로그인 상태일때
                     if (accessToken) {
+                        console.log("accessToken쪽")
                         //accessToken 만료가 되면 백엔드에 있는 refreshToken으로 accessToken을 다시 받아온다.
                         try {
+                            console.log("reissue 접근")
                             const data = await Api.post("/auth/reissue", jsonObj);
-                            const jwtToken = data.data.tokenInfo;
+                            console.log(data)
+                            const jwtToken = data.data.accessToken;
+                            console.log(jwtToken)
 
                             if (jwtToken) {
-                                store.dispatch(setToken(jwtToken));
-                                console.log("reissue 성공")
-                                return new Promise(() => {});
+                                store.dispatch(setToken(data.data));
+                                console.log(store.getState().jwtTokenReducer.accessToken);
+                                config.headers.Authorization = `Bearer ${jwtToken}`;
+                                alert("reissue 성공")
+                                return Api(config);
                                 // return await Api.request(err.config);
                             }
 
@@ -98,7 +102,7 @@ Api.interceptors.response.use(
                     } else {
                         console.log("로그인 예외처리..? ")
                         // alert("로그인이 필요한 작업입니다")
-                        return Promise.reject(err);
+                        return new Promise(() => {});
                     }
 
                     console.log(err)
