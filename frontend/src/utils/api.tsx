@@ -58,6 +58,8 @@ Api.interceptors.response.use(
     //200번이 아닌 응답 오류 작업 핸들링
     async function (err) {
         console.log("response 실패 : API 이거 매번 불려야해")
+        console.log(err);
+        console.log(err.resposnse);
         //accessToken이 만료가 돼서 401이 떴을때
         if (err.response && err.response.status === 401) {
             console.log(`${err.response.data.status} : ` + err.response.data.message);
@@ -73,7 +75,7 @@ Api.interceptors.response.use(
                     const jsonObj = {"accessToken": accessToken};
                     console.log(jsonObj)
                     //유저 로그인 상태일때
-                    if(accessToken) {
+                    if (accessToken) {
                         //accessToken 만료가 되면 백엔드에 있는 refreshToken으로 accessToken을 다시 받아온다.
                         try {
                             const data = await Api.post("/auth/reissue", jsonObj);
@@ -93,7 +95,7 @@ Api.interceptors.response.use(
                             history.push('/login');
                             console.log("재로그인해야함")
                         }
-                    }else{
+                    } else {
                         console.log("로그인 예외처리..? ")
                         // alert("로그인이 필요한 작업입니다")
                         return Promise.reject(err);

@@ -73,7 +73,10 @@ const PostDetail = () => {
 
     useEffect(()=>{
         getPost();
+
     },[])
+
+
 
     if(!post)
     {

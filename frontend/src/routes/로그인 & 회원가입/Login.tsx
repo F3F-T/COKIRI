@@ -33,7 +33,6 @@ const Login = () => {
     interface UserInfo {
         email: string;
         password: string;
-
     }
 
     const [passwordCheck, setpasswordCheck] = useState<boolean>(undefined);
