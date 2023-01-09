@@ -63,8 +63,8 @@ public class Member extends MemberBase {
     @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Message> receivedMessages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "buyer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Trade> buyingTrades = new ArrayList<>();
+//    @OneToMany(mappedBy = "buyer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+//    private List<Trade> buyingTrades = new ArrayList<>();
 
     @OneToMany(mappedBy = "seller", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Trade> sellingTrades = new ArrayList<>();

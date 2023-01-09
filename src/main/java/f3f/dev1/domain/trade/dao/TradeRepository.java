@@ -14,10 +14,6 @@ public interface TradeRepository extends JpaRepository<Trade, Long> {
     boolean existsBySellerId(Long sellerId);
     List<Trade> findTradesBySellerId(Long sellerId);
 
-    boolean existsByBuyerId(Long buyerId);
-
-    List<Trade> findTradesByBuyerId(Long buyerId);
-
     boolean existsByPostId(Long postId);
 
     Optional<Trade> findByPostId(Long postId);

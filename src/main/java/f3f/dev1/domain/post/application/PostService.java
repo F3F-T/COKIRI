@@ -28,6 +28,8 @@ import f3f.dev1.domain.tag.exception.NotFoundByPostAndTagException;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.domain.trade.dao.TradeRepository;
+import f3f.dev1.domain.trade.dto.TradeDTO;
+import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,7 @@ import java.util.List;
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static f3f.dev1.domain.trade.dto.TradeDTO.*;
 
 @Service
 @Validated
@@ -57,6 +60,8 @@ public class PostService {
     private final CategoryRepository categoryRepository;
     private final PostTagRepository postTagRepository;
 
+
+    // TODO 게시글 사진 개수 제한 걸기
     @Transactional
     public Long savePost(PostSaveRequest postSaveRequest, Long currentMemberId) {
 
@@ -65,15 +70,20 @@ public class PostService {
         Category productCategory = categoryRepository.findCategoryByName(postSaveRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
         Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-        if(!member.getId().equals(currentMemberId)) {
-            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
-        }
+
+        // 401 예외 빼기
+//        if(!member.getId().equals(currentMemberId)) {
+//            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
+//        }
         // resultList가 postService의 save 에서는 항상 비어있는 리스트로 들어간다.
         // 컨트롤러에서 postService.save 이후에 tagService를 호출해 addTagToPost로 태그를 추가해주는데,
         // 그때 포스트가 호출되어 리스트에 PostTag가 추가되게 된다.
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
         member.getPosts().add(post);
         postRepository.save(post);
+        Trade trade = CreateTradeDto.builder().sellerId(member.getId()).postId(post.getId()).build().toEntity(member, post);
+        tradeRepository.save(trade);
+
         return post.getId();
     }
 

@@ -39,7 +39,7 @@ public class Post extends BaseTimeEntity {
     // 끼리끼리 거래 여부
     private Boolean tradeEachOther;
 
-    @OneToOne(mappedBy = "post")
+    @OneToOne(mappedBy = "post", cascade = CascadeType.REMOVE)
     private Trade trade;
 
     private Long price;
@@ -136,12 +136,12 @@ public class Post extends BaseTimeEntity {
     }
 
     public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfo userInfo, List<CommentInfoDto> commentInfoDtoList) {
-        TradeStatus tradeStatus;
-        if (this.trade == null) {
-            tradeStatus = TradeStatus.TRADABLE;
-        } else {
-            tradeStatus = this.trade.getTradeStatus();
-        }
+//        TradeStatus tradeStatus;
+//        if (this.trade == null) {
+//            tradeStatus = TradeStatus.TRADABLE;
+//        } else {
+//            tradeStatus = this.trade.getTradeStatus();
+//        }
         return SinglePostInfoDto.builder()
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
@@ -149,7 +149,7 @@ public class Post extends BaseTimeEntity {
                 .tradeEachOther(this.tradeEachOther)
                 .createdTime(super.getCreateDate())
                 .messageRoomCount(messageRoomCount)
-                .tradeStatus(tradeStatus)
+                .tradeStatus(this.trade.getTradeStatus())
                 .scrapCount(scrapCount)
                 .content(this.content)
                 .userInfo(userInfo)
