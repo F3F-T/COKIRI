@@ -90,6 +90,7 @@ public class Member extends MemberBase {
                 .id(this.getId())
                 .scrapId(scrapId)
                 .birthDate(this.birthDate)
+                .description(this.description)
                 .build();
     }
 

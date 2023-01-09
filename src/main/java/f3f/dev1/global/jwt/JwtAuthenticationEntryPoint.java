@@ -46,7 +46,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         } else {
             result = objectMapper.writeValueAsString(new ErrorResponse(UNAUTHORIZED, "INVALID_ACCESS_TOKEN"));
-            response.setStatus(response.SC_UNAUTHORIZED);
+            response.setStatus(response.SC_EXPECTATION_FAILED);
         }
 
 

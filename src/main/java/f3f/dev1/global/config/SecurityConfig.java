@@ -54,8 +54,8 @@ public class SecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.OPTIONS,"**").permitAll()
+                .antMatchers(HttpMethod.GET, "/post/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/post").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user/**").hasRole("USER")
                 .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
