@@ -58,8 +58,8 @@ public class AuthService {
         Member member = signUpRequest.toEntity();
 
         memberRepository.save(member);
-        ScrapDTO.CreateScrapDTO userScrap = ScrapDTO.CreateScrapDTO.builder().user(member).build();
-        scrapService.createScrap(userScrap);
+        Scrap scrap = Scrap.builder().member(member).build();
+        scrapRepository.save(scrap);
         return "CREATED";
     }
 
