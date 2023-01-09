@@ -2,7 +2,7 @@ package f3f.dev1.domain.member.dto;
 
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,7 +57,6 @@ public class MemberDTO {
                     .birthDate(birthDate)
                     .email(email)
                     .password(password)
-                    .address(address)
                     .userLoginType(userLoginType)
                     .build();
         }

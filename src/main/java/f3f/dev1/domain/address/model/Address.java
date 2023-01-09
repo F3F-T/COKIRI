@@ -1,22 +1,35 @@
-package f3f.dev1.domain.model;
+package f3f.dev1.domain.address.model;
 
+import f3f.dev1.domain.member.model.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+
+@Entity
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Address {
-    String addressName;
+    @Id
+    @GeneratedValue
+    @Column(name = "address_id")
+    private Long id;
 
-    String postalAddress;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
-    String latitude;
+    private String addressName;
 
-    String longitude;
+    private String postalAddress;
+
+    private String latitude;
+
+    private String longitude;
 
     @Override
     public boolean equals(Object o) {

@@ -11,9 +11,8 @@ import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRepository;
 import f3f.dev1.domain.message.dto.MessageDTO;
 import f3f.dev1.domain.message.model.MessageRoom;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
@@ -24,7 +23,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 @Transactional
 @SpringBootTest
 public class MessageServiceTest {

@@ -48,7 +48,6 @@ public class TradeDTO {
     public static class TradeInfoDto{
         private String sellerNickname;
 
-        private String buyerNickname;
 
         private TradeStatus tradeStatus;
     }

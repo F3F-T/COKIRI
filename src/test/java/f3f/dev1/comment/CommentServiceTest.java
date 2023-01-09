@@ -9,7 +9,7 @@ import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.model.Post;
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -5,7 +5,7 @@ import f3f.dev1.domain.comment.api.CommentController;
 import f3f.dev1.domain.comment.application.CommentService;
 import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;

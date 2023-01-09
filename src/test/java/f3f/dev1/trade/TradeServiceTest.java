@@ -2,8 +2,7 @@ package f3f.dev1.trade;
 
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
-import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dto.PostDTO.PostSaveRequest;

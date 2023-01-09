@@ -2,7 +2,7 @@ package f3f.dev1.domain.member.api;
 
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

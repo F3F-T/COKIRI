@@ -9,7 +9,7 @@ import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRepository;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;

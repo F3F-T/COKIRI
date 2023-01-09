@@ -73,7 +73,6 @@ public class TradeService {
             String userNickname = memberRepository.findById(post.getAuthor().getId()).orElseThrow(UserNotFoundException::new).getNickname();
             return TradeInfoDto.builder()
                     .sellerNickname(userNickname)
-                    .buyerNickname("none")
                     .tradeStatus(TradeStatus.TRADABLE).build();
         }
     }
@@ -110,7 +109,6 @@ public class TradeService {
 
         return TradeInfoDto.builder()
                 .sellerNickname(member.getNickname())
-                .buyerNickname("none")
                 .tradeStatus(TradeStatus.TRADABLE).build();
     }
 }
