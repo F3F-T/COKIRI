@@ -34,8 +34,6 @@ public class CategoryService {
         Member admin = memberRepository.findById(categorySaveRequest.getMemberId()).orElseThrow(NotFoundByIdException::new);
         //유저 어드민 확인해야되는데 어드민 만들어지면 해야할듯
 
-        //질문)category.getParent()-- null을 categoryRepository.existById(categor.getParentId())이렇게 해주는게 나으려나 뭐가 달라?
-
         //카테고리 이름에 대한 처리
         if (categoryRepository.existsByName(categorySaveRequest.getName())) {
             throw new CategoryException("이미 존재하는 카테고리입니다.");
@@ -82,11 +80,6 @@ public class CategoryService {
                 if (!category.getDepth().equals(category.getParent().getDepth() + 1)) { //왜 !=로 비교 안돼?객체
                     throw new CategoryException("카테고리 depth 오류 : (1,2)중에서 확인");
                 }
-//            if(parentCategory.getName().equals("root")){
-//                if(category.getDepth() != 1){
-//                    throw new CategoryException("카테고리 설정 오류 : depth가 1이어야합니다.");
-//                }
-                //category.setDepth(parentCategory.getDepth()+1); -> NonNull로 받았으니까 필요 없을 듯.
             categoryRepository.save(category);
             category.getParent().getChild().add(category);
             return category.getId();
