@@ -16,7 +16,7 @@ public class UserErrorResponse {
     public static final ResponseEntity<ErrorResponse> WRONG_USERNAME_PHONENUMBER = new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.NOT_FOUND).message("해당 이름과 전화번호로 존재하는 유저는 없습니다.").build(), HttpStatus.NOT_FOUND);
 
 
-    public static final ResponseEntity<ErrorResponse> UNAUTHENTICATED = new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.UNAUTHORIZED).message("로그인 후에 사용하세요.").build(), HttpStatus.UNAUTHORIZED);
+    public static final ResponseEntity<ErrorResponse> UNAUTHENTICATED = new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.BAD_REQUEST).message("잘못된 요청입니다.").build(), HttpStatus.BAD_REQUEST);
 
 
     public static final ResponseEntity<ErrorResponse> INVALID_PASSWORD = new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.CONFLICT).message("잘못된 비밀번호 입력입니다.").build(), HttpStatus.CONFLICT);

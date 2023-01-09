@@ -70,7 +70,7 @@ public class UserExceptionHandler {
             NotAuthorizedException ex, WebRequest request
     ) {
         log.debug("권한이 없는 요청", request.getDescription(false));
-        return new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.UNAUTHORIZED).message(ex.getMessage()).build(), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(ErrorResponse.builder().status(HttpStatus.BAD_REQUEST).message(ex.getMessage()).build(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EmailCertificationExpireException.class)

@@ -2,6 +2,7 @@ package f3f.dev1.global.filter;
 
 import f3f.dev1.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -43,7 +44,8 @@ public class JwtFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
-        return null;
+        throw new AuthenticationServiceException("헤더에 토큰 정보가 존재하지 않습니다");
+//        return null;
     }
 
 }
