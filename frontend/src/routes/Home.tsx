@@ -138,29 +138,6 @@ const HomeKirikiriTrade = () => {
 
 
 const Home = () => {
-
-    let count = 0;
-    const [count1,setCount1] = useState<number>(0);
-    const onClick = () => {
-        setCount1(prevState => prevState+2);
-        hi();
-    }
-
-    const onClick2 = () => {
-        setCount1(prevState => prevState+1);
-        console.log(count1);
-    }
-
-
-    // useEffect(() => {  // Email 형식 체크
-    //     setCount1(prevState => prevState+1);
-    // },[] )
-   async function hi() {
-       setCount1(prevState => prevState+2)
-
-       await setTimeout(() =>console.log(count1), 2000);
-   }
-
     return (
         <div className={styles.home}>
             <button onClick={onClick}/>
