@@ -13,6 +13,7 @@ import {useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api";
 import {useNavigate, useParams} from "react-router-dom";
+import Card from "../../component/tradeCard/Card";
 
 
 
@@ -102,7 +103,7 @@ const PostDetail = () => {
                         <div className={styles.postDetailCategory}>{post.productCategory}</div>
                         <div className={styles.postDetailPrice}></div>
                         <div className={styles.postDetailContent}>{post.content}</div>
-                        <div className={styles.postDetailTag}>{post.tagNames}</div>
+                        <div className={styles.postDetailTag}>#{post.tagNames}</div>
                         <div className={styles.postDetailSwapCategoryBox}>
                             <img className={styles.transfer} src={transfer}/>
                             <div className={styles.postDetailSwapCategory}> {post.wishCategory}</div>
@@ -128,7 +129,7 @@ const PostDetail = () => {
                     <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
                 </section>
             </article>
-            <section className={styles.comments}>//
+            <section className={styles.comments}>
                 <Comments className={"primary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
                 <Comments className={"secondary"}  userID={"함민혁"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
                 <Comments className={"secondary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />

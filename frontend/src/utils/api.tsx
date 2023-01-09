@@ -52,11 +52,12 @@ Api.interceptors.request.use(
 Api.interceptors.response.use(
     //200번 (성공) 범위에 있는 상태 코드는 이 함수에서 트리거 된다
     function (response) {
+        console.log("response 성공 : API 매번 불림")
         return response;
     },
     //200번이 아닌 응답 오류 작업 핸들링
     async function (err) {
-
+        console.log("response 실패 : API 이거 매번 불려야해")
         //accessToken이 만료가 돼서 401이 떴을때
         if (err.response && err.response.status === 401) {
             console.log(`${err.response.data.status} : ` + err.response.data.message);
@@ -132,8 +133,10 @@ Api.interceptors.response.use(
             // } catch (err) {
             //     console.log("토큰 갱신 에러");
             // }
+            console.log(err)
             return Promise.reject(err);
         }
+        console.log(err)
         return Promise.reject(err);
     }
 );
