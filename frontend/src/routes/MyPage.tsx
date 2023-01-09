@@ -90,14 +90,14 @@ const MyPage = () =>  {
                 </div>
               <div className={styles.container}>
                   {
-                      // postList.map((SingleObject:Object)=>(
-                      // <Card  className={"forMypage"} postTitle={SingleObject['title']} like={20} wishCategory={SingleObject['wishCategory']}
-                      // onClick={() => {onClickPost(SingleObject)}}/>
-                      // ))
-                      postList.map((post)=>(
-                          <Card  className={"forMypage"} postTitle={post['title']} like={20} wishCategory={postList['wishCategory']}
-                                 onClick={() => {onClickPost(post)}}/>
+                      postList.map((SingleObject:Object)=>(
+                      <Card  className={"forMypage"} postTitle={SingleObject['title']} like={20} wishCategory={SingleObject['wishCategory']}
+                      onClick={() => {onClickPost(SingleObject)}}/>
                       ))
+                      // postList.map((post)=>(
+                      //     <Card  className={"forMypage"} postTitle={post['title']} like={20} wishCategory={postList['wishCategory']}
+                      //            onClick={() => {onClickPost(post)}}/>
+                      // ))
                       // https://velog.io/@op032/%EB%A0%8C%EB%8D%94%EB%A7%81-%EB%AC%B8%EC%A0%9C%EB%A5%BC-%ED%95%B4%EA%B2%B0%ED%95%B4%EB%B3%B4%EC%9E%90-TypeError-Cannot-read-property-title-of-undefined
                   }
               </div>
