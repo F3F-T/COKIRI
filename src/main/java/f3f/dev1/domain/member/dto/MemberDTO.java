@@ -1,5 +1,6 @@
 package f3f.dev1.domain.member.dto;
 
+import f3f.dev1.domain.address.dto.AddressDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.domain.address.model.Address;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
+import static f3f.dev1.domain.address.dto.AddressDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.PostInfoDto;
 import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 
@@ -358,4 +360,11 @@ public class MemberDTO {
         private String newDescription;
     }
 
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class GetMemberAddressListDTO{
+        private List<AddressInfoDTO> memberAddress;
+    }
 }

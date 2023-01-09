@@ -103,9 +103,6 @@ public class Member extends MemberBase {
         super.updatePassword(updateUserPassword.getNewPassword());
     }
 
-    public void updateAddress(Address address) {
-        this.address.add(address);
-    }
 
     public void updateImage(String imageUrl) {
         this.imageUrl = imageUrl;

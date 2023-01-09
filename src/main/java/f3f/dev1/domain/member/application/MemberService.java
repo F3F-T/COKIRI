@@ -1,5 +1,9 @@
 package f3f.dev1.domain.member.application;
 
+import f3f.dev1.domain.address.dao.AddressRepository;
+import f3f.dev1.domain.address.dto.AddressDTO;
+import f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.*;
 import f3f.dev1.domain.member.model.Member;
@@ -30,6 +34,7 @@ import static f3f.dev1.global.common.constants.RandomCharacter.RandomCharacters;
 @Service
 @RequiredArgsConstructor
 public class MemberService {
+    private final AddressRepository addressRepository;
 
     private final MemberRepository memberRepository;
 
@@ -87,7 +92,7 @@ public class MemberService {
     }
 
     @Transactional
-    public NewNicknameDto updateUserNickname(Long memberId,UpdateMemberNicknameDto updateMemberNicknameDto) {
+    public NewNicknameDto updateUserNickname(Long memberId, UpdateMemberNicknameDto updateMemberNicknameDto) {
         if (!Objects.equals(memberId, updateMemberNicknameDto.getUserId())) {
             throw new NotAuthorizedException();
         }
@@ -118,12 +123,7 @@ public class MemberService {
 
     }
 
-    // 주소 업데이트 메소드
-    @Transactional
-    public void updateUserAddress(UpdateUserAddress address, Long currentMemberId) {
-        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-        member.updateAddress(address.getAddress());
-    }
+    // 주소 업데이트 메소드 -> AddressService로 변경
 
     // 유저 비밀번호 업데이트 처리 메소드
     @Transactional
@@ -137,6 +137,7 @@ public class MemberService {
         member.updateUserPassword(updateUserPassword);
         return "UPDATE";
     }
+
     // TODO dto에 유저 검증 추가로 인한 코드 검토해야함
     // 유저 프사 변경 메소드
     @Transactional
@@ -180,6 +181,7 @@ public class MemberService {
         member.updateUserPassword(updateUserPassword);
         return ReturnPasswordDto.builder().password(newPassword).build();
     }
+
     // 비밀번호 찾을때 랜덤한 비밀번호 생성해주는 메소드
     public String createRandomPassword() {
         int targetStringLength = 10;
@@ -208,11 +210,26 @@ public class MemberService {
         return GetUserPostDto.builder().userPosts(userPosts).build();
 
     }
+
     // TODO 아직 미구현
     @Transactional(readOnly = true)
     public GetUserMessageRoomDto getUserMessageRoomDto(Long memberId) {
 //        messageRoomRepository.
         return null;
 
+    }
+
+    // 멤버 주소 리스트 조회
+    // TODO QueryDSL로 리팩터링 해야된다
+    @Transactional(readOnly = true)
+    public GetMemberAddressListDTO getMemberAddressListDTO(Long memberId) {
+        List<Address> byMemberId = addressRepository.findByMemberId(memberId);
+        List<AddressInfoDTO> memberAddress = new ArrayList<>();
+        for (Address address : byMemberId) {
+            memberAddress.add(address.toInfoDto());
+
+        }
+
+        return GetMemberAddressListDTO.builder().memberAddress(memberAddress).build();
     }
 }

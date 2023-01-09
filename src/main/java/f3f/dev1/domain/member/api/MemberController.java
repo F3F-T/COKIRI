@@ -84,14 +84,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.updateDescription(currentMemberId, updateDescriptionDto));
     }
 
-    // 유저 주소 업데이트
-    @PatchMapping(value = "/user/address")
-    public ResponseEntity<Address> updateUserAddress(@RequestBody UpdateUserAddress address) {
-
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        memberService.updateUserAddress(address, currentMemberId);
-        return ResponseEntity.ok(address.getAddress());
-    }
+    // 유저 주소 업데이트 --> AddressController로 변경
 
     // 로그아웃
     @DeleteMapping("/user/logout")
@@ -109,10 +102,18 @@ public class MemberController {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(memberService.getUserPostDto(currentMemberId));
     }
+
     // 유저가 속한 채팅방 리스트 리턴
     @GetMapping("/user/messagerooms")
     public ResponseEntity<GetUserMessageRoomDto> getUserMessageRooms() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(memberService.getUserMessageRoomDto(currentMemberId));
+    }
+
+    // 유저 주소 리스트 조회
+    @GetMapping("/user/address")
+    public ResponseEntity<GetMemberAddressListDTO> getMemberAddress() {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.getMemberAddressListDTO(currentMemberId));
     }
 }
