@@ -24,13 +24,6 @@ const SignUp = () => {
         nickname: string;
         phoneNumber: string;
         userLoginType: string;
-        // latitude:string;
-        // longitude:string;
-        address: {
-            addressName: string,
-            postalAddress: string,
-            latitude : string,
-            longitude: string}
     }
 
     /**
@@ -119,10 +112,7 @@ const SignUp = () => {
             const res = await axios.post("http://localhost:8080/auth/check-email", email);
 
             const result = res.data;
-            console.log("리절트",result)
             const duplicated = result.exists
-            console.log("중복이니",duplicated)
-
 
             if (duplicated) //중복인 경우 -> true 반환
             {
@@ -303,15 +293,8 @@ const SignUp = () => {
         if (inputName.length > 0) {
             setuserInfo((prevState) => {
                 return {...prevState, userName: e.target.value,
-                    address : {
-                        addressName: "wd",
-                        postalAddress:"99",
-                        latitude: JSON.stringify(location.coordinates.lat) ,
-                        longitude: JSON.stringify(location.coordinates.lng),
-                    }}
+                   }
             })
-            console.log("sdfasdf",userInfo.address)
-
 
             setValidationCheck((prevState) => {
                 return {...prevState, nameAndBirthCheck: true, nameAndBirthCheckBoolean: true}
@@ -400,8 +383,7 @@ const SignUp = () => {
                 headers: res.headers,
                 data: res.data,
             };
-            console.log("에메일",res)
-            console.log("에메일22",result);
+
             if(result.data.success)
             {
                 console.log("이메일 전송")
@@ -426,7 +408,7 @@ const SignUp = () => {
 
             </div>
             <div className={styles.userInfo}>
-                <TextInput placeholder={"이메일"} onBlur={onChangeEmail}/>
+                <TextInput type ={"text"} placeholder={"이메일"} onBlur={onChangeEmail}/>
                 {(validationCheck.emailCheck === undefined &&
                         <Message validCheck={validationCheck.emailCheckBoolean} content={""}/>)
                     ||
@@ -444,7 +426,7 @@ const SignUp = () => {
                         <Message validCheck={validationCheck.emailCheckBoolean} content={"❌ 이미 가입된 이메일입니다."}/>)}
 
 
-                <TextInput placeholder={"비밀번호"} onBlur={onChangePassword}/>
+                <TextInput type ={"password"} placeholder={"비밀번호"} onBlur={onChangePassword}/>
                 {(validationCheck.passwordCheck === undefined &&
                         <Message validCheck={validationCheck.passwordCheckBoolean} content={""}/>)
                     ||
@@ -454,7 +436,7 @@ const SignUp = () => {
                         <Message validCheck={validationCheck.passwordCheckBoolean}
                                  content={"❌ 숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요."}/>)}
 
-                <TextInput placeholder={"비밀번호 확인"} onBlur={onChangeCheckPassword}/>
+                <TextInput type ={"password"} placeholder={"비밀번호 확인"} onBlur={onChangeCheckPassword}/>
                 {(passwordReCheck === undefined && <Message validCheck={passwordReCheck} content={""}/>)
                     ||
                     (passwordReCheck ?
@@ -464,8 +446,8 @@ const SignUp = () => {
 
 
                 <section className={styles.userNameBirth}>
-                    <TextInput placeholder={"이름"} onBlur={onChangeName}/>
-                    <TextInput placeholder={"생일 6자리"} onBlur={onChangeBirth}/>
+                    <TextInput type ={"text"} placeholder={"이름"} onBlur={onChangeName}/>
+                    <TextInput type ={"text"} placeholder={"생일 6자리"} onBlur={onChangeBirth}/>
                 </section>
                 {(validationCheck.nameAndBirthCheck === undefined &&
                         <Message validCheck={validationCheck.nameAndBirthCheckBoolean} content={""}/>)
@@ -476,7 +458,7 @@ const SignUp = () => {
                         <Message validCheck={validationCheck.nameAndBirthCheckBoolean}
                                  content={"❌ 이름과 생일을 올바르게 입력해주세요"}/>)}
 
-                <TextInput placeholder={"닉네임"} onBlur={onChangeNickname}/>
+                <TextInput type ={"text"} placeholder={"닉네임"} onBlur={onChangeNickname}/>
                 {(validationCheck.nicknameCheck === undefined &&
                         <Message validCheck={validationCheck.nicknameCheckBoolean} content={""}/>)
                     ||
@@ -489,7 +471,7 @@ const SignUp = () => {
                     (validationCheck.nicknameCheck === "duplicated" &&
                         <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}
 
-                <TextInput placeholder={"전화번호"} onBlur={onChangePhoneNumber}/>
+                <TextInput type ={"text"} placeholder={"전화번호"} onBlur={onChangePhoneNumber}/>
                 {(validationCheck.phoneNumberCheck === undefined &&
                         <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={""}/>)
                     ||
