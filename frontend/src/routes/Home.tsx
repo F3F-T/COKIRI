@@ -140,10 +140,6 @@ const HomeKirikiriTrade = () => {
 const Home = () => {
     return (
         <div className={styles.home}>
-            <button onClick={onClick}/>
-           <h1> {count}</h1>
-            <button onClick={onClick2}/>
-            <h1> {count1}</h1>
         <HomeStart/>
         <HomeMulmulTrade/>
         <HomeKirikiriTrade/>
