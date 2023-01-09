@@ -9,23 +9,19 @@ import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRepository;
-import f3f.dev1.domain.message.dto.MessageDTO;
-import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
-@SpringBootTest
-public class MessageServiceTest {
+import java.util.ArrayList;
+
+public class MessageRoomTest {
     @Autowired
     MemberRepository memberRepository;
     @Autowired
@@ -42,7 +38,6 @@ public class MessageServiceTest {
     ScrapRepository scrapRepository;
     @Autowired
     TagRepository tagRepository;
-
     @Autowired
     MemberService memberService;
 
@@ -57,6 +52,7 @@ public class MessageServiceTest {
     EmailCertificationService emailCertificationService;
 
 
+
     @BeforeEach
     public void deleteAll() {
         memberRepository.deleteAll();
@@ -67,7 +63,6 @@ public class MessageServiceTest {
         scrapRepository.deleteAll();
         tradeRepository.deleteAll();
     }
-
 
     // 주소 오브젝트 생성
     public Address createAddress() {
@@ -106,12 +101,16 @@ public class MessageServiceTest {
                 .phoneNumber("01088888888")
                 .build();
     }
-
-    private MessageDTO.MessageSaveRequest messageSaveRequest(String content, Member sender, Member receiver, Post post, MessageRoom messageRoom){
-        MessageDTO.MessageSaveRequest saveRequest = new MessageDTO.MessageSaveRequest(content, sender,receiver,post,messageRoom);
-        return saveRequest;
+    public PostDTO.PostSaveRequest createPostSaveRequest(Member author, boolean tradeEachOther, String productName, String wishName) {
+        return PostDTO.PostSaveRequest.builder()
+                .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
+                .title("3년 신은 양말 거래 희망합니다")
+                .tradeEachOther(tradeEachOther)
+                .authorId(author.getId())
+                .productCategory(productName)
+                .tagNames(new ArrayList<>())
+                .wishCategory(wishName)
+                .build();
     }
-    public void createMessageTest() throws Exception{
 
-    }
 }

@@ -1,5 +1,6 @@
 package f3f.dev1.domain.comment.model;
 
+import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.model.Post;
 import lombok.Builder;
@@ -9,6 +10,9 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 
 @Entity
 @Getter
@@ -50,5 +54,19 @@ public class Comment {
         this.depth = depth;
         this.author = author;
         this.parent = parent;
+    }
+
+    public CommentInfoDto toInfoDto() {
+        Long parentCommentId = this.parent == null ? null : this.parent.id;
+        return CommentInfoDto.builder()
+                .memberNickname(this.author.getNickname())
+                .imageUrl(this.author.getImageUrl())
+                .parentCommentId(parentCommentId)
+                .memberId(this.author.getId())
+                .postId(this.post.getId())
+                .content(this.content)
+                .depth(this.depth)
+                .id(this.id)
+                .build();
     }
 }

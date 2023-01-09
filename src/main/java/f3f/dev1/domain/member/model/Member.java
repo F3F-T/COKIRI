@@ -3,7 +3,7 @@ package f3f.dev1.domain.member.model;
 import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.message.model.Message;
 import f3f.dev1.domain.message.model.MessageRoom;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.model.Trade;
@@ -26,8 +26,7 @@ import static f3f.dev1.domain.member.model.Authority.ROLE_USER;
 @NoArgsConstructor
 public class Member extends MemberBase {
 
-    @Embedded
-    private Address address;
+    // TODO 주소 리스트로 변경에정
 
     private String birthDate;
 
@@ -38,6 +37,10 @@ public class Member extends MemberBase {
     private String nickname;
 
     private String imageUrl;
+
+    private String description;
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<Address> address = new ArrayList<>();
 
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Post> posts = new ArrayList<>();
@@ -60,26 +63,24 @@ public class Member extends MemberBase {
     @OneToMany(mappedBy = "receiver", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Message> receivedMessages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "buyer", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private List<Trade> buyingTrades = new ArrayList<>();
+
 
     @OneToMany(mappedBy = "seller", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Trade> sellingTrades = new ArrayList<>();
 
     @Builder
-    public Member(Long id, String email, String password, String username, Address address, String birthDate, String phoneNumber, String nickname, UserLoginType userLoginType) {
+    public Member(Long id, String email, String password, String username, String birthDate, String phoneNumber, String nickname, String description, UserLoginType userLoginType) {
         super(id, email, password, ROLE_USER, userLoginType);
         this.userName = username;
-        this.address = address;
         this.birthDate = birthDate;
         this.phoneNumber = phoneNumber;
         this.nickname = nickname;
+        this.description = description;
         this.imageUrl = "https://cdn-icons-png.flaticon.com/128/7178/7178514.png";
     }
 
     public UserInfo toUserInfo(Long scrapId) {
         return UserInfo.builder()
-                .address(this.address)
                 .userName(this.userName)
                 .email(getEmail())
                 .phoneNumber(this.phoneNumber)
@@ -93,7 +94,6 @@ public class Member extends MemberBase {
     }
 
     public void updateUserInfo(UpdateUserInfo updateUserInfo) {
-        this.address = updateUserInfo.getAddress();
         this.nickname = updateUserInfo.getNickname();
         this.phoneNumber = updateUserInfo.getPhoneNumber();
 
@@ -103,15 +103,12 @@ public class Member extends MemberBase {
         super.updatePassword(updateUserPassword.getNewPassword());
     }
 
-    public void updateAddress(Address address) {
-        this.address = address;
-    }
 
     public void updateImage(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    public void updateNickname(String nickname){
+    public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
 
@@ -119,6 +116,9 @@ public class Member extends MemberBase {
         this.phoneNumber = phoneNumber;
     }
 
+    public void updateDescription(String description) {
+        this.description = description;
+    }
 
 
     public EncryptEmailDto encryptEmail() {

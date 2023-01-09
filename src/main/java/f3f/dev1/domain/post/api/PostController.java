@@ -65,8 +65,8 @@ public class PostController {
 
     // 게시글 정보 조회
     @GetMapping(value = "/post/{postId}")
-    public ResponseEntity<PostInfoDtoWithTag> getPostInfo(@PathVariable(name = "postId") Long postId) {
-        PostInfoDtoWithTag postInfoDto = postService.findPostById(postId);
+    public ResponseEntity<SinglePostInfoDto> getPostInfo(@PathVariable(name = "postId") Long postId) {
+        SinglePostInfoDto postInfoDto = postService.findPostById(postId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
 

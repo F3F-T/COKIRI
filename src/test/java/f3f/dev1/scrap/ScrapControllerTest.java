@@ -2,16 +2,12 @@ package f3f.dev1.scrap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.domain.member.application.MemberService;
-import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
-import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
-import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.scrap.api.ScrapController;
 import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
-import f3f.dev1.domain.scrap.dto.ScrapDTO;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

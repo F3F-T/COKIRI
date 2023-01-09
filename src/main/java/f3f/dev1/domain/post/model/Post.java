@@ -1,7 +1,9 @@
 package f3f.dev1.domain.post.model;
 
 import f3f.dev1.domain.category.model.Category;
+import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.BaseTimeEntity;
@@ -17,6 +19,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static f3f.dev1.domain.comment.dto.CommentDTO.*;
+import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 
 @Getter
@@ -35,7 +39,7 @@ public class Post extends BaseTimeEntity {
     // 끼리끼리 거래 여부
     private Boolean tradeEachOther;
 
-    @OneToOne(mappedBy = "post")
+    @OneToOne(mappedBy = "post", cascade = CascadeType.REMOVE)
     private Trade trade;
 
     private Long price;
@@ -131,5 +135,28 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
-
+    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfo userInfo, List<CommentInfoDto> commentInfoDtoList) {
+//        TradeStatus tradeStatus;
+//        if (this.trade == null) {
+//            tradeStatus = TradeStatus.TRADABLE;
+//        } else {
+//            tradeStatus = this.trade.getTradeStatus();
+//        }
+        return SinglePostInfoDto.builder()
+                .productCategory(this.productCategory.getName())
+                .wishCategory(this.wishCategory.getName())
+                .commentInfoDtoList(commentInfoDtoList)
+                .tradeEachOther(this.tradeEachOther)
+                .createdTime(super.getCreateDate())
+                .messageRoomCount(messageRoomCount)
+                .tradeStatus(this.trade.getTradeStatus())
+                .scrapCount(scrapCount)
+                .content(this.content)
+                .userInfo(userInfo)
+                .tagNames(tagNames)
+                .title(this.title)
+                .price(this.price)
+                .id(this.id)
+                .build();
+    }
 }

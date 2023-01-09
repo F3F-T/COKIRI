@@ -45,8 +45,9 @@ public class MessageRoomDTO {
     @AllArgsConstructor
     public static class DeleteMessageRoomRequest{
         private Long Id;
-        private Long sellerId;
-        private Long buyerId;
+//        private Long sellerId;
+//        private Long buyerId;
+        private Long memberId;
         private Post post;
         private List<Message> messages;
     }

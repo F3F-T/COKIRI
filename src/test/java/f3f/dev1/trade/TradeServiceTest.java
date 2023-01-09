@@ -2,8 +2,7 @@ package f3f.dev1.trade;
 
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
-import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dto.PostDTO.PostSaveRequest;
@@ -94,10 +93,9 @@ public class TradeServiceTest {
     }
 
     // 트레이드 생성 DTO 생성 메소드
-    public CreateTradeDto createTradeDto(Long sellerId, Long buyerId, Long postId) {
+    public CreateTradeDto createTradeDto(Long sellerId, Long postId) {
         return CreateTradeDto.builder()
                 .sellerId(sellerId)
-                .buyerId(buyerId)
                 .postId(postId).build();
     }
     @Test
@@ -116,12 +114,12 @@ public class TradeServiceTest {
 
 
         // when
-        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
+        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).postId(postId).build();
         Long tradeId = tradeService.createTrade(tradeDto, userId1);
         Optional<Trade> byId = tradeRepository.findById(tradeId);
 
         // then
-        assertArrayEquals(new Long[]{userId1, userId2, postId}, new Long[]{byId.get().getSeller().getId(), byId.get().getBuyer().getId(), byId.get().getPost().getId()});
+        assertArrayEquals(new Long[]{userId1, userId2, postId}, new Long[]{byId.get().getSeller().getId(), byId.get().getPost().getId()});
 
     }
 
@@ -140,7 +138,7 @@ public class TradeServiceTest {
 
 
         // when
-        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
+        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).postId(postId).build();
 
         // then
         assertThrows(NotAuthorizedException.class, () -> tradeService.createTrade(tradeDto, userId1 + 2));
@@ -161,7 +159,7 @@ public class TradeServiceTest {
 
 
         // when
-        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId2).buyerId(userId1).postId(postId).build();
+        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId2).postId(postId).build();
         // then
         assertThrows(InvalidSellerIdException.class, () -> tradeService.createTrade(tradeDto, userId2));
     }
@@ -181,7 +179,7 @@ public class TradeServiceTest {
 
 
         // when
-        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
+        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).postId(postId).build();
         Long tradeId = tradeService.createTrade(tradeDto, userId1);
 
 
@@ -202,7 +200,7 @@ public class TradeServiceTest {
         PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest, userId1);
 
-        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
+        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).postId(postId).build();
         // when
         Long tradeId = tradeService.createTrade(tradeDto, userId1);
         UpdateTradeDto updateTradeDto = UpdateTradeDto.builder().postId(postId).userId(userId1).tradeStatus(TradeStatus.TRADING).build();
@@ -226,7 +224,7 @@ public class TradeServiceTest {
         PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest, userId1);
 
-        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
+        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).postId(postId).build();
         // when
         Long tradeId = tradeService.createTrade(tradeDto, userId1);
         UpdateTradeDto updateTradeDto = UpdateTradeDto.builder().postId(postId).userId(userId2).tradeStatus(TradeStatus.TRADING).build();
@@ -247,7 +245,7 @@ public class TradeServiceTest {
         PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest, userId1);
 
-        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
+        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).postId(postId).build();
         // when
         Long tradeId = tradeService.createTrade(tradeDto, userId1);
         UpdateTradeDto updateTradeDto = UpdateTradeDto.builder().postId(postId).userId(userId1).tradeStatus(TradeStatus.TRADING).build();
@@ -269,7 +267,7 @@ public class TradeServiceTest {
         PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest, userId1);
 
-        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
+        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).postId(postId).build();
         // when
         Long tradeId = tradeService.createTrade(tradeDto, userId1);
         DeleteTradeDto deleteTradeDto = DeleteTradeDto.builder().postId(postId).userId(userId1).build();
@@ -292,7 +290,7 @@ public class TradeServiceTest {
         PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest, userId1);
 
-        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId2).postId(postId).build();
+        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).postId(postId).build();
         // when
         Long tradeId = tradeService.createTrade(tradeDto, userId1);
         DeleteTradeDto deleteTradeDto = DeleteTradeDto.builder().postId(postId).userId(userId1).build();
@@ -313,7 +311,7 @@ public class TradeServiceTest {
         PostSaveRequest postSaveRequest = createPostSaveRequest(userId1);
         Long postId = postService.savePost(postSaveRequest, userId1);
 
-        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).buyerId(userId1).postId(postId).build();
+        CreateTradeDto tradeDto = CreateTradeDto.builder().sellerId(userId1).postId(postId).build();
         // when
         Long tradeId = tradeService.createTrade(tradeDto, userId1);
         DeleteTradeDto deleteTradeDto = DeleteTradeDto.builder().postId(postId).userId(userId2).build();

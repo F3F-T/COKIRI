@@ -2,7 +2,7 @@ package f3f.dev1.domain.member.api;
 
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
@@ -78,14 +77,14 @@ public class MemberController {
 
     }
 
-    // 유저 주소 업데이트
-    @PatchMapping(value = "/user/address")
-    public ResponseEntity<Address> updateUserAddress(@RequestBody UpdateUserAddress address) {
-
+    // 유저 한줄 소개 업데이트
+    @PatchMapping(value = "/user/description")
+    public ResponseEntity<NewDescriptionDto> updateUserDescription(@RequestBody UpdateDescriptionDto updateDescriptionDto) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        memberService.updateUserAddress(address, currentMemberId);
-        return ResponseEntity.ok(address.getAddress());
+        return ResponseEntity.ok(memberService.updateDescription(currentMemberId, updateDescriptionDto));
     }
+
+    // 유저 주소 업데이트 --> AddressController로 변경
 
     // 로그아웃
     @DeleteMapping("/user/logout")
@@ -103,10 +102,18 @@ public class MemberController {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(memberService.getUserPostDto(currentMemberId));
     }
+
     // 유저가 속한 채팅방 리스트 리턴
     @GetMapping("/user/messagerooms")
     public ResponseEntity<GetUserMessageRoomDto> getUserMessageRooms() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(memberService.getUserMessageRoomDto(currentMemberId));
+    }
+
+    // 유저 주소 리스트 조회
+    @GetMapping("/user/address")
+    public ResponseEntity<GetMemberAddressListDTO> getMemberAddress() {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.getMemberAddressListDTO(currentMemberId));
     }
 }

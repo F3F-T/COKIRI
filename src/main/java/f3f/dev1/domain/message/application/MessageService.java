@@ -24,20 +24,6 @@ import java.util.List;
 
 import static f3f.dev1.domain.message.dto.MessageDTO.*;
 
-/*
-Message CRUD
-C:
-    - 포스트, 센더, 리시버 확인(유효한지 존재하는지)
-    - 포스트 상태(거래중인지) 확인(물물교환이니까)
-    -
-
-R:
-    -
-U:
-    -
-D:
-`   -
- */
 @Service
 @RequiredArgsConstructor
 public class MessageService {
@@ -59,11 +45,11 @@ public class MessageService {
         MessageRoom messageRoom = messageRoomRepository.findById(messageSaveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
 
 
-        //포스트에 메시지를 보낼 수 있는 상태인지 확인. (거래중이거나 완료이면 메시지를 보내짐 못함.)
+        //포스트에 메시지를 보낼 수 있는 상태인지 확인. (거래중이거나 완료이면 메시지를 보내지 못함.)
         if(trade.getTradeStatus() != TradeStatus.TRADABLE){
             throw new CanNotSendMessageByTradeStatus();
         }
-
+        //TODO 테스트로 메시지 생성시, 센더와 리시버 리스트가 맞게 추가되는지 보기
         Message message = messageSaveRequest.toEntity();
         messageRepository.save(message);
         messageRoom.getMessages().add(message);
@@ -73,7 +59,6 @@ public class MessageService {
         return message.getId();
     }
 
-    //메시지는 나중에~ 고도화때 ?
     //TODO 메시지 삭제는 카톡과 같이 5분 내에 전송시 삭제해야되나?(양방향 삭제 논의)!!!!!
     //자기가 보낸것만 삭제할 수 있음.
     //TODO 채팅방 지우는 형식은 카톡과 동일하게 양쪽 따로 관리하도록 해야할듯.
@@ -101,4 +86,6 @@ public class MessageService {
 //        }
         return "DELETE";
     }
+
+    // TODO 철웅 추가, 메세지 해치웠나?
 }

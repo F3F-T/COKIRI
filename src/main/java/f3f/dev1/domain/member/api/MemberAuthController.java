@@ -1,5 +1,9 @@
 package f3f.dev1.domain.member.api;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.EmailCertificationService;
 import f3f.dev1.domain.member.application.MemberService;
@@ -10,8 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.mail.Multipart;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.member.dto.OAuthDTO.*;
@@ -23,6 +31,7 @@ import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class MemberAuthController {
+    private final String S3Bucket = "cokiri-image";
     private final MemberService memberService;
 
     private final EmailCertificationService emailCertificationService;
@@ -30,6 +39,34 @@ public class MemberAuthController {
     private final AuthService authService;
 
     private final OAuth2UserService oAuth2UserService;
+
+    private final AmazonS3Client amazonS3Client;
+
+    // 이미지 테스트 업로드
+    @PostMapping(value = "/image")
+    public ResponseEntity<Object> upload(MultipartFile[] imageFiles) throws IOException {
+        List<String> imagePathList = new ArrayList<>();
+
+        for(MultipartFile multipartFile: imageFiles) {
+            String originalName = multipartFile.getOriginalFilename(); // 파일 이름
+            long size = multipartFile.getSize(); // 파일 크기
+
+            ObjectMetadata objectMetaData = new ObjectMetadata();
+            objectMetaData.setContentType(multipartFile.getContentType());
+            objectMetaData.setContentLength(size);
+
+            // S3에 업로드
+            amazonS3Client.putObject(
+                    new PutObjectRequest(S3Bucket, originalName, multipartFile.getInputStream(), objectMetaData)
+                            .withCannedAcl(CannedAccessControlList.PublicRead)
+            );
+
+            String imagePath = amazonS3Client.getUrl(S3Bucket, originalName).toString(); // 접근가능한 URL 가져오기
+            imagePathList.add(imagePath);
+        }
+
+        return new ResponseEntity<Object>(imagePathList, HttpStatus.OK);
+    }
 
 
     // 이메일 중복 확인

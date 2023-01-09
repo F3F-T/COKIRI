@@ -7,7 +7,7 @@ import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.model.Post;
@@ -17,7 +17,6 @@ import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -442,7 +441,7 @@ public class PostServiceTest {
 
         //then
         // 컨트롤러에서 사용하는 포스트 서비스 로직을 그대로 사용하여 테스트해보겠음.
-        PostInfoDtoWithTag postInfoDtoWithTag = postService.findPostById(postId);
+        SinglePostInfoDto postInfoDtoWithTag = postService.findPostById(postId);
         assertThat(postInfoDtoWithTag.getTitle()).isEqualTo("제목");
         assertThat(postInfoDtoWithTag.getTagNames().size()).isEqualTo(3);
         assertThat(postInfoDtoWithTag.getTagNames().containsAll(tagNamesToBeAdded)).isTrue();
