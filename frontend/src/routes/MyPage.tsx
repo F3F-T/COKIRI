@@ -22,15 +22,14 @@ interface PostType {
         {
             id?: number;
             title?: string;
-            authorNickname?: string;
+            // authorNickname?: string;
             wishCategory?: string;
             content?: string;
-            productCategory?: string;
-            tradeEachOther: boolean;
-            tradeStatus: string;
+            // productCategory?: string;
+            // tradeEachOther: boolean;
+            // tradeStatus: string;
         }
     ]
-
 }
 const MyPage = () =>  {
     const [tab1, setTab] = useState<string>('curr');
