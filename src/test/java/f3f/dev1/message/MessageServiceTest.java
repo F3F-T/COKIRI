@@ -19,6 +19,7 @@ import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -109,11 +110,14 @@ public class MessageServiceTest {
                 .build();
     }
 
-    private MessageDTO.MessageSaveRequest messageSaveRequest(String content, Member sender, Member receiver, Post post, MessageRoom messageRoom){
-        MessageDTO.MessageSaveRequest saveRequest = new MessageDTO.MessageSaveRequest(content, sender,receiver,post,messageRoom);
+    private MessageDTO.MessageSaveRequest messageSaveRequest(String content, Long senderId, Long receiverId, Long postId, Long messageRoomId){
+        MessageDTO.MessageSaveRequest saveRequest = new MessageDTO.MessageSaveRequest(content, senderId, receiverId, postId, messageRoomId);
         return saveRequest;
     }
+    @Transactional
+    @DisplayName("메시지 생성 테스트")
     public void createMessageTest() throws Exception{
+
 
     }
 }

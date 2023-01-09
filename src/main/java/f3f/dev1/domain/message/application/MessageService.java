@@ -86,6 +86,4 @@ public class MessageService {
 //        }
         return "DELETE";
     }
-
-    // TODO 철웅 추가, 메세지 해치웠나?
 }

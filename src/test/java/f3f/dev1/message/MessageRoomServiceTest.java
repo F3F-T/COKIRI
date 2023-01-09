@@ -2,6 +2,8 @@ package f3f.dev1.message;
 
 import f3f.dev1.domain.category.application.CategoryService;
 import f3f.dev1.domain.category.dao.CategoryRepository;
+import f3f.dev1.domain.category.dto.CategoryDTO;
+import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.EmailCertificationService;
 import f3f.dev1.domain.member.application.MemberService;
@@ -9,19 +11,30 @@ import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRepository;
+import f3f.dev1.domain.message.dto.MessageRoomDTO;
 import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.dto.PostDTO;
+import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
-public class MessageRoomTest {
+import static org.assertj.core.api.Assertions.assertThat;
+
+@Transactional
+@SpringBootTest
+public class MessageRoomServiceTest {
     @Autowired
     MemberRepository memberRepository;
     @Autowired
@@ -40,6 +53,8 @@ public class MessageRoomTest {
     TagRepository tagRepository;
     @Autowired
     MemberService memberService;
+    @Autowired
+    PostService postService;
 
     @Autowired
     AuthService authService;
@@ -111,6 +126,50 @@ public class MessageRoomTest {
                 .tagNames(new ArrayList<>())
                 .wishCategory(wishName)
                 .build();
+    }
+    private CategoryDTO.CategorySaveRequest createCategoryDto(String name, Long memberId, Long depth, Long parentId) {
+        CategoryDTO.CategorySaveRequest saveRequest = new CategoryDTO.CategorySaveRequest(name, memberId, depth, parentId);
+        return saveRequest;
+    }
+
+    private CategoryDTO.CategorySaveRequest createWishCategoryDto(String name, Long memberId, Long depth, Long parentId) {
+        CategoryDTO.CategorySaveRequest saveRequest = new CategoryDTO.CategorySaveRequest(name, memberId, depth, parentId);
+        return saveRequest;
+    }
+    private MessageRoomDTO.MessageRoomSaveRequest messageRoomSaveRequest (Long postId, Long sellerId, Long buyerId){
+        MessageRoomDTO.MessageRoomSaveRequest saveRequest = new MessageRoomDTO.MessageRoomSaveRequest(postId, sellerId, buyerId);
+        return saveRequest;
+    }
+
+    @Test
+    @DisplayName("메시지룸 생성 테스트")
+    public void createMessageRoomTest() throws Exception{
+        MemberDTO.SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member admin = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+//        MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest();
+//        authService.signUp(signUpRequest1);
+//        Member member = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+
+        CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("물물교환", admin.getId(), 1L, null);
+        Long cid1 = categoryService.createCategory(categoryDTO1);
+        Category category1 = categoryRepository.findById(cid1).get();
+        Category root = categoryRepository.findCategoryByName("root").get();
+        assertThat(categoryRepository.existsByName("root")).isEqualTo(true);
+        assertThat(categoryRepository.existsByName("물물교환")).isEqualTo(true);
+        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("끼리끼리", admin.getId(), 1L, root.getId());
+        Long cid2 = categoryService.createCategory(categoryDTO2);
+        Category category2 = categoryRepository.findById(cid2).get();
+        CategoryDTO.CategorySaveRequest categoryDTO3 = createCategoryDto("의류", admin.getId(), 2L,category1.getId());
+        Long cid3 = categoryService.createCategory(categoryDTO3);
+        Category category3 = categoryRepository.findById(cid3).get();
+
+
+        PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "의류", "의류");
+        Long postId = postService.savePost(postSaveRequest, admin.getId());
+        Post post = postRepository.findById(postId).get();
+
+
     }
 
 }

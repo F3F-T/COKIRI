@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import java.beans.Visibility;
 import java.util.List;
 
 public class MessageRoomDTO {
@@ -45,11 +46,9 @@ public class MessageRoomDTO {
     @AllArgsConstructor
     public static class DeleteMessageRoomRequest{
         private Long Id;
-//        private Long sellerId;
-//        private Long buyerId;
         private Long memberId;
         private Long postId;
-        private List<Message> messages;
+
     }
 
 
