@@ -11,6 +11,7 @@ import fashion from "../img/fashion.png";
 import ticket from "../img/ticket.png";
 import young from "../img/young.png";
 import Button from "../component/common/Button";
+import {log} from "util";
 
 //모르는 태그가 너무 많아 하다가 멈춤
 //허락 맡고 다시 진행 예정
@@ -135,9 +136,37 @@ const HomeKirikiriTrade = () => {
     );
 }
 
+
 const Home = () => {
+
+    let count = 0;
+    const [count1,setCount1] = useState<number>(0);
+    const onClick = () => {
+        setCount1(prevState => prevState+2);
+        hi();
+    }
+
+    const onClick2 = () => {
+        setCount1(prevState => prevState+1);
+        console.log(count1);
+    }
+
+
+    // useEffect(() => {  // Email 형식 체크
+    //     setCount1(prevState => prevState+1);
+    // },[] )
+   async function hi() {
+       setCount1(prevState => prevState+2)
+
+       await setTimeout(() =>console.log(count1), 2000);
+   }
+
     return (
         <div className={styles.home}>
+            <button onClick={onClick}/>
+           <h1> {count}</h1>
+            <button onClick={onClick2}/>
+            <h1> {count1}</h1>
         <HomeStart/>
         <HomeMulmulTrade/>
         <HomeKirikiriTrade/>

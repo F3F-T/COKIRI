@@ -73,7 +73,6 @@ const PostDetail = () => {
 
     useEffect(()=>{
         getPost();
-
     },[])
 
     const store = useSelector((state:Rootstate) => state);

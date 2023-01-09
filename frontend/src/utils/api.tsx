@@ -80,7 +80,7 @@ Api.interceptors.response.use(
                         try {
                             console.log("reissue 접근")
                             const data = await Api.post("/auth/reissue", jsonObj);
-                            console.log(data)
+                            // console.log(data)
                             const jwtToken = data.data.accessToken;
                             console.log(jwtToken)
 
@@ -97,9 +97,11 @@ Api.interceptors.response.use(
                             }
 
                             //refreshToken도 만료가 됐을때 : 재로그인
+                            //TODO: reissue가 실패해도 catch로 넘어오는게 아니라 refresh가 만료되면 무한루프를 돌고있음, data.data.message로 구분을 하던가 해야할듯
                         } catch (err) {
                             console.log("refreshToken이 만료돼서 accesToken을 재발급할수없음")
-                            alert("토콘이 만료됐으니 다시 로그인 해주세요")
+                            alert("accessToken의 만료기간이 지나서 백엔드 accessToken의 검증실패, reissue로 refresh token을 활용하여 accessToken 재발급 시도," +
+                                "refresh token의 만료기간도 지나 재로그인 요청")
                             history.push('/login');
                             console.log("재로그인해야함")
                         }
