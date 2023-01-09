@@ -1,5 +1,7 @@
 package f3f.dev1.domain.address.model;
 
+import f3f.dev1.domain.address.dto.AddressDTO;
+import f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
 import f3f.dev1.domain.member.model.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+
+import static f3f.dev1.domain.address.dto.AddressDTO.*;
 
 @Entity
 @Builder
@@ -38,5 +42,21 @@ public class Address {
                 ((Address) o).postalAddress.equalsIgnoreCase(postalAddress) &&
                 ((Address) o).latitude.equalsIgnoreCase(latitude) &&
                 ((Address) o).longitude.equalsIgnoreCase(longitude);
+    }
+
+    public AddressInfoDTO toInfoDto() {
+        return AddressInfoDTO.builder()
+                .memberId(member.getId())
+                .addressName(addressName)
+                .postalAddress(postalAddress)
+                .latitude(latitude)
+                .longitude(longitude).build();
+    }
+
+    public void updateAddress(UpdateAddressDTO updateAddressDTO) {
+        addressName = updateAddressDTO.getAddressName();
+        latitude = updateAddressDTO.getLatitude();
+        longitude = updateAddressDTO.getLongitude();
+        postalAddress = updateAddressDTO.getPostalAddress();
     }
 }
