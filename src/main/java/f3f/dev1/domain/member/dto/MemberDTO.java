@@ -35,7 +35,6 @@ public class MemberDTO {
 
         private String phoneNumber;
 
-        private Address address;
 
         private String email;
 
@@ -99,7 +98,6 @@ public class MemberDTO {
 
         private String nickname;
 
-        private Address address;
 
         private String phoneNumber;
 

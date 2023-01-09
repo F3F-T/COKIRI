@@ -50,7 +50,8 @@ public class Address {
                 .addressName(addressName)
                 .postalAddress(postalAddress)
                 .latitude(latitude)
-                .longitude(longitude).build();
+                .longitude(longitude)
+                .id(id).build();
     }
 
     public void updateAddress(UpdateAddressDTO updateAddressDTO) {

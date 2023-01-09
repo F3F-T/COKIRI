@@ -44,8 +44,7 @@ public class JwtFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
             return bearerToken.substring(7);
         }
-        throw new AuthenticationServiceException("헤더에 토큰 정보가 존재하지 않습니다");
-//        return null;
+        return null;
     }
 
 }
