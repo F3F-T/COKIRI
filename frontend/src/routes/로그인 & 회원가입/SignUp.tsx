@@ -83,29 +83,6 @@ const SignUp = () => {
     const [userInfo, setuserInfo] = useState<UserInfo>(null);
     const navigate = useNavigate();
 
-    async function SignUpData() {
-        try {
-            const res = await axios.post("http://localhost:8080/auth/signup", userInfo);
-
-            const result = {
-                status: res.status + "-" + res.statusText,
-                headers: res.headers,
-                data: res.data,
-            };
-            console.log(result);
-            console.log(userInfo);
-            alert('회원가입에 성공했습니다.');
-            MailConfirm({"email" : userInfo.email})
-            //이메일 인증으로 넘어가면서 이메일 props 전달j
-            navigate('/signup/emailcheck', {state : userInfo})
-
-        } catch (err) {
-            console.log(err);
-            alert('회원가입에 실패했습니다.');
-
-        }
-    }
-
     //이메일 중복 체크 함수
     async function CheckEmailDuplicated(email: object) {
         try {
@@ -146,9 +123,7 @@ const SignUp = () => {
 
         try {
             const res = await axios.post("http://localhost:8080/auth/check-nickname", nickname);
-            console.log("dd닉ㄴ아럼닏ㄴㄹ",res);
             const result = res.data;
-            console.log("dd닉네임ㅇㄴ아럼닏ㄴㄹ",result);
             const duplicated = result.exists
 
             if (duplicated) //중복인 경우 -> true 반환
@@ -221,7 +196,8 @@ const SignUp = () => {
             validationCheck.nameAndBirthCheckBoolean &&
             validationCheck.nicknameCheckBoolean &&
             validationCheck.phoneNumberCheckBoolean) {
-            SignUpData();
+            MailConfirm({"email" : userInfo.email})
+            navigate('/signup/emailcheck', {state : userInfo})
         } else { //유효성 검증 하나라도 실패한 경우 회원가입 실패
             alert("회원가입 정보를 모두 만족시켜주세요")
         }
