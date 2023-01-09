@@ -26,6 +26,7 @@ import static f3f.dev1.domain.member.model.Authority.ROLE_USER;
 @NoArgsConstructor
 public class Member extends MemberBase {
 
+    // TODO 주소 리스트로 변경에정
     @Embedded
     private Address address;
 

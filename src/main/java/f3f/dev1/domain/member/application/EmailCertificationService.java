@@ -92,7 +92,6 @@ public class EmailCertificationService {
             valueOperations.set(to, ePw);
             redisTemplate.expire(to, EMIAL_CERTIFICATION_TIME, TimeUnit.MILLISECONDS);
         } catch (MailException es) {
-            es.printStackTrace();
             log.info(es.getLocalizedMessage());
             throw new IllegalArgumentException(es.getMessage());
         }
