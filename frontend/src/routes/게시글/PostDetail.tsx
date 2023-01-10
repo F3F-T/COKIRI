@@ -77,11 +77,11 @@ const PostDetail = () => {
 
     const store = useSelector((state:Rootstate) => state);
 
-    useEffect(()=>{
-        console.log("jwt 토큰이 바뀜")
-        console.log(store.jwtTokenReducer.accessToken);
-
-    },[store.jwtTokenReducer.accessToken])
+    // useEffect(()=>{
+    //     console.log("jwt 토큰이 바뀜")
+    //     console.log(store.jwtTokenReducer.accessToken);
+    //
+    // },[store.jwtTokenReducer.accessToken])
 
 
 
