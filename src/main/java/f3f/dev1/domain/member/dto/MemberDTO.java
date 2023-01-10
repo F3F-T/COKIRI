@@ -358,4 +358,12 @@ public class MemberDTO {
     public static class GetMemberAddressListDTO{
         private List<AddressInfoDTO> memberAddress;
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class ImageUrlDto {
+        private List<String> imageUrls;
+    }
 }
