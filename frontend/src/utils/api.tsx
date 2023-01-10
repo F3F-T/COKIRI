@@ -65,9 +65,10 @@ Api.interceptors.response.use(
                  * 401 : UNAUTORIZED 권한이 없음
                  * 예외 처리 시나리오
                  * 1. accessToken이 만료됐을때
+                 * 2. refreshToken도 만료됐을때
+                 * 3. 로그인이 필요한 서비스인데 로그인을 하지 않았을 때
                  */
                 case 401: {
-                    console.log("401 오류 switch문 접근")
                     const accessToken = store.getState().jwtTokenReducer.accessToken;
                     const jsonObj = {"accessToken": accessToken};
                     //유저 로그인 상태일때
@@ -76,41 +77,29 @@ Api.interceptors.response.use(
                         //accessToken 만료가 되면 백엔드에 있는 refreshToken으로 accessToken을 다시 받아온다.
                         try {
                             const data = await axios.post("http://localhost:8080/auth/reissue", jsonObj);
-                            // console.log(data)
                             const jwtToken = data.data.accessToken;
-                            console.log(jwtToken)
-
+                            //reissue가 성공하여 accessToken을 받아왔을때(reissue가 200번일때)
                             if (jwtToken) {
-                                //non component에서 redux dispatch를 사용하는 방법
                                 store.dispatch(setToken(data.data));
-                                //non component에서 redux state를 사용하는 방법
-                                console.log(store.getState().jwtTokenReducer.accessToken);
                                 config.headers.Authorization = `Bearer ${jwtToken}`;
                                 alert("accessToken의 만료기간이 지나서 백엔드 accessToken의 검증실패, reissue로 refresh 토큰의 만료기간이 지나지 않아 refresh token을 활용하여 accessToken 재발급 성공")
                                 //성공했으니 err를 반환하지 않고 config 자체를 반환
                                 return axios(config);
                                 // return await Api.request(err.config);
                             }
-
-                            //refreshToken도 만료가 됐을때 : 재로그인
-                            //TODO: reissue가 실패해도 catch로 넘어오는게 아니라 refresh가 만료되면 무한루프를 돌고있음, data.data.message로 구분을 하던가 해야할듯
-                        } catch (err) {
+                        }//reissue가 실패했을때 ( refreshToken도 만료가 됐을때)
+                        catch (err) {
                             console.log("refreshToken이 만료돼서 accesToken을 재발급할수없음")
                             alert("accessToken의 만료기간이 지나서 백엔드 accessToken의 검증실패, reissue로 refresh token을 활용하여 accessToken 재발급 시도," +
                                 "refresh token의 만료기간도 지나 재로그인 요청")
                             history.push('/login');
-                            console.log("재로그인해야함")
                         }
-                    } else {
-                        console.log("로그인 예외처리..? ")
-                        // alert("로그인이 필요한 작업입니다")
+                    } else { //로그인 되지 않은 상태일때
+                        alert("로그인이 필요한 작업입니다")
                         return new Promise(() => {});
                     }
-
-                    console.log(err)
-
-
                 }
+
                 case 404: {
                     return new Promise(() => {
                     });
@@ -121,22 +110,8 @@ Api.interceptors.response.use(
                     });
                 }
 
-
             }
 
-            // try {
-            //     //accessToken 만료가 되면 백엔드에 있는 refreshToken으로 accessToken을 다시 받아온다.
-            //     const data = await Api.post("/auth/reissue", jsonObj);
-            //
-            //     const jwtToken = data.data.tokenInfo;
-            //
-            //     if (jwtToken) {
-            //         store.dispatch(setToken(jwtToken));
-            //         return await Api.request(err.config);
-            //     }
-            // } catch (err) {
-            //     console.log("토큰 갱신 에러");
-            // }
             console.log(err)
             return Promise.reject(err);
         }
