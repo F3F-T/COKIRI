@@ -13,7 +13,9 @@ import {useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api";
 import {useNavigate, useParams} from "react-router-dom";
+import {AiOutlineHeart, AiTwotoneHeart} from "react-icons/ai";
 import Card from "../../component/tradeCard/Card";
+import Message from "../../component/로그인 & 회원가입/Message";
 
 
 
@@ -83,7 +85,23 @@ const PostDetail = () => {
     //
     // },[store.jwtTokenReducer.accessToken])
 
+    const [scrapSaved,setScrapSaved] = useState<boolean>(true);
+    const onClickScrap = async () => {
+        setScrapSaved(prevState => !prevState);
 
+        const userId:Number = store.userInfoReducer.id;
+
+        const jsonObj = {userId : userId, postId : post.id}
+        console.log(jsonObj);
+        if (scrapSaved) {
+            await Api.post(`/user/scrap`, jsonObj);
+        }else
+        {
+            await Api.delete(`/user/scrap`, {
+                data: jsonObj
+            })
+        }
+    }
 
     if(!post)
     {
@@ -120,11 +138,18 @@ const PostDetail = () => {
                         </div>
                     </div>
 
+
                 </section>
                 <section className={styles.postBottom}>
                     <div className={styles.metaBox}>
                         <div className={styles.imgBox}>
-                            <img className={styles.likeImg} src={like} onClick={()=>{}}/>
+                            {(scrapSaved ?
+                            <AiOutlineHeart className={styles.likeImg}  onClick={onClickScrap}/>
+                            :
+                            <AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={onClickScrap}/>)}
+
+                            {/*<AiOutlineHeart className={styles.likeImg}  onClick={onClickScrap}/>*/}
+                            {/*<AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={()=>{}}/>*/}
                             <p className={styles.likeNum}>{post.scrapCount}</p>
                         </div>
                         <div className={styles.commentBox}>

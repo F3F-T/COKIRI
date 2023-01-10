@@ -24,7 +24,6 @@ const Api = axios.create({
 //accessToken을 header에 넣어준다
 Api.interceptors.request.use(
     (config) => {
-
         // HTTP Authorization 요청 헤더에 jwt-token을 넣음
         // 서버측 미들웨어에서 이를 확인하고 검증한 후 해당 API에 요청함.
         const accessToken = store.getState().jwtTokenReducer.accessToken;
@@ -52,14 +51,17 @@ Api.interceptors.request.use(
 Api.interceptors.response.use(
     //200번 (성공) 범위에 있는 상태 코드는 이 함수에서 트리거 된다
     function (response) {
+        console.warn(`${response.config.method.toUpperCase()} ${response.request.responseURL} 으로 요청 성공 : ${response.status}`);
+        console.log(response);
         return response;
     },
     //200번이 아닌 응답 오류 작업 핸들링
     async function (err) {
         const { config, response: { status } } = err;
+        console.error(`${err.response.config.method.toUpperCase()} ${err.response.request.responseURL} 으로 요청 실패 : ${err.response.status} 
+        ${err.response.data.message}`);
         //accessToken이 만료가 돼서 401이 떴을때
         if (err.response && err.response.status === 401) {
-            console.log(`${err.response.data.status} : ` + err.response.data.message);
             switch (err.response.status) {
                 /**
                  * 401 : UNAUTORIZED 권한이 없음
