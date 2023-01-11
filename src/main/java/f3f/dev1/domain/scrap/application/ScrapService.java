@@ -2,7 +2,6 @@ package f3f.dev1.domain.scrap.application;
 
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
-import f3f.dev1.domain.member.exception.UserNotFoundByEmailException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.dao.ScrapPostRepository;
@@ -10,26 +9,24 @@ import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
-import f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapDTO;
+import f3f.dev1.domain.scrap.dto.ScrapDTO.*;
 import f3f.dev1.domain.scrap.exception.DuplicateScrapByUserIdException;
 import f3f.dev1.domain.scrap.exception.NotFoundPostInScrapException;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.trade.dao.TradeRepository;
-import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
-import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static f3f.dev1.domain.scrap.dto.ScrapDTO.*;
-import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
-import static f3f.dev1.global.common.constants.ResponseConstants.OK;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ScrapService {
@@ -79,14 +76,24 @@ public class ScrapService {
         if (!addScrapPostDTO.getUserId().equals(memberId)) {
             throw new NotAuthorizedException();
         }
+
+
         Scrap scrap = scrapRepository.findScrapByMemberId(addScrapPostDTO.getUserId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(addScrapPostDTO.getPostId()).orElseThrow(NotFoundByIdException::new);
+        Optional<ScrapPost> byScrapIdAndPostId = scrapPostRepository.findByScrapIdAndPostId(scrap.getId(), addScrapPostDTO.getPostId());
+        if (byScrapIdAndPostId.isPresent()) {
+            log.info("already created scrap post");
+            return byScrapIdAndPostId.get().toCreateScrapPostDTO();
+        } else {
+            ScrapPost scrapPost = ScrapPost.builder().post(post).scrap(scrap).build();
+            scrapPostRepository.save(scrapPost);
+            CreateScrapPostDTO createScrapPostDTO = scrapPost.toCreateScrapPostDTO();
 
-        ScrapPost scrapPost = ScrapPost.builder().post(post).scrap(scrap).build();
-        scrapPostRepository.save(scrapPost);
-        CreateScrapPostDTO createScrapPostDTO = scrapPost.toCreateScrapPostDTO();
-        System.out.println("scrap post created " + scrapPost.getId());
-        return createScrapPostDTO;
+            log.info("scrap post created " + scrapPost.getId());
+            return createScrapPostDTO;
+        }
+
+
     }
 
     // 스크랩에 있는 포스트 삭제 메서드
