@@ -83,7 +83,7 @@ const PostDetail = () => {
     //     console.log("jwt 토큰이 바뀜")
     //     console.log(store.jwtTokenReducer.accessToken);
     //
-    // },[store.jwtTokenReducer.accessToken])
+    // },[store.jwtTokenReducer.accessToken]) //
 
     const [scrapSaved,setScrapSaved] = useState<boolean>(true);
     const onClickScrap = async () => {
