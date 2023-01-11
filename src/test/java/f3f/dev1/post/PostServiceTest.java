@@ -7,7 +7,7 @@ import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.model.Post;
@@ -281,6 +281,49 @@ public class PostServiceTest {
     }
 
     @Test
+    @DisplayName("게시글 생성 - 태그 생성 테스트")
+    public void postSaveTestWithTagForSuccess() throws Exception {
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+
+        // 루트 생성
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
+
+        //when
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add(tagRequest.getName());
+        tagNames.add(secondTagRequest.getName());
+        tagNames.add(thirdTagRequest.getName());
+        PostSaveRequest postSaveRequestWithTag = createPostSaveRequestWithTag(member, false, productRequest.getName(), wishRequest.getName(), tagNames);
+        Long postId = postService.savePost(postSaveRequestWithTag, member.getId());
+        tagService.addTagsToPost(postId, tagNames);
+
+        //then
+        Post post = postRepository.findById(postId).get();
+        List<PostTag> postTagList = postTagRepository.findByPost(post);
+        assertThat(postTagList.size()).isEqualTo(3);
+        assertThat(postTagList.get(0).getTag().getName()).isEqualTo(tagRequest.getName());
+        assertThat(postTagList.get(1).getTag().getName()).isEqualTo(secondTagRequest.getName());
+        assertThat(postTagList.get(2).getTag().getName()).isEqualTo(thirdTagRequest.getName());
+    }
+
+    @Test
     @DisplayName("작성자로 게시글 조회 테스트")
     public void findPostByAuthorSuccess() throws Exception {
         //given
@@ -398,7 +441,7 @@ public class PostServiceTest {
 
         //then
         // 컨트롤러에서 사용하는 포스트 서비스 로직을 그대로 사용하여 테스트해보겠음.
-        PostInfoDtoWithTag postInfoDtoWithTag = postService.findPostById(postId);
+        SinglePostInfoDto postInfoDtoWithTag = postService.findPostById(postId);
         assertThat(postInfoDtoWithTag.getTitle()).isEqualTo("제목");
         assertThat(postInfoDtoWithTag.getTagNames().size()).isEqualTo(3);
         assertThat(postInfoDtoWithTag.getTagNames().containsAll(tagNamesToBeAdded)).isTrue();
@@ -721,7 +764,7 @@ public class PostServiceTest {
     }
 
     @Test
-    @DisplayName("조건과 함께 테스트 - 모든 조건들 고려한 최종 조회 테스트")
+    @DisplayName("조건과 함께 테스트 - 가격을 제외한 모든 요소 고려")
     public void findPostsWithProductCategoryNameAndTagsConditionTestForSuccess() throws Exception {
         //given
         SignUpRequest signUpRequest = createSignUpRequest();
@@ -845,6 +888,130 @@ public class PostServiceTest {
         assertThat(fourth_Result4).extracting("wishCategory").hasSize(1).contains("wish2");
 
         assertThat(lastResult).extracting("title").hasSize(3).contains("첫번째 게시글", "두번째 게시글", "세번째 게시글");
+    }
+    
+    @Test
+    @DisplayName("조건과 함께 테스트 - 가격 고려")
+    public void searchPostWithPriceTestForSuccess() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
+
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, rootId, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, rootId, member);
+        Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
+        Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
+
+        //when
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("해시태그1");
+        tagNames.add("해시태그2");
+        PostSaveRequest firstRequest = createCompletedPostSaveRequest(member, "첫번째 게시글", "첫번째 내용", false, productRequest.getName(), wishRequest.getName(), tagNames, 7500L);
+        List<String> secondTagNames = new ArrayList<>();
+        secondTagNames.add("해시태그2");
+        secondTagNames.add("해시태그3");
+        PostSaveRequest secondRequest = createCompletedPostSaveRequest(member, "두번째 게시글", "두번째 내용", false, secondProductRequest.getName(), secondWishRequest.getName(), secondTagNames, 30000L);
+        Long firstPostId = postService.savePost(firstRequest, member.getId());
+        Long secondPostId = postService.savePost(secondRequest, member.getId());
+        tagService.addTagsToPost(firstPostId, tagNames);
+        tagService.addTagsToPost(secondPostId, secondTagNames);
+
+        //then
+        List<String> hashTag1 = new ArrayList<>();
+        hashTag1.add("해시태그2");
+        // 게시글1이 검색되어야 한다.
+        SearchPostRequest firstSearchRequest = createPostSearchRequest(productRequest.getName(), "", hashTag1, "3000", "10000");
+        List<PostInfoDtoWithTag> postsWithConditions = postService.findPostsWithConditions(firstSearchRequest);
+        assertThat(postsWithConditions).extracting("title").hasSize(1).contains("첫번째 게시글");
+
+        // 아무 게시글도 검색되선 안된다.
+        SearchPostRequest requestForFail = createPostSearchRequest(productRequest.getName(), "", hashTag1, "35000", "100000");
+        List<PostInfoDtoWithTag> emptyList = postService.findPostsWithConditions(requestForFail);
+        assertThat(emptyList).isEmpty();
+
+        // 게시글1, 게시글2가 모두 검색되어야 한다.
+        SearchPostRequest forBothRequest = createPostSearchRequest("", "", hashTag1, "3000", "50000");
+        List<PostInfoDtoWithTag> bothList = postService.findPostsWithConditions(forBothRequest);
+        assertThat(bothList).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+    }
+
+    @Test
+    @DisplayName("가격대로 검색 - 가격 문자열 이상 테스트")
+    public void invalidPriceStringTestForFail() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
+
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, rootId, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, rootId, member);
+        Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
+        Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
+
+        //when
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("해시태그1");
+        tagNames.add("해시태그2");
+        PostSaveRequest firstRequest = createCompletedPostSaveRequest(member, "첫번째 게시글", "첫번째 내용", false, productRequest.getName(), wishRequest.getName(), tagNames, 7500L);
+        List<String> secondTagNames = new ArrayList<>();
+        secondTagNames.add("해시태그2");
+        secondTagNames.add("해시태그3");
+        PostSaveRequest secondRequest = createCompletedPostSaveRequest(member, "두번째 게시글", "두번째 내용", false, secondProductRequest.getName(), secondWishRequest.getName(), secondTagNames, 30000L);
+        Long firstPostId = postService.savePost(firstRequest, member.getId());
+        Long secondPostId = postService.savePost(secondRequest, member.getId());
+        tagService.addTagsToPost(firstPostId, tagNames);
+        tagService.addTagsToPost(secondPostId, secondTagNames);
+
+        //then
+        // 최소가격, 최대가격 2개 모두 전달이 됐지만 최소가격은 사용 불가능한 형태, 따라서 최대 가격만 고려해서 검색한다.
+        // 게시글1이 검색되어야 한다.
+        SearchPostRequest minPriceStringError = createPostSearchRequest("", "", new ArrayList<>(), "", "7500");
+        List<PostInfoDtoWithTag> firstPostList = postService.findPostsWithConditions(minPriceStringError);
+
+        // 게시글 1,2가 검색되어야 한다.
+        SearchPostRequest maxPriceStringError = createPostSearchRequest("", "", new ArrayList<>(), "3000", "");
+        List<PostInfoDtoWithTag> secondPostList = postService.findPostsWithConditions(maxPriceStringError);
+
+        // 모든 게시글이 다 조회되어야 한다.
+        SearchPostRequest emptyRequest = createPostSearchRequest("", "", new ArrayList<>(), "", "");
+        List<PostInfoDtoWithTag> totalList = postService.findPostsWithConditions(emptyRequest);
+
+        assertThat(firstPostList).extracting("title").hasSize(1).contains("첫번째 게시글");
+        assertThat(secondPostList).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+        assertThat(totalList).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
     }
 
     @Test

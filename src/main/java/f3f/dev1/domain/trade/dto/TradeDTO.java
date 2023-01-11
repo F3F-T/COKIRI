@@ -17,14 +17,11 @@ public class TradeDTO {
     public static class CreateTradeDto {
         private Long sellerId;
 
-        private Long buyerId;
-
         private Long postId;
 
-        public Trade toEntity(Member seller, Member buyer, Post post) {
+        public Trade toEntity(Member seller, Post post) {
             return Trade.builder()
                     .seller(seller)
-                    .buyer(buyer)
                     .post(post)
                     .tradeStatus(TradeStatus.TRADABLE).build();
         }
@@ -51,7 +48,6 @@ public class TradeDTO {
     public static class TradeInfoDto{
         private String sellerNickname;
 
-        private String buyerNickname;
 
         private TradeStatus tradeStatus;
     }

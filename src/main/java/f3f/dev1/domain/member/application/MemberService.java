@@ -1,25 +1,28 @@
 package f3f.dev1.domain.member.application;
 
+import f3f.dev1.domain.address.dao.AddressRepository;
+import f3f.dev1.domain.address.dto.AddressDTO;
+import f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.*;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
-import f3f.dev1.domain.model.Address;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
@@ -27,9 +30,11 @@ import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static f3f.dev1.global.common.constants.RandomCharacter.RandomCharacters;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
+    private final AddressRepository addressRepository;
 
     private final MemberRepository memberRepository;
 
@@ -61,11 +66,10 @@ public class MemberService {
     // 아이디로 유저 정보 조회
     @Transactional(readOnly = true)
     public UserInfo getUserInfo(Long userId) {
+        log.info("유저 정보 조회 호출됐음");
         Member byId = memberRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
-        Scrap scrap = scrapRepository.findScrapByMemberId(byId.getId()).orElseThrow(UserScrapNotFoundException::new);
 
-
-        return byId.toUserInfo(scrap.getId());
+        return byId.toUserInfo(byId.getScrap().getId());
 
     }
 
@@ -87,12 +91,39 @@ public class MemberService {
         return member.toUserInfo(scrap.getId());
     }
 
-    // 주소 업데이트 메소드
     @Transactional
-    public void updateUserAddress(UpdateUserAddress address, Long currentMemberId) {
-        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-        member.updateAddress(address.getAddress());
+    public NewNicknameDto updateUserNickname(Long memberId, UpdateMemberNicknameDto updateMemberNicknameDto) {
+        if (!Objects.equals(memberId, updateMemberNicknameDto.getUserId())) {
+            throw new NotAuthorizedException();
+        }
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        member.updateNickname(updateMemberNicknameDto.getNewNickname());
+        return NewNicknameDto.builder().newNickname(updateMemberNicknameDto.getNewNickname()).build();
     }
+
+    @Transactional
+    public NewPhoneNumberDto updateUserPhoneNumber(Long memberId, UpdateMemberPhoneNumberDto updateMemberPhoneNumberDto) {
+        if (!Objects.equals(memberId, updateMemberPhoneNumberDto.getUserId())) {
+            throw new NotAuthorizedException();
+        }
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        member.updatePhoneNumber(updateMemberPhoneNumberDto.getNewPhoneNumber());
+        return NewPhoneNumberDto.builder().newPhoneNumber(updateMemberPhoneNumberDto.getNewPhoneNumber()).build();
+
+    }
+
+    @Transactional
+    public NewDescriptionDto updateDescription(Long memberId, UpdateDescriptionDto updateDescriptionDto) {
+        if (!Objects.equals(memberId, updateDescriptionDto.getUserId())) {
+            throw new NotAuthorizedException();
+        }
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        member.updateDescription(updateDescriptionDto.getDescription());
+        return NewDescriptionDto.builder().newDescription(updateDescriptionDto.getDescription()).build();
+
+    }
+
+    // 주소 업데이트 메소드 -> AddressService로 변경
 
     // 유저 비밀번호 업데이트 처리 메소드
     @Transactional
@@ -106,6 +137,7 @@ public class MemberService {
         member.updateUserPassword(updateUserPassword);
         return "UPDATE";
     }
+
     // TODO dto에 유저 검증 추가로 인한 코드 검토해야함
     // 유저 프사 변경 메소드
     @Transactional
@@ -149,6 +181,7 @@ public class MemberService {
         member.updateUserPassword(updateUserPassword);
         return ReturnPasswordDto.builder().password(newPassword).build();
     }
+
     // 비밀번호 찾을때 랜덤한 비밀번호 생성해주는 메소드
     public String createRandomPassword() {
         int targetStringLength = 10;
@@ -177,11 +210,26 @@ public class MemberService {
         return GetUserPostDto.builder().userPosts(userPosts).build();
 
     }
+
     // TODO 아직 미구현
     @Transactional(readOnly = true)
     public GetUserMessageRoomDto getUserMessageRoomDto(Long memberId) {
 //        messageRoomRepository.
         return null;
 
+    }
+
+    // 멤버 주소 리스트 조회
+    // TODO QueryDSL로 리팩터링 해야된다
+    @Transactional(readOnly = true)
+    public GetMemberAddressListDTO getMemberAddressListDTO(Long memberId) {
+        List<Address> byMemberId = addressRepository.findByMemberId(memberId);
+        List<AddressInfoDTO> memberAddress = new ArrayList<>();
+        for (Address address : byMemberId) {
+            memberAddress.add(address.toInfoDto());
+
+        }
+
+        return GetMemberAddressListDTO.builder().memberAddress(memberAddress).build();
     }
 }

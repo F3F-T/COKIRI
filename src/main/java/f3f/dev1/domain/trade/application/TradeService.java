@@ -39,7 +39,6 @@ public class TradeService {
     public Long createTrade(CreateTradeDto createTradeDto, Long memberId) {
         Long sellerId = createTradeDto.getSellerId();
         Member seller = memberRepository.findById(sellerId).orElseThrow(NotFoundByIdException::new);
-        Member buyer = memberRepository.findById(createTradeDto.getBuyerId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(createTradeDto.getPostId()).orElseThrow(NotFoundByIdException::new);
 
 
@@ -54,7 +53,7 @@ public class TradeService {
         if (!sellerId.equals(post.getAuthor().getId())) {
             throw new InvalidSellerIdException();
         }
-        Trade trade = createTradeDto.toEntity(seller, buyer, post);
+        Trade trade = createTradeDto.toEntity(seller, post);
         tradeRepository.save(trade);
 
         return trade.getId();
@@ -68,14 +67,12 @@ public class TradeService {
             Trade trade = byId.get();
             String sellerNickname = trade.getSeller().getNickname();
 
-            String buyerNickname = trade.getBuyer().getNickname();
-            return trade.tradeInfoDto(sellerNickname, buyerNickname);
+            return trade.tradeInfoDto(sellerNickname);
         } else {
             Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
             String userNickname = memberRepository.findById(post.getAuthor().getId()).orElseThrow(UserNotFoundException::new).getNickname();
             return TradeInfoDto.builder()
                     .sellerNickname(userNickname)
-                    .buyerNickname("none")
                     .tradeStatus(TradeStatus.TRADABLE).build();
         }
     }
@@ -93,9 +90,8 @@ public class TradeService {
         }
         trade.updateTradeStatus(updateTradeDto.getTradeStatus());
         String sellerNickname = trade.getSeller().getNickname();
-        String buyerNickname = trade.getBuyer().getNickname();
 
-        return trade.tradeInfoDto(sellerNickname, buyerNickname);
+        return trade.tradeInfoDto(sellerNickname);
     }
 
     // 거래 삭제 메서드
@@ -113,7 +109,6 @@ public class TradeService {
 
         return TradeInfoDto.builder()
                 .sellerNickname(member.getNickname())
-                .buyerNickname("none")
                 .tradeStatus(TradeStatus.TRADABLE).build();
     }
 }

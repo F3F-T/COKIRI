@@ -1,7 +1,9 @@
 package f3f.dev1.domain.post.model;
 
 import f3f.dev1.domain.category.model.Category;
+import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.BaseTimeEntity;
@@ -17,6 +19,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static f3f.dev1.domain.comment.dto.CommentDTO.*;
+import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 
 @Getter
@@ -35,7 +39,7 @@ public class Post extends BaseTimeEntity {
     // 끼리끼리 거래 여부
     private Boolean tradeEachOther;
 
-    @OneToOne(mappedBy = "post")
+    @OneToOne(mappedBy = "post", cascade = CascadeType.REMOVE)
     private Trade trade;
 
     private Long price;
@@ -74,15 +78,16 @@ public class Post extends BaseTimeEntity {
     }
 
     @Builder
-    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.tradeEachOther = tradeEachOther;
+    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags, Long price) {
         this.productCategory = productCategory;
+        this.tradeEachOther = tradeEachOther;
         this.wishCategory = wishCategory;
         this.postTags = postTags;
+        this.content = content;
         this.author = author;
+        this.price = price;
+        this.title = title;
+        this.id = id;
     }
 
 
@@ -106,7 +111,7 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
-    public PostInfoDtoWithTag toInfoDtoWithTag(List<String> tagNames) {
+    public PostInfoDtoWithTag toInfoDtoWithTag(List<String> tagNames, Long scrapCount, Long messageRoomCount) {
         TradeStatus tradeStatus;
         if (this.trade == null) {
             tradeStatus = TradeStatus.TRADABLE;
@@ -114,18 +119,44 @@ public class Post extends BaseTimeEntity {
             tradeStatus = this.trade.getTradeStatus();
         }
         return PostInfoDtoWithTag.builder()
-                .id(this.id)
-                .authorNickname(this.author.getNickname())
-                .content(this.content)
-                .title(this.title)
-                .price(this.price)
                 .productCategory(this.productCategory.getName())
+                .authorNickname(this.author.getNickname())
                 .wishCategory(this.wishCategory.getName())
                 .tradeEachOther(this.tradeEachOther)
+                .createdTime(super.getCreateDate())
+                .messageRoomCount(messageRoomCount)
                 .tradeStatus(tradeStatus)
+                .scrapCount(scrapCount)
+                .content(this.content)
                 .tagNames(tagNames)
+                .title(this.title)
+                .price(this.price)
+                .id(this.id)
                 .build();
     }
 
-
+    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfo userInfo, List<CommentInfoDto> commentInfoDtoList) {
+//        TradeStatus tradeStatus;
+//        if (this.trade == null) {
+//            tradeStatus = TradeStatus.TRADABLE;
+//        } else {
+//            tradeStatus = this.trade.getTradeStatus();
+//        }
+        return SinglePostInfoDto.builder()
+                .productCategory(this.productCategory.getName())
+                .wishCategory(this.wishCategory.getName())
+                .commentInfoDtoList(commentInfoDtoList)
+                .tradeEachOther(this.tradeEachOther)
+                .createdTime(super.getCreateDate())
+                .messageRoomCount(messageRoomCount)
+                .tradeStatus(this.trade.getTradeStatus())
+                .scrapCount(scrapCount)
+                .content(this.content)
+                .userInfo(userInfo)
+                .tagNames(tagNames)
+                .title(this.title)
+                .price(this.price)
+                .id(this.id)
+                .build();
+    }
 }

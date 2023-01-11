@@ -11,7 +11,7 @@ public interface MessageRoomRepository extends JpaRepository<MessageRoom, Long> 
 
     boolean existsById(Long id);
     Optional<MessageRoom> findById(Long id);
-
+    List<MessageRoom> findByPostId(Long postId);
     List<MessageRoom> findBySellerId(Long sellerId);
     List<MessageRoom> findByBuyerId(Long buyerId);
 

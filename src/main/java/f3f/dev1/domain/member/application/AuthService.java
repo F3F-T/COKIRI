@@ -2,21 +2,16 @@ package f3f.dev1.domain.member.application;
 
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
-import f3f.dev1.domain.scrap.dto.ScrapDTO;
-import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.token.dto.TokenDTO.AccessTokenDTO;
 import f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
-import f3f.dev1.domain.token.exception.ExpireRefreshTokenException;
-import f3f.dev1.domain.token.exception.InvalidRefreshTokenException;
-import f3f.dev1.domain.token.exception.LogoutUserException;
-import f3f.dev1.domain.token.exception.TokenNotMatchException;
+import f3f.dev1.domain.token.exception.*;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import f3f.dev1.global.jwt.JwtTokenProvider;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +28,7 @@ import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.token.dto.TokenDTO.TokenInfoDTO;
 import static f3f.dev1.global.common.constants.JwtConstants.REFRESH_TOKEN_EXPIRE_TIME;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -43,7 +39,6 @@ public class AuthService {
 
     private final ScrapRepository scrapRepository;
 
-    private final ScrapService scrapService;
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -56,8 +51,8 @@ public class AuthService {
         Member member = signUpRequest.toEntity();
 
         memberRepository.save(member);
-        ScrapDTO.CreateScrapDTO userScrap = ScrapDTO.CreateScrapDTO.builder().user(member).build();
-        scrapService.createScrap(userScrap);
+        Scrap scrap = Scrap.builder().member(member).build();
+        scrapRepository.save(scrap);
         return "CREATED";
     }
 
@@ -66,6 +61,7 @@ public class AuthService {
         // 1. 이메일, 비밀번호 기반으로 토큰 생성
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = loginRequest.toAuthentication();
         // 2. 실제로 검증이 이뤄지는 부분,
+        // authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
         Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(usernamePasswordAuthenticationToken);
 
         // 3. 인증 정보를 기반으로 jwt 토큰 생성
@@ -77,20 +73,21 @@ public class AuthService {
         redisTemplate.expire(authenticate.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
         redisTemplate.expire(tokenInfoDTO.getAccessToken(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
         // 5. 토큰 발급
+
         Member member = memberRepository.findById(Long.parseLong(authenticate.getName())).orElseThrow(NotFoundByIdException::new);
-        Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).orElseThrow(UserScrapNotFoundException::new);
+        Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).orElseThrow(NotFoundByIdException::new);
+
 
         return UserLoginDto.builder().userInfo(member.toUserInfo(scrap.getId())).tokenInfo(tokenInfoDTO.toTokenIssueDTO()).build();
     }
 
     @Transactional
-    public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO) {
+    public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO)  {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         String accessByRefresh = valueOperations.get(accessTokenDTO.getAccessToken());
         if (accessByRefresh == null) {
             throw new ExpireRefreshTokenException();
         }
-//        RefreshToken tokenByAccess = tokenService.findByAccessToken(accessTokenDTO.getAccessToken());
         // 1. refresh token 검증
         if (!jwtTokenProvider.validateToken(accessByRefresh)) {
             throw new InvalidRefreshTokenException();

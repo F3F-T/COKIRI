@@ -3,17 +3,14 @@ package f3f.dev1.trade;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.dao.MemberRepository;
-import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.dto.PostDTO.PostSaveRequest;
 import f3f.dev1.domain.trade.api.TradeController;
 import f3f.dev1.domain.trade.application.TradeService;
 import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.trade.dao.TradeRepository;
-import f3f.dev1.domain.trade.dto.TradeDTO;
 import f3f.dev1.domain.trade.exception.DuplicateTradeException;
 import f3f.dev1.domain.trade.exception.InvalidSellerIdException;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
@@ -33,8 +30,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.Optional;
-
 import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
 import static f3f.dev1.domain.model.TradeStatus.TRADABLE;
 import static f3f.dev1.domain.model.TradeStatus.TRADING;
@@ -49,7 +44,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @WebMvcTest(TradeController.class)
@@ -144,10 +138,9 @@ public class TradeControllerTest {
                 .password("password").build();
     }
 
-    public CreateTradeDto createTradeDto(Long sellerId, Long buyerId, Long postId) {
+    public CreateTradeDto createTradeDto(Long sellerId, Long postId) {
         return CreateTradeDto.builder()
                 .sellerId(sellerId)
-                .buyerId(buyerId)
                 .postId(postId)
                 .build();
     }
@@ -168,7 +161,7 @@ public class TradeControllerTest {
         // then
         mockMvc.perform(post("/trade")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createTradeDto(1L, 2L, 1L))))
+                        .content(objectMapper.writeValueAsString(createTradeDto(1L,  1L))))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("trade/create/successful",
@@ -189,7 +182,7 @@ public class TradeControllerTest {
         // then
         mockMvc.perform(post("/trade")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createTradeDto(1L, 2L, 1L))))
+                        .content(objectMapper.writeValueAsString(createTradeDto(1L, 1L))))
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andDo(document("trade/create/fail/duplicate-trade", requestFields(
@@ -213,7 +206,7 @@ public class TradeControllerTest {
         // then
         mockMvc.perform(post("/trade")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(createTradeDto(1L, 2L, 1L))))
+                        .content(objectMapper.writeValueAsString(createTradeDto(1L, 1L))))
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andDo(document("trade/create/fail/invalid-seller", requestFields(
@@ -232,7 +225,7 @@ public class TradeControllerTest {
         // then
         mockMvc.perform(post("/trade")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createTradeDto(1L, 2L, 1L))))
+                .content(objectMapper.writeValueAsString(createTradeDto(1L, 1L))))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andDo(document("trade/create/fail/non-login", requestFields(
@@ -251,7 +244,6 @@ public class TradeControllerTest {
         //given
         doReturn(TradeInfoDto.builder()
                 .sellerNickname("sellerNickname")
-                .buyerNickname("buyerNickname")
                 .tradeStatus(TRADABLE).build()).when(tradeService).updateTradeStatus(any(), any());
 
         // then
@@ -320,7 +312,6 @@ public class TradeControllerTest {
         //given
         doReturn(TradeInfoDto.builder()
                 .sellerNickname("userNickname")
-                .buyerNickname("none")
                 .tradeStatus(TradeStatus.TRADABLE).build()).when(tradeService).getTradeInfo(any());
         // then
         mockMvc.perform(get("/trade/1")
@@ -348,7 +339,6 @@ public class TradeControllerTest {
         // when
         doReturn(TradeInfoDto.builder()
                 .sellerNickname("userNickname")
-                .buyerNickname("none")
                 .tradeStatus(TradeStatus.TRADABLE).build()).when(tradeService).deleteTrade(any(), any());
 
         // then
