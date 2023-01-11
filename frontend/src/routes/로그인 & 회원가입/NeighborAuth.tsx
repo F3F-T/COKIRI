@@ -15,13 +15,12 @@ import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import {reject} from "list";
 import {resetCategory} from "../../store/categoryReducer";
-import {setUserAddressInfo1} from "../../store/userAddressInfoReducer";
-import {setAddressName1} from "../../store/userAddressInfoReducer";
-import {resetaddress1} from "../../store/userAddressInfoReducer";
+import {setUserAddressInfo1,setAddressName1,resetaddress1} from "../../store/userAddressInfoReducer";
+import {setUserAddressInfo2,setAddressName2,resetaddress2} from "../../store/userAddressInfoReducer";
+
 
 
 interface AddressType {
-// {"userId":5, "addressName":"회사","postalAddress":"999","latitude":"37.49455","longitude":"127.12170"}
     userId:Number;
     addressName:string;
     postalAddress:string;//우편번호
@@ -47,11 +46,9 @@ const NeighborAuth = () => {
     //주소 조회
     async function getAddressData(addressID) {
         try{
-
             const res = await Api.get('/address/'+`${addressID}`);
             console.log("위치정보 조회", res.data);
             alert("조회 성공")
-
         }
         catch (err)
         {
@@ -62,7 +59,7 @@ const NeighborAuth = () => {
 
 
     //주소 추가
-    async function postAddressData() {
+    async function postAddressData_1() {
         try{
             addressCheck()
             const res = await Api.post('/address',addressInfo);
@@ -72,15 +69,6 @@ const NeighborAuth = () => {
             console.log("위치정보ID", res.data.id);
             dispatch(setUserAddressInfo1((res.data.id)))
             dispatch(setAddressName1((res.data.addressName)))
-
-            // setAddressDeleteInfo((prevState) => {
-            //     return {...prevState,
-            //         data: {
-            //             userId: info.id,
-            //             addressId: addressR.addressId1
-            //         }
-            //     }
-            // })
             console.log('store1',store)
             console.log("위치삭제정보 추가", addressDelete);
             console.log("위치삭제정보 추가2 리덕스", addressR);
@@ -92,11 +80,27 @@ const NeighborAuth = () => {
             alert("추가 실패")
         }
     }
-    useEffect(()=>{
-        if(count){
-            // dispatch(setUserAddressInfo1(addressDelete.addressId))
+    async function postAddressData_2() {
+        try{
+            addressCheck()
+            const res = await Api.post('/address',addressInfo);
+            console.log(res)
+            console.log("위치정보 추가2", addressInfo);
+            setAddressID(res.data.id);
+            console.log("위치정보ID", res.data.id);
+            dispatch(setUserAddressInfo2((res.data.id)))
+            dispatch(setAddressName2((res.data.addressName)))
+            console.log('store1',store)
+            console.log("위치삭제정보 추가", addressDelete);
+            console.log("위치삭제정보 추가2 리덕스", addressR);
+            alert("추가 성공")
         }
-    },[count])
+        catch (err)
+        {
+            console.log(err)
+            alert("추가 실패")
+        }
+    }
     function addressCheck() {
             setAddressInfo((prevState) => {
                return {
@@ -105,50 +109,22 @@ const NeighborAuth = () => {
                    longitude: JSON.stringify(location.coordinates.lng),
                }
            })
-
-
            return addressInfo
-
        }
-
     async function postGPS(){
         await addressCheck();
         return addressInfo
     }
-
-
-
-    // const addressPostBtn = () => {
-    //     const promise = new Promise((resolve, reject) => {
-    //         resolve(addressCheck());
-    //     })
-    //     promise.then(value => {
-    //         console.log("sdfsdfds", value)
-    //         postAddressData();
-    //     })
-    // }
-    const addressPostBtn = () => {
-        postAddressData();
-    }
-
-
-        // useEffect(()=>{
-        //     postAddressData();
-        // },[])
-    //주소 update
-
     //주소 delete
-    async function deleteAddress(addressDelete:object) {
+    async function deleteAddress_1() {
         try{
-            const addressDelete2={
+            const addressDelete1={
                 data: {
                     userId: info.id,
                     addressId: addressR.addressId1
                 }
             }
-            const res = await Api.delete('/address', addressDelete2);
-            console.log("위치정보삭제", addressDelete);
-            console.log('store2',store)
+            const res = await Api.delete('/address', addressDelete1);
             dispatch(resetaddress1())
             alert("삭제 성공")
         }
@@ -158,14 +134,29 @@ const NeighborAuth = () => {
             alert("삭제 실패")
         }
     }
-
     const getAddressBtn = () => {
         getAddressData(addressID)
     }
-
+    async function deleteAddress_2() {
+        try{
+            const addressDelete2={
+                data: {
+                    userId: info.id,
+                    addressId: addressR.addressId2
+                }
+            }
+            const res = await Api.delete('/address', addressDelete2);
+            dispatch(resetaddress2())
+            alert("삭제 성공")
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("삭제 실패")
+        }
+    }
     const inputAddressName = (e) => {
         let inputName = e.target.value;
-        //한글자 이상 작성했을때
         if (inputName.length > 0) {
             setAddressInfo((prevState) => {
                 return {
@@ -178,45 +169,24 @@ const NeighborAuth = () => {
                 }
             })
         }
-
-
     }
-    const deleteAddressBtn = () => {
-        console.log("삭제버튼 클릭 ",store)
-        deleteAddress(addressDelete)
-
-    }
-    // const increment = () =>{
-    //     setCount(count+1);
-    //     console.log("dfdfd",count)
-    //     deleteAddress(addressDelete)
-    //
-    // };
-
-    // useEffect(()=>{
-    //     console.log("위치삭제제",addressDelete)
-    //     if(addressDelete){
-    //         deleteAddress(addressDelete)
-    //     }
-    // },[addressDelete])
-
     return (
         <>
             <div className={styles.box}>
                 <div className={styles.gps1}>
-                    <button className={styles.gps1Btn} onClick={()=>{addressPostBtn();setCount(count+1);}}>+</button>
+                    <button className={styles.gps1Btn} onClick={postAddressData_1}>+</button>
                     <button className={styles.gps1Btn} onClick={getAddressBtn}>조회</button>
-                    <button className={styles.gps1Btn} onClick={()=>{deleteAddressBtn()}}>delete</button>
-                    <TextInput placeholder={"주소 이름 써"} onBlur={inputAddressName}/>
+                    <button className={styles.gps1Btn} onClick={deleteAddress_1}>delete</button>
+                    <TextInput placeholder={"첫번째 주소를 입력해주세요"} onBlur={inputAddressName}/>
                     <div className={styles.gps1_1}>{addressR.addressName1}</div>
                     <div className={styles.gps1_1}></div>
                 </div>
                 <div className={styles.gps1}>
-                    <button className={styles.gps1Btn} onClick={()=>{addressPostBtn();setCount(count+1);}}>+</button>
+                    <button className={styles.gps1Btn} onClick={postAddressData_2}>+</button>
                     <button className={styles.gps1Btn} onClick={getAddressBtn}>조회</button>
-                    <button className={styles.gps1Btn} onClick={()=>{deleteAddressBtn()}}>delete</button>
-                    <TextInput placeholder={"주소 이름 써"} onBlur={inputAddressName}/>
-                    <div className={styles.gps1_1}>{addressR.addressName1}</div>
+                    <button className={styles.gps1Btn} onClick={deleteAddress_2}>delete</button>
+                    <TextInput placeholder={"두번째 주소를 입력해주세요"} onBlur={inputAddressName}/>
+                    <div className={styles.gps1_1}>{addressR.addressName2}</div>
                     <div className={styles.gps1_1}></div>
                 </div>
             </div>
