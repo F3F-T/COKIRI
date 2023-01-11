@@ -40,7 +40,6 @@ const userInfoSlice = createSlice({
     initialState : initialUserInfoState,
     reducers : {
         setUserInfo(state,action){
-
             state.id = action.payload.id;
             state.email = action.payload.email;
             state.userName = action.payload.userName;
@@ -54,7 +53,7 @@ const userInfoSlice = createSlice({
             state.address = action.payload.address;
         },
         setUserNick(state,action){
-            state.nickname = action.payload.nickname;
+            state.nickname = action.payload;
 
         },
         deleteUserInfo(state){

@@ -53,20 +53,25 @@ const MyPage = () =>  {
     },[])
     const [newNick,setNewNick]=useState(info.nickname)
 
-
     const [postNum,setNum]=useState('');
-    // if (! readNickName) {
-    //     return null
-    // }
-    // if (! nicknameChange) {
-    //     return null
-    // }
-    // if (! getMyPostList) {
-    //     return null
-    // }
+
+    // useEffect(()=>{
+    //     if (userInfo) {
+    //         dispatch(setUserNick(userInfo.newNickname))
+    //         console.log("리덕스222.", info.nickname)
+    //     }
+    // },[userInfo])
     console.log("리덕스.", info.nickname)
     console.log("useState.", newNick)
-
+    if (! readNickName) {
+        return null
+    }
+    if (! nicknameChange) {
+        return null
+    }
+    if (! getMyPostList) {
+        return null
+    }
     const onChangeNickname = (e) => {
         let inputNickname = e.target.value;
         //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
@@ -106,6 +111,7 @@ const MyPage = () =>  {
                         ...prevState, newNickname: nickname["nickname"]
                     }
                 })
+                // dispatch(setUserNick(nickname["nickname"]))
 
             }
 
@@ -131,7 +137,8 @@ const MyPage = () =>  {
             console.log("바뀐 유저정보", userInfo.newNickname);
             console.log("바뀐 닉넴정보", res.data.newNickname);
             setNewNick(res.data.newNickname)
-            dispatch(setUserInfo(newNick))
+            // dispatch(setUserNick(newNick))
+            dispatch(setUserNick(res.data.newNickname))
             console.log("리덕스에 들어갔나?.", info)
 
 
@@ -160,7 +167,6 @@ const MyPage = () =>  {
                     ...prevState, userId: res.data.id
                 }
             })
-
         }
         catch (err){
             console.log(err);
@@ -187,6 +193,7 @@ const MyPage = () =>  {
             alert("get 실패2");
         }
     }
+
 
 
 
