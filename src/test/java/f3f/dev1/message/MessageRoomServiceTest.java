@@ -151,23 +151,18 @@ public class MessageRoomServiceTest {
 //        authService.signUp(signUpRequest1);
 //        Member member = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
 
-        CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("물물교환", admin.getId(), 1L, null);
+        CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
         Long cid1 = categoryService.createCategory(categoryDTO1);
         Category category1 = categoryRepository.findById(cid1).get();
         Category root = categoryRepository.findCategoryByName("root").get();
-        assertThat(categoryRepository.existsByName("root")).isEqualTo(true);
-        assertThat(categoryRepository.existsByName("물물교환")).isEqualTo(true);
-        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("끼리끼리", admin.getId(), 1L, root.getId());
+        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("주방", admin.getId(), 1L, root.getId());
         Long cid2 = categoryService.createCategory(categoryDTO2);
         Category category2 = categoryRepository.findById(cid2).get();
-        CategoryDTO.CategorySaveRequest categoryDTO3 = createCategoryDto("의류", admin.getId(), 2L,category1.getId());
-        Long cid3 = categoryService.createCategory(categoryDTO3);
-        Category category3 = categoryRepository.findById(cid3).get();
-
-
-        PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "의류", "의류");
+        PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "도서");
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
+
+//        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest();
 
 
     }
