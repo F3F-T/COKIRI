@@ -12,7 +12,7 @@ import f3f.dev1.domain.member.exception.DuplicateNicknameException;
 import f3f.dev1.domain.member.exception.DuplicatePhoneNumberExepction;
 import f3f.dev1.domain.member.exception.InvalidPasswordException;
 import f3f.dev1.domain.member.exception.UserNotFoundException;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

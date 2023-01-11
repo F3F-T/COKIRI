@@ -16,32 +16,28 @@ const EmailCheck = () => {
     const {state} = useLocation();
     const jsonEmail:object = {"email" : state.email}
     const [code,setCode] = useState();
+    const userInfo = state;
 
-    // async function MailConfirm() {
-    //     try {
-    //         const res = await axios.post("http://localhost:8080/auth/mailConfirm", jsonEmail);
-    //
-    //         const result = {
-    //             status: res.status + "-" + res.statusText,
-    //             headers: res.headers,
-    //             data: res.data,
-    //         };
-    //         console.log(res)
-    //         console.log(result);
-    //         if(result.data.success)
-    //         {
-    //             console.log("이메일 전송")
-    //         }
-    //         else{
-    //             console.log("이메일 전송 실패")
-    //         }
-    //
-    //     } catch (err) {
-    //         console.log(err);
-    //         alert('회원가입에 실패했습니다.');
-    //
-    //     }
-    // }
+    async function SignUpData() {
+        try {
+            const res = await axios.post("http://localhost:8080/auth/signup", userInfo);
+
+            const result = {
+                status: res.status + "-" + res.statusText,
+                headers: res.headers,
+                data: res.data,
+            };
+            console.log(result);
+            console.log(userInfo);
+            alert('회원가입에 성공했습니다.');
+
+
+        } catch (err) {
+            console.log(err);
+            alert('회원가입에 실패했습니다.');
+
+        }
+    }
 
     async function CodeConfirm(code:object){
         console.log(code)
@@ -58,6 +54,7 @@ const EmailCheck = () => {
             if(result.data.matches)
             {
                 console.log("코드가 일치합니다")
+                SignUpData();
                 navigate(`/signup/emailcheck/ok`)
             }
             else{

@@ -1,7 +1,7 @@
 package f3f.dev1.domain.comment.api;
 
 import f3f.dev1.domain.comment.application.CommentService;
-import f3f.dev1.domain.comment.dto.CommentDTO;
+import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +24,8 @@ public class CommentController {
     // 댓글 작성
     @PostMapping(value = "/post/{postId}/comments")
     public ResponseEntity<CommentInfoDto> createComment(@PathVariable(name = "postId") Long postId, @RequestBody @Valid CreateCommentRequest createCommentRequest) {
-        CommentInfoDto commentInfoDto = commentService.createComment(createCommentRequest);
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        CommentInfoDto commentInfoDto = commentService.saveComment(createCommentRequest, currentMemberId);
         return new ResponseEntity<>(commentInfoDto, HttpStatus.CREATED);
     }
 
@@ -40,7 +41,8 @@ public class CommentController {
     // 댓글 수정
     @PatchMapping(value = "/post/{postId}/comments/{commentId}")
     public ResponseEntity<CommentInfoDto> updateComment(@PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentId, @RequestBody UpdateCommentRequest updateCommentRequest) {
-        CommentInfoDto commentInfoDto = commentService.updateComment(updateCommentRequest);
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        CommentInfoDto commentInfoDto = commentService.updateComment(updateCommentRequest, currentMemberId);
         return new ResponseEntity<>(commentInfoDto, HttpStatus.OK);
     }
 
@@ -49,7 +51,8 @@ public class CommentController {
     // TODO requestHeader로 전달하던 DeleteCommentRequest를 body로 변경
     @DeleteMapping(value = "/post/{postId}/comments/{commentId}")
     public ResponseEntity<String> deleteComment(@PathVariable(name = "postId") Long postId, @PathVariable(name = "commentId") Long commentsId, @RequestBody @Valid DeleteCommentRequest deleteCommentRequest) {
-        String result = commentService.deleteComment(deleteCommentRequest);
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        String result = commentService.deleteComment(deleteCommentRequest, currentMemberId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

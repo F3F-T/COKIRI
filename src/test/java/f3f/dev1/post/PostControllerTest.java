@@ -4,12 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.member.dao.MemberRepository;
-import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.post.api.PostController;
 import f3f.dev1.domain.post.application.PostService;
-import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
@@ -21,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -31,12 +28,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -188,6 +181,7 @@ public class PostControllerTest {
                         fieldWithPath("tagNames").description("tag names list value of post"),
                         fieldWithPath("authorId").description("author id value of post"),
                         fieldWithPath("content").description("content value of post"),
+                        fieldWithPath("price").description("price value of post"),
                         fieldWithPath("title").description("title value of post")
                 )));
     }
@@ -251,6 +245,7 @@ public class PostControllerTest {
                         fieldWithPath("authorId").description("Id value of auhor (requester)"),
                         fieldWithPath("title").description("title value of post"),
                         fieldWithPath("content").description("content value of post"),
+                        fieldWithPath("price").description("price value of post"),
                         fieldWithPath("productCategory").description("product category name value of post"),
                         fieldWithPath("wishCategory").description("wish category name value of post"),
                         fieldWithPath("tagNames").description("list values of tag names")
@@ -261,6 +256,10 @@ public class PostControllerTest {
                         fieldWithPath("authorNickname").description("authorNickname value of post"),
                         fieldWithPath("wishCategory").description("wishCategory name value of post"),
                         fieldWithPath("productCategory").description("productCategory name value of post"),
+                        fieldWithPath("scrapCount").description("scrap count value of post"),
+                        fieldWithPath("messageRoomCount").description("message room count value of post"),
+                        fieldWithPath("createdTime").description("created time value of post"),
+                        fieldWithPath("price").description("price value of post"),
                         fieldWithPath("title").description("title name value of post"),
                         fieldWithPath("tagNames").description("list values of tag names"),
                         fieldWithPath("tradeStatus").description("tradeStatus value of post")
@@ -273,7 +272,7 @@ public class PostControllerTest {
         //given
         Member member = new Member();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        PostInfoDtoWithTag postInfoDto = PostInfoDtoWithTag.builder().title(postSaveRequest.getTitle()).build();
+        SinglePostInfoDto postInfoDto = SinglePostInfoDto.builder().title(postSaveRequest.getTitle()).build();
         postService.savePost(postSaveRequest, member.getId());
         doReturn(postInfoDto).when(postService).findPostById(any());
 
@@ -287,10 +286,15 @@ public class PostControllerTest {
                 .andDo(document("post/readPostById/successful", responseFields(
                         fieldWithPath("id").description("Id value of post"),
                         fieldWithPath("content").description("content value of post"),
+                        fieldWithPath("scrapCount").description("scrap count value of post"),
+                        fieldWithPath("messageRoomCount").description("message room count value of post"),
+                        fieldWithPath("createdTime").description("created time value of post"),
                         fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
-                        fieldWithPath("authorNickname").description("authorNickname value of post"),
                         fieldWithPath("wishCategory").description("wishCategory name value of post"),
                         fieldWithPath("productCategory").description("productCategory name value of post"),
+                        fieldWithPath("price").description("price value of post"),
+                        fieldWithPath("userInfo").description("userInfo DTO value"),
+                        fieldWithPath("commentInfoDtoList").description("commentInfo DTO list value of post"),
                         fieldWithPath("title").description("title name value of post"),
                         fieldWithPath("tradeStatus").description("tradeStatus value of post"),
                         fieldWithPath("tagNames").description("tag name list value of post")

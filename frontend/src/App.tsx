@@ -15,6 +15,8 @@ import SignUp from "./routes/로그인 & 회원가입/SignUp";
 import EmailCheck from "./routes/로그인 & 회원가입/EmailCheck";
 import PostUpload from "./routes/게시글/PostUpload";
 import Zzim from "./routes/Zzim";
+import NeighborAuth from "./routes/로그인 & 회원가입/NeighborAuth";
+
 
 import styles from "./styles/App.module.css";
 import EmailCheckOK from "./routes/로그인 & 회원가입/EmailCheckOK";
@@ -26,6 +28,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "./index";
+import MyPageSet from "./component/MyPageSet";
 
 function App() {
 
@@ -59,15 +62,22 @@ function App() {
 
                 <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
 
-                <Route path="/mypage" element={<MyPage/>} />
-                <Route path="/mypage/zzim" element={<Zzim/>} />
+                <Route path="/mypage" element={<MyPageSet/>} >
+                    <Route path="" element={<MyPage/>}/>
+                    <Route path="zzim" element={<Zzim/>}/>
+                </Route>
+                {/*<Route path="/mypage" element={<MyPage/>}/ >*/}
+
+                {/*<Route path="/mypage/zzim" element={<Zzim/>} />*/}
 
                 <Route path="/kokiritalk" element={<KokiriTalk/>} />
 
-                <Route path="/post" element={<PostDetail/>}/>
+                <Route path="/post/:id" element={<PostDetail/>}/>
                 <Route path="/upload" element={<PostUpload/>}/>
+                <Route path="/neighborauth" element={<NeighborAuth/>}/>
 
                 <Route path='*' element={<NotFound />}/>
+
             </Routes>
 
         </div>

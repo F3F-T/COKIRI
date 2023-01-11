@@ -34,15 +34,12 @@ public class UserDetailService implements UserDetailsService {
             throw new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다.");
         }
 
-//        return memberRepository.findByEmail(username)
-//                .map(this::createUserDetails)
-//                .orElseThrow(() -> new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다."));
     }
 
     // DB 에 User 값이 존재한다면 UserDetails 객체로 만들어서 리턴
     private UserDetails createUserDetails(Member member) {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());
-
+        log.info("이거보이면 안된다 철웅아");
         return new User(
                 String.valueOf(member.getId()),
                 member.getPassword(),

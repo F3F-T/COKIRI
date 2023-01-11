@@ -1,8 +1,9 @@
 package f3f.dev1.domain.member.dto;
 
+import f3f.dev1.domain.address.dto.AddressDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
+import static f3f.dev1.domain.address.dto.AddressDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.PostInfoDto;
 import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 
@@ -33,7 +35,6 @@ public class MemberDTO {
 
         private String phoneNumber;
 
-        private Address address;
 
         private String email;
 
@@ -53,10 +54,10 @@ public class MemberDTO {
                     .username(userName)
                     .nickname(nickname)
                     .phoneNumber(phoneNumber)
+                    .description("")
                     .birthDate(birthDate)
                     .email(email)
                     .password(password)
-                    .address(address)
                     .userLoginType(userLoginType)
                     .build();
         }
@@ -97,7 +98,7 @@ public class MemberDTO {
 
         private String nickname;
 
-        private Address address;
+        private String description;
 
         private String phoneNumber;
 
@@ -152,15 +153,7 @@ public class MemberDTO {
         private String newImageUrl;
     }
 
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    public static class UpdateUserAddress{
-        private Long userId;
 
-        private Address address;
-    }
 
 
     @Builder
@@ -305,5 +298,72 @@ public class MemberDTO {
         private Boolean exists;
     }
 
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UpdateMemberNicknameDto {
+        private Long userId;
 
+        private String newNickname;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UpdateMemberPhoneNumberDto {
+        private Long userId;
+
+        private String newPhoneNumber;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class NewNicknameDto {
+        private String newNickname;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class NewPhoneNumberDto {
+        private String newPhoneNumber;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UpdateDescriptionDto {
+        private Long userId;
+        private String description;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class NewDescriptionDto {
+        private String newDescription;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class GetMemberAddressListDTO{
+        private List<AddressInfoDTO> memberAddress;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class ImageUrlDto {
+        private List<String> imageUrls;
+    }
 }

@@ -1,12 +1,17 @@
 package f3f.dev1.domain.tag.application;
 
 import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.message.dao.MessageRoomRepository;
+import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.dao.PostRepository;
+import f3f.dev1.domain.post.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.exception.DuplicateTagException;
+import f3f.dev1.domain.tag.exception.NotFoundByTagNameException;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
@@ -35,6 +40,8 @@ public class TagService {
     private final PostRepository postRepository;
     private final PostTagRepository postTagRepository;
     private final MemberRepository memberRepository;
+    private final MessageRoomRepository messageRoomRepository;
+    private final ScrapPostRepository scrapPostRepository;
 
     /*
         C : create
@@ -81,20 +88,36 @@ public class TagService {
             // 추가한 태그가 없다면 바로 게시글을 생성해도 된다.
             return post.getId();
         } else {
-            List<Tag> tags = tagRepository.findByNameIn(tagNames);
-            // 태그들을 일일이 게시글에 추가해주는 작업
-            for (Tag tag : tags) {
-                // 게시글을 처음 생성하는 시점에는 이미 존재하는 태그 자체가 없으니 예외처리는 따로 하지 않겠다.
-                PostTag postTag = PostTag.builder()
-                        .post(post)
-                        .tag(tag)
-                        .build();
-                postTagRepository.save(postTag);
-//                tag.getPostTags().add(postTag);
-//                post.getPostTags().add(postTag);
+            for (String tagName : tagNames) {
+                if(!tagRepository.existsByName(tagName)) {
+                    // 게시글에서 받아온 태그가 현재 없는 태그면 자동으로 만들어 줘야 한다.
+                    Tag tag = Tag.builder().name(tagName).build();
+                    tagRepository.save(tag);
+                    // 태그 저장 후 곧바로 postTag 만들어 추가해주기.
+                    PostTag postTag = PostTag.builder().post(post).tag(tag).build();
+                    postTagRepository.save(postTag);
+                } else {
+                    // 태그가 존재한다면 값을 받아와서 postTag로 만든 뒤 저장해준다.
+                    Tag tag = tagRepository.findByName(tagName).orElseThrow(NotFoundByTagNameException::new);
+                    PostTag postTag = PostTag.builder().post(post).tag(tag).build();
+                    postTagRepository.save(postTag);
+                }
             }
             return post.getId();
         }
+//        else {
+//            List<Tag> tags = tagRepository.findByNameIn(tagNames);
+//            // 태그들을 일일이 게시글에 추가해주는 작업
+//            for (Tag tag : tags) {
+//                // 게시글을 처음 생성하는 시점에는 이미 존재하는 태그 자체가 없으니 예외처리는 따로 하지 않겠다.
+//                PostTag postTag = PostTag.builder()
+//                        .post(post)
+//                        .tag(tag)
+//                        .build();
+//                postTagRepository.save(postTag);
+//            }
+//            return post.getId();
+//        }
     }
 
     /*
@@ -121,8 +144,10 @@ public class TagService {
             for (PostTag postTag : postTags) {
                 tagNames.add(postTag.getTag().getName());
             }
-                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
-                response.add(responseEach);
+            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
+            response.add(responseEach);
         }
         return response;
     }
@@ -170,7 +195,9 @@ public class TagService {
                 for (PostTag postTag : postTags) {
                     tagNames.add(postTag.getTag().getName());
                 }
-                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
+                List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+                List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
                 response.add(responseEach);
             }
         } else {
@@ -192,7 +219,9 @@ public class TagService {
                 for (PostTag postTag : postTags) {
                     tagNames.add(postTag.getTag().getName());
                 }
-                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames);
+                List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+                List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
                 response.add(responseEach);
             }
         }

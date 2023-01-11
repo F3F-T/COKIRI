@@ -39,9 +39,18 @@ public class PostController {
     public ResponseEntity<List<PostInfoDtoWithTag>> getAllPostInfo(
             @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
-            @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames) {
+            @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
+            @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
+            @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice) {
 
-        List<PostInfoDtoWithTag> responseList = postService.findPostsWithConditions(productCategoryName, wishCategoryName, tagNames);
+        SearchPostRequest searchPostRequest = SearchPostRequest.builder()
+                .productCategory(productCategoryName)
+                .wishCategory(wishCategoryName)
+                .tagNames(tagNames)
+                .minPrice(minPrice)
+                .maxPrice(maxPrice)
+                .build();
+        List<PostInfoDtoWithTag> responseList = postService.findPostsWithConditions(searchPostRequest);
         return new ResponseEntity<>(responseList, HttpStatus.OK);
     }
 
@@ -56,8 +65,8 @@ public class PostController {
 
     // 게시글 정보 조회
     @GetMapping(value = "/post/{postId}")
-    public ResponseEntity<PostInfoDtoWithTag> getPostInfo(@PathVariable(name = "postId") Long postId) {
-        PostInfoDtoWithTag postInfoDto = postService.findPostById(postId);
+    public ResponseEntity<SinglePostInfoDto> getPostInfo(@PathVariable(name = "postId") Long postId) {
+        SinglePostInfoDto postInfoDto = postService.findPostById(postId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
 

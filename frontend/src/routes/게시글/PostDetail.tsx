@@ -11,11 +11,102 @@ import talk from "../../img/send.png"
 import Comments from "../../component/comments/Comments";
 import {useSelector} from "react-redux";
 import {Rootstate} from "../../index";
+import Api from "../../utils/api";
+import {useNavigate, useParams} from "react-router-dom";
+import {AiOutlineHeart, AiTwotoneHeart} from "react-icons/ai";
+import Card from "../../component/tradeCard/Card";
+import Message from "../../component/로그인 & 회원가입/Message";
+
+
 
 const PostDetail = () => {
 
-    const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
-    console.log("asdfasdfa",detail)
+    // const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
+    // console.log("asdfasdfa",detail)
+    const navigate = useNavigate();
+
+    interface PostType {
+        id? : number;
+        title? : string;
+        content? : string;
+        price: string;
+        tradeEachOther? : boolean;
+        authorNickname? : string;
+        wishCategory? : string;
+        productCategory? : string;
+        tradeStatus? : string;
+        tagNames? : string[];
+        scrapCount? : number;
+        messageRoomCount? : number;
+        createdTime? : string;
+    }
+
+    const params = useParams();
+    console.log(params)
+    const postId = params.id;
+
+    const [post,setPost] = useState<PostType>(null)
+
+    async function getPost() {
+
+        //interceptor를 사용한 방식 (header에 token값 전달)
+        try{
+            const res = await Api.get(`/post/${postId}`);
+
+            console.log(res)
+            setPost(prevState => {
+                return {...prevState, ...res.data};
+            })
+            console.log(post)
+
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("get 실패");
+        }
+    }
+
+    //TODO:함민혁) 코끼리톡 구현할때 이걸 누르면 메시지룸이 생성되게 구현하고, navigate에서 매개변수를 전달해주면 될거야
+    //예시 : navigate('/signup/emailcheck', {state : userInfo})
+    const talkButton = () => {
+        navigate('/kokiritalk' )
+    }
+
+    useEffect(()=>{
+        getPost();
+    },[])
+
+    const store = useSelector((state:Rootstate) => state);
+
+    // useEffect(()=>{
+    //     console.log("jwt 토큰이 바뀜")
+    //     console.log(store.jwtTokenReducer.accessToken);
+    //
+    // },[store.jwtTokenReducer.accessToken]) //
+
+    const [scrapSaved,setScrapSaved] = useState<boolean>(true);
+    const onClickScrap = async () => {
+        setScrapSaved(prevState => !prevState);
+
+        const userId:Number = store.userInfoReducer.id;
+
+        const jsonObj = {userId : userId, postId : post.id}
+        console.log(jsonObj);
+        if (scrapSaved) {
+            await Api.post(`/user/scrap`, jsonObj);
+        }else
+        {
+            await Api.delete(`/user/scrap`, {
+                data: jsonObj
+            })
+        }
+    }
+
+    if(!post)
+    {
+        return null;
+    }
 
 
 
@@ -26,7 +117,7 @@ const PostDetail = () => {
                     <div className={styles.postTopProfile}>
                         <img className={styles.postTopProfileImg} src={profileImg}></img>
                         <div className={styles.postTopProfileInfo}>
-                            <div className={styles.postTopNickname}>상도동팔이피플</div>
+                            <div className={styles.postTopNickname}>{post.authorNickname}</div>
                             <div className={styles.postTopAddress}>상도 1동 33길</div>
                         </div>
                     </div>
@@ -34,40 +125,43 @@ const PostDetail = () => {
                 <section className={styles.postBody}>
                     <div className={styles.postImg}>
                         <img className={styles.postBodyImg} src={coatImg}></img>
-                        {/*<button></button>*/}
-                        {/*<button>오른쪽으로 가기</button>*/}
                     </div>
                     <div className={styles.postDetailInfo}>
-                        <h2 className={styles.postDetailTitle}>21fw 쿠어 MTR 발마칸 코트M (멜란지토프)</h2>
-                        <div className={styles.postDetailCategory}>남성의류</div>
-                        <div className={styles.postDetailPrice}>120,000원</div>
-                        <div className={styles.postDetailContent}>3개월 전에 산 스팸 클래식 중간크기에요.<br/>
-                            다른 통조림 류랑 교환하실분 !! 꼭 식품이 아니더라도 관심있으신 분 연락주세요 ㅎㅎ
-                        </div>
-                        <div className={styles.postDetailTag}>#스팸 #통조림 #고기 #스팸클래식</div>
+                        <h2 className={styles.postDetailTitle}>{post.title}</h2>
+                        <div className={styles.postDetailCategory}>{post.productCategory}</div>
+                        <div className={styles.postDetailPrice}></div>
+                        <div className={styles.postDetailContent}>{post.content}</div>
+                        <div className={styles.postDetailTag}>#{post.tagNames}</div>
                         <div className={styles.postDetailSwapCategoryBox}>
                             <img className={styles.transfer} src={transfer}/>
-                            <div className={styles.postDetailSwapCategory}> 식품</div>
+                            <div className={styles.postDetailSwapCategory}> {post.wishCategory}</div>
                         </div>
                     </div>
+
 
                 </section>
                 <section className={styles.postBottom}>
                     <div className={styles.metaBox}>
                         <div className={styles.imgBox}>
-                            <img className={styles.likeImg} src={like} onClick={()=>{}}/>
-                            <p className={styles.likeNum}>4</p>
+                            {(scrapSaved ?
+                            <AiOutlineHeart className={styles.likeImg}  onClick={onClickScrap}/>
+                            :
+                            <AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={onClickScrap}/>)}
+
+                            {/*<AiOutlineHeart className={styles.likeImg}  onClick={onClickScrap}/>*/}
+                            {/*<AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={()=>{}}/>*/}
+                            <p className={styles.likeNum}>{post.scrapCount}</p>
                         </div>
                         <div className={styles.commentBox}>
                             <img className={styles.commentImg} src={talk}/>
-                            <p className={styles.commmentNum}>4</p>
+                            <p className={styles.commmentNum}>{post.messageRoomCount}</p>
                         </div>
                         <div className={styles.timeBox}>
                             <img className={styles.timeImg} src={clock}/>
                             <p className={styles.timeNum}>4분전</p>
                         </div>
                     </div>
-                    <button className={styles.exchangeBtn}>코끼리톡으로 교환하기</button>
+                    <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
                 </section>
             </article>
             <section className={styles.comments}>

@@ -40,7 +40,6 @@ const userInfoSlice = createSlice({
     initialState : initialUserInfoState,
     reducers : {
         setUserInfo(state,action){
-
             state.id = action.payload.id;
             state.email = action.payload.email;
             state.userName = action.payload.userName;
@@ -53,6 +52,10 @@ const userInfoSlice = createSlice({
             state.scrapId = action.payload.scrapId;
             state.address = action.payload.address;
         },
+        setUserNick(state,action){
+            state.nickname = action.payload;
+
+        },
         deleteUserInfo(state){
             state = initialUserInfoState;
         }
@@ -62,7 +65,7 @@ const userInfoSlice = createSlice({
 
 //위에서 선언해준 counterSlice의 reducer를 export해준다
 export default userInfoSlice.reducer;
-export const {setUserInfo,deleteUserInfo} = userInfoSlice.actions;
+export const {setUserInfo,deleteUserInfo,setUserNick} = userInfoSlice.actions;
 //이제 이걸다른 컴포턴트에서 dispatch로 사용한다.
 
 //여기선 알아서 api가 해주는구나, 대충 여기서 선언한 initial state, type, action을 보내주면 된다고 생각하면 되겠네

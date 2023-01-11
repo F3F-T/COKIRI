@@ -11,7 +11,8 @@ const cx = classNames.bind(styles)
 
 interface TextInputProps{
     placeholder: string;
-
+    type? : string;
+    value? : string;
     size? : string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onBlur? :(e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -22,7 +23,7 @@ const TestInput = (textInputProps : TextInputProps) => {
     return (
         <>
             <div className={styles.inputText}>
-                <input type="text" className={cx('inputText')} placeholder={textInputProps.placeholder} onChange={textInputProps.onChange} onBlur={textInputProps.onBlur}/>
+                <input type={textInputProps.type} className={cx('inputText')} placeholder={textInputProps.placeholder} onChange={textInputProps.onChange} onBlur={textInputProps.onBlur} value={textInputProps.value}/>
             </div>
         </>
     );

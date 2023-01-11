@@ -49,7 +49,6 @@ const MyPage = () =>  {
     return (
         <>
             <div className={styles.MyPage}>
-                <MyPageSet/>
                 <div className={styles.menu}>
                     {/*{tab1 === 'curr' ? <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>d게시글</button>*/}
                     {/*    :<button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>*/}

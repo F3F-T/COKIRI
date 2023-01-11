@@ -33,7 +33,6 @@ const Login = () => {
     interface UserInfo {
         email: string;
         password: string;
-
     }
 
     const [passwordCheck, setpasswordCheck] = useState<boolean>(undefined);
@@ -200,9 +199,10 @@ const Login = () => {
                     <div className={styles.loginContents}>
                         <fieldset>
                             <div className={styles.idAndPassword}>
-                                <TextInput placeholder={"코끼리 ID(이메일)을 입력해주세요."} onBlur={onChangeEmail}/>
+                                <TextInput type={"text"} placeholder={"코끼리 ID(이메일)을 입력해주세요."} onBlur={onChangeEmail}/>
                             <div className={styles.password}>
-                                <TextInput placeholder={"비밀번호를 입력해주세요."} onBlur={onChangePassword}/>
+                                <TextInput type={"password"} placeholder={"비밀번호를 입력해주세요."} onBlur={onChangePassword}/>
+
                             </div>
 
                             </div>
