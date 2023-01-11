@@ -17,19 +17,12 @@ import {reject} from "list";
 import {resetCategory} from "../../store/categoryReducer";
 import {setUserAddressInfo1,setAddressName1,resetaddress1} from "../../store/userAddressInfoReducer";
 import {setUserAddressInfo2,setAddressName2,resetaddress2} from "../../store/userAddressInfoReducer";
-
-
-
 interface AddressType {
     userId:Number;
     addressName:string;
     postalAddress:string;//우편번호
     latitude:string;
     longitude:string;
-}
-interface AddressDeleteType {
-    userId: Number;
-    addressId: number;
 }
 const NeighborAuth = () => {
     const store = useSelector((state:Rootstate) => state);
@@ -39,9 +32,9 @@ const NeighborAuth = () => {
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
     const addressR = useSelector((state : Rootstate)=>{return state.userAddressInfoReducer})
     const [addressInfo, setAddressInfo] = useState<AddressType>(null);
-    const [addressDelete, setAddressDeleteInfo] = useState<AddressDeleteType>(null);
     const [addressID,setAddressID]=useState('')
-    const [count,setCount] = useState(0);
+    const [parcel_1,setParcel_1] = useState('');
+    const [parcel_2,setParcel_2] = useState('');
 
     //주소 조회
     async function getAddressData(addressID) {
@@ -56,22 +49,17 @@ const NeighborAuth = () => {
             alert("조회 실패")
         }
     }
-
-
+    const getAddressBtn = () => {
+        getAddressData(addressID)
+    }
     //주소 추가
     async function postAddressData_1() {
         try{
-            addressCheck()
             const res = await Api.post('/address',addressInfo);
-            console.log(res)
-            console.log("위치정보 추가2", addressInfo);
+            console.log("첫번째 위치정보", addressInfo);
             setAddressID(res.data.id);
-            console.log("위치정보ID", res.data.id);
             dispatch(setUserAddressInfo1((res.data.id)))
             dispatch(setAddressName1((res.data.addressName)))
-            console.log('store1',store)
-            console.log("위치삭제정보 추가", addressDelete);
-            console.log("위치삭제정보 추가2 리덕스", addressR);
             alert("추가 성공")
         }
         catch (err)
@@ -82,17 +70,12 @@ const NeighborAuth = () => {
     }
     async function postAddressData_2() {
         try{
-            addressCheck()
             const res = await Api.post('/address',addressInfo);
             console.log(res)
-            console.log("위치정보 추가2", addressInfo);
+            console.log("두번째 위치정보", addressInfo);
             setAddressID(res.data.id);
-            console.log("위치정보ID", res.data.id);
             dispatch(setUserAddressInfo2((res.data.id)))
             dispatch(setAddressName2((res.data.addressName)))
-            console.log('store1',store)
-            console.log("위치삭제정보 추가", addressDelete);
-            console.log("위치삭제정보 추가2 리덕스", addressR);
             alert("추가 성공")
         }
         catch (err)
@@ -100,20 +83,6 @@ const NeighborAuth = () => {
             console.log(err)
             alert("추가 실패")
         }
-    }
-    function addressCheck() {
-            setAddressInfo((prevState) => {
-               return {
-                   ...prevState,
-                   latitude: JSON.stringify(location.coordinates.lat),
-                   longitude: JSON.stringify(location.coordinates.lng),
-               }
-           })
-           return addressInfo
-       }
-    async function postGPS(){
-        await addressCheck();
-        return addressInfo
     }
     //주소 delete
     async function deleteAddress_1() {
@@ -134,9 +103,6 @@ const NeighborAuth = () => {
             alert("삭제 실패")
         }
     }
-    const getAddressBtn = () => {
-        getAddressData(addressID)
-    }
     async function deleteAddress_2() {
         try{
             const addressDelete2={
@@ -155,20 +121,74 @@ const NeighborAuth = () => {
             alert("삭제 실패")
         }
     }
-    const inputAddressName = (e) => {
+    const inputAddressName_1 = (e) => {
         let inputName = e.target.value;
         if (inputName.length > 0) {
+            getAddr_1(JSON.stringify(location.coordinates.lat),JSON.stringify(location.coordinates.lng))
             setAddressInfo((prevState) => {
                 return {
                     ...prevState,
                     userId: info.id,
                     addressName: e.target.value,
-                    postalAddress: "나중에api",
+                    postalAddress: parcel_1,
                     latitude: JSON.stringify(location.coordinates.lat),
                     longitude: JSON.stringify(location.coordinates.lng),
                 }
             })
         }
+    }
+    const inputAddressName_2= (e) => {
+        console.log("대답")
+        let inputName = e.target.value;
+        if (inputName.length > 0) {
+            getAddr_2(JSON.stringify(location.coordinates.lat),JSON.stringify(location.coordinates.lng))
+            setAddressInfo((prevState) => {
+                return {
+                    ...prevState,
+                    userId: info.id,
+                    addressName: e.target.value,
+                    postalAddress: parcel_2,
+                    latitude: JSON.stringify(location.coordinates.lat),
+                    longitude: JSON.stringify(location.coordinates.lng),
+                }
+            })
+        }
+        else{
+
+        }
+    }
+    /*global kakao*/
+    function getAddr_1(lat,lng) {
+        // @ts-ignore
+        let geocoder = new kakao.maps.services.Geocoder();
+        // @ts-ignore
+        let coord = new kakao.maps.LatLng(lat, lng);
+        let callback = function (result, status) {
+            // @ts-ignore
+            if (status === kakao.maps.services.Status.OK) {
+                const arr = {...result};
+                const _arr = arr[0].address.address_name;
+                console.log("kakao주소1", _arr)
+                setParcel_1(_arr);
+            }
+        }
+        geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+    }
+    function getAddr_2(lat,lng){
+        // @ts-ignore
+        let geocoder = new kakao.maps.services.Geocoder();
+        // @ts-ignore
+        let coord = new kakao.maps.LatLng(lat, lng);
+        let callback = function(result, status) {
+            // @ts-ignore
+            if (status === kakao.maps.services.Status.OK) {
+                const arr  ={ ...result};
+                const _arr = arr[0].address.address_name;
+                console.log("kakao주소2", _arr)
+                setParcel_2(_arr);
+            }
+        }
+        geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
     }
     return (
         <>
@@ -177,7 +197,7 @@ const NeighborAuth = () => {
                     <button className={styles.gps1Btn} onClick={postAddressData_1}>+</button>
                     <button className={styles.gps1Btn} onClick={getAddressBtn}>조회</button>
                     <button className={styles.gps1Btn} onClick={deleteAddress_1}>delete</button>
-                    <TextInput placeholder={"첫번째 주소를 입력해주세요"} onBlur={inputAddressName}/>
+                    <TextInput placeholder={"첫번째 주소를 입력해주세요"} onChange={inputAddressName_1}/>
                     <div className={styles.gps1_1}>{addressR.addressName1}</div>
                     <div className={styles.gps1_1}></div>
                 </div>
@@ -185,7 +205,7 @@ const NeighborAuth = () => {
                     <button className={styles.gps1Btn} onClick={postAddressData_2}>+</button>
                     <button className={styles.gps1Btn} onClick={getAddressBtn}>조회</button>
                     <button className={styles.gps1Btn} onClick={deleteAddress_2}>delete</button>
-                    <TextInput placeholder={"두번째 주소를 입력해주세요"} onBlur={inputAddressName}/>
+                    <TextInput placeholder={"두번째 주소를 입력해주세요"} onChange={inputAddressName_2}/>
                     <div className={styles.gps1_1}>{addressR.addressName2}</div>
                     <div className={styles.gps1_1}></div>
                 </div>
