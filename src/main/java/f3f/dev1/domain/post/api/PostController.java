@@ -62,9 +62,7 @@ public class PostController {
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
             @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
             @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
-            @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
             Pageable pageable) {
-        if(tagNames.isEmpty()) {
             SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
                     .productCategory(productCategoryName)
                     .wishCategory(wishCategoryName)
@@ -73,10 +71,20 @@ public class PostController {
                     .build();
             Page<PostInfoDtoWithTag> pageDto = postService.findPostsByCategoryAndPriceRange(request, pageable);
             return new ResponseEntity<>(pageDto, HttpStatus.OK);
+    }
+
+    // TODO 임의 생성, 태그 검색이 별도의 컴포넌트로 생성될 수 있나? - 프론트랑 얘기해보기
+    @GetMapping(value = "/post/tagSearch")
+    public ResponseEntity<Page<PostInfoDtoForGET>> getPostsWithTagNames(
+            @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
+            Pageable pageable) {
+        Page<PostInfoDtoForGET> resultList;
+        if(!tagNames.isEmpty()) {
+            resultList = postService.findPostsWithTagNameList(tagNames, pageable);
         } else {
-            Page<PostInfoDtoWithTag> pageDtoWithTag = postService.findPostsWithTag(tagNames, pageable);
-            return new ResponseEntity<>(pageDtoWithTag, HttpStatus.OK);
+            resultList = postService.findAll(pageable);
         }
+        return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 
     // 게시글 작성
