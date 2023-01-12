@@ -12,6 +12,7 @@ import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.model.MessageRoom;
+import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
@@ -33,7 +34,9 @@ import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -61,6 +64,8 @@ public class PostService {
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final PostTagRepository postTagRepository;
+    // Custom repository
+    private final PostCustomRepositoryImpl postCustomRepository;
 
 
     // TODO 게시글 사진 개수 제한 걸기 - 게시글에 사진 필드 추가해야겠다.
@@ -294,6 +299,24 @@ public class PostService {
         return response;
     }
 
+    @Transactional(readOnly = true)
+    public Page<PostInfoDtoWithTag> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
+        // 조회에서는 오류가 발생할 여지가 없다.
+        // 조건이 잘못 전달될 경우 queryDSL에서 조건이 무시되어 반영된다.
+        Page<Post> postPages = postCustomRepository.findPostsByCondition(searchPostRequestExcludeTag, pageable);
+        List<PostInfoDtoWithTag> dtoList = new ArrayList<>();
+        for (Post post : postPages) {
+            List<PostTag> postTags = postTagRepository.findByPost(post);
+            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+            List<String> tagNamesOfPost = new ArrayList<>();
+            for (PostTag postTag : postTags) {
+                tagNamesOfPost.add(postTag.getTag().getName());
+            }
+            dtoList.add(post.toInfoDtoWithTag(tagNamesOfPost, (long) scrapPosts.size(), (long) messageRooms.size()));
+        }
+        return new PageImpl<>(dtoList);
+    }
 
     // TODO 거래 가능한 게시글만 검색하기
 

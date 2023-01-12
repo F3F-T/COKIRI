@@ -7,8 +7,10 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.QPost;
+import f3f.dev1.domain.tag.model.PostTag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
@@ -25,10 +27,19 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 
     // DTO로 처리하기에는 내부적으로 2차 처리되는 필드가 너무 많다. 그냥 객체로 바로 받아오겠다.
     @Override
-    public Page<Post> findPostsByCondition(SearchPostRequest request, Pageable pageable) {
-        return jpaQueryFactory
-                .selectFrom(Post.class)
-                .where()
+    public Page<Post> findPostsByCondition(SearchPostRequestExcludeTag request, Pageable pageable) {
+            QueryResults<Post> results = jpaQueryFactory
+                .selectFrom(post)
+                .where(productCategoryNameFilter(request.getProductCategory()),
+                        wishCategoryNameFilter(request.getWishCategory()),
+                        priceFilter(request.getMinPrice(), request.getMaxPrice()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+            List<Post> responseList = results.getResults();
+            long total = results.getTotal();
+            return new PageImpl<>(responseList, pageable, total);
     }
 
 
@@ -44,10 +55,6 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 
     private BooleanExpression wishCategoryNameFilter(String wishCategoryName) {
         return StringUtils.hasText(wishCategoryName) ? post.wishCategory.name.eq(wishCategoryName) : null;
-    }
-
-    private BooleanExpression tagNamesFilter(List<String> tagNames) {
-        // 얘가 문젠데...
     }
 
     private BooleanExpression priceFilter(String minPrice, String maxPrice) {
