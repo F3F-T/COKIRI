@@ -57,12 +57,11 @@ public class ScrapService {
 
     // 스크랩에 있는 포스트조회 메서드
     @Transactional(readOnly = true)
-    public GetScrapPostDTO getUserScrapPosts(Long memberId, Pageable pageable) {
+    public Page<PostDTO.PostInfoDto> getUserScrapPosts(Long memberId, Pageable pageable) {
 
 
         Scrap scrapByUserId = scrapRepository.findScrapByMemberId(memberId).orElseThrow(NotFoundByIdException::new);
         Page<PostDTO.PostInfoDto> map = scrapPostRepository.findByScrapId(scrapByUserId.getId(), pageable).map(ScrapPost::postInfoDto);
-        map.getContent();
 
 //        List<ScrapPost> scrapPosts = scrapByUserId.getScrapPosts();
 //        List<PostDTO.PostInfoDto> posts = new ArrayList<>();
@@ -71,8 +70,7 @@ public class ScrapService {
 //        }
 
 
-        return GetScrapPostDTO.builder()
-                .scrapPosts(map.getContent()).build();
+        return map;
     }
 
     // 스크랩에 관심 포스트 추가 메소드
