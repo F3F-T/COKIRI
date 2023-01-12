@@ -46,25 +46,22 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
             return new PageImpl<>(responseList, pageable, total);
     }
 
+
+
     @Override
-    public Page<PostInfoDtoForGET> findPostsByTags(List<String>tagNames, Pageable pageable) {
-        QueryResults<PostInfoDtoForGET> results = jpaQueryFactory
-                .select(Projections.fields(PostInfoDtoForGET.class,
-                        post.id,
-                        post.title,
-                        post.content,
-                        post.author.nickname))
-                .from(post)
+    public Page<Post> findPostsByTags(List<String>tagNames, Pageable pageable) {
+        QueryResults<Post> results = jpaQueryFactory
+                .selectFrom(post)
                 .leftJoin(post.postTags, postTag).fetchJoin()
-                .leftJoin(postTag.tag, tag).on(postTag.tag.name.eq(tag.name))
-                .where(tag.name.in(tagNames))
-                .where(post.id.count().eq(3L))
-                .groupBy(post.id, tag.name)
+//                .leftJoin(postTag.tag, tag).on(postTag.tag.name.in(tagNames))
+                .where(postTag.tag.name.in(tagNames))
+                .groupBy(post.id)
+                .having(post.id.count().eq((long) tagNames.size()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
 
-        List<PostInfoDtoForGET> responseList = results.getResults();
+        List<Post> responseList = results.getResults();
         long total = results.getTotal();
         return new PageImpl<>(responseList, pageable, total);
     }

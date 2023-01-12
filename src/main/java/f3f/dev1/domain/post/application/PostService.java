@@ -364,8 +364,8 @@ public class PostService {
         return new PageImpl<>(dtoList);
     }
 
-    public Page<PostInfoDtoForGET> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
-        Page<PostInfoDtoForGET> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
+    public Page<Post> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
+        Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
         return dtoList;
     }
 

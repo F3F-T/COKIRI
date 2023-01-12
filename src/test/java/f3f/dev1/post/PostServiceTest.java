@@ -1101,8 +1101,8 @@ public class PostServiceTest {
     }
 
     @Test
-    @DisplayName("태그 검색 실패작 - 곧 삭제 예정")
-    public void searchPostWithCustomRepository_withOnlyTags() throws Exception {
+    @DisplayName("After QueryDSL - 태그로 검색")
+    public void findPostsWithTagNamesWithQueryDSL() throws Exception {
         //given
         SignUpRequest signUpRequest = createSignUpRequest();
         authService.signUp(signUpRequest);
@@ -1147,46 +1147,27 @@ public class PostServiceTest {
         tagService.addTagsToPost(secondPostId, secondTagNames);
 
         //then
-        List<String> firstTagNames = new ArrayList<>();
-        firstTagNames.add("해시태그1");
-
-        List<String> secondTagName = new ArrayList<>();
-        secondTagName.add("해시태그2");
-
-        List<String> thirdTagNames = new ArrayList<>();
-        thirdTagNames.add("해시태그3");
+        List<String> test1 = new ArrayList<>();
+        test1.add("해시태그2");
+        test1.add("해시태그3");
 
         PageRequest pageRequest = PageRequest.of(0, 20);
-        // 첫번째 게시글만 조회되어야 함.
-        Page<PostInfoDtoWithTag> first = postService.findPostsWithTag(firstTagNames, pageRequest);
-        // 첫번째, 두번째 게시글만 조회되어야 함.
-        Page<PostInfoDtoWithTag> second = postService.findPostsWithTag(secondTagName, pageRequest);
-        // 두번째 게시글만 조회되어야 함.
-        Page<PostInfoDtoWithTag> third = postService.findPostsWithTag(thirdTagNames, pageRequest);
+        Page<Post> resultList = postService.findPostsWithTagNameList(test1, pageRequest);
+        assertThat(resultList).extracting("title").hasSize(1).contains("두번째 게시글");
 
-        assertThat(first).extracting("title").hasSize(1).contains("첫번째 게시글");
-        assertThat(second).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
-        assertThat(third).extracting("title").hasSize(1).contains("두번째 게시글");
+        List<String> test2 = new ArrayList<>();
+        test2.add("해시태그1");
+        test2.add("해시태그2");
+        Page<Post> resultList2 = postService.findPostsWithTagNameList(test2, pageRequest);
+        assertThat(resultList2).extracting("title").hasSize(1).contains("첫번째 게시글");
 
-        Page<PostInfoDtoWithTag> add1 = postService.findPostsWithTag(tagNames, pageRequest);
-        Page<PostInfoDtoWithTag> add2 = postService.findPostsWithTag(secondTagNames, pageRequest);
+        List<String> test3 = new ArrayList<>();
+        test3.add("해시태그2");
+        Page<PostInfoDtoWithTag> resultList3 = postService.findPostsWithTag(test3, pageRequest);
+        assertThat(resultList3).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
 
-        assertThat(add1).extracting("title").hasSize(1).contains("첫번째 게시글");
-        assertThat(add2).extracting("title").hasSize(1).contains("두번째 게시글");
-
-        Page<PostInfoDtoWithTag> postsWithTag = postService.findPostsWithTag(new ArrayList<>(), pageRequest);
-        assertThat(postsWithTag).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
-
-    }
-
-    @Test
-    @DisplayName()
-    public void () throws Exception {
-        //given
-
-        //when
-
-        //then
+        Page<PostInfoDtoWithTag> resultList4 = postService.findPostsWithTag(new ArrayList<>(), pageRequest);
+        assertThat(resultList4).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
     }
 
     @Test
