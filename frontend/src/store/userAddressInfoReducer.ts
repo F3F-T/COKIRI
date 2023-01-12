@@ -8,15 +8,19 @@ import {createSlice,PayloadAction} from "@reduxjs/toolkit";
 interface UserAddressInfo {
     addressId1: number,
     addressName1:string,
-    addressId2:number
+    parcelName1:string,
+    addressId2:number,
     addressName2:string,
+    parcelName2:string
 }
 
 const initialUserAddressInfoState : UserAddressInfo = {
     addressId1:0,
     addressName1:'',
+    parcelName1:'',
     addressId2:0,
     addressName2:'',
+    parcelName2:''
 
 
 }
@@ -34,10 +38,16 @@ const userAddressInfoSlice = createSlice({
         setAddressName1(state,action){
             state.addressName1= action.payload;
         },
+        parcelAddress1(state,action){
+            state.parcelName1= action.payload;
+        },
         resetaddress1(state){
             state.addressId1 = undefined
             state.addressName1 = ''
+            state.parcelName1=''
+
         },
+
 
         setUserAddressInfo2(state,action){
             state.addressId2 = action.payload;
@@ -45,9 +55,14 @@ const userAddressInfoSlice = createSlice({
         setAddressName2(state,action){
             state.addressName2= action.payload;
         },
+        parcelAddress2(state,action){
+            state.parcelName2= action.payload;
+        },
         resetaddress2(state){
             state.addressId2 = undefined
             state.addressName2 = ''
+            state.parcelName2=''
+
         }
     }
 })
@@ -56,8 +71,8 @@ const userAddressInfoSlice = createSlice({
 //위에서 선언해준 counterSlice의 reducer를 export해준다
 export default userAddressInfoSlice.reducer;
 export const {
-    setUserAddressInfo1,setAddressName1,resetaddress1,
-    setUserAddressInfo2,setAddressName2,resetaddress2
+    setUserAddressInfo1,setAddressName1,resetaddress1,parcelAddress1,
+    setUserAddressInfo2,setAddressName2,resetaddress2,parcelAddress2
 } = userAddressInfoSlice.actions;
 
 //이제 이걸다른 컴포턴트에서 dispatch로 사용한다.

@@ -15,8 +15,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import {reject} from "list";
 import {resetCategory} from "../../store/categoryReducer";
-import {setUserAddressInfo1,setAddressName1,resetaddress1} from "../../store/userAddressInfoReducer";
-import {setUserAddressInfo2,setAddressName2,resetaddress2} from "../../store/userAddressInfoReducer";
+import {setUserAddressInfo1,setAddressName1,resetaddress1,parcelAddress1} from "../../store/userAddressInfoReducer";
+import {setUserAddressInfo2,setAddressName2,resetaddress2,parcelAddress2} from "../../store/userAddressInfoReducer";
 interface AddressType {
     userId:Number;
     addressName:string;
@@ -55,6 +55,7 @@ const NeighborAuth = () => {
     //주소 추가
     async function postAddressData_1() {
         try{
+            dispatch(parcelAddress1(parcel_1))
             const res = await Api.post('/address',addressInfo);
             console.log("첫번째 위치정보", addressInfo);
             setAddressID(res.data.id);
@@ -70,6 +71,7 @@ const NeighborAuth = () => {
     }
     async function postAddressData_2() {
         try{
+            dispatch(parcelAddress2(parcel_2))
             const res = await Api.post('/address',addressInfo);
             console.log(res)
             console.log("두번째 위치정보", addressInfo);
@@ -122,6 +124,7 @@ const NeighborAuth = () => {
         }
     }
     const inputAddressName_1 = (e) => {
+        console.log("대답1")
         let inputName = e.target.value;
         if (inputName.length > 0) {
             getAddr_1(JSON.stringify(location.coordinates.lat),JSON.stringify(location.coordinates.lng))
@@ -138,7 +141,7 @@ const NeighborAuth = () => {
         }
     }
     const inputAddressName_2= (e) => {
-        console.log("대답")
+        console.log("대답2")
         let inputName = e.target.value;
         if (inputName.length > 0) {
             getAddr_2(JSON.stringify(location.coordinates.lat),JSON.stringify(location.coordinates.lng))
@@ -169,7 +172,8 @@ const NeighborAuth = () => {
                 const arr = {...result};
                 const _arr = arr[0].address.address_name;
                 console.log("kakao주소1", _arr)
-                setParcel_1(_arr);
+                setParcel_1(_arr)
+
             }
         }
         geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
@@ -185,7 +189,7 @@ const NeighborAuth = () => {
                 const arr  ={ ...result};
                 const _arr = arr[0].address.address_name;
                 console.log("kakao주소2", _arr)
-                setParcel_2(_arr);
+                setParcel_2(_arr)
             }
         }
         geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
@@ -199,7 +203,7 @@ const NeighborAuth = () => {
                     <button className={styles.gps1Btn} onClick={deleteAddress_1}>delete</button>
                     <TextInput placeholder={"첫번째 주소를 입력해주세요"} onChange={inputAddressName_1}/>
                     <div className={styles.gps1_1}>{addressR.addressName1}</div>
-                    <div className={styles.gps1_1}></div>
+                    <div className={styles.gps1_1}>{addressR.parcelName1}</div>
                 </div>
                 <div className={styles.gps1}>
                     <button className={styles.gps1Btn} onClick={postAddressData_2}>+</button>
@@ -207,7 +211,7 @@ const NeighborAuth = () => {
                     <button className={styles.gps1Btn} onClick={deleteAddress_2}>delete</button>
                     <TextInput placeholder={"두번째 주소를 입력해주세요"} onChange={inputAddressName_2}/>
                     <div className={styles.gps1_1}>{addressR.addressName2}</div>
-                    <div className={styles.gps1_1}></div>
+                    <div className={styles.gps1_1}>{addressR.parcelName2}</div>
                 </div>
             </div>
         </>
