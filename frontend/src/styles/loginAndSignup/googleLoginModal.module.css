@@ -8,13 +8,13 @@
 
 }
 .box2{
-    width: 800px;
-    height: 38rem;
+    width: 40rem;
+    height: 30rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     border: none;
-    border-radius: 3px;
+    border-radius: 10px;
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
@@ -27,5 +27,108 @@
     position: fixed;
     top: 0;
     z-index: 9999;
+}
+
+
+.addressBox{
+    width: 40rem;
+    height: 30rem;
+    border: 2px solid rgba(0, 0, 0, 1);
+    border-radius: 10px;
+}
+.addressBox_1{
+    /*border: 2px solid rgba(0, 0, 0, 1);*/
+}
+.ad1{
+    margin-top: 2rem;
+    font-size: 2rem;
+    text-align: center;
+    font-weight: bold;
+}
+.add2Box{
+    margin-top: 2rem;
+
+    /*display: flex;*/
+    /*justify-content: space-around;*/
+}
+.ad2{
+    font-size: 1rem;
+    text-align: center;
+}
+.plusBtnBox{
+    margin-top: 3rem;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+}
+.plusBtn1{
+    width: 13rem;
+    height: 3rem;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0);
+}
+.plusBtn1active{
+    width: 13rem;
+    height: 3rem;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+}
+.plusBtn2{
+    width: 13rem;
+    height: 3rem;
+    border: 2px solid rgba(0, 0, 0, 0);
+    border-radius: 10px;
+}
+.plusBtn2active{
+    width: 13rem;
+    height: 3rem;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+}
+
+
+.registerBox{
+    margin-top: 3rem;
+    /*border: 2px solid rgba(0, 0, 0, 1);*/
+}
+.inputBox{
+}
+.input1{
+    margin-left:6.5rem;
+    font-size: 0.8rem;
+}
+.input2{
+    margin-left: 6.2rem;
+    width: 28rem;
+    height: 3rem;
+    border-radius: 5px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+}
+.input2active{
+    margin-left: 6.2rem;
+    width: 28rem;
+    height: 3rem;
+    border-radius: 5px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
 
 }
+.input2_2{
+    margin-left: 6.2rem;
+    width: 28rem;
+    height: 3rem;
+    border-radius: 5px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+
+
+}
+.registerBtn{
+    margin-top: 4rem;
+    margin-left:30.7rem;
+    border: none;
+    height: 2rem;
+    width: 3rem;
+    border-radius: 10px;
+}
+
+

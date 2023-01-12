@@ -17,6 +17,8 @@ import {reject} from "list";
 import {resetCategory} from "../../store/categoryReducer";
 import {setUserAddressInfo1,setAddressName1,resetaddress1,parcelAddress1} from "../../store/userAddressInfoReducer";
 import {setUserAddressInfo2,setAddressName2,resetaddress2,parcelAddress2} from "../../store/userAddressInfoReducer";
+
+
 interface AddressType {
     userId:Number;
     addressName:string;
@@ -35,6 +37,7 @@ const NeighborAuth = () => {
     const [addressID,setAddressID]=useState('')
     const [parcel_1,setParcel_1] = useState('');
     const [parcel_2,setParcel_2] = useState('');
+
 
     //주소 조회
     async function getAddressData(addressID) {
@@ -194,6 +197,7 @@ const NeighborAuth = () => {
         }
         geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
     }
+
     return (
         <>
             <div className={styles.box}>
