@@ -57,7 +57,18 @@ public class PostController {
 
     // 게시글 전체 조회 세분화 - 태그 제외 조건들 검색
     @GetMapping(value = "/post")
-    public ResponseEntity<Page<PostInfoDtoWithTag>> getPostsWithConditionExcludeTags(@RequestBody SearchPostRequestExcludeTag request, Pageable pageable) {
+    public ResponseEntity<Page<PostInfoDtoWithTag>> getPostsWithConditionExcludeTags(
+            @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
+            @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
+            @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
+            @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
+            Pageable pageable) {
+        SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
+                .productCategory(productCategoryName)
+                .wishCategory(wishCategoryName)
+                .minPrice(minPrice)
+                .maxPrice(maxPrice)
+                .build();
         Page<PostInfoDtoWithTag> pageDto = postService.findPostsByCategoryAndPriceRange(request, pageable);
         return new ResponseEntity<>(pageDto, HttpStatus.OK);
     }

@@ -1081,7 +1081,25 @@ public class PostServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 20);
         Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag, pageRequest);
         assertThat(postsByCategoryAndPriceRange).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+
+        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange1 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag1, pageRequest);
+        assertThat(postsByCategoryAndPriceRange1).extracting("title").hasSize(1).contains("첫번째 게시글");
+
+        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange2 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag2, pageRequest);
+        assertThat(postsByCategoryAndPriceRange2).extracting("title").hasSize(1).contains("두번째 게시글");
+
+        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange3 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag3, pageRequest);
+        assertThat(postsByCategoryAndPriceRange3).extracting("title").hasSize(1).contains("두번째 게시글");
+
+        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange4 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag4, pageRequest);
+        assertThat(postsByCategoryAndPriceRange4).isEmpty();
+        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange5 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag5, pageRequest);
+        assertThat(postsByCategoryAndPriceRange5).extracting("title").hasSize(1).contains("세번째 게시글");
+
+        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange6 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag6, pageRequest);
+        assertThat(postsByCategoryAndPriceRange6).extracting("title").hasSize(3).contains("첫번째 게시글", "두번째 게시글", "세번째 게시글");
     }
+
 
 
     @Test
