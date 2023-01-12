@@ -64,17 +64,19 @@ public class PostController {
             @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
             Pageable pageable) {
-        SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
-                .productCategory(productCategoryName)
-                .wishCategory(wishCategoryName)
-                .minPrice(minPrice)
-                .maxPrice(maxPrice)
-                .build();
-        Page<PostInfoDtoWithTag> pageDto = postService.findPostsByCategoryAndPriceRange(request, pageable);
-
-
-
-        return new ResponseEntity<>(pageDto, HttpStatus.OK);
+        if(tagNames.isEmpty()) {
+            SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
+                    .productCategory(productCategoryName)
+                    .wishCategory(wishCategoryName)
+                    .minPrice(minPrice)
+                    .maxPrice(maxPrice)
+                    .build();
+            Page<PostInfoDtoWithTag> pageDto = postService.findPostsByCategoryAndPriceRange(request, pageable);
+            return new ResponseEntity<>(pageDto, HttpStatus.OK);
+        } else {
+            Page<PostInfoDtoWithTag> pageDtoWithTag = postService.findPostsWithTag(tagNames, pageable);
+            return new ResponseEntity<>(pageDtoWithTag, HttpStatus.OK);
+        }
     }
 
     // 게시글 작성

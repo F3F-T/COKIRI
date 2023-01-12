@@ -33,6 +33,7 @@ import f3f.dev1.domain.trade.dto.TradeDTO;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -323,9 +324,8 @@ public class PostService {
     public Page<PostInfoDtoWithTag> findPostsWithTag(List<String> tagNames, Pageable pageable) {
         List<PostInfoDtoWithTag> dtoList = new ArrayList<>();
         List<Post> beforeConvertToDto = new ArrayList<>();
-        Page<Post> postPages;
         if(tagNames.isEmpty()) {
-            postPages = postRepository.findAll(pageable);
+            Page<Post> postPages = postRepository.findAll(pageable);
             for (Post post : postPages) {
                 List<PostTag> postTags = postTagRepository.findByPost(post);
                 List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
@@ -338,11 +338,12 @@ public class PostService {
                 dtoList.add(responseEach);
             }
         } else {
+            List<PostTag> totalPostTagList = new ArrayList<>();
             for(int i=0; i<tagNames.size(); i++) {
                 List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
                 Page<Post> posts = postRepository.findByPostTagsIn(postTags, pageable);
                 List<Post> tempPostList = posts.getContent();
-                if (i == 0) {
+                if (beforeConvertToDto.isEmpty()) {
                     beforeConvertToDto.addAll(tempPostList);
                 } else {
                     beforeConvertToDto.retainAll(tempPostList);
@@ -361,6 +362,11 @@ public class PostService {
             }
         }
         return new PageImpl<>(dtoList);
+    }
+
+    public Page<PostInfoDtoForGET> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
+        Page<PostInfoDtoForGET> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
+        return dtoList;
     }
 
     // TODO 거래 가능한 게시글만 검색하기

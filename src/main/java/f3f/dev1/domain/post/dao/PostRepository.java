@@ -18,8 +18,6 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRepository {
 
     List<Post> findAll();
-    Page<Post> findAll(Pageable pageable);
-    Page<Post> findByPostTagsIn(List<PostTag> postTags, Pageable pageable);
     boolean existsById(Long id);
     Optional<Post> findById(Long id);
     List<Post> findByPrice(Long price);
@@ -36,5 +34,16 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRep
     List<Post> findByProductCategoryNameAndWishCategoryName(String productCategoryName, String wishCategoryName);
     List<Post> findByProductCategoryNameAndWishCategoryNameAndPostTagsIn(String productCategoryName, String wishCategoryName, List<PostTag> postTags);
     void deleteById(Long id);
+
+    Page<Post> findAll(Pageable pageable);
+    Page<Post> findByPostTagsIn(List<PostTag> postTags, Pageable pageable);
+
+    @Query(nativeQuery = true,value = "select p.post_id , p.title , t.name\n" +
+            "from post p \n" +
+            "join post_tag pt on pt.post_id = p.post_id\n" +
+            "join tag t on t.tag_id = pt.tag_id  \n" +
+            "where t.name in (${tagNameList}) and count(p.post_id) = 3\n" +
+            "group by p.post_id , t.name\n")
+    List<Post> findByPostInTagName(String tagNameList);
 
 }

@@ -1100,7 +1100,94 @@ public class PostServiceTest {
         assertThat(postsByCategoryAndPriceRange6).extracting("title").hasSize(3).contains("첫번째 게시글", "두번째 게시글", "세번째 게시글");
     }
 
+    @Test
+    @DisplayName("태그 검색 실패작 - 곧 삭제 예정")
+    public void searchPostWithCustomRepository_withOnlyTags() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
 
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, rootId, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, rootId, member);
+        Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
+        Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
+
+        //when
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("해시태그1");
+        tagNames.add("해시태그2");
+
+        List<String> secondTagNames = new ArrayList<>();
+        secondTagNames.add("해시태그2");
+        secondTagNames.add("해시태그3");
+
+        PostSaveRequest firstRequest = createCompletedPostSaveRequest(member, "첫번째 게시글", "첫번째 내용", false, productRequest.getName(), wishRequest.getName(), tagNames, 7500L);
+        PostSaveRequest secondRequest = createCompletedPostSaveRequest(member, "두번째 게시글", "두번째 내용", false, secondProductRequest.getName(), secondWishRequest.getName(), secondTagNames, 30000L);
+
+        Long firstPostId = postService.savePost(firstRequest, member.getId());
+        Long secondPostId = postService.savePost(secondRequest, member.getId());
+        tagService.addTagsToPost(firstPostId, tagNames);
+        tagService.addTagsToPost(secondPostId, secondTagNames);
+
+        //then
+        List<String> firstTagNames = new ArrayList<>();
+        firstTagNames.add("해시태그1");
+
+        List<String> secondTagName = new ArrayList<>();
+        secondTagName.add("해시태그2");
+
+        List<String> thirdTagNames = new ArrayList<>();
+        thirdTagNames.add("해시태그3");
+
+        PageRequest pageRequest = PageRequest.of(0, 20);
+        // 첫번째 게시글만 조회되어야 함.
+        Page<PostInfoDtoWithTag> first = postService.findPostsWithTag(firstTagNames, pageRequest);
+        // 첫번째, 두번째 게시글만 조회되어야 함.
+        Page<PostInfoDtoWithTag> second = postService.findPostsWithTag(secondTagName, pageRequest);
+        // 두번째 게시글만 조회되어야 함.
+        Page<PostInfoDtoWithTag> third = postService.findPostsWithTag(thirdTagNames, pageRequest);
+
+        assertThat(first).extracting("title").hasSize(1).contains("첫번째 게시글");
+        assertThat(second).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+        assertThat(third).extracting("title").hasSize(1).contains("두번째 게시글");
+
+        Page<PostInfoDtoWithTag> add1 = postService.findPostsWithTag(tagNames, pageRequest);
+        Page<PostInfoDtoWithTag> add2 = postService.findPostsWithTag(secondTagNames, pageRequest);
+
+        assertThat(add1).extracting("title").hasSize(1).contains("첫번째 게시글");
+        assertThat(add2).extracting("title").hasSize(1).contains("두번째 게시글");
+
+        Page<PostInfoDtoWithTag> postsWithTag = postService.findPostsWithTag(new ArrayList<>(), pageRequest);
+        assertThat(postsWithTag).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+
+    }
+
+    @Test
+    @DisplayName()
+    public void () throws Exception {
+        //given
+
+        //when
+
+        //then
+    }
 
     @Test
     @DisplayName("게시글 업데이트 테스트")
