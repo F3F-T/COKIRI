@@ -9,6 +9,8 @@ import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dto.TagDTO;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -34,24 +36,30 @@ public class PostController {
 
 
     //게시글 전체 조회
-    // TODO 쿼리스트링 추가 - price 추가 예정
-    @GetMapping(value = "/post")
-    public ResponseEntity<List<PostInfoDtoWithTag>> getAllPostInfo(
-            @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
-            @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
-            @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
-            @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
-            @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice) {
+//    @GetMapping(value = "/post")
+//    public ResponseEntity<List<PostInfoDtoWithTag>> getAllPostInfo(
+//            @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
+//            @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
+//            @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
+//            @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
+//            @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice) {
+//
+//        SearchPostRequest searchPostRequest = SearchPostRequest.builder()
+//                .productCategory(productCategoryName)
+//                .wishCategory(wishCategoryName)
+//                .tagNames(tagNames)
+//                .minPrice(minPrice)
+//                .maxPrice(maxPrice)
+//                .build();
+//        List<PostInfoDtoWithTag> responseList = postService.findPostsWithConditions(searchPostRequest);
+//        return new ResponseEntity<>(responseList, HttpStatus.OK);
+//    }
 
-        SearchPostRequest searchPostRequest = SearchPostRequest.builder()
-                .productCategory(productCategoryName)
-                .wishCategory(wishCategoryName)
-                .tagNames(tagNames)
-                .minPrice(minPrice)
-                .maxPrice(maxPrice)
-                .build();
-        List<PostInfoDtoWithTag> responseList = postService.findPostsWithConditions(searchPostRequest);
-        return new ResponseEntity<>(responseList, HttpStatus.OK);
+    // 게시글 전체 조회 세분화 - 태그 제외 조건들 검색
+    @GetMapping(value = "/post")
+    public ResponseEntity<Page<PostInfoDtoWithTag>> getPostsWithConditionExcludeTags(@RequestBody SearchPostRequestExcludeTag request, Pageable pageable) {
+        Page<PostInfoDtoWithTag> pageDto = postService.findPostsByCategoryAndPriceRange(request, pageable);
+        return new ResponseEntity<>(pageDto, HttpStatus.OK);
     }
 
     // 게시글 작성

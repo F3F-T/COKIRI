@@ -6,17 +6,18 @@ import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.tag.model.PostTag;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRepository {
 
-    Optional<Post> findById(Long id);
     List<Post> findAll();
     boolean existsById(Long id);
+    Optional<Post> findById(Long id);
     List<Post> findByPrice(Long price);
     boolean existsByAuthorId(Long authorId);
     List<Post> findByAuthorId(Long authorId);

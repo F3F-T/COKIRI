@@ -230,7 +230,6 @@ public class MemberControllerTest {
                 .loginType(EMAIL)
                 .scrapId(2L)
                 .userName("userName")
-                .address(createAddress())
                 .email("email")
                 .nickname("nickname")
                 .phoneNumber("01012345678").build();
@@ -267,7 +266,6 @@ public class MemberControllerTest {
                 .loginType(EMAIL)
                 .scrapId(2L)
                 .userName("userName")
-                .address(createAddress())
                 .email("email")
                 .nickname("nickname")
                 .phoneNumber("01012345678").build();
