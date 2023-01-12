@@ -9,7 +9,7 @@ import like from "../../img/heart.png"
 import talk from "../../img/send.png"
 
 import Comments from "../../component/comments/Comments";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api";
 import {useNavigate, useParams} from "react-router-dom";
@@ -17,6 +17,8 @@ import {AiOutlineHeart, AiTwotoneHeart} from "react-icons/ai";
 import Card from "../../component/tradeCard/Card";
 import Message from "../../component/로그인 & 회원가입/Message";
 import {HiPencil} from "react-icons/hi";
+import {resetCategory} from "../../store/categoryReducer";
+import {changeRefreshState} from "../../store/refreshReducer";
 
 
 
@@ -74,6 +76,8 @@ const PostDetail = () => {
     const [commentList,setCommentList] = useState<CommentType[]>(null)
     const [writeComment,setWriteComment] = useState<WriteCommentType>(null)
     const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
+    const dispatch = useDispatch();
+    const store = useSelector((state:Rootstate) => state);
 
     async function getPost() {
 
@@ -123,15 +127,8 @@ const PostDetail = () => {
     useEffect(()=>{
         getPost();
         getComments();
-    },[refreshFetch])
+    },[store.refreshReducer.commentChange])
 
-    const store = useSelector((state:Rootstate) => state);
-
-    // useEffect(()=>{
-    //     console.log("jwt 토큰이 바뀜")
-    //     console.log(store.jwtTokenReducer.accessToken);
-    //
-    // },[store.jwtTokenReducer.accessToken]) //
 
     const [scrapSaved,setScrapSaved] = useState<boolean>(true);
     const onClickScrap = async () => {
@@ -167,6 +164,7 @@ const PostDetail = () => {
         try{
             const res = await Api.post(`/post/${postId}/comments`, writeComment);
 
+            dispatch(changeRefreshState());
             setRefreshFetch((prevState) => {
                 return {...prevState,commentChange : true
                 }

@@ -4,8 +4,9 @@ import profileImg from "../../img/profileImg.png";
 import classNames from "classnames/bind";
 import {HiPencil} from "react-icons/hi";
 import Api from "../../utils/api";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
+import {changeRefreshState} from "../../store/refreshReducer";
 
 /**
  * Props 부모 : PostDetail.tsx
@@ -48,24 +49,50 @@ interface WriteCommentType {
 }
 
 
-const onClickReComment = (comment) => {
-    console.log(comment.id);
-
-}
-
-const UploadComment = () => {
-
-}
-
-const onChangeComment = () => {
-
-}
-
-
-
 
 const PrimaryComment = (commentInfo: CommentProps) => {
-   return(
+
+    const [enableReComment,setEnableReComment] = useState<boolean>(false);
+    const [writeComment,setWriteComment] = useState<WriteCommentType>(null)
+    const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
+
+    const store = useSelector((state:Rootstate) => state);
+    const dispatch = useDispatch();
+    const onClickReComment = (comment) => {
+        setEnableReComment(prevState => !prevState);
+    }
+
+    const UploadComment = async () => {
+        try{
+            const res = await Api.post(`/post/${commentInfo.postId}/comments`, writeComment);
+            dispatch(changeRefreshState());
+            console.log(writeComment);
+            alert("대댓글 작성 성공")
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("대댓글 작성 실패")
+        }
+    }
+
+    const onChangeComment = (e) => {
+        const inputComment = e.target.value;
+
+        setWriteComment((prevState) => {
+            return {...prevState,
+                authorId: store.userInfoReducer.id,
+                postId : commentInfo.postId,
+                depth : 1,
+                content : inputComment,
+                parentCommentId : commentInfo.id,
+            }
+        })
+    }
+
+
+
+    return(
        <>
         <div className={cx('Profile')}>
             <img className={cx('ProfileImg')} src={profileImg}></img>
@@ -84,10 +111,15 @@ const PrimaryComment = (commentInfo: CommentProps) => {
             {commentInfo.time}
         </div>
 
-           <div className = {styles.writeComments}>
+           {
+               enableReComment ?
+                   (
+               <div className = {styles.writeComments}>
                <input type={"text"} className={styles.writeCommentsInput} placeholder={"대댓글을 입력하세요"} onBlurCapture={onChangeComment}/>
                <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
-           </div>
+               </div>
+                   )
+           : ""}
        </>
 );
 }
