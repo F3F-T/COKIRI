@@ -110,7 +110,6 @@ const PrimaryComment = (commentInfo: CommentProps) => {
         <div className={styles.time}>
             {commentInfo.time}
         </div>
-
            {
                enableReComment ?
                    (
