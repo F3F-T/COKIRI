@@ -11,7 +11,9 @@ interface UserAddressInfo {
     parcelName1:string,
     addressId2:number,
     addressName2:string,
-    parcelName2:string
+    parcelName2:string,
+    click1:number,
+    click2:number
 }
 
 const initialUserAddressInfoState : UserAddressInfo = {
@@ -20,7 +22,9 @@ const initialUserAddressInfoState : UserAddressInfo = {
     parcelName1:'',
     addressId2:0,
     addressName2:'',
-    parcelName2:''
+    parcelName2:'',
+    click1:0,
+    click2:0,
 
 
 }
@@ -45,7 +49,10 @@ const userAddressInfoSlice = createSlice({
             state.addressId1 = undefined
             state.addressName1 = ''
             state.parcelName1=''
-
+            state.click1=0
+        },
+        setClick1(state,action){
+            state.click1=action.payload;
         },
 
 
@@ -58,12 +65,15 @@ const userAddressInfoSlice = createSlice({
         parcelAddress2(state,action){
             state.parcelName2= action.payload;
         },
-        resetaddress2(state){
+        resetaddress2(state) {
             state.addressId2 = undefined
             state.addressName2 = ''
-            state.parcelName2=''
-
-        }
+            state.parcelName2 = ''
+            state.click2 = 0
+        },
+        setClick2(state,action){
+            state.click2=action.payload;
+        },
     }
 })
 
@@ -71,8 +81,8 @@ const userAddressInfoSlice = createSlice({
 //위에서 선언해준 counterSlice의 reducer를 export해준다
 export default userAddressInfoSlice.reducer;
 export const {
-    setUserAddressInfo1,setAddressName1,resetaddress1,parcelAddress1,
-    setUserAddressInfo2,setAddressName2,resetaddress2,parcelAddress2
+    setUserAddressInfo1,setAddressName1,resetaddress1,parcelAddress1,setClick1,
+    setUserAddressInfo2,setAddressName2,resetaddress2,parcelAddress2,setClick2
 } = userAddressInfoSlice.actions;
 
 //이제 이걸다른 컴포턴트에서 dispatch로 사용한다.

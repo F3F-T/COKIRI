@@ -218,7 +218,7 @@ const Login = () => {
                         <span>비밀번호 찾기</span>
                     </div>
                 </section>
-                <Button className={"white"} onClick={()=>{  onClickToggleModal(); }} content={"구글 로그인"}/>
+                {/*<Button className={"white"} onClick={()=>{  onClickToggleModal(); }} content={"구글 로그인"}/>*/}
                 {/*<GoogleButton/>*/}
                 {/*@ts-ignore*/}
                 <Button className={"white"} onClick={login2} content={"구글 로그인"}/>

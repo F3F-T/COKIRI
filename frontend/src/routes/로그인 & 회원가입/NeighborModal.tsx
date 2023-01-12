@@ -11,7 +11,7 @@ import {
     parcelAddress2, resetaddress1, resetaddress2,
     setAddressName1, setAddressName2,
     setUserAddressInfo1,
-    setUserAddressInfo2
+    setUserAddressInfo2,setClick1,setClick2
 } from "../../store/userAddressInfoReducer";
 
 interface ModalDefaultType {
@@ -48,6 +48,7 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
     const [count1,setCount1]=useState(0);
     const [count2,setCount2]=useState(0);
 
+
     //주소 추가
     async function postAddressData_1() {
         try{
@@ -57,7 +58,8 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
             setAddressID(res.data.id);
             dispatch(setUserAddressInfo1((res.data.id)))
             dispatch(setAddressName1((res.data.addressName)))
-            alert("추가 성공")
+            dispatch(setClick1(1))
+            // alert("추가 성공")
         }
         catch (err)
         {
@@ -74,7 +76,8 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
             setAddressID(res.data.id);
             dispatch(setUserAddressInfo2((res.data.id)))
             dispatch(setAddressName2((res.data.addressName)))
-            alert("추가 성공")
+            dispatch(setClick2(1))
+            // alert("추가 성공")
         }
         catch (err)
         {
@@ -93,7 +96,7 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
             }
             const res = await Api.delete('/address', addressDelete1);
             dispatch(resetaddress1())
-            alert("삭제 성공")
+            // alert("삭제 성공")
         }
         catch (err)
         {
@@ -111,7 +114,7 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
             }
             const res = await Api.delete('/address', addressDelete2);
             dispatch(resetaddress2())
-            alert("삭제 성공")
+            // alert("삭제 성공")
         }
         catch (err)
         {
@@ -173,7 +176,6 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
                 const _arr = arr[0].address.address_name;
                 console.log("kakao주소1", _arr)
                 setParcel_1(_arr)
-
             }
         }
         geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
@@ -195,8 +197,7 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
         geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
     }
 
-    console.log("등록1클릭",count1);
-    console.log("등록2클릭",count2);
+
 
     return (
         <div className={styles.box1}>
@@ -223,29 +224,28 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
                     <div className={styles.registerBox}>
                         <div className={styles.inputBox}>
                             {tab1 === 'curr' ?
-                                count1 ==0?
+                                addressR.click1==0?
                                     <>  <p className={styles.input1}>주소 이름</p>
-                                        <input type="text" placeholder={'첫번째 주소 이름을 적어주세요.       [ 예시:  집, 회사 ]'}  className={`${styles["input2"+(tab1 ==="curr"? "active" : "")]}`} onChange={inputAddressName_1} onClick={() =>{ setDealTab('curr')}}/>
-                                        <button className={styles.registerBtn} onClick={()=>{postAddressData_1();setCount1(count1+1)}}>등록1</button>
+                                        <input type="text" placeholder={'첫번째 주소 이름을 적어주세요.       [ 예시:  집, 회사 ]'}  className={`${styles["input2"+(tab1 ==="curr"? "active" : "")]}`} onChange={inputAddressName_1}/>
+                                        <button className={styles.registerBtn} onClick={()=>{postAddressData_1();setCount1(count1+1)}}>등록</button>
                                     </>:
                                     <>
                                         <p className={styles.input1}>지번 주소</p>
                                         <div className={styles.input2}>{addressR.parcelName1}</div>
-                                        <button className={styles.registerBtn} onClick={deleteAddress_1}>삭제1</button>
-
+                                        <button className={styles.registerBtn} onClick={deleteAddress_1}>삭제</button>
                                     </>
 
                                 :
 
-                                count2 == 0?
+                                addressR.click2==0?
                                     <>  <p className={styles.input1}>주소 이름</p>
-                                        <input type="text" placeholder={'두번째 주소 이름을 적어주세요.       [ 예시:  집, 회사 ]'}  className={`${styles["input2_2"+(tab1 ==="curr"? "active" : "")]}`} onChange={inputAddressName_2} onClick={() =>{ setDealTab('curr')}}/>
-                                        <button className={styles.registerBtn} onClick={()=>{postAddressData_2();setCount2(count1+1)}}>등록2</button>
+                                        <input type="text" placeholder={'두번째 주소 이름을 적어주세요.       [ 예시:  집, 회사 ]'}  className={`${styles["input2_2"+(tab1 ==="curr"? "active" : "")]}`} onChange={inputAddressName_2} />
+                                        <button className={styles.registerBtn} onClick={()=>{postAddressData_2();setCount2(count2+1)}}>등록</button>
                                     </>:
                                     <>
                                         <p className={styles.input1}>지번 주소</p>
                                         <div className={styles.input2}>{addressR.parcelName2}</div>
-                                        <button className={styles.registerBtn} onClick={deleteAddress_2}>삭제2</button>
+                                        <button className={styles.registerBtn} onClick={deleteAddress_2}>삭제</button>
 
                                     </>
                             }
