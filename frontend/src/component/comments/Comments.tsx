@@ -141,6 +141,7 @@ const SecondaryComment = (commentInfo: CommentProps) => {
             <div className={styles.time}>
                 {commentInfo.time}
             </div>
+
         </>
     );
 }
@@ -161,7 +162,6 @@ const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps
                     <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}/>
                 </div>
             }
-
         </>
 
     );

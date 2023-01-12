@@ -19,6 +19,7 @@ import Message from "../../component/로그인 & 회원가입/Message";
 import {HiPencil} from "react-icons/hi";
 import {resetCategory} from "../../store/categoryReducer";
 import {changeRefreshState} from "../../store/refreshReducer";
+import comments from "../../component/comments/Comments";
 
 
 
@@ -53,7 +54,7 @@ const PostDetail = () => {
         imageUrl : String;
         content : String;
         depth : Number;
-        parendCommentId : number | null;
+        parentCommentId : number | null;
 
         //댓글인지 대댓글인지 확인
     }
@@ -130,6 +131,7 @@ const PostDetail = () => {
     },[store.refreshReducer.commentChange])
 
 
+
     const [scrapSaved,setScrapSaved] = useState<boolean>(true);
     const onClickScrap = async () => {
         setScrapSaved(prevState => !prevState);
@@ -190,7 +192,25 @@ const PostDetail = () => {
         return null
     }
 
+    const primaryComment = commentList.filter((comment) => {
+        return comment.depth === 0
+    })
 
+    const secondaryComment = commentList.filter((comment) => {
+        return comment.depth === 1
+    })
+
+    //댓글, 대댓글을 순서대로 배열에 담는 로직, 댓글 대댓글을 연결
+    let result = primaryComment.reduce((prev,cur)=>{
+        prev.push(cur);
+        secondaryComment.forEach(secondary => {
+            if(secondary.parentCommentId === cur.id)
+            {
+                prev.push(secondary);
+            }
+        })
+        return prev;
+    },[]);
 
     return (
         <div className={styles.postDetail}>
@@ -248,10 +268,11 @@ const PostDetail = () => {
             </article>
             <section className={styles.comments}>
                 {
-                    commentList.map((comment)=>(
+                    result.map((comment)=>(
                         <>
                             {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
                             {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
+
                         </>
                     ))
                 }
