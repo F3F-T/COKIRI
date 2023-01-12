@@ -85,7 +85,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
         </div>
 
            <div className = {styles.writeComments}>
-               <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onBlurCapture={onChangeComment}/>
+               <input type={"text"} className={styles.writeCommentsInput} placeholder={"대댓글을 입력하세요"} onBlurCapture={onChangeComment}/>
                <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
            </div>
        </>

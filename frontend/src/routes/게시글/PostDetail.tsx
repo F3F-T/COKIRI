@@ -252,7 +252,7 @@ const PostDetail = () => {
                 {
                     commentList.map((comment)=>(
                         <>
-                            {comment.depth ===0 && <Comments postId = {comment.postId}id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
+                            {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
                             {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
                         </>
                     ))
