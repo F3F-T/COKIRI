@@ -318,6 +318,51 @@ public class PostService {
         return new PageImpl<>(dtoList);
     }
 
+    // TODO 테스트 예정
+    // 테스트 완료하면 기존의 조회 로직 삭제 예정
+    public Page<PostInfoDtoWithTag> findPostsWithTag(List<String> tagNames, Pageable pageable) {
+        List<PostInfoDtoWithTag> dtoList = new ArrayList<>();
+        List<Post> beforeConvertToDto = new ArrayList<>();
+        Page<Post> postPages;
+        if(tagNames.isEmpty()) {
+            postPages = postRepository.findAll(pageable);
+            for (Post post : postPages) {
+                List<PostTag> postTags = postTagRepository.findByPost(post);
+                List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+                List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+                List<String> tagNamesOfPost = new ArrayList<>();
+                for (PostTag postTag : postTags) {
+                    tagNamesOfPost.add(postTag.getTag().getName());
+                }
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNamesOfPost, (long) scrapPosts.size(), (long) messageRooms.size());
+                dtoList.add(responseEach);
+            }
+        } else {
+            for(int i=0; i<tagNames.size(); i++) {
+                List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
+                Page<Post> posts = postRepository.findByPostTagsIn(postTags, pageable);
+                List<Post> tempPostList = posts.getContent();
+                if (i == 0) {
+                    beforeConvertToDto.addAll(tempPostList);
+                } else {
+                    beforeConvertToDto.retainAll(tempPostList);
+                }
+            }
+            for (Post post : beforeConvertToDto) {
+                List<PostTag> postTags = postTagRepository.findByPost(post);
+                List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+                List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+                List<String> tagNamesOfPost = new ArrayList<>();
+                for (PostTag postTag : postTags) {
+                    tagNamesOfPost.add(postTag.getTag().getName());
+                }
+                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNamesOfPost, (long) scrapPosts.size(), (long) messageRooms.size());
+                dtoList.add(responseEach);
+            }
+        }
+        return new PageImpl<>(dtoList);
+    }
+
     // TODO 거래 가능한 게시글만 검색하기
 
     @Transactional(readOnly = true)

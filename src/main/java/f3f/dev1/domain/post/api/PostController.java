@@ -62,6 +62,7 @@ public class PostController {
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
             @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
             @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
+            @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
             Pageable pageable) {
         SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
                 .productCategory(productCategoryName)
@@ -70,6 +71,9 @@ public class PostController {
                 .maxPrice(maxPrice)
                 .build();
         Page<PostInfoDtoWithTag> pageDto = postService.findPostsByCategoryAndPriceRange(request, pageable);
+
+
+
         return new ResponseEntity<>(pageDto, HttpStatus.OK);
     }
 
