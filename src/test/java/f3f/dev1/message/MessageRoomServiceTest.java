@@ -1,5 +1,6 @@
 package f3f.dev1.message;
 
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.category.application.CategoryService;
 import f3f.dev1.domain.category.dao.CategoryRepository;
 import f3f.dev1.domain.category.dto.CategoryDTO;
@@ -10,16 +11,25 @@ import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.message.application.MessageRoomService;
 import f3f.dev1.domain.message.dao.MessageRepository;
+import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.dto.MessageRoomDTO;
-import f3f.dev1.domain.model.Address;
+import f3f.dev1.domain.message.exception.CanNotMakeMessegeRoom;
+import f3f.dev1.domain.message.exception.CanNotSendMessageByTradeStatus;
+import f3f.dev1.domain.message.model.MessageRoom;
+import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
+import f3f.dev1.domain.trade.application.TradeService;
 import f3f.dev1.domain.trade.dao.TradeRepository;
+import f3f.dev1.domain.trade.dto.TradeDTO;
+import f3f.dev1.domain.trade.model.Trade;
+import io.netty.util.internal.UnstableApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,10 +37,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @SpringBootTest
@@ -42,11 +54,17 @@ public class MessageRoomServiceTest {
     @Autowired
     MessageRepository messageRepository;
     @Autowired
+    MessageRoomRepository messageRoomRepository;
+    @Autowired
+    MessageRoomService messageRoomService;
+    @Autowired
     CategoryRepository categoryRepository;
     @Autowired
     CategoryService categoryService;
     @Autowired
     TradeRepository tradeRepository;
+    @Autowired
+    TradeService tradeService;
     @Autowired
     ScrapRepository scrapRepository;
     @Autowired
@@ -89,33 +107,56 @@ public class MessageRoomServiceTest {
                 .build();
     }
 
+
     // 회원가입 DTO 생성 메소드
-    public MemberDTO.SignUpRequest createSignUpRequest() {
+    public MemberDTO.SignUpRequest createSignUpRequest1() {
         return MemberDTO.SignUpRequest.builder()
-                .userName("username")
-                .nickname("nickname")
+                .userName("user1")
+                .nickname("admin")
                 .phoneNumber("01012345678")
                 .email("userEmail@email.com")
                 .birthDate("990128")
                 .password("password")
                 .build();
     }
+    public MemberDTO.SignUpRequest createSignUpRequest2() {
+        return MemberDTO.SignUpRequest.builder()
+                .userName("user2")
+                .nickname("nickname")
+                .phoneNumber("01011112222")
+                .email("user2Email@email.com")
+                .birthDate("990127")
+                .password("password")
+                .build();
+    }
+    public MemberDTO.SignUpRequest createSignUpRequest3() {
+        return MemberDTO.SignUpRequest.builder()
+                .userName("user3")
+                .nickname("user3ya")
+                .phoneNumber("01011113333")
+                .email("user3Email@email.com")
+                .birthDate("990126")
+                .password("password")
+                .build();
+    }
 
     // 로그인 DTO 생성 메소드
-    public MemberDTO.LoginRequest createLoginRequest() {
+    public MemberDTO.LoginRequest createLoginRequest1() {
         return MemberDTO.LoginRequest.builder()
                 .email("userEmail@email.com")
                 .password("password").build();
     }
-
-    // 업데이트 DTO 생성 메소드
-    public MemberDTO.UpdateUserInfo createUpdateRequest() {
-        return MemberDTO.UpdateUserInfo.builder()
-                .address(createAddress())
-                .nickname("newNickname")
-                .phoneNumber("01088888888")
-                .build();
+    public MemberDTO.LoginRequest createLoginRequest2() {
+        return MemberDTO.LoginRequest.builder()
+                .email("user2Email@email.com")
+                .password("password").build();
     }
+    public MemberDTO.LoginRequest createLoginRequest3() {
+        return MemberDTO.LoginRequest.builder()
+                .email("user3Email@email.com")
+                .password("password").build();
+    }
+
     public PostDTO.PostSaveRequest createPostSaveRequest(Member author, boolean tradeEachOther, String productName, String wishName) {
         return PostDTO.PostSaveRequest.builder()
                 .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
@@ -127,29 +168,32 @@ public class MessageRoomServiceTest {
                 .wishCategory(wishName)
                 .build();
     }
+    public TradeDTO.CreateTradeDto createTradeDto(Long sellerId, Long postId) {
+        return TradeDTO.CreateTradeDto.builder()
+                .sellerId(sellerId)
+                .postId(postId).build();
+    }
     private CategoryDTO.CategorySaveRequest createCategoryDto(String name, Long memberId, Long depth, Long parentId) {
         CategoryDTO.CategorySaveRequest saveRequest = new CategoryDTO.CategorySaveRequest(name, memberId, depth, parentId);
         return saveRequest;
     }
 
-    private CategoryDTO.CategorySaveRequest createWishCategoryDto(String name, Long memberId, Long depth, Long parentId) {
-        CategoryDTO.CategorySaveRequest saveRequest = new CategoryDTO.CategorySaveRequest(name, memberId, depth, parentId);
+    private MessageRoomDTO.MessageRoomSaveRequest messageRoomSaveRequest (Long postId, Long buyerId){
+        MessageRoomDTO.MessageRoomSaveRequest saveRequest = new MessageRoomDTO.MessageRoomSaveRequest(postId, buyerId);
         return saveRequest;
     }
-    private MessageRoomDTO.MessageRoomSaveRequest messageRoomSaveRequest (Long postId, Long sellerId, Long buyerId){
-        MessageRoomDTO.MessageRoomSaveRequest saveRequest = new MessageRoomDTO.MessageRoomSaveRequest(postId, sellerId, buyerId);
-        return saveRequest;
-    }
-
+//---------------------------------------------messageRoom 생성 -----------------------------------------------------------------
     @Test
     @DisplayName("메시지룸 생성 테스트")
     public void createMessageRoomTest() throws Exception{
-        MemberDTO.SignUpRequest signUpRequest = createSignUpRequest();
-        authService.signUp(signUpRequest);
-        Member admin = memberRepository.findByEmail(signUpRequest.getEmail()).get();
-//        MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest();
-//        authService.signUp(signUpRequest1);
-//        Member member = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+        //given
+        MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
+        authService.signUp(signUpRequest1);
+        Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+
+        MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
+        authService.signUp(signUpRequest2);
+        Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
 
         CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
         Long cid1 = categoryService.createCategory(categoryDTO1);
@@ -162,9 +206,157 @@ public class MessageRoomServiceTest {
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
 
-//        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest();
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
+        //when
+        Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1);
+        MessageRoom messageRoom1 = messageRoomRepository.findById(msgRoomId).get();
+
+        //when
+        assertThat(messageRoomRepository.existsById(msgRoomId)).isEqualTo(true);
 
 
+    }
+
+    @Test
+    @DisplayName("(실패)메시지룸 생성 테스트: 본인에게 메시지")
+    public void createWrongMessageRoomTest() throws Exception {
+        //given
+        MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
+        authService.signUp(signUpRequest1);
+        Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+
+        MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
+        authService.signUp(signUpRequest2);
+        Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
+
+        CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
+        Long cid1 = categoryService.createCategory(categoryDTO1);
+        Category category1 = categoryRepository.findById(cid1).get();
+        Category root = categoryRepository.findCategoryByName("root").get();
+        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("주방", admin.getId(), 1L, root.getId());
+        Long cid2 = categoryService.createCategory(categoryDTO2);
+        Category category2 = categoryRepository.findById(cid2).get();
+        PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "도서");
+        Long postId = postService.savePost(postSaveRequest, admin.getId());
+        Post post = postRepository.findById(postId).get();
+
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), admin.getId());
+        //when
+        assertThrows(CanNotMakeMessegeRoom.class, () -> {
+            Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1);
+        });
+    }
+
+    @Test
+    @DisplayName("(실패)메시지룸 생성 테스트: 거래 완료")
+    public void createTradedPostMessageRoomTest() throws Exception {
+        //given
+        MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
+        authService.signUp(signUpRequest1);
+        Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+
+        MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
+        authService.signUp(signUpRequest2);
+        Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
+
+        CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
+        Long cid1 = categoryService.createCategory(categoryDTO1);
+        Category category1 = categoryRepository.findById(cid1).get();
+        Category root = categoryRepository.findCategoryByName("root").get();
+        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("주방", admin.getId(), 1L, root.getId());
+        Long cid2 = categoryService.createCategory(categoryDTO2);
+        Category category2 = categoryRepository.findById(cid2).get();
+        PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "주방");
+        Long postId = postService.savePost(postSaveRequest, admin.getId());
+        Post post = postRepository.findById(postId).get();
+
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
+//        TradeDTO.CreateTradeDto tradeDto = TradeDTO.CreateTradeDto.builder().sellerId(user.getId()).postId(postId).build();
+//        Long tradeId = tradeService.createTrade(tradeDto, user.getId());
+        Trade trade = tradeRepository.findByPostId(postId).get();
+        TradeDTO.UpdateTradeDto updateTradeDto = TradeDTO.UpdateTradeDto.builder().postId(postId).userId(admin.getId()).tradeStatus(TradeStatus.TRADED).build();
+        tradeService.updateTradeStatus(updateTradeDto, admin.getId());
+        //when
+        assertThrows(CanNotSendMessageByTradeStatus.class, () -> {
+            Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1);
+        });
+    }
+
+    //-------------------------------------------메시지룸 조회 테스트------------------------------
+//    @Test
+//    @DisplayName("메시지룸 메시지 조회")
+//    public void readMessageRoomTest() throws Exception {
+//        //given
+//        MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
+//        authService.signUp(signUpRequest1);
+//        Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+//
+//        MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
+//        authService.signUp(signUpRequest2);
+//        Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
+//        MemberDTO.SignUpRequest signUpRequest3 = createSignUpRequest3();
+//        authService.signUp(signUpRequest3);
+//        Member user2 = memberRepository.findByEmail(signUpRequest3.getEmail()).get();
+//
+//
+//        CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
+//        Long cid1 = categoryService.createCategory(categoryDTO1);
+//        Category category1 = categoryRepository.findById(cid1).get();
+//        Category root = categoryRepository.findCategoryByName("root").get();
+//        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("주방", admin.getId(), 1L, root.getId());
+//        Long cid2 = categoryService.createCategory(categoryDTO2);
+//        Category category2 = categoryRepository.findById(cid2).get();
+//        PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "도서");
+//        Long postId = postService.savePost(postSaveRequest, admin.getId());
+//        Post post = postRepository.findById(postId).get();
+//
+//        //given
+//        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
+//        Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1);
+//        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO2 = messageRoomSaveRequest(post.getId(), user.getId());
+//        Long msgRoomId2 = messageRoomService.createMessageRoom(messageRoomDTO2);
+//        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO3 = messageRoomSaveRequest(post.getId(), user.getId());
+//        Long msgRoomId3 = messageRoomService.createMessageRoom(messageRoomDTO2);
+//    }
+
+    @Test
+    @DisplayName("포스트 메시지룸 갯수 조회")
+    public void readMessageRoomTest() throws Exception {
+        //given
+        MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
+        authService.signUp(signUpRequest1);
+        Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+
+        MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
+        authService.signUp(signUpRequest2);
+        Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
+        MemberDTO.SignUpRequest signUpRequest3 = createSignUpRequest3();
+        authService.signUp(signUpRequest3);
+        Member user2 = memberRepository.findByEmail(signUpRequest3.getEmail()).get();
+
+
+        CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
+        Long cid1 = categoryService.createCategory(categoryDTO1);
+        Category category1 = categoryRepository.findById(cid1).get();
+        Category root = categoryRepository.findCategoryByName("root").get();
+        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("주방", admin.getId(), 1L, root.getId());
+        Long cid2 = categoryService.createCategory(categoryDTO2);
+        Category category2 = categoryRepository.findById(cid2).get();
+        PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "도서");
+        Long postId = postService.savePost(postSaveRequest, admin.getId());
+        Post post = postRepository.findById(postId).get();
+
+        //given
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
+        Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1);
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO2 = messageRoomSaveRequest(post.getId(), user.getId());
+        Long msgRoomId2 = messageRoomService.createMessageRoom(messageRoomDTO2);
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO3 = messageRoomSaveRequest(post.getId(), user.getId());
+        Long msgRoomId3 = messageRoomService.createMessageRoom(messageRoomDTO2);
+
+        //then
+        assertThat(messageRoomService.ReadMessageRoomsByPostId(postId)).isEqualTo(3);
+//        assertThat(postRepository.existsById(msgRoomId)).isEqualTo(true);
     }
 
 }

@@ -25,16 +25,15 @@ public class MessageRoomDTO {
         @NonNull
         private Long postId;
 
-        @NotNull
-        private Long sellerId;
+//        @NotNull
+//        private Long sellerId;
 
         @NonNull
         private Long buyerId;
 
-        public MessageRoom toEntity(Post post, Member seller, Member buyer){
+        public MessageRoom toEntity(Post post, Member buyer){
             return MessageRoom.builder()
                     .post(post)
-                    .seller(seller)
                     .buyer(buyer)
                     .build();
 
@@ -45,7 +44,7 @@ public class MessageRoomDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DeleteMessageRoomRequest{
-        private Long Id;
+        private Long id;
         private Long memberId;
         private Long postId;
 
