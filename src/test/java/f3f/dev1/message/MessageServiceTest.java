@@ -231,7 +231,8 @@ public class MessageServiceTest {
         Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1);
         MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
         //when
-        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
+        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(),msgRoom1.getSeller().getId(), post.getId(), msgRoom1.getId());
+//        assertThat()
         Long messageId1 = messageService.createMessage(messageDTO1);
         Message message1 = messageRepository.findById(messageId1).get();
         //then
