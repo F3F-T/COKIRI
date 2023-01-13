@@ -160,12 +160,15 @@ const PostDetail = () => {
                 parendCommentId : null,
             }
         })
+
+        console.log(writeComment);
     }
 
     const UploadComment = async () => {
         try{
             const res = await Api.post(`/post/${postId}/comments`, writeComment);
-
+            console.log(writeComment);
+            console.log(res);
             dispatch(changeRefreshState());
             setRefreshFetch((prevState) => {
                 return {...prevState,commentChange : true
@@ -272,7 +275,6 @@ const PostDetail = () => {
                         <>
                             {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
                             {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
-
                         </>
                     ))
                 }

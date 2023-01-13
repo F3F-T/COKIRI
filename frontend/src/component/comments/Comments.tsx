@@ -146,7 +146,6 @@ const SecondaryComment = (commentInfo: CommentProps) => {
     );
 }
 
-
 const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps임을 알려준다.
 
     return (

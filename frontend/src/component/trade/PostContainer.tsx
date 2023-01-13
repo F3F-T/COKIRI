@@ -48,9 +48,10 @@ const PostContainer = () => {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
             const res = await Api.get('/post');
+            console.log(res);
             console.log(res.data)
             setPostList(prevState => {
-                return [...res.data];
+                return [...res.data.content];
             })
         }
         catch (err)
