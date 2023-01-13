@@ -44,7 +44,7 @@ public class MemberAuthController {
 
     // 이미지 테스트 업로드
     @PostMapping(value = "/image")
-    public ResponseEntity<Object> upload(MultipartFile[] imageFiles) throws IOException {
+    public ResponseEntity<ImageUrlDto> upload(MultipartFile[] imageFiles) throws IOException {
         List<String> imagePathList = new ArrayList<>();
 
         for(MultipartFile multipartFile: imageFiles) {
@@ -65,7 +65,7 @@ public class MemberAuthController {
             imagePathList.add(imagePath);
         }
 
-        return new ResponseEntity<Object>(imagePathList, HttpStatus.OK);
+        return ResponseEntity.ok(ImageUrlDto.builder().imageUrls(imagePathList).build());
     }
 
 

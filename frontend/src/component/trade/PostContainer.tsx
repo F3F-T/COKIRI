@@ -52,7 +52,6 @@ const PostContainer = () => {
             setPostList(prevState => {
                 return [...res.data];
             })
-            console.log("포리포리",postList);
         }
         catch (err)
         {

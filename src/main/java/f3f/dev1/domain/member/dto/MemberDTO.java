@@ -98,6 +98,7 @@ public class MemberDTO {
 
         private String nickname;
 
+        private String description;
 
         private String phoneNumber;
 
@@ -152,15 +153,7 @@ public class MemberDTO {
         private String newImageUrl;
     }
 
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    public static class UpdateUserAddress{
-        private Long userId;
 
-        private Address address;
-    }
 
 
     @Builder
@@ -364,5 +357,13 @@ public class MemberDTO {
     @Getter
     public static class GetMemberAddressListDTO{
         private List<AddressInfoDTO> memberAddress;
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class ImageUrlDto {
+        private List<String> imageUrls;
     }
 }
