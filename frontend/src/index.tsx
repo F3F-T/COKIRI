@@ -30,6 +30,7 @@ import {
 } from 'redux-persist';
 import {PersistGate} from "redux-persist/integration/react";
 import userAddressInfoReducer from "./store/userAddressInfoReducer";
+import RefreshReducer from "./store/refreshReducer";
 
 /**
  * configureStore을 import해온다.
@@ -53,7 +54,8 @@ const rootReducer = combineReducers({
     postDetailReducer: postDetailReducer,
     jwtTokenReducer: jwtTokenReducer,
     userInfoReducer: userInfoReducer,
-    userAddressInfoReducer: userAddressInfoReducer
+    userAddressInfoReducer: userAddressInfoReducer,
+    refreshReducer : RefreshReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig,rootReducer);

@@ -146,8 +146,22 @@ const PostUpload = () => {
         };
 
         uploadPost(jsonObj);
-
     }
+
+    /**
+     * 로그인 상태를 확인하고 비로그인일때 이전화면으로 돌아가기
+     */
+    useEffect(()=>{
+        if(store.jwtTokenReducer.authenticated)
+        {
+            console.log("로그인 상태")
+        }
+        else
+        {
+            alert("로그인후에 가능한 서비스입니다.")
+            navigate(-1);
+        }
+    },[store.jwtTokenReducer.authenticated])
 
 
     return (
@@ -178,7 +192,7 @@ const PostUpload = () => {
                 <div className={styles.categoryBox2}>
                     <select className={styles.categoryToggle} placeholder="올릴 물건의 카테고리를 선택해주세요." onChange={onChangeProductCategory} >
                         {categories.map((category:string)=> (
-                            <option value={category}>{category}</option>
+                            <option key={category} value={category}>{category}</option>
                         ))}
                     </select>
                 </div>
@@ -188,7 +202,7 @@ const PostUpload = () => {
                 <div className={styles.categoryBox2}>
                     <select className={styles.categoryToggle} placeholder="원하는 물건의 카테고리를 선택해주세요." onChange={onChangeWishCategory} >
                         {categories.map((category:string)=> (
-                            <option value={category}>{category}</option>
+                            <option key={category} value={category}>{category}</option>
                         ))}
                     </select>
                 </div>

@@ -34,15 +34,13 @@ public class CategoryService {
         Member admin = memberRepository.findById(categorySaveRequest.getMemberId()).orElseThrow(NotFoundByIdException::new);
         //유저 어드민 확인해야되는데 어드민 만들어지면 해야할듯
 
-        //질문)category.getParent()-- null을 categoryRepository.existById(categor.getParentId())이렇게 해주는게 나으려나 뭐가 달라?
-
         //카테고리 이름에 대한 처리
         if (categoryRepository.existsByName(categorySaveRequest.getName())) {
             throw new CategoryException("이미 존재하는 카테고리입니다.");
         }
         //depth가 root 포함 0,1,2임
-        if (categorySaveRequest.getDepth() > 2) {
-            throw new CategoryException("max depth(2)를 초과하셨습니다.");
+        if (categorySaveRequest.getDepth() > 1) {
+            throw new CategoryException("max depth(1)를 초과하셨습니다.");
         }
 
         //이거 만들긴 했는데 이정도 이면 그냥 데이터에 밖는게 나을듯 시바
@@ -78,15 +76,9 @@ public class CategoryService {
             //root 카테고리 하위
             //부모 카테고리가 있다면
 
-                //질문)depth를 NonNUll로 했는데 그럼 parent에서 deth+1을 안해도 되지 않나?
-                if (!category.getDepth().equals(category.getParent().getDepth() + 1)) { //왜 !=로 비교 안돼?객체
-                    throw new CategoryException("카테고리 depth 오류 : (1,2)중에서 확인");
-                }
-//            if(parentCategory.getName().equals("root")){
-//                if(category.getDepth() != 1){
-//                    throw new CategoryException("카테고리 설정 오류 : depth가 1이어야합니다.");
-//                }
-                //category.setDepth(parentCategory.getDepth()+1); -> NonNull로 받았으니까 필요 없을 듯.
+            if (!category.getDepth().equals(category.getParent().getDepth() + 1)) {
+                throw new CategoryException("카테고리 depth 오류 : depth는 1이어야함.");
+            }
             categoryRepository.save(category);
             category.getParent().getChild().add(category);
             return category.getId();
@@ -161,17 +153,38 @@ public class CategoryService {
         Category category = categoryRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         Category parentCat = categoryRepository.findById(category.getParent().getId()).orElseThrow(NotFoundByIdException::new);
 
-        //자식 카테고리가 있다면, 자식 카테고리를 지운다.(계속 반복)
-        //수정)하위카테고리가 있으면 지우지 않음.
+        //자식 카테고리가 있다면, 자식 카테고리를 지운다.(계속 반복) -> 하위 카테고리가 없을 경우 삭제 가능.
         if(category.getChild().isEmpty()){
-            for(Category childCategory : category.getChild()){
-                categoryRepository.delete(childCategory);
-            }
+//            for(Category childCategory : category.getChild()){
+//                categoryRepository.delete(childCategory);
+//            }
             categoryRepository.delete(category);
         }
         else{
             throw new CanNotDeleteCategoryException();
         }
         return "DELETE";
+    }
+
+    @Transactional
+    public String deleteCategoryByName(String name){
+        if(!categoryRepository.existsByName(name)){
+            throw new NotFoundCategoryByNameException();
+        }
+        else{
+            Category category = categoryRepository.findCategoryByName(name).get();
+            //자식 카테고리가 있다면, 자식 카테고리를 지운다.(계속 반복) -> 하위 카테고리가 없을 경우 삭제 가능.
+            if(category.getChild().isEmpty()){
+//            for(Category childCategory : category.getChild()){
+//                categoryRepository.delete(childCategory);
+//            }
+                categoryRepository.delete(category);
+            }
+            else{
+                throw new CanNotDeleteCategoryException();
+            }
+            return "DELETE";
+        }
+
     }
 }
