@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 import static f3f.dev1.domain.message.dto.MessageDTO.*;
 import static f3f.dev1.domain.message.dto.MessageRoomDTO.*;
@@ -77,6 +77,33 @@ public class MessageRoomService {
 //        //findById
 //        return messageRoom.getMessages();
 //    }
+
+    //유저에서 메시지룸들 조회(sellingRoom, buyingRoom 통합)
+    @Transactional(readOnly = true)
+    public List<MessageRoom> ReadMessageRoomsByUserId(Long id){
+        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        List<MessageRoom> totalMsgRoom = new ArrayList<>();
+        totalMsgRoom.addAll(member.getBuyingRooms());
+        totalMsgRoom.addAll(member.getSellingRooms());
+//        for(MessageRoom buyingMsgroom : member.getBuyingRooms())
+//            totalMsgRoom.add(buyingMsgroom);
+//        for(MessageRoom sellingMsgroom : member.getSellingRooms())
+//            totalMsgRoom.add(sellingMsgroom);
+        return totalMsgRoom;
+    }
+
+    //유저에서 sellingRoom 조회
+    @Transactional(readOnly = true)
+    public List<MessageRoom> ReadSellingMessageRoomsByUserId(Long id){
+        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        return member.getSellingRooms();
+    }
+    //유저에서 BuyingRoom 조회
+    @Transactional(readOnly = true)
+    public List<MessageRoom> ReadBuyingMessageRoomsByUserId(Long id){
+        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        return member.getBuyingRooms();
+    }
     @Transactional(readOnly = true)
     public List<Message> ReadMessagesByMessageRoomId(Long id){
        MessageRoom messageRoom = messageRoomRepository.findById(id).orElseThrow(NotFoundByIdException::new);
