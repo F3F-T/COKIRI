@@ -17,6 +17,7 @@ import {setUserInfo, setUserNick} from "../store/userInfoReducer";
 import {userInfo} from "os";
 import TextInput from "./common/TextInput";
 import Message from "./로그인 & 회원가입/Message";
+import Modal from "../routes/로그인 & 회원가입/NeighborModal";
 
 // interface TextInputProps {
 //     init: string;
@@ -52,8 +53,15 @@ const MyPage = () =>  {
         readNickName()
     },[])
     const [newNick,setNewNick]=useState(info.nickname)
-
     const [postNum,setNum]=useState('');
+//모달창
+    const [isOpenModal, setOpenModal] = useState<boolean>(false);
+
+    const onClickToggleModal = useCallback(() => {
+        setOpenModal(!isOpenModal);
+    }, [isOpenModal]);
+
+
 
     // useEffect(()=>{
     //     if (userInfo) {
@@ -181,7 +189,6 @@ const MyPage = () =>  {
     async function getMyPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-
             const res = await Api.get('/user/posts');
             console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
             // @ts-ignore
@@ -201,6 +208,11 @@ const MyPage = () =>  {
     return (
             <>
             <div className={styles.profile}>
+                {isOpenModal && (
+                    <Modal onClickToggleModal={onClickToggleModal}>
+                        <embed type="text/html"  width="800" height="608"/>
+                    </Modal>
+                )}
                 <div className={styles.profileImage}>
                     <img className={styles.Image} src={profile}/>
                 </div>
@@ -228,7 +240,7 @@ const MyPage = () =>  {
                             <p>상품 거래</p> <p className={styles.tradeNum}>8</p>
                         </div>
                     </div>
-                    <button className={styles.gpsBox} onClick={() => navigate('/neighborauth')}>
+                    <button className={styles.gpsBox} onClick={() => onClickToggleModal()}>
                         동네 등록을 해주세요.
                     </button>
                 </div>

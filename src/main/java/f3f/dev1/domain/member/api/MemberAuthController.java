@@ -31,7 +31,7 @@ import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class MemberAuthController {
-    private final String S3Bucket = "cokiri-image";
+    private final String S3Bucket = "cokiri-image/image/profileImage";
     private final MemberService memberService;
 
     private final EmailCertificationService emailCertificationService;
