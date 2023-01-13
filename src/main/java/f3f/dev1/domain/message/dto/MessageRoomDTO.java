@@ -52,5 +52,20 @@ public class MessageRoomDTO {
 
     }
 
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class MessageInfoDto{
+        private Long id;
+        private String sellerNickName;
+        private String buyerNickName;
+        private Long postId;
+        private Long sellerId;
+        private Long buyerId;
+        //private List<Message> messages;
+
+    }
+
 
 }

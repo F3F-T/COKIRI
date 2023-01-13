@@ -1,6 +1,7 @@
 package f3f.dev1.domain.message.application;
 
 import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRepository;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
@@ -38,7 +39,7 @@ public class MessageRoomService {
     private final MessageRepository messageRepository;
     private final MessageService messageService;
 
-    public Long createMessageRoom(MessageRoomSaveRequest saveRequest){
+    public MessageInfoDto createMessageRoom(MessageRoomSaveRequest saveRequest, Long currentMemberId){
         Post post = postRepository.findById(saveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         //파는 사람이 유효한지 확인(메시지를 받는 입장임)
         Member seller = memberRepository.findById(post.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
@@ -46,6 +47,10 @@ public class MessageRoomService {
         Member buyer = memberRepository.findById(saveRequest.getBuyerId()).orElseThrow(NotFoundByIdException::new);
         //거래 상태 확인을 위해 포스트에 있는 트레이드 아이디로 가져옴.
         Trade trade = tradeRepository.findByPostId(saveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+
+        if(!buyer.getId().equals(currentMemberId)){
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
+        }
 
         //포스트 작성자는 메시지를 받는 사람. 즉, 자신한테는 메시지를 남기지 못함.
         if(buyer.getId().equals(seller.getId())){
@@ -59,12 +64,14 @@ public class MessageRoomService {
 
         MessageRoom messageRoom = saveRequest.toEntity(post, buyer);
         messageRoomRepository.save(messageRoom);
+        MessageInfoDto messageInfoDto = messageRoom.toMessageRoomInfo();
+
         post.getMessageRooms().add(messageRoom);
         //두명의 유저 채팅 리스트에 추가.
         seller.getSellingRooms().add(messageRoom);
         buyer.getBuyingRooms().add(messageRoom);
 
-        return messageRoom.getId();
+        return messageInfoDto;
     }
 
     //채팅방 클릭할 때, 조회 (채팅창은 멤버에서 관리, 포스트에서 열어볼 수 없음)
@@ -79,16 +86,26 @@ public class MessageRoomService {
 //    }
 
     //유저에서 메시지룸들 조회(sellingRoom, buyingRoom 통합)
+//    @Transactional(readOnly = true)
+//    public List<MessageRoom> ReadMessageRoomsByUserId(Long id){
+//        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+//        List<MessageRoom> totalMsgRoom = new ArrayList<>();
+//        totalMsgRoom.addAll(member.getBuyingRooms());
+//        totalMsgRoom.addAll(member.getSellingRooms());
+////        for(MessageRoom buyingMsgroom : member.getBuyingRooms())
+////            totalMsgRoom.add(buyingMsgroom);
+////        for(MessageRoom sellingMsgroom : member.getSellingRooms())
+////            totalMsgRoom.add(sellingMsgroom);
+//        return totalMsgRoom;
+//    }
+
     @Transactional(readOnly = true)
     public List<MessageRoom> ReadMessageRoomsByUserId(Long id){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         List<MessageRoom> totalMsgRoom = new ArrayList<>();
         totalMsgRoom.addAll(member.getBuyingRooms());
         totalMsgRoom.addAll(member.getSellingRooms());
-//        for(MessageRoom buyingMsgroom : member.getBuyingRooms())
-//            totalMsgRoom.add(buyingMsgroom);
-//        for(MessageRoom sellingMsgroom : member.getSellingRooms())
-//            totalMsgRoom.add(sellingMsgroom);
+
         return totalMsgRoom;
     }
 
@@ -126,7 +143,7 @@ public class MessageRoomService {
     //메시지 룸을 그냥 합치는게 낫지 않을까?
     //내 메시지 방은 우선 내가 관리할 수 있게 함. - 디비에는 남게!
     @Transactional
-    public DeleteMessageRoomRequest deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest){
+    public DeleteMessageRoomRequest deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest, Long currentMemberId){
         //메시지룸을 유저가 가지고 있는것과 비교해야함. -> 멤버에는 메시지 룸 리스트가 있음.
         //메시지룸은 어차피 디비상에서는 지워지지 않을거지만 유저와 비교 편리하게 하기 위해 가져옴.
         //유저가 센딩 메시지룸과 리시브 메시지룸을 구별하면 되기 때문에 그냥 객체로 두는게 나은가? 메시지 레포지토리가 아니라 멤버에서 지워야해서 헷갈림.
@@ -134,6 +151,9 @@ public class MessageRoomService {
         Member member = memberRepository.findById(deleteMessageRoomRequest.getMemberId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        if(!member.getId().equals(currentMemberId)){
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
+        }
 
 //
 //        //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정
