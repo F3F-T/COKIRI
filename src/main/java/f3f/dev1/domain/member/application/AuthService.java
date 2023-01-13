@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -126,6 +127,7 @@ public class AuthService {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.getAndDelete(Long.toString(SecurityUtil.getCurrentMemberId()));
         valueOperations.getAndDelete(token);
+
 
         return "SUCCESS";
     }
