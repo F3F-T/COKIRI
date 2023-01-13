@@ -1,5 +1,6 @@
 package f3f.dev1.domain.member.api;
 
+import com.amazonaws.Response;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.address.model.Address;
@@ -54,11 +55,6 @@ public class MemberController {
 
     }
 
-    @PatchMapping(value = "/user/image")
-    public ResponseEntity<String> updateUserImage(@RequestBody UpdateUserImage updateUserImage) {
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.updateUserImage(updateUserImage, currentMemberId));
-    }
 
     // 유저 닉네임 업데이트
     @PatchMapping(value = "/user/nickname")
@@ -82,6 +78,13 @@ public class MemberController {
     public ResponseEntity<NewDescriptionDto> updateUserDescription(@RequestBody UpdateDescriptionDto updateDescriptionDto) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(memberService.updateDescription(currentMemberId, updateDescriptionDto));
+    }
+
+    // 유저 이미지 url 업데이트
+    @PatchMapping(value = "/user/imageUrl")
+    public ResponseEntity<NewImageUrlDto> updateUserImageUrl(@RequestBody UpdateUserImage updateUserImage) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.updateUserImage(updateUserImage, currentMemberId));
     }
 
     // 유저 주소 업데이트 --> AddressController로 변경
