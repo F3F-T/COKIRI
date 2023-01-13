@@ -29,6 +29,7 @@ import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
+import f3f.dev1.domain.trade.application.TradeService;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.dto.TradeDTO;
 import f3f.dev1.domain.trade.model.Trade;
@@ -68,6 +69,8 @@ public class MessageServiceTest {
     CategoryService categoryService;
     @Autowired
     TradeRepository tradeRepository;
+    @Autowired
+    TradeService tradeService;
     @Autowired
     ScrapRepository scrapRepository;
     @Autowired
@@ -178,6 +181,12 @@ public class MessageServiceTest {
                 .build();
     }
 
+    public TradeDTO.CreateTradeDto createTradeDto(Long sellerId, Long postId) {
+        return TradeDTO.CreateTradeDto.builder()
+                .sellerId(sellerId)
+                .postId(postId).build();
+    }
+
     private CategoryDTO.CategorySaveRequest createCategoryDto(String name, Long memberId, Long depth, Long parentId) {
         CategoryDTO.CategorySaveRequest saveRequest = new CategoryDTO.CategorySaveRequest(name, memberId, depth, parentId);
         return saveRequest;
@@ -259,7 +268,9 @@ public class MessageServiceTest {
         MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
         Trade trade = tradeRepository.findByPostId(postId).get();
         TradeDTO.UpdateTradeDto updateTradeDto = TradeDTO.UpdateTradeDto.builder().postId(postId).userId(admin.getId()).tradeStatus(TradeStatus.TRADED).build();
+        tradeService.updateTradeStatus(updateTradeDto, admin.getId());
         //then
+        assertThat(trade.getTradeStatus()).isEqualTo(TradeStatus.TRADED);
         Assertions.assertThrows(CanNotSendMessageByTradeStatus.class,()->{
             Long messageId1 = messageService.createMessage(messageDTO1);
         });
@@ -415,6 +426,7 @@ public class MessageServiceTest {
         MessageDTO.DeleteMessageRequest delMessageDTO1 = deleteMessageRequest(messageId2, admin.getId(),msgRoomId1);
         Trade trade = tradeRepository.findByPostId(postId).get();
         TradeDTO.UpdateTradeDto updateTradeDto = TradeDTO.UpdateTradeDto.builder().postId(postId).userId(admin.getId()).tradeStatus(TradeStatus.TRADED).build();
+        tradeService.updateTradeStatus(updateTradeDto, admin.getId());
         //then
         Assertions.assertThrows(CanNotDeleteMessage.class, ()->{
             messageService.deleteMessage(delMessageDTO1);
