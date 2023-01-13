@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom";
 import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
 import axios from "axios";
-import Modal from "../../routes/로그인 & 회원가입/GoogleLoginModal"
+import Modal from "./NeighborModal"
 import GoogleButton from "./GoogleButton.js"
 import { useGoogleLogin } from '@react-oauth/google'
 import {useDispatch, useSelector} from "react-redux";
@@ -218,7 +218,7 @@ const Login = () => {
                         <span>비밀번호 찾기</span>
                     </div>
                 </section>
-                {/*<Button className={"white"} onClick={()=>{ googleClick(); onClickToggleModal(); }} content={"구글 로그인"}/>*/}
+                {/*<Button className={"white"} onClick={()=>{  onClickToggleModal(); }} content={"구글 로그인"}/>*/}
                 {/*<GoogleButton/>*/}
                 {/*@ts-ignore*/}
                 <Button className={"white"} onClick={login2} content={"구글 로그인"}/>
