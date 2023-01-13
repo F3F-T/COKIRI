@@ -56,7 +56,7 @@ public class MessageRoomDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
-    public static class MessageInfoDto{
+    public static class MessageRoomInfoDto{
         private Long id;
         private String sellerNickName;
         private String buyerNickName;

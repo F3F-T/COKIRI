@@ -56,4 +56,18 @@ public class MessageDTO {
         private Long messageRoomId;
 
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MessageInfoDto{
+        private Long id;
+        private String senderNickname;
+        private String receiverNickname;
+        private String content;
+        private Long senderId;
+        private Long receiverId;
+        private Long messageRoomId;
+    }
 }

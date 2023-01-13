@@ -228,12 +228,12 @@ public class MessageServiceTest {
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
         MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1);
+        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
         MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
         //when
         MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(),msgRoom1.getSeller().getId(), post.getId(), msgRoom1.getId());
 //        assertThat()
-        Long messageId1 = messageService.createMessage(messageDTO1);
+        Long messageId1 = messageService.createMessage(messageDTO1, user.getId()).getId();
         Message message1 = messageRepository.findById(messageId1).get();
         //then
         assertThat(messageRepository.existsById(messageId1));
@@ -263,7 +263,7 @@ public class MessageServiceTest {
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
         MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1);
+        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
         MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
         //when
         MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
@@ -273,7 +273,7 @@ public class MessageServiceTest {
         //then
         assertThat(trade.getTradeStatus()).isEqualTo(TradeStatus.TRADED);
         Assertions.assertThrows(CanNotSendMessageByTradeStatus.class,()->{
-            Long messageId1 = messageService.createMessage(messageDTO1);
+            Long messageId1 = messageService.createMessage(messageDTO1, user.getId()).getId();
         });
     }
     @Test
@@ -300,16 +300,17 @@ public class MessageServiceTest {
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
         MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1);
+        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
         MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
         //when
 
         MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), user.getId(), post.getId(), msgRoom1.getId());
         //then
         Assertions.assertThrows(MessageException.class,()->{
-            Long messageId1 = messageService.createMessage(messageDTO1);
+            Long messageId1 = messageService.createMessage(messageDTO1, user.getId()).getId();
         });
     }
+    //--------------------------------------------메시지 삭제 -------------------------------------------------------------
     @Test
     @DisplayName("메시지 삭제 테스트")
     public void deleteMessageTest() throws Exception {
@@ -334,18 +335,18 @@ public class MessageServiceTest {
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
         MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1);
+        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
         MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
         MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId1 = messageService.createMessage(messageDTO1);
+        Long messageId1 = messageService.createMessage(messageDTO1, user.getId()).getId();
         MessageDTO.MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId2 = messageService.createMessage(messageDTO2);
+        Long messageId2 = messageService.createMessage(messageDTO2, user.getId()).getId();
         MessageDTO.MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user.getId(), post.getId(), msgRoom1.getId());
-        Long messageId3 = messageService.createMessage(messageDTO3);
+        Long messageId3 = messageService.createMessage(messageDTO3, admin.getId()).getId();
         //when
         assertThat(msgRoom1.getMessages().size()).isEqualTo(3);
         MessageDTO.DeleteMessageRequest delMessageDTO1 = deleteMessageRequest(messageId2, user.getId(),msgRoomId1);
-        messageService.deleteMessage(delMessageDTO1);
+        messageService.deleteMessage(delMessageDTO1, user.getId());
         //then
         assertThat(messageRepository.existsById(messageId2)).isEqualTo(false);
     }
@@ -374,20 +375,20 @@ public class MessageServiceTest {
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
         MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1);
+        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
         MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
         MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId1 = messageService.createMessage(messageDTO1);
+        Long messageId1 = messageService.createMessage(messageDTO1,user.getId()).getId();
         MessageDTO.MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId2 = messageService.createMessage(messageDTO2);
+        Long messageId2 = messageService.createMessage(messageDTO2, user.getId()).getId();
         MessageDTO.MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user.getId(), post.getId(), msgRoom1.getId());
-        Long messageId3 = messageService.createMessage(messageDTO3);
+        Long messageId3 = messageService.createMessage(messageDTO3, admin.getId()).getId();
         //when
         assertThat(msgRoom1.getMessages().size()).isEqualTo(3);
         MessageDTO.DeleteMessageRequest delMessageDTO1 = deleteMessageRequest(messageId2, admin.getId(),msgRoomId1);
         //then
         Assertions.assertThrows(CanNotDeleteMessage.class, ()->{
-            messageService.deleteMessage(delMessageDTO1);
+            messageService.deleteMessage(delMessageDTO1, admin.getId());
         });
     }
     @Test
@@ -414,14 +415,14 @@ public class MessageServiceTest {
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
         MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1);
+        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
         MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
         MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId1 = messageService.createMessage(messageDTO1);
+        Long messageId1 = messageService.createMessage(messageDTO1, user.getId()).getId();
         MessageDTO.MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId2 = messageService.createMessage(messageDTO2);
+        Long messageId2 = messageService.createMessage(messageDTO2, user.getId()).getId();
         MessageDTO.MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user.getId(), post.getId(), msgRoom1.getId());
-        Long messageId3 = messageService.createMessage(messageDTO3);
+        Long messageId3 = messageService.createMessage(messageDTO3, admin.getId()).getId();
         //when
         assertThat(msgRoom1.getMessages().size()).isEqualTo(3);
         MessageDTO.DeleteMessageRequest delMessageDTO1 = deleteMessageRequest(messageId2, admin.getId(),msgRoomId1);
@@ -430,7 +431,7 @@ public class MessageServiceTest {
         tradeService.updateTradeStatus(updateTradeDto, admin.getId());
         //then
         Assertions.assertThrows(CanNotDeleteMessage.class, ()->{
-            messageService.deleteMessage(delMessageDTO1);
+            messageService.deleteMessage(delMessageDTO1, admin.getId());
         });
     }
 

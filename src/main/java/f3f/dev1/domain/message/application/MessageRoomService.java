@@ -39,7 +39,7 @@ public class MessageRoomService {
     private final MessageRepository messageRepository;
     private final MessageService messageService;
 
-    public MessageInfoDto createMessageRoom(MessageRoomSaveRequest saveRequest, Long currentMemberId){
+    public MessageRoomInfoDto createMessageRoom(MessageRoomSaveRequest saveRequest, Long currentMemberId){
         Post post = postRepository.findById(saveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         //파는 사람이 유효한지 확인(메시지를 받는 입장임)
         Member seller = memberRepository.findById(post.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
@@ -64,14 +64,14 @@ public class MessageRoomService {
 
         MessageRoom messageRoom = saveRequest.toEntity(post, buyer);
         messageRoomRepository.save(messageRoom);
-        MessageInfoDto messageInfoDto = messageRoom.toMessageRoomInfo();
+        MessageRoomInfoDto messageRoomInfoDto = messageRoom.toMessageRoomInfo();
 
         post.getMessageRooms().add(messageRoom);
         //두명의 유저 채팅 리스트에 추가.
         seller.getSellingRooms().add(messageRoom);
         buyer.getBuyingRooms().add(messageRoom);
 
-        return messageInfoDto;
+        return messageRoomInfoDto;
     }
 
     //채팅방 클릭할 때, 조회 (채팅창은 멤버에서 관리, 포스트에서 열어볼 수 없음)

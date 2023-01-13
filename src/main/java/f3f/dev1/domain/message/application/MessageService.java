@@ -1,5 +1,6 @@
 package f3f.dev1.domain.message.application;
 
+import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.message.dao.MessageRepository;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.dto.MessageDTO;
@@ -36,7 +37,7 @@ public class MessageService {
     private final TradeRepository tradeRepository;
 
     @Transactional
-    public Long createMessage(MessageSaveRequest messageSaveRequest) {
+    public MessageInfoDto createMessage(MessageSaveRequest messageSaveRequest, Long currentMemberId) {
 
         Member sender = memberRepository.findById(messageSaveRequest.getSenderId()).orElseThrow(UserNotFoundException::new);
         Member receiver = memberRepository.findById(messageSaveRequest.getReceiverId()).orElseThrow(UserNotFoundException::new);
@@ -45,10 +46,9 @@ public class MessageService {
         Trade trade = tradeRepository.findByPostId(messageSaveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
 
         MessageRoom messageRoom = messageRoomRepository.findById(messageSaveRequest.getMessageRoomId()).orElseThrow(NotFoundByIdException::new);
-
-        log.info("seller Id" + messageRoom.getSeller().getId());
-        log.info("post author Id"+messageRoom.getPost().getAuthor());
-
+        if(!sender.getId().equals(currentMemberId)){
+            throw new NotAuthorizedException("요청자는 로그인된 유저가 아닙니다.");
+        }
 
         if(messageSaveRequest.getSenderId().equals(messageSaveRequest.getReceiverId())){
             throw new MessageException("본인에게 메시지를 보낼 수 없습니다");
@@ -67,22 +67,28 @@ public class MessageService {
         //TODO 테스트로 메시지 생성시, 센더와 리시버 리스트가 맞게 추가되는지 보기
         Message message = messageSaveRequest.toEntity(sender, receiver, post, messageRoom);
         messageRepository.save(message);
+        MessageInfoDto messageInfoDto = message.toMessageInfo();
         messageRoom.getMessages().add(message);
         sender.getSendMessages().add(message);
         receiver.getReceivedMessages().add(message);
 
-        return message.getId();
+        return messageInfoDto;
     }
 
     //TODO 메시지 삭제는 카톡과 같이 5분 내에 전송시 삭제해야되나?(양방향 삭제 논의)!!!!!
     //자기가 보낸것만 삭제할 수 있음.
     //TODO 채팅방 지우는 형식은 카톡과 동일하게 양쪽 따로 관리하도록 해야할듯.
     @Transactional
-    public String deleteMessage(DeleteMessageRequest deleteMessageRequest){
+    public String deleteMessage(DeleteMessageRequest deleteMessageRequest, Long currentMemberId){
         Member sender = memberRepository.findById(deleteMessageRequest.getSenderId()).orElseThrow(NotFoundByIdException::new);
         MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRequest.getMessageRoomId()).orElseThrow(NotFoundByIdException::new);
         Trade trade = tradeRepository.findByPostId(messageRoom.getPost().getId()).orElseThrow(NotFoundByIdException::new);
         Message message = messageRepository.findById(deleteMessageRequest.getId()).orElseThrow(NotFoundByIdException::new);
+
+
+        if(!sender.getId().equals(currentMemberId)){
+            throw new NotAuthorizedException("요청자는 로그인된 유저가 아닙니다.");
+        }
         //작성자만 자신의 메시지를 지울 수 있음.
         if(message.getSender().getId().equals(deleteMessageRequest.getSenderId())) {
             if(trade.getTradeStatus().equals(TradeStatus.TRADED)){
