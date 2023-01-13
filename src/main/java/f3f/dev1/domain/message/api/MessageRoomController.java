@@ -18,23 +18,17 @@ import javax.validation.Valid;
 
 import static f3f.dev1.domain.message.dto.MessageDTO.*;
 import static f3f.dev1.domain.message.dto.MessageRoomDTO.*;
-//
-//@PostMapping(value = "/post/{postId}/comments")
-//public ResponseEntity<CommentInfoDto> createComment(@PathVariable(name = "postId") Long postId, @RequestBody @Valid CreateCommentRequest createCommentRequest) {
-//        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-//        CommentInfoDto commentInfoDto = commentService.saveComment(createCommentRequest, currentMemberId);
-//        return new ResponseEntity<>(commentInfoDto, HttpStatus.CREATED);
-//        }
-//@RestController
-//@Validated
-//@RequiredArgsConstructor
-//public class MessageRoomController {
-//    private final MessageRoomService messageRoomService;
-//
-//    @PostMapping(value ="/post/{postId}/messageRooms/{messageRoom_id}")
-//    public ResponseEntity<MessageRoomSaveRequest> createMessageRoom(@PathVariable(name = "postId") Long postId, @RequestBody @Valid MessageRoomSaveRequest messageRoomSaveRequest){
-//        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-//        MessageRoomSaveRequest messageRoomSaveDto = messageRoomService.createMessageRoom(messageRoomSaveRequest);
-//        return new ResponseEntity<>(messageRoomSaveDto, HttpStatus.CREATED);
-//}
-//}
+
+@RestController
+@Validated
+@RequiredArgsConstructor
+public class MessageRoomController {
+    private final MessageRoomService messageRoomService;
+
+    @PostMapping(value ="/post/{postId}/messageRooms/{messageRoom_id}")
+    public ResponseEntity<MessageRoomInfoDto> createMessageRoom( @RequestBody @Valid MessageRoomSaveRequest messageRoomSaveRequest){
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        MessageRoomInfoDto messageRoomInfoDto = messageRoomService.createMessageRoom(messageRoomSaveRequest, currentMemberId);
+        return new ResponseEntity<>(messageRoomInfoDto, HttpStatus.CREATED);
+}
+}
