@@ -41,14 +41,14 @@ public class MessageRoomService {
     public Long createMessageRoom(MessageRoomSaveRequest saveRequest){
         Post post = postRepository.findById(saveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         //파는 사람이 유효한지 확인(메시지를 받는 입장임)
-        Member seller = memberRepository.findById(saveRequest.getSellerId()).orElseThrow(NotFoundByIdException::new);
+        Member seller = memberRepository.findById(post.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         //메시지를 보내는 사람은 물건을 사고자하는 사람.
         Member buyer = memberRepository.findById(saveRequest.getBuyerId()).orElseThrow(NotFoundByIdException::new);
         //거래 상태 확인을 위해 포스트에 있는 트레이드 아이디로 가져옴.
         Trade trade = tradeRepository.findByPostId(saveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
 
         //포스트 작성자는 메시지를 받는 사람. 즉, 자신한테는 메시지를 남기지 못함.
-        if(buyer.getId().equals(post.getAuthor())){
+        if(buyer.getId().equals(seller.getId())){
             throw new CanNotMakeMessegeRoom("본인 게시물입니다.");
         }
         //거래 상태 확인하고 메시지 룸 만들기
@@ -57,8 +57,9 @@ public class MessageRoomService {
             throw new CanNotSendMessageByTradeStatus();
         }
 
-        MessageRoom messageRoom = saveRequest.toEntity(post, seller, buyer);
+        MessageRoom messageRoom = saveRequest.toEntity(post, buyer);
         messageRoomRepository.save(messageRoom);
+        post.getMessageRooms().add(messageRoom);
         //두명의 유저 채팅 리스트에 추가.
         seller.getSellingRooms().add(messageRoom);
         buyer.getBuyingRooms().add(messageRoom);

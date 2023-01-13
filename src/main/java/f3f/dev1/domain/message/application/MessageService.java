@@ -5,6 +5,7 @@ import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.dto.MessageDTO;
 import f3f.dev1.domain.message.exception.CanNotDeleteMessage;
 import f3f.dev1.domain.message.exception.CanNotSendMessageByTradeStatus;
+import f3f.dev1.domain.message.exception.MessageException;
 import f3f.dev1.domain.message.model.Message;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.TradeStatus;
@@ -44,9 +45,18 @@ public class MessageService {
 
         MessageRoom messageRoom = messageRoomRepository.findById(messageSaveRequest.getMessageRoomId()).orElseThrow(NotFoundByIdException::new);
 
+        if(messageSaveRequest.getSenderId().equals(messageSaveRequest.getReceiverId())){
+            throw new MessageException("본인에게 메시지를 보낼 수 없습니다");
+        }
+//        if(!messageSaveRequest.getSenderId().equals(messageRoom.getSeller().getId())|| !messageSaveRequest.getSenderId().equals(messageSaveRequest.getReceiverId())){
+//            throw new MessageException("메시지룸에 존재하지 않는 사용자입니다.(발신자 오류)");
+//        }
+//        if(!messageSaveRequest.getReceiverId().equals(messageRoom.getSeller().getId())||!messageSaveRequest.getReceiverId().equals(messageSaveRequest.getReceiverId())){
+//            throw new MessageException("메시지룸에 존재하지 않는 사용자입니다.(수신자 오류)");
+//        }
 
         //포스트에 메시지를 보낼 수 있는 상태인지 확인. (거래중이거나 완료이면 메시지를 보내지 못함.)
-        if(trade.getTradeStatus() != TradeStatus.TRADABLE){
+        if(!(trade.getTradeStatus().equals(TradeStatus.TRADABLE))){
             throw new CanNotSendMessageByTradeStatus();
         }
         //TODO 테스트로 메시지 생성시, 센더와 리시버 리스트가 맞게 추가되는지 보기
@@ -67,13 +77,16 @@ public class MessageService {
         Member sender = memberRepository.findById(deleteMessageRequest.getSenderId()).orElseThrow(NotFoundByIdException::new);
         MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRequest.getMessageRoomId()).orElseThrow(NotFoundByIdException::new);
         Trade trade = tradeRepository.findByPostId(messageRoom.getPost().getId()).orElseThrow(NotFoundByIdException::new);
-        Message message = messageRepository.findById(deleteMessageRequest.getSenderId()).orElseThrow(NotFoundByIdException::new);
+        Message message = messageRepository.findById(deleteMessageRequest.getId()).orElseThrow(NotFoundByIdException::new);
         //작성자만 자신의 메시지를 지울 수 있음.
         if(message.getSender().getId().equals(deleteMessageRequest.getSenderId())) {
+            if(trade.getTradeStatus().equals(TradeStatus.TRADED)){
+                throw new CanNotDeleteMessage("거래 완료된 항목의 채팅은 지울 수 없습니다.");
+            }
             messageRepository.delete(message);
         }
         else{
-            throw new CanNotDeleteMessage();
+            throw new CanNotDeleteMessage("본인만 메시지를 지울 수 있습니다");
         }
 
 
