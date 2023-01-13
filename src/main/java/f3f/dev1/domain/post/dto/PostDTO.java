@@ -142,6 +142,18 @@ public class PostDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // 동재 피드백 - 1 : 단순 조회를 위한 가벼운 DTO
+    public static class PostInfoDtoForGET {
+        private Long id;
+        private String title;
+        private String content;
+        private String authorNickname;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class PostInfoDtoWithTag{
 
         private Long id;

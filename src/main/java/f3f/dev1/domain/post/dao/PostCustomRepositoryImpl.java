@@ -8,6 +8,8 @@ import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.QPost;
 import f3f.dev1.domain.tag.model.PostTag;
+import f3f.dev1.domain.tag.model.QPostTag;
+import f3f.dev1.domain.tag.model.QTag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,6 +21,8 @@ import java.util.List;
 import static com.querydsl.core.util.StringUtils.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static f3f.dev1.domain.post.model.QPost.*;
+import static f3f.dev1.domain.tag.model.QPostTag.*;
+import static f3f.dev1.domain.tag.model.QTag.*;
 
 @RequiredArgsConstructor
 public class PostCustomRepositoryImpl implements PostCustomRepository {
@@ -43,6 +47,26 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 
 
+
+    @Override
+    public Page<Post> findPostsByTags(List<String>tagNames, Pageable pageable) {
+        QueryResults<Post> results = jpaQueryFactory
+                .selectFrom(post)
+                .leftJoin(post.postTags, postTag).fetchJoin()
+//                .leftJoin(postTag.tag, tag).on(postTag.tag.name.in(tagNames))
+                .where(postTag.tag.name.in(tagNames))
+                .groupBy(post.id)
+                .having(post.id.count().eq((long) tagNames.size()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<Post> responseList = results.getResults();
+        long total = results.getTotal();
+        return new PageImpl<>(responseList, pageable, total);
+    }
+
+//tag1,tag2,tag3
     private BooleanExpression productCategoryNameFilter(String productCategoryName) {
 
 //        deprecated

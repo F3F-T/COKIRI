@@ -33,6 +33,7 @@ import f3f.dev1.domain.trade.dto.TradeDTO;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -94,23 +95,14 @@ public class PostService {
         return post.getId();
     }
 
-    // 게시글 전체 조회
-    // 컨트롤러에서는 쓰이지 않음. 컨트롤러에서는 findPostsWithConditions를 사용하고 아무 조건이 건네지지 않으면 전체조회를 수행함.
-    public List<PostInfoDtoWithTag> findAllPosts() {
-        List<Post> allPosts = postRepository.findAll();
-        List<PostInfoDtoWithTag> response = new ArrayList<>();
-        for (Post post : allPosts) {
-            List<PostTag> postTags = postTagRepository.findByPost(post);
-            List<String> tagNames = new ArrayList<>();
-            for (PostTag postTag : postTags) {
-                tagNames.add(postTag.getTag().getName());
-            }
-            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
-            response.add(responseEach);
+    @Transactional(readOnly = true)
+    public Page<PostInfoDtoForGET> findAll(Pageable pageable) {
+        Page<Post> all = postRepository.findAll(pageable);
+        List<PostInfoDtoForGET> resultList = new ArrayList<>();
+        for (Post post : all) {
+            resultList.add(post.toInfoDtoForGET());
         }
-        return response;
+        return new PageImpl<>(resultList);
     }
 
 
@@ -139,170 +131,10 @@ public class PostService {
     }
 
 
-    // TODO 페이징 적용하기
-    @Transactional(readOnly = true)
-    public List<PostInfoDtoWithTag> findPostsWithConditions(SearchPostRequest searchPostRequest) {
-        List<Post> resultPostList = new ArrayList<>();
-        List<PostInfoDtoWithTag> response = new ArrayList<>();
-        List<String> tagNames = searchPostRequest.getTagNames();
-        String productCategoryName = searchPostRequest.getProductCategory();
-        String wishCategoryName = searchPostRequest.getWishCategory();
-        String minPrice = searchPostRequest.getMinPrice();
-        String maxPrice = searchPostRequest.getMaxPrice();
-        boolean flag = false;
 
-//         넘어오는 가격대 문자열이 숫자로 변환할 수 없는 구조라면 현재는 그냥 무시해버린다.
-//         예외를 터뜨리게 바꿔야 할까??
-//         이전 로직. 일단 유지하겠음
-//            if(minPrice.chars().allMatch(Character::isDigit)) {
-//                flag = true;
-//                if(!maxPrice.chars().allMatch(Character::isDigit)) {
-//                    List<Post> postsFromMinPrice = postRepository.findByPriceGreaterThanEqual(Long.parseLong(minPrice));
-//                    resultPostList.addAll(postsFromMinPrice);
-//                } else {
-//                    List<Post> postsFromBoth = postRepository.findByPriceBetween(Long.parseLong(minPrice), Long.parseLong(maxPrice));
-//                    resultPostList.addAll(postsFromBoth);
-//                }
-//            } else if(maxPrice.chars().allMatch(Character::isDigit)){
-//                flag = true;
-//                List<Post> postsFromMaxPrice = postRepository.findByPriceLessThanEqual(Long.parseLong(maxPrice));
-//                resultPostList.addAll(postsFromMaxPrice);
-//            }
-
-        if(minPrice != null && maxPrice != null) {
-            if (!minPrice.equals("")) {
-                flag = true;
-                if (maxPrice.equals("")) {
-                    List<Post> postsFromMinPrice = postRepository.findByPriceGreaterThanEqual(Long.parseLong(minPrice));
-                    resultPostList.addAll(postsFromMinPrice);
-                } else {
-                    List<Post> postsFromBoth = postRepository.findByPriceBetween(Long.parseLong(minPrice), Long.parseLong(maxPrice));
-                    resultPostList.addAll(postsFromBoth);
-                }
-            } else if (!maxPrice.equals("")) {
-                flag = true;
-                List<Post> postsFromMaxPrice = postRepository.findByPriceLessThanEqual(Long.parseLong(maxPrice));
-                resultPostList.addAll(postsFromMaxPrice);
-            }
-        }
-
-        if(!tagNames.isEmpty()) {
-            // 카테고리 정보는 없고 태그로만 검색하는 경우
-            if(productCategoryName.equals("") && wishCategoryName.equals("")) {
-                for(int i=0; i<tagNames.size(); i++) {
-                    List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
-                    List<Post> posts = postRepository.findByPostTagsIn(postTags);
-                    if(i == 0) {
-                        if(flag) {
-                            resultPostList.retainAll(posts);
-                        } else {
-                            resultPostList.addAll(posts);
-                        }
-                    } else {
-                        resultPostList.retainAll(posts);
-                    }
-                }
-                // 올린 상품 카테고리 정보와 태그만 있고, 희망 상품 카테고리 정보는 없이 검색한 경우
-            } else if(!productCategoryName.equals("") && wishCategoryName.equals("")) {
-                for(int i=0; i<tagNames.size(); i++) {
-                    List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
-                    List<Post> posts = postRepository.findByProductCategoryNameAndPostTagsIn(productCategoryName, postTags);
-                    if(i == 0) {
-                        if(flag) {
-                            resultPostList.retainAll(posts);
-                        } else {
-                            resultPostList.addAll(posts);
-                        }
-                    } else {
-                        resultPostList.retainAll(posts);
-                    }
-                }
-                // 올린 상품 카테고리 정보는 없고, 희망 상품 카테고리 정보와 태그로만 검색한 경우
-            } else if(productCategoryName.equals("") && !wishCategoryName.equals("")) {
-                for(int i=0; i<tagNames.size(); i++) {
-                    List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
-                    List<Post> posts = postRepository.findByWishCategoryNameAndPostTagsIn(wishCategoryName, postTags);
-                    if(i == 0) {
-                        if(flag) {
-                            resultPostList.retainAll(posts);
-                        } else {
-                            resultPostList.addAll(posts);
-                        }
-                    } else {
-                        resultPostList.retainAll(posts);
-                    }
-                }
-                // 올린 상품 카테고리와 희망 상품 카테고리, 태그 모두 사용해서 검색한 경우
-            } else if(!productCategoryName.equals("") && !wishCategoryName.equals("")) {
-                for(int i=0; i<tagNames.size(); i++) {
-                    List<PostTag> postTags = postTagRepository.findByTagName(tagNames.get(i));
-                    List<Post> posts = postRepository.findByProductCategoryNameAndWishCategoryNameAndPostTagsIn(productCategoryName, wishCategoryName, postTags);
-                    if(i == 0) {
-                        if(flag) {
-                            resultPostList.retainAll(posts);
-                        } else {
-                            resultPostList.addAll(posts);
-                        }
-                    } else {
-                        resultPostList.retainAll(posts);
-                    }
-                }
-            }
-
-        } else if(tagNames.isEmpty()) {
-            // 올린 상품 카테고리와 희망 상품 카테고리, 태그정보 모두 없이 검색한 경우 - 전체 조회 결과로 반환
-            if(productCategoryName.equals("") && wishCategoryName.equals("")) {
-                List<Post> all = postRepository.findAll();
-                if(flag) {
-                    resultPostList.retainAll(all);
-                } else {
-                    resultPostList.addAll(all);
-                }
-            // 올린 상품 카테고리만 있고 희망 상품 카테고리와 태그는 없이 검색하는 경우
-            } else if(!productCategoryName.equals("") && wishCategoryName.equals("")) {
-                List<Post> postsFromProductCategoryName = postRepository.findByProductCategoryName(productCategoryName);
-                if(flag) {
-                    resultPostList.retainAll(postsFromProductCategoryName);
-                } else {
-                    resultPostList.addAll(postsFromProductCategoryName);
-                }
-                // 올린 상품 카테고리와 태그는 없고 희망 상품 카테고리만 사용하여 검색하는 경우
-            } else if(productCategoryName.equals("") && !wishCategoryName.equals("")) {
-                List<Post> postsFromWishProductCategoryName = postRepository.findByWishCategoryName(wishCategoryName);
-                if(flag) {
-                    resultPostList.retainAll(postsFromWishProductCategoryName);
-                } else {
-                    resultPostList.addAll(postsFromWishProductCategoryName);
-                }
-            } else if(!productCategoryName.equals("") && !wishCategoryName.equals("")) {
-                List<Post> posts = postRepository.findByProductCategoryNameAndWishCategoryName(productCategoryName, wishCategoryName);
-                if(flag) {
-                    resultPostList.retainAll(posts);
-                } else {
-                    resultPostList.addAll(posts);
-                }
-            }
-        }
-            // 지금까지 resultPostList를 위에서 필터링하여 만들었다.
-            // 여기서부터는 필터링된 resultPostList를 postInfoDto로 바꿔서 리스트에 추가하는 파트
-            for (Post post : resultPostList) {
-                List<PostTag> postTags = postTagRepository.findByPost(post);
-                List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-                List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-                List<String> tagNamesOfPost = new ArrayList<>();
-                for (PostTag postTag : postTags) {
-                    tagNamesOfPost.add(postTag.getTag().getName());
-                }
-                PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNamesOfPost, (long) scrapPosts.size(), (long) messageRooms.size());
-                response.add(responseEach);
-            }
-        return response;
-    }
 
     @Transactional(readOnly = true)
     public Page<PostInfoDtoWithTag> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
-        // 조회에서는 오류가 발생할 여지가 없다.
-        // 조건이 잘못 전달될 경우 queryDSL에서 조건이 무시되어 반영된다.
         Page<Post> postPages = postCustomRepository.findPostsByCondition(searchPostRequestExcludeTag, pageable);
         List<PostInfoDtoWithTag> dtoList = new ArrayList<>();
         for (Post post : postPages) {
@@ -316,6 +148,15 @@ public class PostService {
             dtoList.add(post.toInfoDtoWithTag(tagNamesOfPost, (long) scrapPosts.size(), (long) messageRooms.size()));
         }
         return new PageImpl<>(dtoList);
+    }
+
+    public Page<PostInfoDtoForGET> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
+        Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
+        List<PostInfoDtoForGET> resultList = new ArrayList<>();
+        for (Post post : dtoList) {
+            resultList.add(post.toInfoDtoForGET());
+        }
+        return new PageImpl<>(resultList);
     }
 
     // TODO 거래 가능한 게시글만 검색하기
