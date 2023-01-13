@@ -1,5 +1,6 @@
 package f3f.dev1.domain.scrap.api;
 
+import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.dto.ScrapDTO;
 import f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapPostDTO;
@@ -7,6 +8,8 @@ import f3f.dev1.domain.scrap.dto.ScrapDTO.GetScrapPostDTO;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +26,8 @@ public class ScrapController {
 
     // 스크랩 포스트 조회 요청
     @GetMapping(value = "/user/scrap")
-    public ResponseEntity<GetScrapPostDTO> getScrapPosts() {
-        return new ResponseEntity<>(scrapService.getUserScrapPosts(SecurityUtil.getCurrentMemberId()), HttpStatus.OK);
+    public ResponseEntity<Page<PostDTO.PostInfoDto>> getScrapPosts(Pageable pageable) {
+        return new ResponseEntity<>(scrapService.getUserScrapPosts(SecurityUtil.getCurrentMemberId(), pageable), HttpStatus.OK);
     }
     // 유저 스크랩에 포스트 추가 요청
     @PostMapping(value = "/user/scrap")

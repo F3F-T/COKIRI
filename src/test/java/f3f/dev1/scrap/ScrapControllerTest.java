@@ -129,7 +129,7 @@ public class ScrapControllerTest {
         postList.add(postInfoDto);
         // when
         GetScrapPostDTO getScrapPostDTO = GetScrapPostDTO.builder().scrapPosts(postList).build();
-        doReturn(getScrapPostDTO).when(scrapService).getUserScrapPosts(any());
+        doReturn(getScrapPostDTO).when(scrapService).getUserScrapPosts(any(),any());
 
         // then
         mockMvc.perform(get("/user/scrap"))

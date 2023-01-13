@@ -1,5 +1,6 @@
 package f3f.dev1.domain.post.model;
 
+import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.scrap.dto.ScrapDTO;
 import f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapPostDTO;
 import f3f.dev1.domain.scrap.model.Scrap;
@@ -34,5 +35,9 @@ public class ScrapPost {
 
     public CreateScrapPostDTO toCreateScrapPostDTO() {
         return CreateScrapPostDTO.builder().scrapPostId(id).postTitle(post.getTitle()).build();
+    }
+
+    public static PostDTO.PostInfoDto postInfoDto(ScrapPost scrapPost) {
+        return scrapPost.getPost().toInfoDto();
     }
 }

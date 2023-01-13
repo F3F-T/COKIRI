@@ -2,6 +2,7 @@ package f3f.dev1.domain.scrap.dto;
 
 import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.member.model.Member;
 import lombok.AllArgsConstructor;
@@ -67,6 +68,8 @@ public class ScrapDTO {
 
         private String postTitle;
     }
+
+
 
 
 }

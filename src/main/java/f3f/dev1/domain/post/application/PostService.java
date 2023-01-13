@@ -12,6 +12,7 @@ import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.model.MessageRoom;
+import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
@@ -32,6 +33,10 @@ import f3f.dev1.domain.trade.dto.TradeDTO;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -59,9 +64,11 @@ public class PostService {
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final PostTagRepository postTagRepository;
+    // Custom repository
+    private final PostCustomRepositoryImpl postCustomRepository;
 
 
-    // TODO 게시글 사진 개수 제한 걸기
+    // TODO 게시글 사진 개수 제한 걸기 - 게시글에 사진 필드 추가해야겠다.
     @Transactional
     public Long savePost(PostSaveRequest postSaveRequest, Long currentMemberId) {
 
@@ -87,12 +94,6 @@ public class PostService {
         return post.getId();
     }
 
-    /* TODO
-        R : read
-        카테고리, 태그 필터링은 Post에서 할 수 없다. 각각의 서비스에서 구현하겠다.
-        title 별로 조회도 필요할까? 검색엔진이 필요한가? - 피드백 결과 일단은 제외하는 걸로.
-     */
-
     // 게시글 전체 조회
     // 컨트롤러에서는 쓰이지 않음. 컨트롤러에서는 findPostsWithConditions를 사용하고 아무 조건이 건네지지 않으면 전체조회를 수행함.
     public List<PostInfoDtoWithTag> findAllPosts() {
@@ -113,6 +114,7 @@ public class PostService {
     }
 
 
+    // TODO 페이징 적용하기
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     @Transactional(readOnly = true)
     public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
@@ -136,6 +138,8 @@ public class PostService {
         return response;
     }
 
+
+    // TODO 페이징 적용하기
     @Transactional(readOnly = true)
     public List<PostInfoDtoWithTag> findPostsWithConditions(SearchPostRequest searchPostRequest) {
         List<Post> resultPostList = new ArrayList<>();
@@ -147,9 +151,9 @@ public class PostService {
         String maxPrice = searchPostRequest.getMaxPrice();
         boolean flag = false;
 
-        // 넘어오는 가격대 문자열이 숫자로 변환할 수 없는 구조라면 현재는 그냥 무시해버린다.
-        // 예외를 터뜨리게 바꿔야 할까??
-        // 이전 로직. 일단 유지하겠음
+//         넘어오는 가격대 문자열이 숫자로 변환할 수 없는 구조라면 현재는 그냥 무시해버린다.
+//         예외를 터뜨리게 바꿔야 할까??
+//         이전 로직. 일단 유지하겠음
 //            if(minPrice.chars().allMatch(Character::isDigit)) {
 //                flag = true;
 //                if(!maxPrice.chars().allMatch(Character::isDigit)) {
@@ -293,6 +297,25 @@ public class PostService {
                 response.add(responseEach);
             }
         return response;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostInfoDtoWithTag> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
+        // 조회에서는 오류가 발생할 여지가 없다.
+        // 조건이 잘못 전달될 경우 queryDSL에서 조건이 무시되어 반영된다.
+        Page<Post> postPages = postCustomRepository.findPostsByCondition(searchPostRequestExcludeTag, pageable);
+        List<PostInfoDtoWithTag> dtoList = new ArrayList<>();
+        for (Post post : postPages) {
+            List<PostTag> postTags = postTagRepository.findByPost(post);
+            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+            List<String> tagNamesOfPost = new ArrayList<>();
+            for (PostTag postTag : postTags) {
+                tagNamesOfPost.add(postTag.getTag().getName());
+            }
+            dtoList.add(post.toInfoDtoWithTag(tagNamesOfPost, (long) scrapPosts.size(), (long) messageRooms.size()));
+        }
+        return new PageImpl<>(dtoList);
     }
 
     // TODO 거래 가능한 게시글만 검색하기
