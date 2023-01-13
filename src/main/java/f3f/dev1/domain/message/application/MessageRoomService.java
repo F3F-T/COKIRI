@@ -98,15 +98,16 @@ public class MessageRoomService {
     //TODO 양쪽에서 따로 해야 할듯 메시지와 마찬가지로
     //메시지 룸을 그냥 합치는게 낫지 않을까?
     //내 메시지 방은 우선 내가 관리할 수 있게 함. - 디비에는 남게!
-//    @Transactional
-//    public String deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest){
-//        //메시지룸을 유저가 가지고 있는것과 비교해야함. -> 멤버에는 메시지 룸 리스트가 있음.
-//        //메시지룸은 어차피 디비상에서는 지워지지 않을거지만 유저와 비교 편리하게 하기 위해 가져옴.
-//        //유저가 센딩 메시지룸과 리시브 메시지룸을 구별하면 되기 때문에 그냥 객체로 두는게 나은가? 메시지 레포지토리가 아니라 멤버에서 지워야해서 헷갈림.
-//        MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRoomRequest.getId()).orElseThrow(NotFoundByIdException::new);
-//        Member member = memberRepository.findById(deleteMessageRoomRequest.getMemberId()).orElseThrow(NotFoundByIdException::new);
-//        Post post = postRepository.findById(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
-//        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+    @Transactional
+    public DeleteMessageRoomRequest deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest){
+        //메시지룸을 유저가 가지고 있는것과 비교해야함. -> 멤버에는 메시지 룸 리스트가 있음.
+        //메시지룸은 어차피 디비상에서는 지워지지 않을거지만 유저와 비교 편리하게 하기 위해 가져옴.
+        //유저가 센딩 메시지룸과 리시브 메시지룸을 구별하면 되기 때문에 그냥 객체로 두는게 나은가? 메시지 레포지토리가 아니라 멤버에서 지워야해서 헷갈림.
+        MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRoomRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Member member = memberRepository.findById(deleteMessageRoomRequest.getMemberId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+
 //
 //        //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정
 //        //유저 메시지 방에 있는지 확인해야함.
@@ -130,8 +131,8 @@ public class MessageRoomService {
 //
 //            }
 //        }
-//    return "DELETE";
-//    }
+    return deleteMessageRoomRequest;
+    }
 
 
 

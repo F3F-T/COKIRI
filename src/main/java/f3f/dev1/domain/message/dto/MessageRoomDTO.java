@@ -34,6 +34,7 @@ public class MessageRoomDTO {
         public MessageRoom toEntity(Post post, Member buyer){
             return MessageRoom.builder()
                     .post(post)
+                    .seller(post.getAuthor())
                     .buyer(buyer)
                     .build();
 
@@ -47,6 +48,7 @@ public class MessageRoomDTO {
         private Long id;
         private Long memberId;
         private Long postId;
+        //boolean deleteStatus;
 
     }
 

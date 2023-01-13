@@ -18,13 +18,14 @@ import f3f.dev1.domain.member.exception.UserNotFoundException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static f3f.dev1.domain.message.dto.MessageDTO.*;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageService {
@@ -45,15 +46,19 @@ public class MessageService {
 
         MessageRoom messageRoom = messageRoomRepository.findById(messageSaveRequest.getMessageRoomId()).orElseThrow(NotFoundByIdException::new);
 
+        log.info("seller Id" + messageRoom.getSeller().getId());
+        log.info("post author Id"+messageRoom.getPost().getAuthor());
+
+
         if(messageSaveRequest.getSenderId().equals(messageSaveRequest.getReceiverId())){
             throw new MessageException("본인에게 메시지를 보낼 수 없습니다");
         }
-//        if(!messageSaveRequest.getSenderId().equals(messageRoom.getSeller().getId())|| !messageSaveRequest.getSenderId().equals(messageSaveRequest.getReceiverId())){
-//            throw new MessageException("메시지룸에 존재하지 않는 사용자입니다.(발신자 오류)");
-//        }
-//        if(!messageSaveRequest.getReceiverId().equals(messageRoom.getSeller().getId())||!messageSaveRequest.getReceiverId().equals(messageSaveRequest.getReceiverId())){
-//            throw new MessageException("메시지룸에 존재하지 않는 사용자입니다.(수신자 오류)");
-//        }
+        if(!messageSaveRequest.getSenderId().equals(messageRoom.getBuyer().getId()) && !messageSaveRequest.getSenderId().equals(messageRoom.getSeller().getId())){
+            throw new MessageException("메시지룸에 존재하지 않는 사용자입니다.(발신자 오류)");
+        }
+        if(!messageSaveRequest.getReceiverId().equals(messageRoom.getBuyer().getId()) && !messageSaveRequest.getReceiverId().equals(messageRoom.getSeller().getId())){
+            throw new MessageException("메시지룸에 존재하지 않는 사용자입니다.(수신자 오류)");
+        }
 
         //포스트에 메시지를 보낼 수 있는 상태인지 확인. (거래중이거나 완료이면 메시지를 보내지 못함.)
         if(!(trade.getTradeStatus().equals(TradeStatus.TRADABLE))){
