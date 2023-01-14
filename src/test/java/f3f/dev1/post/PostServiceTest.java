@@ -569,6 +569,65 @@ public class PostServiceTest {
     }
 
     @Test
+    @DisplayName("After QueryDSL - 조인 후 DTO로 조회")
+    public void getPostInfoDtoForGET_PreProcessorTestForSuccess() throws Exception {
+        //given
+        SignUpRequest signUpRequest = createSignUpRequest();
+        authService.signUp(signUpRequest);
+        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
+        CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
+        CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
+        CreateTagRequest thirdTagRequest = createTagRequest("해시태그3", member.getId());
+        Long tagId = tagService.createTag(tagRequest);
+        Long secondTagId = tagService.createTag(secondTagRequest);
+        Long thirdTagId = tagService.createTag(thirdTagRequest);
+
+        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
+        Long rootId = categoryService.createCategory(rootRequest);
+        Category root = categoryRepository.findById(rootId).get();
+        // product, wish 생성
+
+        CategorySaveRequest productRequest = createCategorySaveRequest("product", 1L, rootId, member);
+        CategorySaveRequest wishRequest = createCategorySaveRequest("wish", 1L, rootId, member);
+        Long productCategoryId = categoryService.createCategory(productRequest);
+        Long wishCategoryId = categoryService.createCategory(wishRequest);
+
+        CategorySaveRequest secondProductRequest = createCategorySaveRequest("product2", 1L, rootId, member);
+        CategorySaveRequest secondWishRequest = createCategorySaveRequest("wish2", 1L, rootId, member);
+        Long secondProductCategoryId = categoryService.createCategory(secondProductRequest);
+        Long secondWishCategoryId = categoryService.createCategory(secondWishRequest);
+
+        //when
+        PostSaveRequest firstRequest = createCompletedPostSaveRequest(member, "첫번째 게시글", "첫번째 내용", false, productRequest.getName(), wishRequest.getName(), new ArrayList<>(), 7500L);
+        PostSaveRequest secondRequest = createCompletedPostSaveRequest(member, "두번째 게시글", "두번째 내용", false, productRequest.getName(), secondWishRequest.getName(), new ArrayList<>(), 12000L);
+        PostSaveRequest thirdRequest = createCompletedPostSaveRequest(member, "세번째 게시글", "세번째 내용", false, secondProductRequest.getName(), secondWishRequest.getName(), new ArrayList<>(), 9000L);
+        postService.savePost(firstRequest, member.getId());
+        postService.savePost(secondRequest, member.getId());
+        postService.savePost(thirdRequest, member.getId());
+
+        // 첫번째, 두번째 게시글 조회돼야함
+        SearchPostRequestExcludeTag searchPostRequestExcludeTag = createSearchPostRequestExcludeTag(productRequest.getName(), null, null, null);
+        // 첫번째 게시글 조회돼야함
+        SearchPostRequestExcludeTag searchPostRequestExcludeTag1 = createSearchPostRequestExcludeTag(null, wishRequest.getName(), null, null);
+        // 두번째 게시글 조회돼야함
+        SearchPostRequestExcludeTag searchPostRequestExcludeTag2 = createSearchPostRequestExcludeTag(productRequest.getName(), secondWishRequest.getName(), null, null);
+        // 두번째 게시글 조회돼야함
+        SearchPostRequestExcludeTag searchPostRequestExcludeTag3 = createSearchPostRequestExcludeTag(productRequest.getName(), null, "8000", null);
+        // 조회되면 안됨
+        SearchPostRequestExcludeTag searchPostRequestExcludeTag4 = createSearchPostRequestExcludeTag(null, secondWishRequest.getName(), null, "8000");
+        // 세번째 게시글 조회돼야함
+        SearchPostRequestExcludeTag searchPostRequestExcludeTag5 = createSearchPostRequestExcludeTag(null, secondWishRequest.getName(), "5000", "10000");
+        // 전체 게시글 조회돼야함
+        SearchPostRequestExcludeTag searchPostRequestExcludeTag6 = createSearchPostRequestExcludeTag(null, null, null, null);
+
+        //then
+        PageRequest pageRequest = PageRequest.of(0, 20);
+        Page<PostInfoDtoForGET_PreProcessor> list1 = postService.findPostDtosByCategoryAndPriceRange(searchPostRequestExcludeTag, pageRequest);
+        assertThat(list1).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+
+    }
+
+    @Test
     @DisplayName("게시글 업데이트 테스트")
     public void updatePostTestForSuccess() throws Exception {
         SignUpRequest signUpRequest = createSignUpRequest();

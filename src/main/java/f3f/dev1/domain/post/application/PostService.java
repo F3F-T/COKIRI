@@ -150,6 +150,12 @@ public class PostService {
         return new PageImpl<>(dtoList);
     }
 
+    @Transactional(readOnly = true)
+    public Page<PostInfoDtoForGET_PreProcessor> findPostDtosByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
+        Page<PostInfoDtoForGET_PreProcessor> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
+        return dtoPages;
+    }
+
     public Page<PostInfoDtoForGET> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
         Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
         List<PostInfoDtoForGET> resultList = new ArrayList<>();
