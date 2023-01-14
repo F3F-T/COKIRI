@@ -47,7 +47,8 @@ const PostContainer = () => {
     async function getPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-            const res = await Api.get('/post');
+            //query string 날리기
+            const res = await Api.get('/post?wishCategory=도서');
             console.log(res);
             console.log(res.data)
             setPostList(prevState => {
