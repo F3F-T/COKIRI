@@ -24,7 +24,7 @@ const initialUserInfoState : UserInfo = {
     birthDate: 0,
     email: "",
     id: 0,
-    imageUrl: "",
+    imageUrl: "https://cdn-icons-png.flaticon.com/128/7178/7178514.png",
     loginType: "",
     nickname: "",
     phoneNumber: "",
@@ -54,7 +54,12 @@ const userInfoSlice = createSlice({
         },
         setUserNick(state,action){
             state.nickname = action.payload;
-
+        },
+        setUserProfile(state,action){
+            state.imageUrl = action.payload;
+        },
+        setUserName(state,action){
+            state.userName = action.payload;
         },
         deleteUserInfo(state){
             state = initialUserInfoState;
@@ -65,7 +70,7 @@ const userInfoSlice = createSlice({
 
 //위에서 선언해준 counterSlice의 reducer를 export해준다
 export default userInfoSlice.reducer;
-export const {setUserInfo,deleteUserInfo,setUserNick} = userInfoSlice.actions;
+export const {setUserInfo,deleteUserInfo,setUserNick,setUserProfile,setUserName} = userInfoSlice.actions;
 //이제 이걸다른 컴포턴트에서 dispatch로 사용한다.
 
 //여기선 알아서 api가 해주는구나, 대충 여기서 선언한 initial state, type, action을 보내주면 된다고 생각하면 되겠네
