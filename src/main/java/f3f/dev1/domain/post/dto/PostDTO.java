@@ -165,8 +165,9 @@ public class PostDTO {
         private String content;
         private String authorNickname;
         private String productCategory;
-        private String wishCategory;
+        private LocalDateTime createdTime;
         private Long messageRoomCount;
+        private String wishCategory;
         private Long scrapCount;
         private Long price;
     }

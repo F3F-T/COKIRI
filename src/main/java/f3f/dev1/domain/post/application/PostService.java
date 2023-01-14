@@ -91,11 +91,11 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostInfoDtoForGET> findAll(Pageable pageable) {
+    public Page<PostSearchResponseDto> findAll(Pageable pageable) {
         Page<Post> all = postRepository.findAll(pageable);
-        List<PostInfoDtoForGET> resultList = new ArrayList<>();
+        List<PostSearchResponseDto> resultList = new ArrayList<>();
         for (Post post : all) {
-            resultList.add(post.toInfoDtoForGET());
+            resultList.add(post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size()));
         }
         return new PageImpl<>(resultList);
     }
@@ -164,11 +164,13 @@ public class PostService {
 //        return dtoPages;
 //    }
 
-    public Page<PostInfoDtoForGET> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
         Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
-        List<PostInfoDtoForGET> resultList = new ArrayList<>();
+        List<PostSearchResponseDto> resultList = new ArrayList<>();
         for (Post post : dtoList) {
-            resultList.add(post.toInfoDtoForGET());
+            PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size());
+            resultList.add(build);
         }
         return new PageImpl<>(resultList);
     }

@@ -96,6 +96,7 @@ public class Post extends BaseTimeEntity {
                 .authorNickname(this.author.getNickname())
                 .wishCategory(this.wishCategory.getName())
                 .messageRoomCount(messageRoomCount)
+                .createdTime(super.getCreateDate())
                 .scrapCount(scrapCount)
                 .content(this.content)
                 .title(this.title)

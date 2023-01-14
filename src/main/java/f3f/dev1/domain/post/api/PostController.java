@@ -75,10 +75,10 @@ public class PostController {
 
     // TODO 임의 생성, 태그 검색이 별도의 컴포넌트로 생성될 수 있나? - 프론트랑 얘기해보기
     @GetMapping(value = "/post/tagSearch")
-    public ResponseEntity<Page<PostInfoDtoForGET>> getPostsWithTagNames(
+    public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithTagNames(
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
             Pageable pageable) {
-        Page<PostInfoDtoForGET> resultList;
+        Page<PostSearchResponseDto> resultList;
         if(!tagNames.isEmpty()) {
             resultList = postService.findPostsWithTagNameList(tagNames, pageable);
         } else {
