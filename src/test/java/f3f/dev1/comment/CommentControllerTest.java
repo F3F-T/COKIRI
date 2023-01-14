@@ -208,7 +208,7 @@ public class CommentControllerTest {
         List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "댓글1");
         commentInfoDtoList.add(commentInfoDto);
-        doReturn(commentInfoDtoList).when(commentService).findCommentsByPostId(any());
+        doReturn(commentInfoDtoList).when(commentService).findCommentDtosByPostId(any());
         postService.savePost(postSaveRequest, member.getId());
 
         //then
@@ -246,7 +246,7 @@ public class CommentControllerTest {
         CommentInfoDto commentInfoDto = createCommentInfoDto(1L, postId, member.getId(), "댓글1");
         commentInfoDtoList.add(commentInfoDto);
         // 20번 아이디를 가진 포스트는 존재하지 않는다고 가정.
-        doReturn(null).when(commentService).findCommentsByPostId(20L);
+        doReturn(null).when(commentService).findCommentDtosByPostId(20L);
         postService.savePost(postSaveRequest, member.getId());
 
         //then
