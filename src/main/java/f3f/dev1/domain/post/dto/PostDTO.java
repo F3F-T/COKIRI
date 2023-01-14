@@ -149,8 +149,6 @@ public class PostDTO {
         private Long id;
         private String title;
         private String content;
-        private Long scrapCount;
-        private Long messageRoomCount;
         private String authorNickname;
     }
 
@@ -161,23 +159,16 @@ public class PostDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PostInfoDtoForGET_PreProcessor {
+    public static class PostSearchResponseDto {
         private Long id;
         private String title;
         private String content;
         private String authorNickname;
-        private List<MessageRoom> messageRooms;
-        private List<ScrapPost> scrapPosts;
-
-        public PostInfoDtoForGET toDTO() {
-            return PostInfoDtoForGET.builder()
-                    .id(this.id)
-                    .title(this.title)
-                    .content(this.content)
-                    .scrapCount((long) this.scrapPosts.size())
-                    .messageRoomCount((long)this.messageRooms.size())
-                    .build();
-        }
+        private String productCategory;
+        private String wishCategory;
+        private Long messageRoomCount;
+        private Long scrapCount;
+        private Long price;
     }
 
     @Getter

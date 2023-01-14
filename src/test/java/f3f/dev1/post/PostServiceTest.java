@@ -11,6 +11,7 @@ import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
@@ -33,6 +34,7 @@ import static f3f.dev1.domain.category.dto.CategoryDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static f3f.dev1.domain.scrap.dto.ScrapDTO.*;
 import static f3f.dev1.domain.tag.dto.TagDTO.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -53,6 +55,9 @@ public class PostServiceTest {
 
     @Autowired
     PostTagService postTagService;
+
+    @Autowired
+    ScrapService scrapService;
 
     @Autowired
     MemberRepository memberRepository;
@@ -476,24 +481,24 @@ public class PostServiceTest {
 
         //then
         PageRequest pageRequest = PageRequest.of(0, 20);
-        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag, pageRequest);
         assertThat(postsByCategoryAndPriceRange).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
 
-        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange1 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag1, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange1 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag1, pageRequest);
         assertThat(postsByCategoryAndPriceRange1).extracting("title").hasSize(1).contains("첫번째 게시글");
 
-        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange2 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag2, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange2 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag2, pageRequest);
         assertThat(postsByCategoryAndPriceRange2).extracting("title").hasSize(1).contains("두번째 게시글");
 
-        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange3 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag3, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange3 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag3, pageRequest);
         assertThat(postsByCategoryAndPriceRange3).extracting("title").hasSize(1).contains("두번째 게시글");
 
-        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange4 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag4, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange4 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag4, pageRequest);
         assertThat(postsByCategoryAndPriceRange4).isEmpty();
-        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange5 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag5, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange5 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag5, pageRequest);
         assertThat(postsByCategoryAndPriceRange5).extracting("title").hasSize(1).contains("세번째 게시글");
 
-        Page<PostInfoDtoWithTag> postsByCategoryAndPriceRange6 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag6, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange6 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag6, pageRequest);
         assertThat(postsByCategoryAndPriceRange6).extracting("title").hasSize(3).contains("첫번째 게시글", "두번째 게시글", "세번째 게시글");
     }
 
@@ -601,30 +606,21 @@ public class PostServiceTest {
         PostSaveRequest firstRequest = createCompletedPostSaveRequest(member, "첫번째 게시글", "첫번째 내용", false, productRequest.getName(), wishRequest.getName(), new ArrayList<>(), 7500L);
         PostSaveRequest secondRequest = createCompletedPostSaveRequest(member, "두번째 게시글", "두번째 내용", false, productRequest.getName(), secondWishRequest.getName(), new ArrayList<>(), 12000L);
         PostSaveRequest thirdRequest = createCompletedPostSaveRequest(member, "세번째 게시글", "세번째 내용", false, secondProductRequest.getName(), secondWishRequest.getName(), new ArrayList<>(), 9000L);
-        postService.savePost(firstRequest, member.getId());
+        Long firstPostId = postService.savePost(firstRequest, member.getId());
         postService.savePost(secondRequest, member.getId());
         postService.savePost(thirdRequest, member.getId());
 
+        AddScrapPostDTO addScrapPostDTO = AddScrapPostDTO.builder().userId(member.getId()).postId(firstPostId).build();
+        scrapService.addScrapPost(addScrapPostDTO, member.getId());
+
         // 첫번째, 두번째 게시글 조회돼야함
         SearchPostRequestExcludeTag searchPostRequestExcludeTag = createSearchPostRequestExcludeTag(productRequest.getName(), null, null, null);
-        // 첫번째 게시글 조회돼야함
-        SearchPostRequestExcludeTag searchPostRequestExcludeTag1 = createSearchPostRequestExcludeTag(null, wishRequest.getName(), null, null);
-        // 두번째 게시글 조회돼야함
-        SearchPostRequestExcludeTag searchPostRequestExcludeTag2 = createSearchPostRequestExcludeTag(productRequest.getName(), secondWishRequest.getName(), null, null);
-        // 두번째 게시글 조회돼야함
-        SearchPostRequestExcludeTag searchPostRequestExcludeTag3 = createSearchPostRequestExcludeTag(productRequest.getName(), null, "8000", null);
-        // 조회되면 안됨
-        SearchPostRequestExcludeTag searchPostRequestExcludeTag4 = createSearchPostRequestExcludeTag(null, secondWishRequest.getName(), null, "8000");
-        // 세번째 게시글 조회돼야함
-        SearchPostRequestExcludeTag searchPostRequestExcludeTag5 = createSearchPostRequestExcludeTag(null, secondWishRequest.getName(), "5000", "10000");
-        // 전체 게시글 조회돼야함
-        SearchPostRequestExcludeTag searchPostRequestExcludeTag6 = createSearchPostRequestExcludeTag(null, null, null, null);
 
         //then
         PageRequest pageRequest = PageRequest.of(0, 20);
-        Page<PostInfoDtoForGET_PreProcessor> list1 = postService.findPostDtosByCategoryAndPriceRange(searchPostRequestExcludeTag, pageRequest);
+        Page<PostSearchResponseDto> list1 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag, pageRequest);
         assertThat(list1).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
-
+        assertThat(list1.getContent().get(0).getScrapCount()).isEqualTo(1L);
     }
 
     @Test

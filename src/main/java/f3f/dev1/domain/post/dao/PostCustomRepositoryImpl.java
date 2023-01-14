@@ -47,31 +47,48 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 
     @Override
-    public Page<PostInfoDtoForGET_PreProcessor> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Pageable pageable) {
-        QueryResults<PostInfoDtoForGET_PreProcessor> results = jpaQueryFactory
-                .select(Projections.constructor(PostInfoDtoForGET_PreProcessor.class,
-                        post.id,
-                        post.title,
-                        post.content,
-                        post.author.nickname,
-                        post.messageRooms,
-                        post.scrapPosts
-                        ))
-                .from(post)
-                .leftJoin(post.messageRooms, messageRoom)
-                .leftJoin(post.scrapPosts, scrapPost)
-//                .where(messageRoom.post.id.eq(post.id))
-//                .where(scrapPost.post.id.eq(post.id))
-                .fetchJoin()
-//                .groupBy(post.id)
+    // scrapCount, messageCount 때문에 DTO로 바로 뱉을 수 없음
+    public Page<Post> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Pageable pageable) {
+        QueryResults<Post> results = jpaQueryFactory.
+                selectFrom(post)
+                .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
+                        wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
+                        priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
 
-        List<PostInfoDtoForGET_PreProcessor> responseList = results.getResults();
+        List<Post> responseList = results.getResults();
         long total = results.getTotal();
         return new PageImpl<>(responseList, pageable, total);
     }
+
+//    @Override
+//    public Page<PostInfoDtoForGET_PreProcessor> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Pageable pageable) {
+//        QueryResults<PostInfoDtoForGET_PreProcessor> results = jpaQueryFactory
+//                .select(Projections.constructor(PostInfoDtoForGET_PreProcessor.class,
+//                        post.id,
+//                        post.title,
+//                        post.content,
+//                        post.author.nickname,
+//                        post.messageRooms,
+//                        post.scrapPosts
+//                        ))
+//                .from(post)
+//                .leftJoin(post.messageRooms, messageRoom)
+//                .leftJoin(post.scrapPosts, scrapPost)
+////                .where(messageRoom.post.id.eq(post.id))
+////                .where(scrapPost.post.id.eq(post.id))
+//                .fetchJoin()
+////                .groupBy(post.id)
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetchResults();
+//
+//        List<PostInfoDtoForGET_PreProcessor> responseList = results.getResults();
+//        long total = results.getTotal();
+//        return new PageImpl<>(responseList, pageable, total);
+//    }
 
     @Override
     // 조인때문에 (select 결과로 얻지 못한 필드는 조인에서 사용할 수 없음) DTO로 바로 뱉는건 힘들거같다.
