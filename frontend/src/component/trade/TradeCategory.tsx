@@ -21,11 +21,7 @@ const TradeCategory = () => {
     const categories: string[] =
         ['전체', '도서', '생활가전', '의류', '유아도서', '유아동', '여성의류', '남성의류', '뷰티/미용', '스포츠/레저',
             '티켓/교환권', '식물', '가구', '반려동물용품', '가공용품', '취미/게임', '인테리어', '생활/주방']
-    // const categories: string[] =
-    //     ['전체', '도서', '의류', '유아도서', '여성의류', '남성의류', '스포츠/레저', '가구', '인테리어']
-    // const categories2: string[]=
-    //     ['생활가전',  '유아동',  '뷰티/미용',
-    //     '티켓/교환권', '식물', '반려동물용품', '가공용품', '취미/게임', '생활/주방']
+
     const onClickCategoryButton = (category)  => {
         dispatch(storeCategory(category))
         //확인하고 싶을때 : console.log(store.categoryReducer.category)
