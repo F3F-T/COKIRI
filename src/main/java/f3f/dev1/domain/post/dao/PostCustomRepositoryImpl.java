@@ -1,15 +1,13 @@
 package f3f.dev1.domain.post.dao;
 
+import com.querydsl.core.QueryFactory;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import f3f.dev1.domain.post.dto.PostDTO;
+import f3f.dev1.domain.message.model.QMessageRoom;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.post.model.QPost;
-import f3f.dev1.domain.tag.model.PostTag;
-import f3f.dev1.domain.tag.model.QPostTag;
-import f3f.dev1.domain.tag.model.QTag;
+import f3f.dev1.domain.post.model.QScrapPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,8 +17,10 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 
 import static com.querydsl.core.util.StringUtils.*;
+import static f3f.dev1.domain.message.model.QMessageRoom.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static f3f.dev1.domain.post.model.QPost.*;
+import static f3f.dev1.domain.post.model.QScrapPost.*;
 import static f3f.dev1.domain.tag.model.QPostTag.*;
 import static f3f.dev1.domain.tag.model.QTag.*;
 
@@ -46,14 +46,56 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
             return new PageImpl<>(responseList, pageable, total);
     }
 
+    @Override
+    // scrapCount, messageCount 때문에 DTO로 바로 뱉을 수 없음
+    public Page<Post> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Pageable pageable) {
+        QueryResults<Post> results = jpaQueryFactory.
+                selectFrom(post)
+                .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
+                        wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
+                        priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
 
+        List<Post> responseList = results.getResults();
+        long total = results.getTotal();
+        return new PageImpl<>(responseList, pageable, total);
+    }
+
+//    @Override
+//    public Page<PostInfoDtoForGET_PreProcessor> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Pageable pageable) {
+//        QueryResults<PostInfoDtoForGET_PreProcessor> results = jpaQueryFactory
+//                .select(Projections.constructor(PostInfoDtoForGET_PreProcessor.class,
+//                        post.id,
+//                        post.title,
+//                        post.content,
+//                        post.author.nickname,
+//                        post.messageRooms,
+//                        post.scrapPosts
+//                        ))
+//                .from(post)
+//                .leftJoin(post.messageRooms, messageRoom)
+//                .leftJoin(post.scrapPosts, scrapPost)
+////                .where(messageRoom.post.id.eq(post.id))
+////                .where(scrapPost.post.id.eq(post.id))
+//                .fetchJoin()
+////                .groupBy(post.id)
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetchResults();
+//
+//        List<PostInfoDtoForGET_PreProcessor> responseList = results.getResults();
+//        long total = results.getTotal();
+//        return new PageImpl<>(responseList, pageable, total);
+//    }
 
     @Override
+    // 조인때문에 (select 결과로 얻지 못한 필드는 조인에서 사용할 수 없음) DTO로 바로 뱉는건 힘들거같다.
     public Page<Post> findPostsByTags(List<String>tagNames, Pageable pageable) {
         QueryResults<Post> results = jpaQueryFactory
                 .selectFrom(post)
                 .leftJoin(post.postTags, postTag).fetchJoin()
-//                .leftJoin(postTag.tag, tag).on(postTag.tag.name.in(tagNames))
                 .where(postTag.tag.name.in(tagNames))
                 .groupBy(post.id)
                 .having(post.id.count().eq((long) tagNames.size()))
