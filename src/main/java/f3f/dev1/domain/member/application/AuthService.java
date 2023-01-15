@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -84,12 +85,12 @@ public class AuthService {
     @Transactional
     public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO)  {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        String accessByRefresh = valueOperations.get(accessTokenDTO.getAccessToken());
-        if (accessByRefresh == null) {
+        String refreshByAccess = valueOperations.get(accessTokenDTO.getAccessToken());
+        if (refreshByAccess == null) {
             throw new ExpireRefreshTokenException();
         }
         // 1. refresh token 검증
-        if (!jwtTokenProvider.validateToken(accessByRefresh)) {
+        if (!jwtTokenProvider.validateToken(refreshByAccess)) {
             throw new InvalidRefreshTokenException();
         }
 
@@ -97,14 +98,14 @@ public class AuthService {
         Authentication authentication = jwtTokenProvider.getAuthentication(accessTokenDTO.getAccessToken());
 
         // 3. 저장소에서 member id를 기반으로 refresh token 값 가져옴
-        String accessByMemberId = valueOperations.get(authentication.getName());
-        if (accessByMemberId == null) {
+        String refreshByMemberId = valueOperations.get(authentication.getName());
+        if (refreshByMemberId == null) {
             throw new LogoutUserException();
         }
 
         // 4. refresh token이 일치하는지 검사,
 
-        if (!accessByMemberId.equals(accessByRefresh)) {
+        if (!refreshByMemberId.equals(refreshByAccess)) {
             throw new TokenNotMatchException();
         }
 
@@ -126,6 +127,7 @@ public class AuthService {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.getAndDelete(Long.toString(SecurityUtil.getCurrentMemberId()));
         valueOperations.getAndDelete(token);
+
 
         return "SUCCESS";
     }

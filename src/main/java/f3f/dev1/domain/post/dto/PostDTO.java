@@ -69,6 +69,19 @@ public class PostDTO {
         String maxPrice;
     }
 
+    // 최적화 문제 및 페이징을 위해 태그는 별도의 검색 로직으로 빼두겠다.
+    // 그에 따라 태그를 제외한 검색 요청 DTO를 새로 만들겠음.
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SearchPostRequestExcludeTag {
+        String productCategory;
+        String wishCategory;
+        String minPrice;
+        String maxPrice;
+    }
+
     // U : Update 담당 DTO들
 
     @Getter
@@ -123,6 +136,18 @@ public class PostDTO {
         private String productCategory;
 
         private TradeStatus tradeStatus;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    // 동재 피드백 - 1 : 단순 조회를 위한 가벼운 DTO
+    public static class PostInfoDtoForGET {
+        private Long id;
+        private String title;
+        private String content;
+        private String authorNickname;
     }
 
     @Getter

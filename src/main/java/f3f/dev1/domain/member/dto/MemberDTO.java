@@ -355,6 +355,15 @@ public class MemberDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
+    public static class NewImageUrlDto {
+        private String newImageUrl;
+    }
+
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
     public static class GetMemberAddressListDTO{
         private List<AddressInfoDTO> memberAddress;
     }

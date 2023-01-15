@@ -34,7 +34,6 @@ public class CommentService {
      */
 
 
-    // 부모 자식 대통합
     // TODO : 부모 댓글이 null인데 depth가 1 이상인 요청들 잡아내야함, 비슷한 맥락으로 부모 있는데 depth 0인 요청 잡아내야 함
     @Transactional
     public CommentInfoDto saveComment(CreateCommentRequest createCommentRequest, Long currentMemberId) {
@@ -65,7 +64,7 @@ public class CommentService {
      */
 
     // id로 조회
-    // TODO URL 중복으로 컨트롤러가 삭제됐다. 후에 다시 컨트롤러가 다른 URL로 생기면 사용하겠음
+    // 현재는 사용하지 않는 로직
     @Transactional(readOnly = true)
     public CommentInfoDto findCommentById(Long id) {
         Comment comment = commentRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -78,9 +77,6 @@ public class CommentService {
     // post로 조회
     @Transactional(readOnly = true)
     public List<CommentInfoDto> findCommentsByPostId(Long postId) {
-        if(!commentRepository.existsByPostId(postId)) {
-            throw new NotFoundByIdException();
-        }
         List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
         List<Comment> comments = commentRepository.findByPostId(postId);
         for (Comment comment : comments) {

@@ -1,5 +1,6 @@
 package f3f.dev1.domain.member.api;
 
+import com.amazonaws.Response;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.address.model.Address;
@@ -20,8 +21,6 @@ import static f3f.dev1.domain.member.dto.MemberDTO.*;
 public class MemberController {
     private final MemberService memberService;
 
-
-    private final AuthService authService;
 
     // 유저 정보 조회
     @GetMapping(value = "/user")
@@ -54,11 +53,6 @@ public class MemberController {
 
     }
 
-    @PatchMapping(value = "/user/image")
-    public ResponseEntity<String> updateUserImage(@RequestBody UpdateUserImage updateUserImage) {
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.updateUserImage(updateUserImage, currentMemberId));
-    }
 
     // 유저 닉네임 업데이트
     @PatchMapping(value = "/user/nickname")
@@ -84,16 +78,16 @@ public class MemberController {
         return ResponseEntity.ok(memberService.updateDescription(currentMemberId, updateDescriptionDto));
     }
 
+    // 유저 이미지 url 업데이트
+    @PatchMapping(value = "/user/imageUrl")
+    public ResponseEntity<NewImageUrlDto> updateUserImageUrl(@RequestBody UpdateUserImage updateUserImage) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.updateUserImage(updateUserImage, currentMemberId));
+    }
+
     // 유저 주소 업데이트 --> AddressController로 변경
 
-    // 로그아웃
-    @DeleteMapping("/user/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) throws IOException {
 
-        String token = request.getHeader("Authorization").split(" ")[1];
-        System.out.println("token = " + token);
-        return ResponseEntity.ok(authService.logout(token));
-    }
 
 
     // 마이페이지용 조회 - 유저가 작성한 게시글 리스트 리턴

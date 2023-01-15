@@ -9,6 +9,7 @@ import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
+import f3f.dev1.domain.scrap.dto.ScrapDTO;
 import f3f.dev1.domain.scrap.dto.ScrapDTO.*;
 import f3f.dev1.domain.scrap.exception.DuplicateScrapByUserIdException;
 import f3f.dev1.domain.scrap.exception.NotFoundPostInScrapException;
@@ -17,6 +18,8 @@ import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,19 +57,20 @@ public class ScrapService {
 
     // 스크랩에 있는 포스트조회 메서드
     @Transactional(readOnly = true)
-    public GetScrapPostDTO getUserScrapPosts(Long memberId) {
-        Member user = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
-
-        Scrap scrapByUserId = scrapRepository.findScrapByMemberId(user.getId()).orElseThrow(NotFoundByIdException::new);
-        List<ScrapPost> scrapPosts = scrapByUserId.getScrapPosts();
-        List<PostDTO.PostInfoDto> posts = new ArrayList<>();
-        for (ScrapPost scrapPost : scrapPosts) {
-            posts.add(scrapPost.getPost().toInfoDto());
-        }
+    public Page<PostDTO.PostInfoDto> getUserScrapPosts(Long memberId, Pageable pageable) {
 
 
-        return GetScrapPostDTO.builder()
-                .scrapPosts(posts).build();
+        Scrap scrapByUserId = scrapRepository.findScrapByMemberId(memberId).orElseThrow(NotFoundByIdException::new);
+        Page<PostDTO.PostInfoDto> map = scrapPostRepository.findByScrapId(scrapByUserId.getId(), pageable).map(ScrapPost::postInfoDto);
+
+//        List<ScrapPost> scrapPosts = scrapByUserId.getScrapPosts();
+//        List<PostDTO.PostInfoDto> posts = new ArrayList<>();
+//        for (ScrapPost scrapPost : scrapPosts) {
+//            posts.add(scrapPost.getPost().toInfoDto());
+//        }
+
+
+        return map;
     }
 
     // 스크랩에 관심 포스트 추가 메소드

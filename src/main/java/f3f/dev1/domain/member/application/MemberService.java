@@ -141,10 +141,10 @@ public class MemberService {
     // TODO dto에 유저 검증 추가로 인한 코드 검토해야함
     // 유저 프사 변경 메소드
     @Transactional
-    public String updateUserImage(UpdateUserImage updateUserImage, Long currentMemberId) {
+    public NewImageUrlDto updateUserImage(UpdateUserImage updateUserImage, Long currentMemberId) {
         Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         member.updateImage(updateUserImage.getNewImageUrl());
-        return "UPDATE";
+        return NewImageUrlDto.builder().newImageUrl(updateUserImage.getNewImageUrl()).build();
     }
 
     // 유저 삭제 메소드
