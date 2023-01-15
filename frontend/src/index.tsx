@@ -31,6 +31,7 @@ import {
 import {PersistGate} from "redux-persist/integration/react";
 import userAddressInfoReducer from "./store/userAddressInfoReducer";
 import RefreshReducer from "./store/refreshReducer";
+import PostQueryStringReducer from "./store/postQueryStringReducer";
 
 /**
  * configureStore을 import해온다.
@@ -56,6 +57,7 @@ const rootReducer = combineReducers({
     userInfoReducer: userInfoReducer,
     userAddressInfoReducer: userAddressInfoReducer,
     refreshReducer : RefreshReducer,
+    postQueryStringReducer : PostQueryStringReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig,rootReducer);
