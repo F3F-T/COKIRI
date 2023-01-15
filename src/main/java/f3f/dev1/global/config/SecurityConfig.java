@@ -1,6 +1,6 @@
 package f3f.dev1.global.config;
 
-import f3f.dev1.domain.member.application.OAuth2UserService;
+import f3f.dev1.global.jwt.CustomLogoutSuccessHandler;
 import f3f.dev1.global.jwt.JwtAccessDeniedHandler;
 import f3f.dev1.global.jwt.JwtAuthenticationEntryPoint;
 import f3f.dev1.global.jwt.JwtTokenProvider;
@@ -23,6 +23,8 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
     private final RedisTemplate<String, String> redisTemplate;
+
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
 
 
@@ -66,7 +68,14 @@ public class SecurityConfig {
 
                 // JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용
                 .and()
-                .apply(new JwtSecurityConfig(jwtTokenProvider, redisTemplate));
+                .apply(new JwtSecurityConfig(jwtTokenProvider, redisTemplate))
+                .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
+                .clearAuthentication(true)
+                .logoutSuccessHandler(customLogoutSuccessHandler)
+                ;
 
 
 

@@ -12,12 +12,14 @@ import f3f.dev1.domain.member.dto.OAuthDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.Multipart;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,19 +130,27 @@ public class MemberAuthController {
         return new ResponseEntity<>(authService.signUp(signUpRequest), HttpStatus.CREATED);
     }
 
-    // 로그인
-    @PostMapping(value = "/login")
-    public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest) {
+    // 로그인 - TODO 크롬 자동 로그인 이용하려면 form data 형식도 열어놔야할듯
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserLoginDto> loginJson(@RequestBody LoginRequest loginRequest) {
         log.info("로그인 호출됐음");
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<UserLoginDto> loginForm(LoginRequest loginRequest) {
+        log.info("로그인 호출됐음");
+        return ResponseEntity.ok(authService.login(loginRequest));
+    }
+
+
     // 로그인 리다이렉트 페이지
     @GetMapping(value = "/login")
-    public ResponseEntity<String> loginRedirect(HttpServletRequest request) throws IOException {
-        String token = request.getHeader("Authorization").split(" ")[1];
-        log.info("token = " + token);
-        return ResponseEntity.ok(authService.logout(token));
+    public ResponseEntity<String> loginRedirect(HttpServletResponse response) throws IOException {
+//        String token = request.getHeader("Authorization").split(" ")[1];
+//        log.info("token = " + token);
+//        return ResponseEntity.ok(authService.logout(token));
+        return ResponseEntity.ok("LOGOUT");
     }
 
     // 로그아웃은 스프링 시큐리티에서 기본적으로 제공해주는 기능사용
