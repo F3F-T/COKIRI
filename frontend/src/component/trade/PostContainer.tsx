@@ -6,7 +6,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import myImage from "../../img/cokkiriLogo.png"
 import Card from "../tradeCard/Card"
 import Comments from "../comments/Comments";
-import {storeCategory} from "../../store/categoryReducer";
+import categoryReducer, {storeCategory} from "../../store/categoryReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {storePostDetail} from "../../store/postDetailReducer";
 import TalkList from "../talk/TalkList";
@@ -32,11 +32,17 @@ interface PostType {
     tagNames? : string[];
 }
 
+type categoryOption = "wishCategory" | "productCategory" | "both"
+interface postProps {
+    categoryOption? : categoryOption,
+}
+const PostContainer = (postProps : postProps) => {
 
-const PostContainer = () => {
-
+    console.log(postProps.categoryOption);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    let wishCategory = "";
+    let productCategory = "";
 
     const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
 
@@ -44,11 +50,26 @@ const PostContainer = () => {
 
     const [postList,setPostList] = useState<PostType[]>(null)
     const [loading,setLoading] = useState(false);
+
+    if(postProps.categoryOption === "wishCategory")
+    {
+        wishCategory = store.categoryReducer.category;
+    }
+    else if(postProps.categoryOption === "productCategory")
+    {
+        productCategory = store.categoryReducer.category;
+    }
+    else if(postProps.categoryOption === "both")
+    {
+        wishCategory = store.categoryReducer.category;
+        productCategory = store.categoryReducer.category;
+    }
+
     async function getPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
             //query string 날리기
-            const res = await Api.get('/post');
+            const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=&maxPrice=`);
             console.log(res);
             console.log(res.data)
             setPostList(prevState => {
