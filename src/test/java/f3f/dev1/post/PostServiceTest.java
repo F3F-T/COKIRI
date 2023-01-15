@@ -568,6 +568,10 @@ public class PostServiceTest {
         Page<PostSearchResponseDto> resultList3 = postService.findPostsWithTagNameList(test3, pageRequest);
         assertThat(resultList3).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
 
+        List<String> testPlz = new ArrayList<>();
+        testPlz.add("해시태그");
+        Page<PostSearchResponseDto> resultListPlz = postService.findPostsWithTagNameList(testPlz, pageRequest);
+        assertThat(resultListPlz).extracting("title").isEmpty();
         // 빈 리스트는 처리하지 못함. 컨트롤러 단에서 컷해주자.
 //        Page<PostInfoDtoForGET> resultList4 = postService.findPostsWithTagNameList(new ArrayList<>(), pageRequest);
 //        assertThat(resultList4).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");

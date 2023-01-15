@@ -9,6 +9,7 @@ import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dto.TagDTO;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import static f3f.dev1.domain.tag.dto.TagDTO.*;
 
 @RestController
 @Validated
+@Slf4j
 @RequiredArgsConstructor
 public class PostController {
 
@@ -80,8 +82,10 @@ public class PostController {
             Pageable pageable) {
         Page<PostSearchResponseDto> resultList;
         if(!tagNames.isEmpty()) {
+            log.info("tagNames 비어있지 않음 - " + tagNames.get(0));
             resultList = postService.findPostsWithTagNameList(tagNames, pageable);
         } else {
+            log.info("tagNames 비어있음.");
             resultList = postService.findAll(pageable);
         }
         return new ResponseEntity<>(resultList, HttpStatus.OK);
