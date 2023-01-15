@@ -11,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import java.beans.Visibility;
 import java.util.List;
 
 public class MessageRoomDTO {
@@ -22,19 +23,19 @@ public class MessageRoomDTO {
     public static class MessageRoomSaveRequest{
 
         @NonNull
-        private Post post;
+        private Long postId;
 
-        @NotNull
-        private Member seller;
+//        @NotNull
+//        private Long sellerId;
 
         @NonNull
-        private Member buyer;
+        private Long buyerId;
 
-        public MessageRoom toEntity(){
+        public MessageRoom toEntity(Post post, Member buyer){
             return MessageRoom.builder()
-                    .post(this.post)
-                    .seller(this.seller)
-                    .buyer(this.buyer)
+                    .post(post)
+                    .seller(post.getAuthor())
+                    .buyer(buyer)
                     .build();
 
         }
@@ -44,12 +45,26 @@ public class MessageRoomDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DeleteMessageRoomRequest{
-        private Long Id;
-//        private Long sellerId;
-//        private Long buyerId;
+        private Long id;
         private Long memberId;
-        private Post post;
-        private List<Message> messages;
+        private Long postId;
+        //boolean deleteStatus;
+
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class MessageRoomInfoDto{
+        private Long id;
+        private String sellerNickName;
+        private String buyerNickName;
+        private Long postId;
+        private Long sellerId;
+        private Long buyerId;
+        //private List<Message> messages;
+
     }
 
 

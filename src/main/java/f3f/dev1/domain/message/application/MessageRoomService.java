@@ -1,6 +1,7 @@
 package f3f.dev1.domain.message.application;
 
 import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRepository;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
@@ -21,20 +22,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
 
 import static f3f.dev1.domain.message.dto.MessageDTO.*;
 import static f3f.dev1.domain.message.dto.MessageRoomDTO.*;
 import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
 
-/*
-메시지룸을 만들고 메시지 만들기
-C:
-R:
-U:
-D:
-    - 거래 완료 후, 7일 뒤에 사라짐.
- */
 @Service
 @RequiredArgsConstructor
 public class MessageRoomService {
@@ -46,17 +39,21 @@ public class MessageRoomService {
     private final MessageRepository messageRepository;
     private final MessageService messageService;
 
-    public Long createMessageRoom(MessageRoomSaveRequest saveRequest){
-        Post post = postRepository.findById(saveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+    public MessageRoomInfoDto createMessageRoom(MessageRoomSaveRequest saveRequest, Long currentMemberId){
+        Post post = postRepository.findById(saveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         //파는 사람이 유효한지 확인(메시지를 받는 입장임)
-        Member seller = memberRepository.findById(saveRequest.getSeller().getId()).orElseThrow(NotFoundByIdException::new);
+        Member seller = memberRepository.findById(post.getAuthor().getId()).orElseThrow(NotFoundByIdException::new);
         //메시지를 보내는 사람은 물건을 사고자하는 사람.
-        Member buyer = memberRepository.findById(saveRequest.getBuyer().getId()).orElseThrow(NotFoundByIdException::new);
+        Member buyer = memberRepository.findById(saveRequest.getBuyerId()).orElseThrow(NotFoundByIdException::new);
         //거래 상태 확인을 위해 포스트에 있는 트레이드 아이디로 가져옴.
-        Trade trade = tradeRepository.findByPostId(saveRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(saveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+
+        if(!buyer.getId().equals(currentMemberId)){
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
+        }
 
         //포스트 작성자는 메시지를 받는 사람. 즉, 자신한테는 메시지를 남기지 못함.
-        if(buyer.getId().equals(post.getAuthor())){
+        if(buyer.getId().equals(seller.getId())){
             throw new CanNotMakeMessegeRoom("본인 게시물입니다.");
         }
         //거래 상태 확인하고 메시지 룸 만들기
@@ -65,13 +62,16 @@ public class MessageRoomService {
             throw new CanNotSendMessageByTradeStatus();
         }
 
-        MessageRoom messageRoom = saveRequest.toEntity();
+        MessageRoom messageRoom = saveRequest.toEntity(post, buyer);
         messageRoomRepository.save(messageRoom);
+        MessageRoomInfoDto messageRoomInfoDto = messageRoom.toMessageRoomInfo();
+
+        post.getMessageRooms().add(messageRoom);
         //두명의 유저 채팅 리스트에 추가.
         seller.getSellingRooms().add(messageRoom);
         buyer.getBuyingRooms().add(messageRoom);
 
-        return messageRoom.getId();
+        return messageRoomInfoDto;
     }
 
     //채팅방 클릭할 때, 조회 (채팅창은 멤버에서 관리, 포스트에서 열어볼 수 없음)
@@ -84,6 +84,43 @@ public class MessageRoomService {
 //        //findById
 //        return messageRoom.getMessages();
 //    }
+
+    //유저에서 메시지룸들 조회(sellingRoom, buyingRoom 통합)
+//    @Transactional(readOnly = true)
+//    public List<MessageRoom> ReadMessageRoomsByUserId(Long id){
+//        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+//        List<MessageRoom> totalMsgRoom = new ArrayList<>();
+//        totalMsgRoom.addAll(member.getBuyingRooms());
+//        totalMsgRoom.addAll(member.getSellingRooms());
+////        for(MessageRoom buyingMsgroom : member.getBuyingRooms())
+////            totalMsgRoom.add(buyingMsgroom);
+////        for(MessageRoom sellingMsgroom : member.getSellingRooms())
+////            totalMsgRoom.add(sellingMsgroom);
+//        return totalMsgRoom;
+//    }
+
+    @Transactional(readOnly = true)
+    public List<MessageRoom> ReadMessageRoomsByUserId(Long id){
+        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        List<MessageRoom> totalMsgRoom = new ArrayList<>();
+        totalMsgRoom.addAll(member.getBuyingRooms());
+        totalMsgRoom.addAll(member.getSellingRooms());
+
+        return totalMsgRoom;
+    }
+
+    //유저에서 sellingRoom 조회
+    @Transactional(readOnly = true)
+    public List<MessageRoom> ReadSellingMessageRoomsByUserId(Long id){
+        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        return member.getSellingRooms();
+    }
+    //유저에서 BuyingRoom 조회
+    @Transactional(readOnly = true)
+    public List<MessageRoom> ReadBuyingMessageRoomsByUserId(Long id){
+        Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        return member.getBuyingRooms();
+    }
     @Transactional(readOnly = true)
     public List<Message> ReadMessagesByMessageRoomId(Long id){
        MessageRoom messageRoom = messageRoomRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -106,40 +143,42 @@ public class MessageRoomService {
     //메시지 룸을 그냥 합치는게 낫지 않을까?
     //내 메시지 방은 우선 내가 관리할 수 있게 함. - 디비에는 남게!
     @Transactional
-    public String deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest){
+    public DeleteMessageRoomRequest deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest, Long currentMemberId){
         //메시지룸을 유저가 가지고 있는것과 비교해야함. -> 멤버에는 메시지 룸 리스트가 있음.
         //메시지룸은 어차피 디비상에서는 지워지지 않을거지만 유저와 비교 편리하게 하기 위해 가져옴.
         //유저가 센딩 메시지룸과 리시브 메시지룸을 구별하면 되기 때문에 그냥 객체로 두는게 나은가? 메시지 레포지토리가 아니라 멤버에서 지워야해서 헷갈림.
         MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRoomRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Member member = memberRepository.findById(deleteMessageRoomRequest.getMemberId()).orElseThrow(NotFoundByIdException::new);
-        Post post = postRepository.findById(deleteMessageRoomRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
-        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPost().getId()).orElseThrow(NotFoundByIdException::new);
-
-        //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정
-        //유저 메시지 방에 있는지 확인해야함.
-        //TODO 그 전에 어디 메시지 룸인지 확인을 해야되나? - 테스트로 확인해보자
-        //포스트 작성자는 seller이기 때문에 메시지를 받는 사람임. -> 우리는 내가 보낸 메시지방, 리스트로 나눠져있지만 프론트는 아니기때문에 우선 이렇게 구현
-        if(post.getAuthor().equals(member.getId())) {
-            for (MessageRoom mr : member.getSellingRooms()) {//객체 비교 보다 아이디 비교가 빠르려나?
-                //selling 방에 지우고자 하는 채팅방이 있으면 메시지 다 지움
-                    if(mr.getId().equals(messageRoom.getId())) {
-                        mr.getMessages().clear();
-                    }
-                    memberRepository.deleteById(mr.getId());
-                    break;
-                }
-            }
-        //멤버가 포스트 작성자가 아니면 다 buyer
-        else{
-            for(MessageRoom mr : member.getBuyingRooms()){
-                if(mr.getId().equals(messageRoom.getId())){
-                    mr.getMessages().clear();
-                }
-                memberRepository.deleteById(mr.getId());
-                break;
-            }
+        Post post = postRepository.findById(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        if(!member.getId().equals(currentMemberId)){
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
-    return "DELETE";
+
+//
+//        //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정
+//        //유저 메시지 방에 있는지 확인해야함.
+//        //TODO 그 전에 어디 메시지 룸인지 확인을 해야되나? - 테스트로 확인해보자
+//        //포스트 작성자는 seller이기 때문에 메시지를 받는 사람임. -> 우리는 내가 보낸 메시지방, 리스트로 나눠져있지만 프론트는 아니기때문에 우선 이렇게 구현
+//        if(post.getAuthor().equals(member.getId())) {
+//            for (MessageRoom mr : member.getSellingRooms()) {//객체 비교 보다 아이디 비교가 빠르려나?
+//                //selling 방에 지우고자 하는 채팅방이 있으면 메시지 다 지움
+//                    if(mr.getId().equals(messageRoom.getId())) {
+//                        mr.getMessages().clear();
+//                    }
+//
+//                }
+//            }
+//        //멤버가 포스트 작성자가 아니면 다 buyer
+//        else{
+//            for(MessageRoom mr : member.getBuyingRooms()){
+//                if(mr.getId().equals(messageRoom.getId())){
+//                    mr.getMessages().clear();
+//                }
+//
+//            }
+//        }
+    return deleteMessageRoomRequest;
     }
 
 

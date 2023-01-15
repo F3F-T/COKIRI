@@ -1,5 +1,7 @@
 package f3f.dev1.domain.message.model;
 
+import f3f.dev1.domain.member.dto.MemberDTO;
+import f3f.dev1.domain.message.dto.MessageRoomDTO;
 import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.model.Member;
@@ -43,6 +45,16 @@ public class MessageRoom extends BaseTimeEntity {
         this.post = post;
         this.seller = seller;
         this.buyer = buyer;
+    }
+    public MessageRoomDTO.MessageRoomInfoDto toMessageRoomInfo(){
+        return MessageRoomDTO.MessageRoomInfoDto.builder()
+                .id(this.getId())
+                .sellerNickName(this.seller.getNickname())
+                .buyerNickName(this.buyer.getNickname())
+                .postId(this.post.getId())
+                .sellerId(this.seller.getId())
+                .buyerId(this.buyer.getId())
+                .build();
     }
 }
 
