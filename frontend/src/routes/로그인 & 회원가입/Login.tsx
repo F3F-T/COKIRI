@@ -86,10 +86,13 @@ const Login = () => {
             //jwt 토큰 redux에 넣기
             const jwtToken = accessToken.tokenInfo;
             console.log(jwtToken)
+            console.log(res.data.userInfo)
 
             dispatch(setToken(jwtToken));
             dispatch(setUserInfo(res.data.userInfo))
-            console.log(store)
+            dispatch(setOnelineIntro(res.data.userInfo.description))
+
+            console.log("store",store)
             alert("로그인 성공")
             navigate(`/`)
             }
@@ -138,13 +141,14 @@ const Login = () => {
                 //jwt 토큰 redux에 넣기
                 const jwtToken = res1.data.tokenInfo;
                 console.log("tststaD토큰",jwtToken)
+                console.log("구글유저정보", res1.data)
                 dispatch(deleteToken());
                 dispatch(setToken(jwtToken));
                 dispatch(deleteUserInfo())
                 dispatch(setUserNick(res1.data.userInfo.nickname))//얘는 뱉는거로
                 dispatch(setUserName(res1.data.userInfo.userName))
                 dispatch(setUserProfile(res1.data.userInfo.imageUrl))
-                dispatch(setOnelineIntro(res1.data.userInfo.onelineIntro))
+                dispatch(setOnelineIntro(res1.data.userInfo.description))
 
                 navigate(`/`)
                 }

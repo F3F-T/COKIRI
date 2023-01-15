@@ -13,7 +13,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
 import {Simulate} from "react-dom/test-utils";
 import input = Simulate.input;
-import {setUserInfo, setUserNick, setUserProfile,setOnelineIntro} from "../store/userInfoReducer";
+import {setUserInfo, setUserNick, setUserProfile, setOnelineIntro, deleteUserInfo} from "../store/userInfoReducer";
 import {userInfo} from "os";
 import TextInput from "./common/TextInput";
 import Message from "./로그인 & 회원가입/Message";
@@ -220,6 +220,9 @@ const MyPage = () =>  {
                 description: inputIntro
             }
             const res = await Api.patch('/user/description',intro);
+            console.log("한줄소개 리덕스",res.data.newDescription)
+            console.log("한줄소개 리덕스2",info.onelineIntro)
+
         }
         catch (err)
         {
@@ -233,10 +236,28 @@ const MyPage = () =>  {
             setIntro(inputIntro);
             dispatch(setOnelineIntro(inputIntro));
             oneLineIntro(inputIntro)
+            console.log("한줄소개입니다.",info.onelineIntro)
+
         }
         else{
         }
     }
+    console.log("한줄소개입니다.",info.onelineIntro)
+
+    async function logOut() {
+        try{
+            const res = await Api.get('/logout');
+            dispatch(deleteUserInfo())
+            alert("로그아웃");
+            navigate(`/`)
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("로그아웃 실패");
+        }
+    }
+    logOut()
     return (
             <>
             <div className={styles.profile}>
@@ -267,6 +288,8 @@ const MyPage = () =>  {
                             <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}
                     <button className={styles.nickChangeBtn} onClick={nicknameChange}>변경</button>
                     <input className={styles.intro} placeholder={info.onelineIntro} onChange={inputIntro} ></input>
+                    <button className={styles.nickChangeBtn} onClick={logOut}>로그아웃</button>
+
                     <div className={styles.intro2}>
                         <div className={styles.i1}>
                             <p>게시글</p> <p className={styles.postNum}>{postNum}</p>
