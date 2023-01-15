@@ -158,7 +158,6 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
             })
         }
         else{
-
         }
     }
 

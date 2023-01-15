@@ -13,7 +13,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
 import {Simulate} from "react-dom/test-utils";
 import input = Simulate.input;
-import {setUserInfo, setUserNick, setUserProfile} from "../store/userInfoReducer";
+import {setUserInfo, setUserNick, setUserProfile,setOnelineIntro} from "../store/userInfoReducer";
 import {userInfo} from "os";
 import TextInput from "./common/TextInput";
 import Message from "./로그인 & 회원가입/Message";
@@ -63,14 +63,9 @@ const MyPage = () =>  {
     //프로필사진
     const[profile,setProfile] = useState("")
     const fileInput = useRef(null)
+    //한줄소개
+    const[intro,setIntro] = useState("")
 
-
-    // useEffect(()=>{
-    //     if (userInfo) {
-    //         dispatch(setUserNick(userInfo.newNickname))
-    //         console.log("리덕스222.", info.nickname)
-    //     }
-    // },[userInfo])
     console.log("리덕스.", info.nickname)
     console.log("useState.", newNick)
     if (! readNickName) {
@@ -200,20 +195,6 @@ const MyPage = () =>  {
             alert("get 실패2");
         }
     }
-
-    // const onChangeImg = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     e.preventDefault();
-    //
-    //     if(e.target.files){
-    //         const uploadFile = e.target.files[0]
-    //         const formData = new FormData()
-    //         formData.append('files',uploadFile)
-    //         console.log("프로필사진",uploadFile.name)
-    //         console.log("프로필사진 새로운 방식",formData.get('files'))
-    //         dispatch(setUserProfile(uploadFile.name))
-    //     }
-    //
-    // }
     const onChangeImg = async (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         if(e.target.files){
@@ -221,8 +202,6 @@ const MyPage = () =>  {
             console.log('uploadFile',uploadFile);
             const formData = new FormData()
             formData.append('imageFiles',uploadFile)
-            // const res = await axios.post("/auth/image", formData);
-            // console.log('formdata2',res);
             const res = await axios.post("http://localhost:8080/auth/image", formData);
             console.log("리턴 데이터 ", res.data.imageUrls[0])
             dispatch(setUserProfile(res.data.imageUrls[0]))
@@ -230,42 +209,34 @@ const MyPage = () =>  {
                 userId : info.id,
                 newImageUrl : res.data.imageUrls[0],
             }
-            console.log("프 리덕스",mbody)
             const res2 = await Api.patch("/user/imageUrl",mbody);
-            console.log("프 리덕스2",res2)
-
-            // await axios({
-            //     method: 'post',
-            //     url: 'http://localhost:8080/auth/image',
-            //     data: formData,
-            //     headers: {
-            //         'Content-Type': 'multipart/form-data',
-            //     },
-            // });
-
-        }
-    }
-    console.log("프로필 리덕스",info.imageUrl)
-    console.log("프로필 리덕스2",info.imageUrl[0])
-
-    async function onChangeImg1(e: React.ChangeEvent<HTMLInputElement>) {
-        e.preventDefault();
-        try {
-            console.log("프사변경들어옴");
-            const uploadFile = e.target.files[0]
-            console.log('uploadFile',uploadFile);
-            const formData = new FormData()
-            formData.append('files',uploadFile)
-            const res = await axios.post("http://localhost:8080/auth/image", formData);
-            alert('프사 변경 성공');
-
-        } catch (err) {
-            console.log(err);
-            alert('프사 변경 성공');
         }
     }
 
-
+    async function oneLineIntro(inputIntro:string) {
+        try{
+            const intro={
+                userId: info.id,
+                description: inputIntro
+            }
+            const res = await Api.patch('/user/description',intro);
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("한줄소개 실패");
+        }
+    }
+    const inputIntro= (e) => {
+        let inputIntro = e.target.value;
+        if (inputIntro.length > 0) {
+            setIntro(inputIntro);
+            dispatch(setOnelineIntro(inputIntro));
+            oneLineIntro(inputIntro)
+        }
+        else{
+        }
+    }
     return (
             <>
             <div className={styles.profile}>
@@ -282,7 +253,7 @@ const MyPage = () =>  {
                 </div>
                 <div className={styles.userInfo}>
                     <div className={styles.nickName}>{newNick}</div>
-                    <TextInput placeholder={info.nickname} onBlur={onChangeNickname}/>
+                    <TextInput placeholder={info.nickname} onChange={onChangeNickname}/>
                     {(validationCheck.nicknameCheck === undefined &&
                             <Message validCheck={validationCheck.nicknameCheckBoolean} content={""}/>)
                         ||
@@ -295,7 +266,7 @@ const MyPage = () =>  {
                         (validationCheck.nicknameCheck === "duplicated" &&
                             <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}
                     <button className={styles.nickChangeBtn} onClick={nicknameChange}>변경</button>
-                    <input className={styles.intro} placeholder={"한 줄 소개를 입력하세요."}></input>
+                    <input className={styles.intro} placeholder={info.onelineIntro} onChange={inputIntro} ></input>
                     <div className={styles.intro2}>
                         <div className={styles.i1}>
                             <p>게시글</p> <p className={styles.postNum}>{postNum}</p>

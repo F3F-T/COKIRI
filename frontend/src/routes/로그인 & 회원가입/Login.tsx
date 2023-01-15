@@ -13,7 +13,14 @@ import {useDispatch, useSelector} from "react-redux";
 import {setToken, deleteToken} from "../../store/jwtTokenReducer";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api"
-import {setUserInfo, setUserProfile, deleteUserInfo, setUserNick, setUserName} from "../../store/userInfoReducer";
+import {
+    setUserInfo,
+    setUserProfile,
+    deleteUserInfo,
+    setUserNick,
+    setUserName,
+    setOnelineIntro
+} from "../../store/userInfoReducer";
 
 const Login = () => {
 
@@ -137,6 +144,8 @@ const Login = () => {
                 dispatch(setUserNick(res1.data.userInfo.nickname))//얘는 뱉는거로
                 dispatch(setUserName(res1.data.userInfo.userName))
                 dispatch(setUserProfile(res1.data.userInfo.imageUrl))
+                dispatch(setOnelineIntro(res1.data.userInfo.onelineIntro))
+
                 navigate(`/`)
                 }
             catch (err) {
