@@ -72,7 +72,7 @@ const Login = () => {
 
             //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-            const res = await Api.post('/auth/login',userInfo);
+            const res = await Api.post('/login',userInfo);
             console.log(res)
             const accessToken = res.data;
 
@@ -136,6 +136,7 @@ const Login = () => {
                 dispatch(deleteUserInfo())
                 dispatch(setUserNick(res1.data.userInfo.nickname))//얘는 뱉는거로
                 dispatch(setUserName(res1.data.userInfo.userName))
+                dispatch(setUserProfile(res1.data.userInfo.imageUrl))
                 navigate(`/`)
                 }
             catch (err) {
@@ -191,11 +192,4 @@ const Login = () => {
 }
 //
 
-function Modal2(){
-    return(
-        <div className={styles.modal}>
-            모달창입니다.
-        </div>
-    )
-}
 export default Login;

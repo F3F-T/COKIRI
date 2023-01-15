@@ -24,7 +24,7 @@ const initialUserInfoState : UserInfo = {
     birthDate: 0,
     email: "",
     id: 0,
-    imageUrl: "https://cdn-icons-png.flaticon.com/128/7178/7178514.png",
+    imageUrl: "",
     loginType: "",
     nickname: "",
     phoneNumber: "",
