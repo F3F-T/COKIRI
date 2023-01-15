@@ -54,6 +54,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
                         wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
                         priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
+                .orderBy(post.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
@@ -99,6 +100,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(postTag.tag.name.in(tagNames))
                 .groupBy(post.id)
                 .having(post.id.count().eq((long) tagNames.size()))
+                .orderBy(post.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
