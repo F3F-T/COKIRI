@@ -5,9 +5,7 @@ import f3f.dev1.domain.category.exception.NotFoundProductCategoryNameException;
 import f3f.dev1.domain.category.exception.NotFoundWishCategoryNameException;
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.comment.dao.CommentRepository;
-import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.domain.comment.model.Comment;
-import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
@@ -29,14 +27,11 @@ import f3f.dev1.domain.tag.exception.NotFoundByPostAndTagException;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.domain.trade.dao.TradeRepository;
-import f3f.dev1.domain.trade.dto.TradeDTO;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,11 +91,11 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostInfoDtoForGET> findAll(Pageable pageable) {
+    public Page<PostSearchResponseDto> findAll(Pageable pageable) {
         Page<Post> all = postRepository.findAll(pageable);
-        List<PostInfoDtoForGET> resultList = new ArrayList<>();
+        List<PostSearchResponseDto> resultList = new ArrayList<>();
         for (Post post : all) {
-            resultList.add(post.toInfoDtoForGET());
+            resultList.add(post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size()));
         }
         return new PageImpl<>(resultList);
     }
@@ -133,28 +128,49 @@ public class PostService {
 
 
 
+//    @Transactional(readOnly = true)
+//    public Page<PostInfoDtoWithTag> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
+//        Page<Post> postPages = postCustomRepository.findPostsByCondition(searchPostRequestExcludeTag, pageable);
+//        List<PostInfoDtoWithTag> dtoList = new ArrayList<>();
+//        for (Post post : postPages) {
+//            List<PostTag> postTags = postTagRepository.findByPost(post);
+//            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+//            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+//            List<String> tagNamesOfPost = new ArrayList<>();
+//            for (PostTag postTag : postTags) {
+//                tagNamesOfPost.add(postTag.getTag().getName());
+//            }
+//            dtoList.add(post.toInfoDtoWithTag(tagNamesOfPost, (long) scrapPosts.size(), (long) messageRooms.size()));
+//        }
+//        return new PageImpl<>(dtoList);
+//    }
+
+
     @Transactional(readOnly = true)
-    public Page<PostInfoDtoWithTag> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
-        Page<Post> postPages = postCustomRepository.findPostsByCondition(searchPostRequestExcludeTag, pageable);
-        List<PostInfoDtoWithTag> dtoList = new ArrayList<>();
-        for (Post post : postPages) {
-            List<PostTag> postTags = postTagRepository.findByPost(post);
-            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-            List<String> tagNamesOfPost = new ArrayList<>();
-            for (PostTag postTag : postTags) {
-                tagNamesOfPost.add(postTag.getTag().getName());
-            }
-            dtoList.add(post.toInfoDtoWithTag(tagNamesOfPost, (long) scrapPosts.size(), (long) messageRooms.size()));
+    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
+        List<PostSearchResponseDto> list = new ArrayList<>();
+        Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
+        for (Post post : dtoPages) {
+            PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size());
+            list.add(build);
         }
-        return new PageImpl<>(dtoList);
+        return new PageImpl<>(list);
     }
 
-    public Page<PostInfoDtoForGET> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
+
+//    @Transactional(readOnly = true)
+//    public Page<PostInfoDtoForGET_PreProcessor> findPostDtosByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
+//        Page<PostInfoDtoForGET_PreProcessor> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
+//        return dtoPages;
+//    }
+
+    @Transactional(readOnly = true)
+    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
         Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
-        List<PostInfoDtoForGET> resultList = new ArrayList<>();
+        List<PostSearchResponseDto> resultList = new ArrayList<>();
         for (Post post : dtoList) {
-            resultList.add(post.toInfoDtoForGET());
+            PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size());
+            resultList.add(build);
         }
         return new PageImpl<>(resultList);
     }

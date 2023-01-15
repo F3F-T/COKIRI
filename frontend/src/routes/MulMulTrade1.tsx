@@ -36,7 +36,7 @@ const MulmulTrade1 = () => {
                         : <button className={`${styles["newsetBtn"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>누적도순</button>
                     }
                 </div>
-                <PostContainer/>
+                <PostContainer categoryOption = {"productCategory"}/>
             </div>
         </div>
     );
