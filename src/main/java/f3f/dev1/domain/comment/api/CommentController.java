@@ -34,7 +34,7 @@ public class CommentController {
     // 게시글 단위 댓글 조회 기능만 제공
     @GetMapping(value = "/post/{postId}/comments")
     public ResponseEntity<List<CommentInfoDto>> findCommentsByPostId(@PathVariable(name = "postId") Long postId) {
-        List<CommentInfoDto> commentInfoDtoList = commentService.findCommentsByPostId(postId);
+        List<CommentInfoDto> commentInfoDtoList = commentService.findCommentDtosByPostId(postId);
         return new ResponseEntity<>(commentInfoDtoList, HttpStatus.OK);
     }
 

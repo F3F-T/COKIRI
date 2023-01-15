@@ -9,7 +9,7 @@ import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.dao.ScrapPostRepository;
+import f3f.dev1.domain.scrap.dao.ScrapPostRepository;
 import f3f.dev1.domain.scrap.application.ScrapService;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.dto.ScrapDTO.DeleteScrapPostDTO;

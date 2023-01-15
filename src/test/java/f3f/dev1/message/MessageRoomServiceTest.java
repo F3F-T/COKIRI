@@ -1,5 +1,6 @@
 package f3f.dev1.message;
 
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.category.application.CategoryService;
 import f3f.dev1.domain.category.dao.CategoryRepository;
 import f3f.dev1.domain.category.dto.CategoryDTO;
@@ -16,12 +17,9 @@ import f3f.dev1.domain.message.dao.MessageRepository;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.dto.MessageDTO;
 import f3f.dev1.domain.message.dto.MessageRoomDTO;
-import f3f.dev1.domain.message.exception.CanNotDeleteMessage;
+import f3f.dev1.domain.message.exception.CanNotMakeMessegeRoom;
 import f3f.dev1.domain.message.exception.CanNotSendMessageByTradeStatus;
-import f3f.dev1.domain.message.exception.MessageException;
-import f3f.dev1.domain.message.model.Message;
 import f3f.dev1.domain.message.model.MessageRoom;
-import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.post.dao.PostRepository;
@@ -33,7 +31,7 @@ import f3f.dev1.domain.trade.application.TradeService;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.dto.TradeDTO;
 import f3f.dev1.domain.trade.model.Trade;
-import org.junit.jupiter.api.Assertions;
+import io.netty.util.internal.UnstableApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,20 +39,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @SpringBootTest
-public class MessageServiceTest {
+public class MessageRoomServiceTest {
     @Autowired
     MemberRepository memberRepository;
     @Autowired
     PostRepository postRepository;
-    @Autowired
-    PostService postService;
     @Autowired
     MessageRepository messageRepository;
     @Autowired
@@ -75,9 +74,10 @@ public class MessageServiceTest {
     ScrapRepository scrapRepository;
     @Autowired
     TagRepository tagRepository;
-
     @Autowired
     MemberService memberService;
+    @Autowired
+    PostService postService;
 
     @Autowired
     AuthService authService;
@@ -88,6 +88,7 @@ public class MessageServiceTest {
 
     @Autowired
     EmailCertificationService emailCertificationService;
+
 
 
     @BeforeEach
@@ -101,7 +102,6 @@ public class MessageServiceTest {
         tradeRepository.deleteAll();
     }
 
-
     // 주소 오브젝트 생성
     public Address createAddress() {
         return Address.builder()
@@ -111,6 +111,7 @@ public class MessageServiceTest {
                 .longitude("127.12170")
                 .build();
     }
+
 
     // 회원가입 DTO 생성 메소드
     public MemberDTO.SignUpRequest createSignUpRequest1() {
@@ -161,14 +162,6 @@ public class MessageServiceTest {
                 .password("password").build();
     }
 
-    // 업데이트 DTO 생성 메소드
-    public MemberDTO.UpdateUserInfo createUpdateRequest() {
-        return MemberDTO.UpdateUserInfo.builder()
-                .address(createAddress())
-                .nickname("newNickname")
-                .phoneNumber("01088888888")
-                .build();
-    }
     public PostDTO.PostSaveRequest createPostSaveRequest(Member author, boolean tradeEachOther, String productName, String wishName) {
         return PostDTO.PostSaveRequest.builder()
                 .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
@@ -180,13 +173,22 @@ public class MessageServiceTest {
                 .wishCategory(wishName)
                 .build();
     }
-
+    public PostDTO.PostSaveRequest createPostSaveRequest2(Member author, boolean tradeEachOther, String productName, String wishName) {
+        return PostDTO.PostSaveRequest.builder()
+                .content("읽다가 밤샘 심심하신분 읽으세요. 재미 감동 다 있음.")
+                .title("이 책 존잼 거래하실분")
+                .tradeEachOther(tradeEachOther)
+                .authorId(author.getId())
+                .productCategory(productName)
+                .tagNames(new ArrayList<>())
+                .wishCategory(wishName)
+                .build();
+    }
     public TradeDTO.CreateTradeDto createTradeDto(Long sellerId, Long postId) {
         return TradeDTO.CreateTradeDto.builder()
                 .sellerId(sellerId)
                 .postId(postId).build();
     }
-
     private CategoryDTO.CategorySaveRequest createCategoryDto(String name, Long memberId, Long depth, Long parentId) {
         CategoryDTO.CategorySaveRequest saveRequest = new CategoryDTO.CategorySaveRequest(name, memberId, depth, parentId);
         return saveRequest;
@@ -200,22 +202,22 @@ public class MessageServiceTest {
         MessageDTO.MessageSaveRequest saveRequest = new MessageDTO.MessageSaveRequest(content, senderId, receiverId, postId, messageRoomId);
         return saveRequest;
     }
-    private MessageDTO.DeleteMessageRequest deleteMessageRequest(Long id,Long memberId, Long messageRoomId){
+    private MessageDTO.DeleteMessageRequest deleteMessageRequest(Long id, Long memberId, Long messageRoomId){
         MessageDTO.DeleteMessageRequest deleteRequest = new MessageDTO.DeleteMessageRequest(id,memberId, messageRoomId);
         return deleteRequest;
     }
+//---------------------------------------------messageRoom 생성 -----------------------------------------------------------------
     @Test
-    @DisplayName("메시지 생성 테스트")
-    public void createMessageTest() throws Exception{
+    @DisplayName("메시지룸 생성 테스트")
+    public void createMessageRoomTest() throws Exception{
+        //given
         MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
         authService.signUp(signUpRequest1);
         Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+
         MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
         authService.signUp(signUpRequest2);
         Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
-        MemberDTO.SignUpRequest signUpRequest3 = createSignUpRequest3();
-        authService.signUp(signUpRequest3);
-        Member user2 = memberRepository.findByEmail(signUpRequest3.getEmail()).get();
 
         CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
         Long cid1 = categoryService.createCategory(categoryDTO1);
@@ -227,30 +229,28 @@ public class MessageServiceTest {
         PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "도서");
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
-        MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
-        MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
+
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
         //when
-        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(),msgRoom1.getSeller().getId(), post.getId(), msgRoom1.getId());
-//        assertThat()
-        Long messageId1 = messageService.createMessage(messageDTO1, user.getId()).getId();
-        Message message1 = messageRepository.findById(messageId1).get();
-        //then
-        assertThat(messageRepository.existsById(messageId1));
+        MessageRoomDTO.MessageRoomInfoDto msgRoomDto = messageRoomService.createMessageRoom(messageRoomDTO1, user.getId());
+
+        //when
+        assertThat(messageRoomRepository.existsById(msgRoomDto.getId())).isEqualTo(true);
+
 
     }
+
     @Test
-    @DisplayName("(실패)메시지 생성 실패 테스트 : 거래 완료")
-    public void createTradedPostMessageTest() throws Exception{
+    @DisplayName("(실패)메시지룸 생성 테스트: 본인에게 메시지")
+    public void createWrongMessageRoomTest() throws Exception {
+        //given
         MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
         authService.signUp(signUpRequest1);
         Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+
         MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
         authService.signUp(signUpRequest2);
         Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
-        MemberDTO.SignUpRequest signUpRequest3 = createSignUpRequest3();
-        authService.signUp(signUpRequest3);
-        Member user2 = memberRepository.findByEmail(signUpRequest3.getEmail()).get();
 
         CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
         Long cid1 = categoryService.createCategory(categoryDTO1);
@@ -262,67 +262,65 @@ public class MessageServiceTest {
         PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "도서");
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
-        MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
-        MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
+
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), admin.getId());
         //when
-        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
+        assertThrows(CanNotMakeMessegeRoom.class, () -> {
+            Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1, admin.getId()).getId();
+        });
+    }
+
+    @Test
+    @DisplayName("(실패)메시지룸 생성 테스트: 거래 완료")
+    public void createTradedPostMessageRoomTest() throws Exception {
+        //given
+        MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
+        authService.signUp(signUpRequest1);
+        Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+
+        MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
+        authService.signUp(signUpRequest2);
+        Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
+
+        CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
+        Long cid1 = categoryService.createCategory(categoryDTO1);
+        Category category1 = categoryRepository.findById(cid1).get();
+        Category root = categoryRepository.findCategoryByName("root").get();
+        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("주방", admin.getId(), 1L, root.getId());
+        Long cid2 = categoryService.createCategory(categoryDTO2);
+        Category category2 = categoryRepository.findById(cid2).get();
+        PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "주방");
+        Long postId = postService.savePost(postSaveRequest, admin.getId());
+        Post post = postRepository.findById(postId).get();
+
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
+//        TradeDTO.CreateTradeDto tradeDto = TradeDTO.CreateTradeDto.builder().sellerId(user.getId()).postId(postId).build();
+//        Long tradeId = tradeService.createTrade(tradeDto, user.getId());
         Trade trade = tradeRepository.findByPostId(postId).get();
         TradeDTO.UpdateTradeDto updateTradeDto = TradeDTO.UpdateTradeDto.builder().postId(postId).userId(admin.getId()).tradeStatus(TradeStatus.TRADED).build();
         tradeService.updateTradeStatus(updateTradeDto, admin.getId());
-        //then
-        assertThat(trade.getTradeStatus()).isEqualTo(TradeStatus.TRADED);
-        Assertions.assertThrows(CanNotSendMessageByTradeStatus.class,()->{
-            Long messageId1 = messageService.createMessage(messageDTO1, user.getId()).getId();
-        });
-    }
-    @Test
-    @DisplayName("(실패)메시지 생성 실패 테스트 : 본인에게 메시지")
-    public void createOneselfMessageTest() throws Exception{
-        MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
-        authService.signUp(signUpRequest1);
-        Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
-        MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
-        authService.signUp(signUpRequest2);
-        Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
-        MemberDTO.SignUpRequest signUpRequest3 = createSignUpRequest3();
-        authService.signUp(signUpRequest3);
-        Member user2 = memberRepository.findByEmail(signUpRequest3.getEmail()).get();
-
-        CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
-        Long cid1 = categoryService.createCategory(categoryDTO1);
-        Category category1 = categoryRepository.findById(cid1).get();
-        Category root = categoryRepository.findCategoryByName("root").get();
-        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("주방", admin.getId(), 1L, root.getId());
-        Long cid2 = categoryService.createCategory(categoryDTO2);
-        Category category2 = categoryRepository.findById(cid2).get();
-        PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "도서");
-        Long postId = postService.savePost(postSaveRequest, admin.getId());
-        Post post = postRepository.findById(postId).get();
-        MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
-        MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
         //when
-
-        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), user.getId(), post.getId(), msgRoom1.getId());
-        //then
-        Assertions.assertThrows(MessageException.class,()->{
-            Long messageId1 = messageService.createMessage(messageDTO1, user.getId()).getId();
+        assertThrows(CanNotSendMessageByTradeStatus.class, () -> {
+            Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1, user.getId()).getId();
         });
     }
-    //--------------------------------------------메시지 삭제 -------------------------------------------------------------
+
+   // -------------------------------------------메시지룸 조회 테스트------------------------------
     @Test
-    @DisplayName("메시지 삭제 테스트")
-    public void deleteMessageTest() throws Exception {
+    @DisplayName("메시지룸 메시지 조회")
+    public void readMessageRoomTest() throws Exception {
+        //given
         MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
         authService.signUp(signUpRequest1);
         Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+
         MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
         authService.signUp(signUpRequest2);
         Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
         MemberDTO.SignUpRequest signUpRequest3 = createSignUpRequest3();
         authService.signUp(signUpRequest3);
         Member user2 = memberRepository.findByEmail(signUpRequest3.getEmail()).get();
+
 
         CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
         Long cid1 = categoryService.createCategory(categoryDTO1);
@@ -334,26 +332,25 @@ public class MessageServiceTest {
         PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "도서");
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
-        MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
-        MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
-        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId1 = messageService.createMessage(messageDTO1, user.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId2 = messageService.createMessage(messageDTO2, user.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user.getId(), post.getId(), msgRoom1.getId());
+
+        //given
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
+        Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1, user2.getId()).getId();
+
+        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
+        Long messageId1 = messageService.createMessage(messageDTO1,user2.getId()).getId();
+        MessageDTO.MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
+        Long messageId2 = messageService.createMessage(messageDTO2, user2.getId()).getId();
+        MessageDTO.MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user2.getId(), post.getId(), msgRoomId);
         Long messageId3 = messageService.createMessage(messageDTO3, admin.getId()).getId();
-        //when
-        assertThat(msgRoom1.getMessages().size()).isEqualTo(3);
-        MessageDTO.DeleteMessageRequest delMessageDTO1 = deleteMessageRequest(messageId2, user.getId(),msgRoomId1);
-        messageService.deleteMessage(delMessageDTO1, user.getId());
-        //then
-        assertThat(messageRepository.existsById(messageId2)).isEqualTo(false);
+
+        assertThat(messageRoomRepository.findById(msgRoomId).get().getMessages().size()).isEqualTo(3);
     }
 
     @Test
-    @DisplayName("(실패)메시지 삭제 테스트 : 본인 아님")
-    public void deleteMessageByWrongUserTest() throws Exception {
+    @DisplayName("유저 아이디로 메시지룸 조회, selling, buying messageRoom 포함")
+    public void readMessageRoomByUserIdTest() throws Exception {
+        //given
         MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
         authService.signUp(signUpRequest1);
         Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
@@ -371,38 +368,69 @@ public class MessageServiceTest {
         CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("주방", admin.getId(), 1L, root.getId());
         Long cid2 = categoryService.createCategory(categoryDTO2);
         Category category2 = categoryRepository.findById(cid2).get();
+
         PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "도서");
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
-        MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
-        MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
-        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId1 = messageService.createMessage(messageDTO1,user.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId2 = messageService.createMessage(messageDTO2, user.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user.getId(), post.getId(), msgRoom1.getId());
+        PostDTO.PostSaveRequest postSaveRequest2 = createPostSaveRequest2(user, true, "도서", "도서");
+        Long postId2 = postService.savePost(postSaveRequest2, user.getId());
+        Post post2 = postRepository.findById(postId2).get();
+
+        //given
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
+        Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1, user2.getId()).getId();
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO2 = messageRoomSaveRequest(post.getId(), user.getId());
+        Long msgRoomId2 = messageRoomService.createMessageRoom(messageRoomDTO2, user.getId()).getId();
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO3 = messageRoomSaveRequest(post2.getId(), admin.getId());
+        Long msgRoomId3 = messageRoomService.createMessageRoom(messageRoomDTO3, admin.getId()).getId();
+
+        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
+        Long messageId1 = messageService.createMessage(messageDTO1, user2.getId()).getId();
+        MessageDTO.MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
+        Long messageId2 = messageService.createMessage(messageDTO2, user2.getId()).getId();
+        MessageDTO.MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user2.getId(), post.getId(), msgRoomId);
         Long messageId3 = messageService.createMessage(messageDTO3, admin.getId()).getId();
-        //when
-        assertThat(msgRoom1.getMessages().size()).isEqualTo(3);
-        MessageDTO.DeleteMessageRequest delMessageDTO1 = deleteMessageRequest(messageId2, admin.getId(),msgRoomId1);
+
+        MessageDTO.MessageSaveRequest messageDTO4 = messageSaveRequest("그 양말 냄새 안나나요?", user.getId(), post.getAuthor().getId(), post.getId(), msgRoomId2);
+        Long messageId4 = messageService.createMessage(messageDTO4, user.getId()).getId();
+        MessageDTO.MessageSaveRequest messageDTO5 = messageSaveRequest("빨면 안나는데 솔직히 이제 다섯번만 더 빨면 없어질것같아요.", admin.getId(), user.getId(), post.getId(), msgRoomId2);
+        Long messageId5 = messageService.createMessage(messageDTO5, admin.getId()).getId();
+
+        MessageDTO.MessageSaveRequest messageDTO6 = messageSaveRequest("그 책 그림 많고 안뚜거운가요?", admin.getId(), post2.getAuthor().getId(), post2.getId(), msgRoomId3);
+        Long messageId6 = messageService.createMessage(messageDTO6, admin.getId()).getId();
+        MessageDTO.MessageSaveRequest messageDTO7 = messageSaveRequest("그림은 별로 없고 두께는 보통인데 묘사가 걍 미쳤어요. 그림 필요없음.ㅎ", user.getId(), admin.getId(), post2.getId(), msgRoomId3);
+        Long messageId7 = messageService.createMessage(messageDTO7, user.getId()).getId();
+
+        //given
+        List<MessageRoom> totalMsgRoom = messageRoomService.ReadMessageRoomsByUserId(admin.getId());
+        List<MessageRoom> adminBuyingRoom = messageRoomService.ReadBuyingMessageRoomsByUserId(admin.getId());
+        List<MessageRoom> adminSellingRoom = messageRoomService.ReadSellingMessageRoomsByUserId(admin.getId());
+        List<MessageRoom> userSellingRoom = messageRoomService.ReadBuyingMessageRoomsByUserId(user.getId());
         //then
-        Assertions.assertThrows(CanNotDeleteMessage.class, ()->{
-            messageService.deleteMessage(delMessageDTO1, admin.getId());
-        });
+        assertThat(totalMsgRoom.size()).isEqualTo(3);
+        assertThat(admin.getBuyingRooms().size()).isEqualTo(1);
+        assertThat(user.getSellingRooms().size()).isEqualTo(1);
+        assertThat(admin.getSellingRooms().size()).isEqualTo(2);
+        assertThat(adminBuyingRoom.size()).isEqualTo(1);
+        assertThat(userSellingRoom.size()).isEqualTo(1);
+        assertThat(adminSellingRoom.size()).isEqualTo(2);
+
     }
     @Test
-    @DisplayName("(실패)메시지 삭제 테스트 : 거래 완료")
-    public void deleteTradedPostMessageTest() throws Exception {
+    @DisplayName("포스트 메시지룸 갯수 조회")
+    public void readMessagesInMessageRoomTest() throws Exception {
+        //given
         MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
         authService.signUp(signUpRequest1);
         Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+
         MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
         authService.signUp(signUpRequest2);
         Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
         MemberDTO.SignUpRequest signUpRequest3 = createSignUpRequest3();
         authService.signUp(signUpRequest3);
         Member user2 = memberRepository.findByEmail(signUpRequest3.getEmail()).get();
+
 
         CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
         Long cid1 = categoryService.createCategory(categoryDTO1);
@@ -414,25 +442,17 @@ public class MessageServiceTest {
         PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "도서");
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
-        MessageRoomDTO.MessageRoomSaveRequest msgRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
-        Long msgRoomId1 = messageRoomService.createMessageRoom(msgRoomDTO1, user.getId()).getId();
-        MessageRoom msgRoom1 = messageRoomRepository.findById(msgRoomId1).get();
-        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId1 = messageService.createMessage(messageDTO1, user.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user.getId(), post.getAuthor().getId(), post.getId(), msgRoom1.getId());
-        Long messageId2 = messageService.createMessage(messageDTO2, user.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user.getId(), post.getId(), msgRoom1.getId());
-        Long messageId3 = messageService.createMessage(messageDTO3, admin.getId()).getId();
-        //when
-        assertThat(msgRoom1.getMessages().size()).isEqualTo(3);
-        MessageDTO.DeleteMessageRequest delMessageDTO1 = deleteMessageRequest(messageId2, admin.getId(),msgRoomId1);
-        Trade trade = tradeRepository.findByPostId(postId).get();
-        TradeDTO.UpdateTradeDto updateTradeDto = TradeDTO.UpdateTradeDto.builder().postId(postId).userId(admin.getId()).tradeStatus(TradeStatus.TRADED).build();
-        tradeService.updateTradeStatus(updateTradeDto, admin.getId());
+
+        //given
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
+        Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1, user2.getId()).getId();
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO2 = messageRoomSaveRequest(post.getId(), user.getId());
+        Long msgRoomId2 = messageRoomService.createMessageRoom(messageRoomDTO2,user.getId()).getId();
+        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO3 = messageRoomSaveRequest(post.getId(), user.getId());
+        Long msgRoomId3 = messageRoomService.createMessageRoom(messageRoomDTO3, user.getId()).getId();
+
         //then
-        Assertions.assertThrows(CanNotDeleteMessage.class, ()->{
-            messageService.deleteMessage(delMessageDTO1, admin.getId());
-        });
+        assertThat(messageRoomService.ReadMessageRoomsByPostId(postId)).isEqualTo(3);
     }
 
-    }
+}

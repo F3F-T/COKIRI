@@ -171,3 +171,29 @@
     margin-top: 3rem;
 
 }
+
+.writeComments{
+    display: flex;
+}
+
+.writeCommentsInput{
+    margin: 0;
+    padding: 10px 85px 10px 10px;
+    border: 0;
+    width: 100%;
+    height: 40px;
+    line-height: 20px;
+    box-sizing: border-box;
+    color: #262626;
+    font-size: 13px;
+    overflow: hidden;
+    resize: none;
+    background-color: #F8F8F8;
+    width:100%
+}
+
+.pencilIcon{
+    background-color: #F8F8F8;
+    height: 40px;
+    font-size: 25px;
+}

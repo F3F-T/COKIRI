@@ -1,5 +1,6 @@
 package f3f.dev1.domain.comment.application;
 
+import f3f.dev1.domain.comment.dao.CommentCustomRepositoryImpl;
 import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.comment.exception.DeletedCommentException;
 import f3f.dev1.domain.comment.model.Comment;
@@ -26,6 +27,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final CommentCustomRepositoryImpl commentCustomRepository;
 
     /*
         C : Create
@@ -34,7 +36,6 @@ public class CommentService {
      */
 
 
-    // 부모 자식 대통합
     // TODO : 부모 댓글이 null인데 depth가 1 이상인 요청들 잡아내야함, 비슷한 맥락으로 부모 있는데 depth 0인 요청 잡아내야 함
     @Transactional
     public CommentInfoDto saveComment(CreateCommentRequest createCommentRequest, Long currentMemberId) {
@@ -65,29 +66,33 @@ public class CommentService {
      */
 
     // id로 조회
-    // TODO URL 중복으로 컨트롤러가 삭제됐다. 후에 다시 컨트롤러가 다른 URL로 생기면 사용하겠음
+    // 현재는 사용하지 않는 로직
     @Transactional(readOnly = true)
     public CommentInfoDto findCommentById(Long id) {
         Comment comment = commentRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-//        FindByIdCommentResponse response = new FindByIdCommentResponse(comment);
         CommentInfoDto commentInfoDto = comment.toInfoDto();
         return commentInfoDto;
     }
 
-    // DTO의 리스트로 수정하기
     // post로 조회
+//    @Transactional(readOnly = true)
+//    public List<CommentInfoDto> findCommentsByPostId(Long postId) {
+//        List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
+//        List<Comment> comments = commentRepository.findByPostId(postId);
+//        for (Comment comment : comments) {
+//            CommentInfoDto commentInfoDto = comment.toInfoDto();
+//            commentInfoDtoList.add(commentInfoDto);
+//        }
+//        return commentInfoDtoList;
+//    }
+
     @Transactional(readOnly = true)
-    public List<CommentInfoDto> findCommentsByPostId(Long postId) {
-        if(!commentRepository.existsByPostId(postId)) {
-            throw new NotFoundByIdException();
+    public List<CommentInfoDto> findCommentDtosByPostId(Long postId) {
+        if(!postRepository.existsById(postId)) {
+            throw new NotFoundByIdException("해당 Id의 게시글이 존재하지 않습니다.");
         }
-        List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
-        List<Comment> comments = commentRepository.findByPostId(postId);
-        for (Comment comment : comments) {
-            CommentInfoDto commentInfoDto = comment.toInfoDto();
-            commentInfoDtoList.add(commentInfoDto);
-        }
-        return commentInfoDtoList;
+        List<CommentInfoDto> resultList = commentCustomRepository.findCommentDtoByPostId(postId);
+        return resultList;
     }
 
     /*
@@ -102,7 +107,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(updateCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Member user = memberRepository.findById(updateCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
-        // 상위 댓글이 없는 경우까지 고려해주겠다.
+        // 상위댓글이 이미 삭제되었는데 함께 삭제되지 않았다면 예외 처리
         if(updateCommentRequest.getParentId() != null) {
             if(!commentRepository.existsById(updateCommentRequest.getParentId())) {
                 throw new DeletedCommentException();

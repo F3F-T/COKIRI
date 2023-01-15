@@ -2,6 +2,11 @@ import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../../styles/comments/Comments.module.scss";
 import profileImg from "../../img/profileImg.png";
 import classNames from "classnames/bind";
+import {HiPencil} from "react-icons/hi";
+import Api from "../../utils/api";
+import {useDispatch, useSelector} from "react-redux";
+import {Rootstate} from "../../index";
+import {changeRefreshState} from "../../store/refreshReducer";
 
 /**
  * Props 부모 : PostDetail.tsx
@@ -25,15 +30,69 @@ type CommentTypes = "primary" | "secondary";
 interface CommentProps {
     //className은 PrimaryComment, SecondaryComment에도 넘겨줄 것이기 때문에 className을 optional로 설정
     className?: CommentTypes;
-    userID: string;
+    userID: String;
+    postId? : number;
 
     //userProfileImg : string; (url, string형식?)
-    content: string;
-    time: string;
+    content: String;
+    time: String;
+    id?: number;
 }
 
+//글 작성
+interface WriteCommentType {
+    authorId : Number;
+    postId? : number;
+    depth : number;
+    content : string;
+    parendCommentId : number | null;
+}
+
+
+
 const PrimaryComment = (commentInfo: CommentProps) => {
-   return(
+
+    const [enableReComment,setEnableReComment] = useState<boolean>(false);
+    const [writeComment,setWriteComment] = useState<WriteCommentType>(null)
+    const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
+
+    const store = useSelector((state:Rootstate) => state);
+    const dispatch = useDispatch();
+    const onClickReComment = (comment) => {
+        setEnableReComment(prevState => !prevState);
+    }
+
+    const UploadComment = async () => {
+        try{
+            const res = await Api.post(`/post/${commentInfo.postId}/comments`, writeComment);
+            dispatch(changeRefreshState());
+            console.log(writeComment);
+            alert("대댓글 작성 성공")
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("대댓글 작성 실패")
+        }
+    }
+
+    const onChangeComment = (e) => {
+        const inputComment = e.target.value;
+
+        setWriteComment((prevState) => {
+            return {...prevState,
+                authorId: store.userInfoReducer.id,
+                postId : commentInfo.postId,
+                depth : 1,
+                content : inputComment,
+                parentCommentId : commentInfo.id,
+            }
+        })
+    }
+
+
+
+    return(
        <>
         <div className={cx('Profile')}>
             <img className={cx('ProfileImg')} src={profileImg}></img>
@@ -41,7 +100,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
                 {commentInfo.userID}
             </div>
             <ul className={styles.ProfileActionList}>
-                <li>대댓글</li>
+                <li onClick={()=> onClickReComment(commentInfo)}>대댓글</li>
                 <li>신고</li>
             </ul>
         </div>
@@ -51,6 +110,15 @@ const PrimaryComment = (commentInfo: CommentProps) => {
         <div className={styles.time}>
             {commentInfo.time}
         </div>
+           {
+               enableReComment ?
+                   (
+               <div className = {styles.writeComments}>
+               <input type={"text"} className={styles.writeCommentsInput} placeholder={"대댓글을 입력하세요"} onBlurCapture={onChangeComment}/>
+               <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
+               </div>
+                   )
+           : ""}
        </>
 );
 }
@@ -64,7 +132,6 @@ const SecondaryComment = (commentInfo: CommentProps) => {
                     {commentInfo.userID}
                 </div>
                 <ul className={styles.ProfileActionList}>
-                    <li>대댓글</li>
                     <li>신고</li>
                 </ul>
             </div>
@@ -74,10 +141,10 @@ const SecondaryComment = (commentInfo: CommentProps) => {
             <div className={styles.time}>
                 {commentInfo.time}
             </div>
+
         </>
     );
 }
-
 
 const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps임을 알려준다.
 
@@ -85,7 +152,7 @@ const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps
         <>
             {commentInfo.className === "primary" &&
                 <div className={cx(commentInfo.className)}>
-                    <PrimaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}/>
+                    <PrimaryComment postId = {commentInfo.postId} id= {commentInfo.id} userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}/>
                 </div>
             }
 
@@ -94,7 +161,6 @@ const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps
                     <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}/>
                 </div>
             }
-
         </>
 
     );

@@ -1,5 +1,6 @@
 package f3f.dev1.domain.message.api;
 
+import f3f.dev1.domain.message.application.MessageRoomService;
 import f3f.dev1.domain.message.application.MessageService;
 import f3f.dev1.domain.message.dto.MessageDTO;
 import f3f.dev1.domain.message.dto.MessageRoomDTO;
@@ -16,16 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 import static f3f.dev1.domain.message.dto.MessageDTO.*;
+import static f3f.dev1.domain.message.dto.MessageRoomDTO.*;
 
 @RestController
 @Validated
 @RequiredArgsConstructor
-public class MessageController {
-    private static MessageService messageService;
-    @PostMapping(value="/messageRooms/{messageRoom_id}")
-    public ResponseEntity<MessageInfoDto> createMessage(@PathVariable(name="messageRoomId") Long messageRoomId, @RequestBody @Validated MessageSaveRequest messageSaveRequest){
+public class MessageRoomController {
+    private final MessageRoomService messageRoomService;
+
+    @PostMapping(value ="/post/{postId}/messageRooms")
+    public ResponseEntity<MessageRoomInfoDto> createMessageRoom(@PathVariable(name = "postId")Long postId, @RequestBody @Valid MessageRoomSaveRequest messageRoomSaveRequest){
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        MessageInfoDto messageInfoDto = messageService.createMessage(messageSaveRequest, currentMemberId);
-        return new ResponseEntity<>(messageInfoDto, HttpStatus.CREATED);
-    }
+        MessageRoomInfoDto messageRoomInfoDto = messageRoomService.createMessageRoom(messageRoomSaveRequest, currentMemberId);
+        return new ResponseEntity<>(messageRoomInfoDto, HttpStatus.CREATED);
+}
 }

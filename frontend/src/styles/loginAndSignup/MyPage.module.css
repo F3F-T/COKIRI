@@ -8,23 +8,26 @@
 }
 .profile{
     padding-top: 5rem;
-
+    gap: 9rem;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
 
 }
 .profileImage{
 
 }
 .Image{
-    height: 100px;
-    width: 100px;
+
+    height: 200px;
+    width: 200px;
     border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 1);
     /*창 크기에 영향X*/
 }
 .userInfo{
     display: grid;
     gap: 10px;
+
 
 }
 .nickName{
@@ -98,4 +101,12 @@
     border-radius: 10px;
     gap: 0.5rem;
     display: grid;
+}
+.gpsBox{
+    border-radius: 5px;
+    border: none;
+}
+.nickChangeBtn{
+    border-radius: 5px;
+    border: none;
 }

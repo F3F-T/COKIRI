@@ -3,8 +3,10 @@ package f3f.dev1.domain.post.dto;
 import f3f.dev1.domain.category.model.Category;
 
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
 import lombok.*;
@@ -69,6 +71,19 @@ public class PostDTO {
         String maxPrice;
     }
 
+    // 최적화 문제 및 페이징을 위해 태그는 별도의 검색 로직으로 빼두겠다.
+    // 그에 따라 태그를 제외한 검색 요청 DTO를 새로 만들겠음.
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SearchPostRequestExcludeTag {
+        String productCategory;
+        String wishCategory;
+        String minPrice;
+        String maxPrice;
+    }
+
     // U : Update 담당 DTO들
 
     @Getter
@@ -123,6 +138,38 @@ public class PostDTO {
         private String productCategory;
 
         private TradeStatus tradeStatus;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    // 동재 피드백 - 1 : 단순 조회를 위한 가벼운 DTO
+    public static class PostInfoDtoForGET {
+        private Long id;
+        private String title;
+        private String content;
+        private String authorNickname;
+    }
+
+    // 조인에 필요한 필드를 모두 가지는 1차 DTO.
+    // QueryDSL에서 이 DTO의 형태로 1차로 받아오고,
+    // 최종적으로 PostInfoDtoForGET으로 변환해서 뱉어준다.
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PostSearchResponseDto {
+        private Long id;
+        private String title;
+        private String content;
+        private String authorNickname;
+        private String productCategory;
+        private LocalDateTime createdTime;
+        private Long messageRoomCount;
+        private String wishCategory;
+        private Long scrapCount;
+        private Long price;
     }
 
     @Getter

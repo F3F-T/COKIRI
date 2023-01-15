@@ -52,7 +52,7 @@ const KiriKiriTrade = () => {
                         }
                     </div>
                 </div>
-                <PostContainer/>
+                <PostContainer categoryOption={"both"}/>
             </div>
         </div>
     );

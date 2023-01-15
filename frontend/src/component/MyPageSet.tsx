@@ -5,7 +5,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import photo from "../img/photoSelect.png"
 import PriceBox from "../component/trade/PriceBox";
-import profile from "../img/profile.jpeg"
+import profile2 from "../img/profile.jpeg"
 import PostContainer from "../component/trade/PostContainer";
 import axios from "axios";
 import Api from "../utils/api"
@@ -13,10 +13,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
 import {Simulate} from "react-dom/test-utils";
 import input = Simulate.input;
-import {setUserInfo, setUserNick} from "../store/userInfoReducer";
+import {setUserInfo, setUserNick, setUserProfile} from "../store/userInfoReducer";
 import {userInfo} from "os";
 import TextInput from "./common/TextInput";
 import Message from "./로그인 & 회원가입/Message";
+import Modal from "../routes/로그인 & 회원가입/NeighborModal";
 
 // interface TextInputProps {
 //     init: string;
@@ -52,8 +53,17 @@ const MyPage = () =>  {
         readNickName()
     },[])
     const [newNick,setNewNick]=useState(info.nickname)
-
     const [postNum,setNum]=useState('');
+    //모달창
+    const [isOpenModal, setOpenModal] = useState<boolean>(false);
+
+    const onClickToggleModal = useCallback(() => {
+        setOpenModal(!isOpenModal);
+    }, [isOpenModal]);
+    //프로필사진
+    const[profile,setProfile] = useState("")
+
+
 
     // useEffect(()=>{
     //     if (userInfo) {
@@ -148,8 +158,6 @@ const MyPage = () =>  {
             //     dispatch(setUserNick(res.data.newNickname));
             //     dispatch(setUserNick( userInfo.newNickname));
             // }
-
-
         } catch (err) {
             console.log(err);
             alert('닉넴 변경 실패');
@@ -181,7 +189,6 @@ const MyPage = () =>  {
     async function getMyPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-
             const res = await Api.get('/user/posts');
             console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
             // @ts-ignore
@@ -194,15 +201,72 @@ const MyPage = () =>  {
         }
     }
 
+    // const onChangeImg = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     e.preventDefault();
+    //
+    //     if(e.target.files){
+    //         const uploadFile = e.target.files[0]
+    //         const formData = new FormData()
+    //         formData.append('files',uploadFile)
+    //         console.log("프로필사진",uploadFile.name)
+    //         console.log("프로필사진 새로운 방식",formData.get('files'))
+    //         dispatch(setUserProfile(uploadFile.name))
+    //     }
+    //
+    // }
+    const onChangeImg = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        if(e.target.files){
+            const uploadFile = e.target.files[0]
+            console.log('uploadFile',uploadFile);
+            const formData = new FormData()
+            formData.append('files',uploadFile)
+            // const res = await axios.post("/auth/image", formData);
+            // console.log('formdata2',res);
 
+            await axios({
+                method: 'post',
+                url: 'http://localhost:8080/auth/image',
+                data: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+        }
+    }
+    console.log("프로필 리덕스",info.imageUrl)
+    async function onChangeImg1(e: React.ChangeEvent<HTMLInputElement>) {
+        e.preventDefault();
+        try {
+            console.log("프사변경들어옴");
+            const uploadFile = e.target.files[0]
+            console.log('uploadFile',uploadFile);
+            const formData = new FormData()
+            formData.append('files',uploadFile)
+            const res = await axios.post("http://localhost:8080/auth/image", formData);
+            alert('프사 변경 성공');
 
+        } catch (err) {
+            console.log(err);
+            alert('프사 변경 성공');
+        }
+    }
 
 
     return (
             <>
             <div className={styles.profile}>
+                {isOpenModal && (
+                    <Modal onClickToggleModal={onClickToggleModal}>
+                        <embed type="text/html"  width="800" height="608"/>
+                    </Modal>
+                )}
                 <div className={styles.profileImage}>
-                    <img className={styles.Image} src={profile}/>
+                    <img className={styles.Image} src={info.imageUrl}/>
+                    <form>
+                        <label htmlFor="profile-upload" />
+                        <input type="file" id="profile-upload" accept="image/*" onChange={onChangeImg}/>
+                    </form>
                 </div>
                 <div className={styles.userInfo}>
                     <div className={styles.nickName}>{newNick}</div>
@@ -228,7 +292,7 @@ const MyPage = () =>  {
                             <p>상품 거래</p> <p className={styles.tradeNum}>8</p>
                         </div>
                     </div>
-                    <button className={styles.gpsBox} onClick={() => navigate('/neighborauth')}>
+                    <button className={styles.gpsBox} onClick={() => onClickToggleModal()}>
                         동네 등록을 해주세요.
                     </button>
                 </div>
