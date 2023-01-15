@@ -62,6 +62,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET, "/post").permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/login").permitAll()
+                .antMatchers("/logout-redirect").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user/**").hasRole("USER")
                 .anyRequest().authenticated()   // 나머지 API 는 전부 인증 필요
@@ -72,7 +73,7 @@ public class SecurityConfig {
                 .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
+                .logoutSuccessUrl("/logout-redirect")
                 .clearAuthentication(true)
                 .logoutSuccessHandler(customLogoutSuccessHandler)
                 ;

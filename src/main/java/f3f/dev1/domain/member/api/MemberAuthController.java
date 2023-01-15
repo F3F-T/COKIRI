@@ -144,12 +144,9 @@ public class MemberAuthController {
     }
 
 
-    // 로그인 리다이렉트 페이지
-    @GetMapping(value = "/login")
-    public ResponseEntity<String> loginRedirect(HttpServletResponse response) throws IOException {
-//        String token = request.getHeader("Authorization").split(" ")[1];
-//        log.info("token = " + token);
-//        return ResponseEntity.ok(authService.logout(token));
+    // 로그아웃 리다이렉트 페이지
+    @GetMapping(value = "/logout-redirect")
+    public ResponseEntity<String> loginRedirect(){
         return ResponseEntity.ok("LOGOUT");
     }
 

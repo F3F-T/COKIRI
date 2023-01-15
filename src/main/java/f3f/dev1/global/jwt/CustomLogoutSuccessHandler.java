@@ -36,7 +36,6 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler im
         log.info("token = " + token);
 
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-//        valueOperations.getAndDelete(Long.toString(SecurityUtil.getCurrentMemberId()));
         valueOperations.getAndDelete(token);
 
         log.info(request.getRequestURI());
@@ -47,6 +46,6 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler im
     @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
-        return "login";
+        return "logout-redirect";
     }
 }
