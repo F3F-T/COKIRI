@@ -12,7 +12,7 @@ import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.dao.ScrapPostRepository;
+import f3f.dev1.domain.scrap.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.model.Post;
