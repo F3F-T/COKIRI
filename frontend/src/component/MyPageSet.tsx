@@ -62,7 +62,7 @@ const MyPage = () =>  {
     }, [isOpenModal]);
     //프로필사진
     const[profile,setProfile] = useState("")
-
+    const fileInput = useRef(null)
 
 
     // useEffect(()=>{
@@ -178,7 +178,7 @@ const MyPage = () =>  {
         }
         catch (err){
             console.log(err);
-            alert("실패")
+            alert("실패??")
         }
     }
 
@@ -220,21 +220,34 @@ const MyPage = () =>  {
             const uploadFile = e.target.files[0]
             console.log('uploadFile',uploadFile);
             const formData = new FormData()
-            formData.append('files',uploadFile)
+            formData.append('imageFiles',uploadFile)
             // const res = await axios.post("/auth/image", formData);
             // console.log('formdata2',res);
+            const res = await axios.post("http://localhost:8080/auth/image", formData);
+            console.log("리턴 데이터 ", res.data.imageUrls[0])
+            dispatch(setUserProfile(res.data.imageUrls[0]))
+            const mbody = {
+                userId : info.id,
+                newImageUrl : res.data.imageUrls[0],
+            }
+            console.log("프 리덕스",mbody)
+            const res2 = await Api.patch("/user/imageUrl",mbody);
+            console.log("프 리덕스2",res2)
 
-            await axios({
-                method: 'post',
-                url: 'http://localhost:8080/auth/image',
-                data: formData,
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            // await axios({
+            //     method: 'post',
+            //     url: 'http://localhost:8080/auth/image',
+            //     data: formData,
+            //     headers: {
+            //         'Content-Type': 'multipart/form-data',
+            //     },
+            // });
+
         }
     }
     console.log("프로필 리덕스",info.imageUrl)
+    console.log("프로필 리덕스2",info.imageUrl[0])
+
     async function onChangeImg1(e: React.ChangeEvent<HTMLInputElement>) {
         e.preventDefault();
         try {
@@ -262,10 +275,9 @@ const MyPage = () =>  {
                     </Modal>
                 )}
                 <div className={styles.profileImage}>
-                    <img className={styles.Image} src={info.imageUrl}/>
+                    <img className={styles.Image} src={info.imageUrl} onClick={()=>{fileInput.current.click()}}/>
                     <form>
-                        <label htmlFor="profile-upload" />
-                        <input type="file" id="profile-upload" accept="image/*" onChange={onChangeImg}/>
+                        <input type="file" style={{display:'none'}} accept="image/*" onChange={onChangeImg} ref={fileInput}/>
                     </form>
                 </div>
                 <div className={styles.userInfo}>
