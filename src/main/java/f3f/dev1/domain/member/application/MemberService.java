@@ -1,7 +1,6 @@
 package f3f.dev1.domain.member.application;
 
 import f3f.dev1.domain.address.dao.AddressRepository;
-import f3f.dev1.domain.address.dto.AddressDTO;
 import f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
 import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.member.dao.MemberRepository;
@@ -222,14 +221,9 @@ public class MemberService {
     // 멤버 주소 리스트 조회
     // TODO QueryDSL로 리팩터링 해야된다
     @Transactional(readOnly = true)
-    public GetMemberAddressListDTO getMemberAddressListDTO(Long memberId) {
-        List<Address> byMemberId = addressRepository.findByMemberId(memberId);
-        List<AddressInfoDTO> memberAddress = new ArrayList<>();
-        for (Address address : byMemberId) {
-            memberAddress.add(address.toInfoDto());
+    public GetMemberAddressesDTO getMemberAddressesDTO(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
 
-        }
-
-        return GetMemberAddressListDTO.builder().memberAddress(memberAddress).build();
+        return null;
     }
 }

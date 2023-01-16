@@ -26,10 +26,10 @@ public class AddressDTO {
         public Address toEntity(Member member) {
             return Address.builder()
                     .addressName(addressName)
+                    .member(member)
                     .postalAddress(postalAddress)
                     .latitude(latitude)
                     .longitude(longitude)
-                    .member(member)
                     .build();
 
         }
@@ -43,7 +43,6 @@ public class AddressDTO {
 
         private Long id;
 
-        private Long memberId;
         private String addressName;
 
         private String postalAddress;
