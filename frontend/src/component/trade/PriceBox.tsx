@@ -6,14 +6,19 @@ import Navbar from 'react-bootstrap/Navbar';
 import Button from "../common/Button";
 
 import '../../Btn.css'
-import {setPrice} from "../../store/priceReducer";
+import {resetPrice, setPrice} from "../../store/priceReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
+import {current} from "@reduxjs/toolkit";
+import classNames from "classnames/bind";
+const cx = classNames.bind(styles)
 
 const prices: string[] =
     ['5천원~1만원', '1만원~3만원', '3만원~10만원', '10만원~20만원', '20만원~30만원', '30만원~50만원', '50만원~100만원', '100만원~']
 const PriceBox = () => {
 
+
+    const [isClicked,setIsClicked] = useState();
     const store = useSelector((state:Rootstate) => state);
     //action을 사용하기 위해 dispatch를 선언한다.
     const dispatch = useDispatch();
@@ -24,9 +29,10 @@ const PriceBox = () => {
     }
     let priceJson:priceJson;
 
-    const onClickPriceButton = (price) => {
+    const onClickPriceButton = (e,price) => {
         let minPrice: string = "";
         let maxPrice: string = "";
+
 
         if (price === '5천원~1만원') {
              priceJson =
@@ -85,14 +91,32 @@ const PriceBox = () => {
                 }
         }
 
-        dispatch(setPrice(priceJson));
+        //store에 값이 존재하면 초기화, store에 값이 존재하지 않으면 누른 값으로 dispatch
 
+        if(store.priceReducer.minPrice || store.priceReducer.maxPrice){
+            dispatch(resetPrice());
+
+            setIsClicked((prev) => {
+                return undefined;
+            });
+
+        }else
+        {
+            dispatch(setPrice(priceJson));
+
+            setIsClicked((prev) => {
+                return e.target.value;
+            });
+
+            console.log(isClicked);
+        }
     }
+
     return (
         <div className={styles.priceBox}>
             <div className={styles.priceList}>
-                {prices.map((price: string) => (
-                    <button className="priceBtn" onClick={() => onClickPriceButton(price)}>{price}</button>
+                {prices.map((price: string, index) => (
+                    <button value = {index} className={cx(`priceBtn`, index != isClicked ? `` : `red`)} onClick={(event) => onClickPriceButton(event,price)}>{price}</button>
                 ))}
 
             </div>
