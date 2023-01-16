@@ -64,7 +64,7 @@ public class PostService {
     private final PostCustomRepositoryImpl postCustomRepository;
 
 
-    // TODO 게시글 사진 개수 제한 걸기 - 게시글에 사진 필드 추가해야겠다.
+    // TODO 게시글 사진 개수 제한 걸기
     @Transactional
     public Long savePost(PostSaveRequest postSaveRequest, Long currentMemberId) {
 
@@ -74,13 +74,6 @@ public class PostService {
         Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
 
-        // 401 예외 빼기
-//        if(!member.getId().equals(currentMemberId)) {
-//            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
-//        }
-        // resultList가 postService의 save 에서는 항상 비어있는 리스트로 들어간다.
-        // 컨트롤러에서 postService.save 이후에 tagService를 호출해 addTagToPost로 태그를 추가해주는데,
-        // 그때 포스트가 호출되어 리스트에 PostTag가 추가되게 된다.
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
         member.getPosts().add(post);
         postRepository.save(post);
@@ -127,25 +120,6 @@ public class PostService {
 
 
 
-
-//    @Transactional(readOnly = true)
-//    public Page<PostInfoDtoWithTag> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
-//        Page<Post> postPages = postCustomRepository.findPostsByCondition(searchPostRequestExcludeTag, pageable);
-//        List<PostInfoDtoWithTag> dtoList = new ArrayList<>();
-//        for (Post post : postPages) {
-//            List<PostTag> postTags = postTagRepository.findByPost(post);
-//            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-//            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-//            List<String> tagNamesOfPost = new ArrayList<>();
-//            for (PostTag postTag : postTags) {
-//                tagNamesOfPost.add(postTag.getTag().getName());
-//            }
-//            dtoList.add(post.toInfoDtoWithTag(tagNamesOfPost, (long) scrapPosts.size(), (long) messageRooms.size()));
-//        }
-//        return new PageImpl<>(dtoList);
-//    }
-
-
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
         List<PostSearchResponseDto> list = new ArrayList<>();
@@ -157,12 +131,6 @@ public class PostService {
         return new PageImpl<>(list);
     }
 
-
-//    @Transactional(readOnly = true)
-//    public Page<PostInfoDtoForGET_PreProcessor> findPostDtosByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
-//        Page<PostInfoDtoForGET_PreProcessor> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
-//        return dtoPages;
-//    }
 
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
