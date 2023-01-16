@@ -12,13 +12,14 @@ import ticket from "../img/ticket.png";
 import young from "../img/young.png";
 import Button from "../component/common/Button";
 import {log} from "util";
+import {useSelector} from "react-redux";
+import {Rootstate} from "../index";
 
 //모르는 태그가 너무 많아 하다가 멈춤
 //허락 맡고 다시 진행 예정
 const HomeStart = () => {
     const navigate = useNavigate();
-
-
+    const store = useSelector((state:Rootstate) => state);
     const onClickStart = () => {
         navigate(`/login`)
     }
@@ -26,6 +27,9 @@ const HomeStart = () => {
     const onClickUpload = () => {
         navigate(`/upload`)
     }
+    console.log("담긴거확인",store.jwtTokenReducer)
+    console.log("담긴거확인",store.userInfoReducer.nickname)
+
     return (
         <section className={styles.start}>
             <div className={styles.startLeft}>CO끼리</div>
