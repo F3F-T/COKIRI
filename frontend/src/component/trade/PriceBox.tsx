@@ -6,7 +6,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import Button from "../common/Button";
 
 import '../../Btn.css'
-import {setPrice} from "../../store/priceReducer";
+import {resetPrice, setPrice} from "../../store/priceReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 
@@ -14,6 +14,7 @@ const prices: string[] =
     ['5천원~1만원', '1만원~3만원', '3만원~10만원', '10만원~20만원', '20만원~30만원', '30만원~50만원', '50만원~100만원', '100만원~']
 const PriceBox = () => {
 
+    const [priceCheck,setPriceCheck] = useState();
     const store = useSelector((state:Rootstate) => state);
     //action을 사용하기 위해 dispatch를 선언한다.
     const dispatch = useDispatch();
@@ -27,6 +28,8 @@ const PriceBox = () => {
     const onClickPriceButton = (price) => {
         let minPrice: string = "";
         let maxPrice: string = "";
+        setPriceCheck(price);
+        console.log(priceCheck)
 
         if (price === '5천원~1만원') {
              priceJson =
@@ -85,7 +88,14 @@ const PriceBox = () => {
                 }
         }
 
-        dispatch(setPrice(priceJson));
+        //store에 값이 존재하면 초기화, store에 값이 존재하지 않으면 누른 값으로 dispatch
+
+        if(store.priceReducer.minPrice || store.priceReducer.maxPrice){
+            dispatch(resetPrice());
+        }else
+        {
+            dispatch(setPrice(priceJson));
+        }
 
     }
     return (
