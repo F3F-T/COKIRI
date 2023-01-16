@@ -1,12 +1,9 @@
 package f3f.dev1.domain.post.api;
 
-import f3f.dev1.domain.category.application.CategoryService;
 import f3f.dev1.domain.post.application.PostService;
-import f3f.dev1.domain.post.dto.PostDTO;
-import f3f.dev1.domain.post.model.Post;
+import f3f.dev1.domain.post.model.SortOrder;
 import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
-import f3f.dev1.domain.tag.dto.TagDTO;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +15,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 import static f3f.dev1.domain.post.dto.PostDTO.*;
-import static f3f.dev1.domain.tag.dto.TagDTO.*;
 
 @RestController
 @Validated
@@ -38,14 +33,14 @@ public class PostController {
 
 
     // 게시글 전체 조회 세분화 - 태그 제외 조건들 검색
-    // TODO Enum 쿼리스트링으로 받았을때 변환해줄 컨버터 등록하기
+    // TODO Enum 쿼리스트링으로 받았을때 변환해줄 컨버터 등록하기 - 완료, 테스트 미실시
     @GetMapping(value = "/post")
     public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithConditionExcludeTags(
             @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
             @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
             @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
-            @RequestParam(value = "order", required = false, defaultValue = "") String order,
+            @RequestParam(value = "sortOrder", required = false, defaultValue = "CURRENT") SortOrder sortOrder,
             Pageable pageable) {
             SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
                     .productCategory(productCategoryName)
@@ -57,17 +52,16 @@ public class PostController {
             return new ResponseEntity<>(pageDto, HttpStatus.OK);
     }
 
-    // TODO 임의 생성, 태그 검색이 별도의 컴포넌트로 생성될 수 있나? - 프론트랑 얘기해보기
     @GetMapping(value = "/post/tagSearch")
     public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithTagNames(
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
+            @RequestParam(value = "sortOrder", required = false, defaultValue = "CURRENT") SortOrder sortOrder,
             Pageable pageable) {
         Page<PostSearchResponseDto> resultList;
+
         if(!tagNames.isEmpty()) {
-            log.info("tagNames 비어있지 않음 - " + tagNames.get(0));
             resultList = postService.findPostsWithTagNameList(tagNames, pageable);
         } else {
-            log.info("tagNames 비어있음.");
             resultList = postService.findAll(pageable);
         }
         return new ResponseEntity<>(resultList, HttpStatus.OK);

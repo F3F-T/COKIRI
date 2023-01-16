@@ -15,6 +15,7 @@ import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
+import f3f.dev1.domain.post.model.SortOrder;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.post.model.ScrapPost;
@@ -96,6 +97,7 @@ public class PostService {
 
     // TODO 페이징 적용하기
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
+    // controller에서 사용되지 않는 로직. 현재 테스트에서만 사용되고 있다.
     @Transactional(readOnly = true)
     public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
         // TODO 없애도 될 예외같음. 게시글이 없으면 빈 리스트를 반환해주면 된다.

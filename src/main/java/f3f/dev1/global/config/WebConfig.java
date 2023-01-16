@@ -21,8 +21,4 @@ public class WebConfig implements WebMvcConfigurer {
     queryParamter로 전달받은 게시글 정렬 기준이 Enum class로 선언되어있는데,
     전달받은 String을 자동으로 Enum 타입으로 convert 해주는 converter를 등록하는 코드.
      */
-    @Override
-    public void addFormatters(FormatterRegistry registry) {
-        registry.addConverter(new OrderRequestConverter());
-    }
 }

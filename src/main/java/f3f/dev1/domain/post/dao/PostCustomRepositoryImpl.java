@@ -2,18 +2,24 @@ package f3f.dev1.domain.post.dao;
 
 import com.querydsl.core.QueryFactory;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import f3f.dev1.domain.message.model.QMessageRoom;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.QScrapPost;
+import f3f.dev1.domain.post.model.SortOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.querydsl.core.util.StringUtils.*;
@@ -64,32 +70,6 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         return new PageImpl<>(responseList, pageable, total);
     }
 
-//    @Override
-//    public Page<PostInfoDtoForGET_PreProcessor> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Pageable pageable) {
-//        QueryResults<PostInfoDtoForGET_PreProcessor> results = jpaQueryFactory
-//                .select(Projections.constructor(PostInfoDtoForGET_PreProcessor.class,
-//                        post.id,
-//                        post.title,
-//                        post.content,
-//                        post.author.nickname,
-//                        post.messageRooms,
-//                        post.scrapPosts
-//                        ))
-//                .from(post)
-//                .leftJoin(post.messageRooms, messageRoom)
-//                .leftJoin(post.scrapPosts, scrapPost)
-////                .where(messageRoom.post.id.eq(post.id))
-////                .where(scrapPost.post.id.eq(post.id))
-//                .fetchJoin()
-////                .groupBy(post.id)
-//                .offset(pageable.getOffset())
-//                .limit(pageable.getPageSize())
-//                .fetchResults();
-//
-//        List<PostInfoDtoForGET_PreProcessor> responseList = results.getResults();
-//        long total = results.getTotal();
-//        return new PageImpl<>(responseList, pageable, total);
-//    }
 
     @Override
     // 조인때문에 (select 결과로 얻지 못한 필드는 조인에서 사용할 수 없음) DTO로 바로 뱉는건 힘들거같다.
@@ -100,7 +80,9 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(postTag.tag.name.in(tagNames))
                 .groupBy(post.id)
                 .having(post.id.count().eq((long) tagNames.size()))
-                .orderBy(post.id.desc())
+//                .orderBy(post.id.desc())
+                // 동적 sorting, 테스트 미실시
+                .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
@@ -110,14 +92,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         return new PageImpl<>(responseList, pageable, total);
     }
 
-//tag1,tag2,tag3
     private BooleanExpression productCategoryNameFilter(String productCategoryName) {
-
-//        deprecated
-//        if(StringUtils.isEmpty(productCategoryName)) {
-//            return null;
-//        }
-//        return post.productCategory.name.eq(productCategoryName);
         return StringUtils.hasText(productCategoryName) ? post.productCategory.name.eq(productCategoryName) : null;
     }
 
@@ -137,5 +112,17 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         }
         // 어느 조건문에도 걸리지 않으면 둘 다 존재하는 경우. between으로 처리함.
         return post.price.between(Long.parseLong(minPrice), Long.parseLong(maxPrice));
+    }
+
+    private List<OrderSpecifier> dynamicSorting(Sort sort) {
+        List<OrderSpecifier> orders = new ArrayList<>();
+        sort.stream().forEach(order -> {
+            Order direction= order.isAscending() ? Order.ASC : Order.DESC;
+            String prop = order.getProperty();
+            // 대상이 되는 클래스를 지정하고, 그 클래스 내에서 세부
+            PathBuilder orderByExpression = new PathBuilder(Post.class, "post");
+            orders.add(new OrderSpecifier(direction, orderByExpression.get(prop)));
+        });
+        return orders;
     }
 }
