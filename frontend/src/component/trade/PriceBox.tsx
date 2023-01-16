@@ -33,11 +33,6 @@ const PriceBox = () => {
         let minPrice: string = "";
         let maxPrice: string = "";
 
-        setIsClicked((prev) => {
-            return e.target.value;
-        });
-
-        console.log(isClicked);
 
         if (price === '5천원~1만원') {
              priceJson =
@@ -100,9 +95,20 @@ const PriceBox = () => {
 
         if(store.priceReducer.minPrice || store.priceReducer.maxPrice){
             dispatch(resetPrice());
+
+            setIsClicked((prev) => {
+                return undefined;
+            });
+
         }else
         {
             dispatch(setPrice(priceJson));
+
+            setIsClicked((prev) => {
+                return e.target.value;
+            });
+
+            console.log(isClicked);
         }
     }
 
