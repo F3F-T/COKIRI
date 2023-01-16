@@ -18,10 +18,16 @@ public class MemberController {
 
     // 유저 정보 조회
     @GetMapping(value = "/user")
-    public ResponseEntity<UserInfo> getUserInfo() {
+    public ResponseEntity<UserInfoWithAddress> getUserInfo() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(memberService.getUserInfo(currentMemberId));
 
+    }
+    // 유저 디테일 조회
+    @GetMapping(value = "/user/detail")
+    public ResponseEntity<UserDetail> getUserDetail() {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.getUserDetail(currentMemberId));
     }
 
     // 유저 정보 수정

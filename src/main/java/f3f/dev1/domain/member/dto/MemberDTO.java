@@ -1,5 +1,6 @@
 package f3f.dev1.domain.member.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.domain.address.model.Address;
@@ -106,7 +107,60 @@ public class MemberDTO {
         private String birthDate;
 
         private UserLoginType loginType;
+
+
+
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UserInfoWithAddress {
+        private UserDetail userDetail;
+
+        private List<AddressInfoDTO> address;
+    }
+
+
+
+    @Builder
+    @NoArgsConstructor
+    @Getter
+    public static class UserDetail {
+        private Long id;
+
+        private Long scrapId;
+        private String userName;
+
+        private String imageUrl;
+
+        private String nickname;
+
+        private String description;
+
+        private String phoneNumber;
+
+        private String email;
+
+        private String birthDate;
+
+        private UserLoginType loginType;
+        @QueryProjection
+        public UserDetail(Long id, Long scrapId, String userName, String imageUrl, String nickname, String description, String phoneNumber, String email, String birthDate, UserLoginType loginType) {
+            this.id = id;
+            this.scrapId = scrapId;
+            this.userName = userName;
+            this.imageUrl = imageUrl;
+            this.nickname = nickname;
+            this.description = description;
+            this.phoneNumber = phoneNumber;
+            this.email = email;
+            this.birthDate = birthDate;
+            this.loginType = loginType;
+        }
+    }
+
 
     @Builder
     @AllArgsConstructor
@@ -258,7 +312,7 @@ public class MemberDTO {
     @NoArgsConstructor
     @Getter
     public static class UserLoginDto {
-        private UserInfo userInfo;
+        private UserInfoWithAddress userInfo;
 
         private TokenIssueDTO tokenInfo;
     }
@@ -374,4 +428,17 @@ public class MemberDTO {
     public static class ImageUrlDto {
         private List<String> imageUrls;
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class SimpleLoginDto {
+
+        private String userId;
+
+        private TokenIssueDTO tokenInfo;
+
+    }
+
 }

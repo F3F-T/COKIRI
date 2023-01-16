@@ -178,9 +178,9 @@ public class MemberAuthController {
         System.out.println("code = " + code);
 
         UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code);
-        if (userLoginDto.getUserInfo().getNickname() == null) {
-            return new ResponseEntity<>(userLoginDto, HttpStatus.CREATED);
-        }
+//        if (userLoginDto.getUserInfo().getNickname() == null) {
+//            return new ResponseEntity<>(userLoginDto, HttpStatus.CREATED);
+//        }
         return ResponseEntity.ok(userLoginDto);
     }
 
