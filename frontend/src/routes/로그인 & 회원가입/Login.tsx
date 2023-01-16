@@ -113,6 +113,10 @@ const Login = () => {
         postLoginData();
     }
     const googleLogin = useGoogleLogin({
+        onSuccess: (codeResponse) => console.log(codeResponse),
+        flow: 'auth-code',
+    })
+    const googleLo2gin = useGoogleLogin({
         onSuccess: async response => {
             try {
                 const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
@@ -122,6 +126,10 @@ const Login = () => {
                 })
                 const data = res.data
                 console.log("d",data);
+                console.log("code확인",res.request);
+                console.log("code확인",);
+
+
                 const googleUserInfo1 ={
                     email:data.email,
                     name:data.name
