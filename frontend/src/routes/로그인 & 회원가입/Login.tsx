@@ -77,18 +77,15 @@ const Login = () => {
     //     }
     // }
     async function postLoginData() {
-
             //interceptor를 사용한 방식 (header에 token값 전달)
         try{
             const res = await Api.post('/login',userInfo);
             console.log(res)
             const accessToken = res.data;
-
             //jwt 토큰 redux에 넣기
             const jwtToken = accessToken.tokenInfo;
             console.log(jwtToken)
-            console.log("꼬라지좀 보자",res.data.userInfo)
-
+            console.log(res.data.userInfo)
             dispatch(setToken(jwtToken));
             dispatch(setUserInfo(res.data.userInfo))
             dispatch(setOnelineIntro(res.data.userInfo.description))
@@ -125,13 +122,6 @@ const Login = () => {
                 })
                 const data = res.data
                 console.log("d",data);
-
-                // setUserInfoG((prevState) => {
-                //     return {
-                //         ...prevState, email:data.email , name:data.name
-                //     }
-                //
-                // })
                 const googleUserInfo1 ={
                     email:data.email,
                     name:data.name
@@ -139,21 +129,18 @@ const Login = () => {
                 console.log("유저정보",googleUserInfo1)
                 const res1 = await axios.post("http://localhost:8080/auth/google_login", googleUserInfo1)
                 console.log("res2...", res1)
-                //jwt 토큰 redux에 넣기
                 const jwtToken = res1.data.tokenInfo;
-                console.log("tststaD토큰",jwtToken)
-                console.log("구글유저정보꼬라지", res1.data.userInfo)
+                console.log("토큰",jwtToken)
+                console.log("구글유저정보", res1.data.userInfo)
                 dispatch(logoutToken());
                 dispatch(setToken(jwtToken));
                 dispatch(logoutUserInfo())
                 // dispatch(setUserInfo(res.data.userInfo))
                 dispatch(setUserInfo(res1.data.userInfo))
-
                 // dispatch(setUserNick(res1.data.userInfo.nickname))//얘는 뱉는거로
                 // dispatch(setUserName(res1.data.userInfo.userName))
                 // dispatch(setUserProfile(res1.data.userInfo.imageUrl))
                 // dispatch(setOnelineIntro(res1.data.userInfo.description))
-
                 navigate(`/`)
                 }
             catch (err) {
