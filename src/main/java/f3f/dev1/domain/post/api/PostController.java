@@ -38,12 +38,14 @@ public class PostController {
 
 
     // 게시글 전체 조회 세분화 - 태그 제외 조건들 검색
+    // TODO Enum 쿼리스트링으로 받았을때 변환해줄 컨버터 등록하기
     @GetMapping(value = "/post")
     public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithConditionExcludeTags(
             @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
             @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
             @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
+            @RequestParam(value = "order", required = false, defaultValue = "") String order,
             Pageable pageable) {
             SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
                     .productCategory(productCategoryName)
