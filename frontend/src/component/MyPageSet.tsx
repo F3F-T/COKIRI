@@ -68,17 +68,7 @@ const MyPage = () =>  {
     //한줄소개
     const[intro,setIntro] = useState("")
     //로그아웃
-    const[count,setCount]=useState(0);
 
-    useEffect(() => {
-        console.log("들어오긴하나?")
-
-        if(count==1){
-         console.log("들어오긴해?")
-         dispatch(deleteToken())
-         dispatch(deleteUserInfo())
-     }
-    }, [count]);
 
     console.log("리덕스.", info.nickname)
     console.log("useState.", newNick)
@@ -267,8 +257,8 @@ const MyPage = () =>  {
             alert("로그아웃");
             dispatch(logoutToken());
             dispatch(logoutUserInfo());
-            dispatch(resetaddress1())
-            dispatch(resetaddress2())
+            dispatch(resetaddress1());
+            dispatch(resetaddress2());
 
             navigate(`/`)
         }
@@ -309,7 +299,7 @@ const MyPage = () =>  {
                             <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}
                     <button className={styles.nickChangeBtn} onClick={nicknameChange}>변경</button>
                     <input className={styles.intro} placeholder={info.onelineIntro} onChange={inputIntro} ></input>
-                    <button className={styles.nickChangeBtn} onClick={()=>{setCount(count+1);logOut();}}>로그아웃</button>
+                    <button className={styles.nickChangeBtn} onClick={logOut}>로그아웃</button>
 
                     <div className={styles.intro2}>
                         <div className={styles.i1}>

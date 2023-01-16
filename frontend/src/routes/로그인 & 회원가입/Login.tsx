@@ -19,7 +19,7 @@ import {
     deleteUserInfo,
     setUserNick,
     setUserName,
-    setOnelineIntro, logoutUserInfo
+    setOnelineIntro, logoutUserInfo,
 } from "../../store/userInfoReducer";
 
 const Login = () => {
@@ -87,7 +87,7 @@ const Login = () => {
             //jwt 토큰 redux에 넣기
             const jwtToken = accessToken.tokenInfo;
             console.log(jwtToken)
-            console.log(res.data.userInfo)
+            console.log("꼬라지좀 보자",res.data.userInfo)
 
             dispatch(setToken(jwtToken));
             dispatch(setUserInfo(res.data.userInfo))
@@ -142,14 +142,17 @@ const Login = () => {
                 //jwt 토큰 redux에 넣기
                 const jwtToken = res1.data.tokenInfo;
                 console.log("tststaD토큰",jwtToken)
-                console.log("구글유저정보", res1.data)
+                console.log("구글유저정보꼬라지", res1.data.userInfo)
                 dispatch(logoutToken());
                 dispatch(setToken(jwtToken));
                 dispatch(logoutUserInfo())
-                dispatch(setUserNick(res1.data.userInfo.nickname))//얘는 뱉는거로
-                dispatch(setUserName(res1.data.userInfo.userName))
-                dispatch(setUserProfile(res1.data.userInfo.imageUrl))
-                dispatch(setOnelineIntro(res1.data.userInfo.description))
+                // dispatch(setUserInfo(res.data.userInfo))
+                dispatch(setUserInfo(res1.data.userInfo))
+
+                // dispatch(setUserNick(res1.data.userInfo.nickname))//얘는 뱉는거로
+                // dispatch(setUserName(res1.data.userInfo.userName))
+                // dispatch(setUserProfile(res1.data.userInfo.imageUrl))
+                // dispatch(setOnelineIntro(res1.data.userInfo.description))
 
                 navigate(`/`)
                 }
