@@ -37,6 +37,11 @@ const jwtTokenSlice = createSlice({
         },
         deleteToken(state){
             state = initialJwtTokenState;
+        },
+        logoutToken(state){
+            state.authenticated = false;
+            state.accessToken = null;
+            state.accessTokenExpiresIn = null;
         }
     }
 })
@@ -44,7 +49,7 @@ const jwtTokenSlice = createSlice({
 
 //위에서 선언해준 counterSlice의 reducer를 export해준다
 export default jwtTokenSlice.reducer;
-export const {setToken,deleteToken} = jwtTokenSlice.actions;
+export const {setToken,deleteToken,logoutToken} = jwtTokenSlice.actions;
 //이제 이걸다른 컴포턴트에서 dispatch로 사용한다.
 
 //여기선 알아서 api가 해주는구나, 대충 여기서 선언한 initial state, type, action을 보내주면 된다고 생각하면 되겠네

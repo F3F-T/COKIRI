@@ -13,11 +13,13 @@ import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
 import {Simulate} from "react-dom/test-utils";
 import input = Simulate.input;
-import {setUserInfo, setUserNick, setUserProfile, setOnelineIntro, deleteUserInfo} from "../store/userInfoReducer";
+import {setUserInfo, setUserNick, setUserProfile, setOnelineIntro, deleteUserInfo,logoutUserInfo} from "../store/userInfoReducer";
 import {userInfo} from "os";
 import TextInput from "./common/TextInput";
 import Message from "./로그인 & 회원가입/Message";
 import Modal from "../routes/로그인 & 회원가입/NeighborModal";
+import {deleteToken,logoutToken} from "../store/jwtTokenReducer";
+import {resetaddress1,resetaddress2} from "../store/userAddressInfoReducer";
 
 // interface TextInputProps {
 //     init: string;
@@ -65,6 +67,18 @@ const MyPage = () =>  {
     const fileInput = useRef(null)
     //한줄소개
     const[intro,setIntro] = useState("")
+    //로그아웃
+    const[count,setCount]=useState(0);
+
+    useEffect(() => {
+        console.log("들어오긴하나?")
+
+        if(count==1){
+         console.log("들어오긴해?")
+         dispatch(deleteToken())
+         dispatch(deleteUserInfo())
+     }
+    }, [count]);
 
     console.log("리덕스.", info.nickname)
     console.log("useState.", newNick)
@@ -126,12 +140,17 @@ const MyPage = () =>  {
 
         }
     }
+    console.log("리덕스리덕스리덕스리덕스리덕스.", info)
 
     async function nicknameChange() {
         try {
             console.log("닉넴체인지들어옴");
 
-            const res = await Api.patch("/user/nickname", userInfo);
+            const userInfo1={
+                userId: userInfo.userId,
+                newNickname: userInfo.newNickname
+            }
+            const res = await Api.patch("/user/nickname", userInfo1);
 
             const result = {
                 status: res.status + "-" + res.statusText,
@@ -145,11 +164,9 @@ const MyPage = () =>  {
             // dispatch(setUserNick(newNick))
             dispatch(setUserNick(res.data.newNickname))
             console.log("리덕스에 들어갔나?.", info)
-
-
             alert('닉넴 변경 성공');
             // if(info.nickname==undefined){
-            //     console.log("?????.")
+            //     console.log("?????.")에
             //     dispatch(setUserNick(res.data.newNickname));
             //     dispatch(setUserNick( userInfo.newNickname));
             // }
@@ -247,8 +264,12 @@ const MyPage = () =>  {
     async function logOut() {
         try{
             const res = await Api.get('/logout');
-            dispatch(deleteUserInfo())
             alert("로그아웃");
+            dispatch(logoutToken());
+            dispatch(logoutUserInfo());
+            dispatch(resetaddress1())
+            dispatch(resetaddress2())
+
             navigate(`/`)
         }
         catch (err)
@@ -257,7 +278,7 @@ const MyPage = () =>  {
             alert("로그아웃 실패");
         }
     }
-    logOut()
+
     return (
             <>
             <div className={styles.profile}>
@@ -288,7 +309,7 @@ const MyPage = () =>  {
                             <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}
                     <button className={styles.nickChangeBtn} onClick={nicknameChange}>변경</button>
                     <input className={styles.intro} placeholder={info.onelineIntro} onChange={inputIntro} ></input>
-                    <button className={styles.nickChangeBtn} onClick={logOut}>로그아웃</button>
+                    <button className={styles.nickChangeBtn} onClick={()=>{setCount(count+1);logOut();}}>로그아웃</button>
 
                     <div className={styles.intro2}>
                         <div className={styles.i1}>

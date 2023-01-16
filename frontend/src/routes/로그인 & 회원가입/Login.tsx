@@ -10,7 +10,7 @@ import GoogleButton from "./GoogleButton.js"
 import { useGoogleLogin } from '@react-oauth/google'
 import {useDispatch, useSelector} from "react-redux";
 // import {gapi} from 'gapi-script';
-import {setToken, deleteToken} from "../../store/jwtTokenReducer";
+import {setToken, deleteToken, logoutToken} from "../../store/jwtTokenReducer";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api"
 import {
@@ -19,7 +19,7 @@ import {
     deleteUserInfo,
     setUserNick,
     setUserName,
-    setOnelineIntro
+    setOnelineIntro, logoutUserInfo
 } from "../../store/userInfoReducer";
 
 const Login = () => {
@@ -142,9 +142,9 @@ const Login = () => {
                 const jwtToken = res1.data.tokenInfo;
                 console.log("tststaD토큰",jwtToken)
                 console.log("구글유저정보", res1.data)
-                dispatch(deleteToken());
+                dispatch(logoutToken());
                 dispatch(setToken(jwtToken));
-                dispatch(deleteUserInfo())
+                dispatch(logoutUserInfo())
                 dispatch(setUserNick(res1.data.userInfo.nickname))//얘는 뱉는거로
                 dispatch(setUserName(res1.data.userInfo.userName))
                 dispatch(setUserProfile(res1.data.userInfo.imageUrl))
