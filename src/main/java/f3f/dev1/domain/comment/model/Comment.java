@@ -2,12 +2,14 @@ package f3f.dev1.domain.comment.model;
 
 import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.post.model.Post;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +19,7 @@ import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Comment {
+public class Comment extends BaseTimeEntity {
     @Id
     @GeneratedValue
     @Column(name = "comment_id")
@@ -61,6 +63,7 @@ public class Comment {
         return CommentInfoDto.builder()
                 .memberNickname(this.author.getNickname())
                 .imageUrl(this.author.getImageUrl())
+                .createdTime(super.getCreateDate())
                 .parentCommentId(parentCommentId)
                 .memberId(this.author.getId())
                 .postId(this.post.getId())
