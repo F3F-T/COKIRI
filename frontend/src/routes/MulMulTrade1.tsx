@@ -14,7 +14,7 @@ import {resetCategory} from "../store/categoryReducer";
 
 const MulmulTrade1 = () => {
     const [tab1, setTab] = useState('next');
-
+//
     type filtertype = "recent" | "popular"
     const [filterType, setFilterType]= useState<filtertype>("recent");
 
@@ -42,6 +42,7 @@ const MulmulTrade1 = () => {
                         : <button className={`${styles["newsetBtn" + (tab1 === "next" ? "active" : "")]}`}
                                   onClick={() => {
                                       setDealTab('next')
+                                      setFilterType('recent')
                                   }}>최신순</button>
                     }
                     {tab1 === 'curr' ? <button className={`${styles["pupularBtn" + (tab1 === "curr" ? "active" : "")]}`}
