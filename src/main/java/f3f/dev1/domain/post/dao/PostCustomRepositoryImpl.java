@@ -60,7 +60,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
                         wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
                         priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
-                .orderBy(post.id.desc())
+                .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
@@ -114,6 +114,20 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         return post.price.between(Long.parseLong(minPrice), Long.parseLong(maxPrice));
     }
 
+    /*
+        동적 정렬 테스트 완료
+        아래와 같이 활용할 수 있다.
+        최신순 정렬  :
+            {{SPRING}}/post?page=1&size=5&sort=createDate,DESC
+
+        메시지룸으로 정렬 :
+            {{SPRING}}/post?page=1&size=3&sort=messageRooms.size,DESC
+
+        아이디로 정렬 :
+            {{SPRING}}/post?page=0&size=3&sort=scrapPosts.size,DESC
+
+        그 외 제목, 본문, 작성자명 등으로도 조회가 가능하다.
+     */
     private List<OrderSpecifier> dynamicSorting(Sort sort) {
         List<OrderSpecifier> orders = new ArrayList<>();
         sort.stream().forEach(order -> {
