@@ -28,19 +28,15 @@ const MyPage = () =>  {
         newNickname: string;
 
     }
-
     type checkNicknameTypes = 'invalid' | 'valid' | 'duplicated'
-
     interface ValidationCheck {
         nicknameCheck: checkNicknameTypes;
         nicknameCheckBoolean: boolean;
     }
-
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
-    console.log("닉네임입니다.", info.nickname)
     const [userInfo, setuserInfo] = useState<UserInfo>(null);
 
     const [validationCheck, setValidationCheck] = useState<ValidationCheck>(
@@ -49,6 +45,33 @@ const MyPage = () =>  {
             nicknameCheckBoolean: undefined,
         }
     );
+    useEffect(()=>{
+        getMyPostList();
+    },[])
+    useEffect(()=>{
+        readNickName()
+    },[])
+    const [newNick,setNewNick]=useState(info.nickname)
+
+    const [postNum,setNum]=useState('');
+
+    // useEffect(()=>{
+    //     if (userInfo) {
+    //         dispatch(setUserNick(userInfo.newNickname))
+    //         console.log("리덕스222.", info.nickname)
+    //     }
+    // },[userInfo])
+    console.log("리덕스.", info.nickname)
+    console.log("useState.", newNick)
+    if (! readNickName) {
+        return null
+    }
+    if (! nicknameChange) {
+        return null
+    }
+    if (! getMyPostList) {
+        return null
+    }
     const onChangeNickname = (e) => {
         let inputNickname = e.target.value;
         //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
@@ -69,9 +92,8 @@ const MyPage = () =>  {
 
         try {
             const res = await axios.post("http://localhost:8080/auth/check-nickname", nickname);
-            console.log("dd닉ㄴ아럼닏ㄴㄹ",res);
             const result = res.data;
-            console.log("dd닉네임ㅇㄴ아럼닏ㄴㄹ",result);
+            console.log("체크닉듀플리케잇 들어옴",result);
             const duplicated = result.exists
 
             if (duplicated) //중복인 경우 -> true 반환
@@ -89,6 +111,7 @@ const MyPage = () =>  {
                         ...prevState, newNickname: nickname["nickname"]
                     }
                 })
+                // dispatch(setUserNick(nickname["nickname"]))
 
             }
 
@@ -99,9 +122,10 @@ const MyPage = () =>  {
         }
     }
 
-    const [newNick,setNewNick]=useState(info.nickname)
     async function nicknameChange() {
         try {
+            console.log("닉넴체인지들어옴");
+
             const res = await Api.patch("/user/nickname", userInfo);
 
             const result = {
@@ -110,12 +134,20 @@ const MyPage = () =>  {
                 data: res.data,
             };
             console.log(result);
-            console.log("바뀐 유저정보", userInfo);
+            console.log("바뀐 유저정보", userInfo.newNickname);
             console.log("바뀐 닉넴정보", res.data.newNickname);
             setNewNick(res.data.newNickname)
-            dispatch(setUserInfo(newNick));
+            // dispatch(setUserNick(newNick))
+            dispatch(setUserNick(res.data.newNickname))
+            console.log("리덕스에 들어갔나?.", info)
+
 
             alert('닉넴 변경 성공');
+            // if(info.nickname==undefined){
+            //     console.log("?????.")
+            //     dispatch(setUserNick(res.data.newNickname));
+            //     dispatch(setUserNick( userInfo.newNickname));
+            // }
 
 
         } catch (err) {
@@ -124,7 +156,6 @@ const MyPage = () =>  {
 
         }
     }
-
 
 
     async function readNickName(){
@@ -136,27 +167,20 @@ const MyPage = () =>  {
                     ...prevState, userId: res.data.id
                 }
             })
-
         }
         catch (err){
             console.log(err);
             alert("실패")
         }
     }
-    const [value,setValue]=useState();
 
-    const onChange = useCallback(e=>{
-        setValue((e.target.value))
-    },[])
-    console.log("value",value);
-    useEffect(()=>{
-        readNickName()
-    },[])
-    const [postNum,setNum]=useState('');
+
+
+    // console.log("value",value);
+
     async function getMyPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-            dispatch(setUserNick(newNick));
 
             const res = await Api.get('/user/posts');
             console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
@@ -166,12 +190,13 @@ const MyPage = () =>  {
         catch (err)
         {
             console.log(err)
-            alert("get 실패");
+            alert("get 실패2");
         }
     }
-    useEffect(()=>{
-        getMyPostList();
-    },[])
+
+
+
+
 
     return (
             <>
@@ -203,6 +228,9 @@ const MyPage = () =>  {
                             <p>상품 거래</p> <p className={styles.tradeNum}>8</p>
                         </div>
                     </div>
+                    <button className={styles.gpsBox} onClick={() => navigate('/neighborauth')}>
+                        동네 등록을 해주세요.
+                    </button>
                 </div>
             </div>
                 <Outlet/>

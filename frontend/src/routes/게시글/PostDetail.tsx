@@ -13,6 +13,9 @@ import {useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api";
 import {useNavigate, useParams} from "react-router-dom";
+import {AiOutlineHeart, AiTwotoneHeart} from "react-icons/ai";
+import Card from "../../component/tradeCard/Card";
+import Message from "../../component/로그인 & 회원가입/Message";
 
 
 
@@ -74,6 +77,32 @@ const PostDetail = () => {
         getPost();
     },[])
 
+    const store = useSelector((state:Rootstate) => state);
+
+    // useEffect(()=>{
+    //     console.log("jwt 토큰이 바뀜")
+    //     console.log(store.jwtTokenReducer.accessToken);
+    //
+    // },[store.jwtTokenReducer.accessToken]) //
+
+    const [scrapSaved,setScrapSaved] = useState<boolean>(true);
+    const onClickScrap = async () => {
+        setScrapSaved(prevState => !prevState);
+
+        const userId:Number = store.userInfoReducer.id;
+
+        const jsonObj = {userId : userId, postId : post.id}
+        console.log(jsonObj);
+        if (scrapSaved) {
+            await Api.post(`/user/scrap`, jsonObj);
+        }else
+        {
+            await Api.delete(`/user/scrap`, {
+                data: jsonObj
+            })
+        }
+    }
+
     if(!post)
     {
         return null;
@@ -102,18 +131,25 @@ const PostDetail = () => {
                         <div className={styles.postDetailCategory}>{post.productCategory}</div>
                         <div className={styles.postDetailPrice}></div>
                         <div className={styles.postDetailContent}>{post.content}</div>
-                        <div className={styles.postDetailTag}>{post.tagNames}</div>
+                        <div className={styles.postDetailTag}>#{post.tagNames}</div>
                         <div className={styles.postDetailSwapCategoryBox}>
                             <img className={styles.transfer} src={transfer}/>
                             <div className={styles.postDetailSwapCategory}> {post.wishCategory}</div>
                         </div>
                     </div>
 
+
                 </section>
                 <section className={styles.postBottom}>
                     <div className={styles.metaBox}>
                         <div className={styles.imgBox}>
-                            <img className={styles.likeImg} src={like} onClick={()=>{}}/>
+                            {(scrapSaved ?
+                            <AiOutlineHeart className={styles.likeImg}  onClick={onClickScrap}/>
+                            :
+                            <AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={onClickScrap}/>)}
+
+                            {/*<AiOutlineHeart className={styles.likeImg}  onClick={onClickScrap}/>*/}
+                            {/*<AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={()=>{}}/>*/}
                             <p className={styles.likeNum}>{post.scrapCount}</p>
                         </div>
                         <div className={styles.commentBox}>
@@ -128,7 +164,7 @@ const PostDetail = () => {
                     <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
                 </section>
             </article>
-            <section className={styles.comments}>//
+            <section className={styles.comments}>
                 <Comments className={"primary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
                 <Comments className={"secondary"}  userID={"함민혁"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
                 <Comments className={"secondary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />

@@ -11,6 +11,7 @@ import fashion from "../img/fashion.png";
 import ticket from "../img/ticket.png";
 import young from "../img/young.png";
 import Button from "../component/common/Button";
+import {log} from "util";
 
 //모르는 태그가 너무 많아 하다가 멈춤
 //허락 맡고 다시 진행 예정
@@ -134,6 +135,7 @@ const HomeKirikiriTrade = () => {
         </section>
     );
 }
+
 
 const Home = () => {
     return (

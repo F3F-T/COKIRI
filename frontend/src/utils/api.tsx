@@ -5,11 +5,11 @@
  */
 
 import axios, {AxiosRequestConfig} from 'axios';
-import {setToken} from "../store/jwtTokenReducer";
 import {history} from "../index";
-
+import {setToken} from "../store/jwtTokenReducer";
 
 let store;
+
 
 //이렇게 store을 index파일에서 주입해주는 식으로 하면 순환오류를 막을수있다.
 //https://redux.js.org/faq/code-structure#how-can-i-use-the-redux-store-in-non-component-files
@@ -24,7 +24,6 @@ const Api = axios.create({
 //accessToken을 header에 넣어준다
 Api.interceptors.request.use(
     (config) => {
-
         // HTTP Authorization 요청 헤더에 jwt-token을 넣음
         // 서버측 미들웨어에서 이를 확인하고 검증한 후 해당 API에 요청함.
         const accessToken = store.getState().jwtTokenReducer.accessToken;
@@ -52,60 +51,57 @@ Api.interceptors.request.use(
 Api.interceptors.response.use(
     //200번 (성공) 범위에 있는 상태 코드는 이 함수에서 트리거 된다
     function (response) {
+        console.warn(`${response.config.method.toUpperCase()} ${response.request.responseURL} 으로 요청 성공 : ${response.status}`);
+        console.log(response);
         return response;
     },
     //200번이 아닌 응답 오류 작업 핸들링
     async function (err) {
-
+        const { config, response: { status } } = err;
+        console.error(`${err.response.config.method.toUpperCase()} ${err.response.request.responseURL} 으로 요청 실패 : ${err.response.status} 
+        ${err.response.data.message}`);
         //accessToken이 만료가 돼서 401이 떴을때
         if (err.response && err.response.status === 401) {
-            console.log(`${err.response.data.status} : ` + err.response.data.message);
             switch (err.response.status) {
                 /**
                  * 401 : UNAUTORIZED 권한이 없음
                  * 예외 처리 시나리오
                  * 1. accessToken이 만료됐을때
+                 * 2. refreshToken도 만료됐을때
+                 * 3. 로그인이 필요한 서비스인데 로그인을 하지 않았을 때
                  */
                 case 401: {
-                    console.log("401 오류 switch문 접근")
                     const accessToken = store.getState().jwtTokenReducer.accessToken;
                     const jsonObj = {"accessToken": accessToken};
-                    console.log(jsonObj)
                     //유저 로그인 상태일때
-                    if(accessToken) {
+                    //TODO: 리팩토링, test 검증, 추후에 만료기간을 확인을 하고 만료기간이 임박했을때 미리 reissue를 거치는 방법도 생각중.. 근데 이건 401 오류에서 처리를 할 수 없어 보류
+                    if (accessToken) {
                         //accessToken 만료가 되면 백엔드에 있는 refreshToken으로 accessToken을 다시 받아온다.
                         try {
-                            const data = await Api.post("/auth/reissue", jsonObj);
-                            const jwtToken = data.data.tokenInfo;
-
+                            const data = await axios.post("http://localhost:8080/auth/reissue", jsonObj);
+                            const jwtToken = data.data.accessToken;
+                            //reissue가 성공하여 accessToken을 받아왔을때(reissue가 200번일때)
                             if (jwtToken) {
-                                store.dispatch(setToken(jwtToken));
-                                console.log("reissue 성공")
-                                return new Promise(() => {});
+                                store.dispatch(setToken(data.data));
+                                config.headers.Authorization = `Bearer ${jwtToken}`;
+                                alert("accessToken의 만료기간이 지나서 백엔드 accessToken의 검증실패, reissue로 refresh 토큰의 만료기간이 지나지 않아 refresh token을 활용하여 accessToken 재발급 성공")
+                                //성공했으니 err를 반환하지 않고 config 자체를 반환
+                                return axios(config);
                                 // return await Api.request(err.config);
                             }
-
-                            //refreshToken도 만료가 됐을때 : 재로그인
-                        } catch (err) {
+                        }//reissue가 실패했을때 ( refreshToken도 만료가 됐을때)
+                        catch (err) {
                             console.log("refreshToken이 만료돼서 accesToken을 재발급할수없음")
-                            alert("토콘이 만료됐으니 다시 로그인 해주세요")
+                            alert("accessToken의 만료기간이 지나서 백엔드 accessToken의 검증실패, reissue로 refresh token을 활용하여 accessToken 재발급 시도," +
+                                "refresh token의 만료기간도 지나 재로그인 요청")
                             history.push('/login');
-                            console.log("재로그인해야함")
                         }
-                    }else{
-                        console.log("로그인 예외처리..? ")
-                        // alert("로그인이 필요한 작업입니다")
-                        return Promise.reject(err);
+                    } else { //로그인 되지 않은 상태일때
+                        alert("로그인이 필요한 작업입니다")
+                        return new Promise(() => {});
                     }
-
-                    console.log(err)
-
-
-                    //promise chain을 끊어준다
-                    // return new Promise(() => {
-                    // });
-
                 }
+
                 case 404: {
                     return new Promise(() => {
                     });
@@ -116,24 +112,12 @@ Api.interceptors.response.use(
                     });
                 }
 
-
             }
 
-            // try {
-            //     //accessToken 만료가 되면 백엔드에 있는 refreshToken으로 accessToken을 다시 받아온다.
-            //     const data = await Api.post("/auth/reissue", jsonObj);
-            //
-            //     const jwtToken = data.data.tokenInfo;
-            //
-            //     if (jwtToken) {
-            //         store.dispatch(setToken(jwtToken));
-            //         return await Api.request(err.config);
-            //     }
-            // } catch (err) {
-            //     console.log("토큰 갱신 에러");
-            // }
+            console.log(err)
             return Promise.reject(err);
         }
+        console.log(err)
         return Promise.reject(err);
     }
 );

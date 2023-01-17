@@ -15,6 +15,8 @@ import SignUp from "./routes/로그인 & 회원가입/SignUp";
 import EmailCheck from "./routes/로그인 & 회원가입/EmailCheck";
 import PostUpload from "./routes/게시글/PostUpload";
 import Zzim from "./routes/Zzim";
+import NeighborAuth from "./routes/로그인 & 회원가입/NeighborAuth";
+
 
 import styles from "./styles/App.module.css";
 import EmailCheckOK from "./routes/로그인 & 회원가입/EmailCheckOK";
@@ -72,8 +74,10 @@ function App() {
 
                 <Route path="/post/:id" element={<PostDetail/>}/>
                 <Route path="/upload" element={<PostUpload/>}/>
+                <Route path="/neighborauth" element={<NeighborAuth/>}/>
 
                 <Route path='*' element={<NotFound />}/>
+
             </Routes>
 
         </div>
