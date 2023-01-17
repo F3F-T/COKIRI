@@ -166,23 +166,28 @@ public class MemberAuthController {
 
     // 외부 API 로그인 요청
     @GetMapping(value = "/auth/social_login/{loginType}")
-    public ResponseEntity<SocialLoginUrlDto> socialLogin(@PathVariable(name = "loginType") String loginType) {
-        return ResponseEntity.ok(oAuth2UserService.request(loginType.toUpperCase()));
-
-    }
-
-    // 구글 로그인 콜백 처리
-    @GetMapping(value = "/auth/social_login/{loginType}/callback")
-    public ResponseEntity<UserLoginDto> callback(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
+    public ResponseEntity<UserLoginDto> socialLogin(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
         log.debug("code " + code);
         System.out.println("code = " + code);
 
         UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code);
-//        if (userLoginDto.getUserInfo().getNickname() == null) {
-//            return new ResponseEntity<>(userLoginDto, HttpStatus.CREATED);
-//        }
+
         return ResponseEntity.ok(userLoginDto);
+
     }
+
+    // 구글 로그인 콜백 처리
+//    @GetMapping(value = "/auth/social_login/{loginType}/callback")
+//    public ResponseEntity<UserLoginDto> callback(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
+//        log.debug("code " + code);
+//        System.out.println("code = " + code);
+//
+//        UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code);
+////        if (userLoginDto.getUserInfo().getNickname() == null) {
+////            return new ResponseEntity<>(userLoginDto, HttpStatus.CREATED);
+////        }
+//        return ResponseEntity.ok(userLoginDto);
+//    }
 
 
 

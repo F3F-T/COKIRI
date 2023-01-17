@@ -56,12 +56,6 @@ public class ScrapService {
         Scrap scrapByUserId = scrapRepository.findScrapByMemberId(memberId).orElseThrow(NotFoundByIdException::new);
 
 
-//        List<ScrapPost> scrapPosts = scrapByUserId.getScrapPosts();
-//        List<PostDTO.PostInfoDto> posts = new ArrayList<>();
-//        for (ScrapPost scrapPost : scrapPosts) {
-//            posts.add(scrapPost.getPost().toInfoDto());
-//        }
-
 
         return scrapPostRepositoryImpl.findUserScrapPost(scrapByUserId.getId(), pageable);
     }
