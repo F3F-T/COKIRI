@@ -17,7 +17,6 @@ import styled from "../../styles/card/cards.module.scss";
 import Api from "../../utils/api";
 import {setToken} from "../../store/jwtTokenReducer";
 import {setUserInfo} from "../../store/userInfoReducer";
-import {log} from "util";
 import nav from "../Nav";
 
 interface PostType {
@@ -33,10 +32,13 @@ interface PostType {
 }
 
 type categoryOption = "wishCategory" | "productCategory" | "both"
+type filtertype = "recent" | "popular"
 interface postProps {
     categoryOption? : categoryOption,
+    filterType? : filtertype,
 }
 const PostContainer = (postProps : postProps) => {
+    console.log(postProps.filterType);
 
     console.log(postProps.categoryOption);
     const dispatch = useDispatch();
