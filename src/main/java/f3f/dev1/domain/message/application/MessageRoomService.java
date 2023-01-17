@@ -99,32 +99,56 @@ public class MessageRoomService {
 //        return totalMsgRoom;
 //    }
 
+    //유저 채팅방 전체 조회
     @Transactional(readOnly = true)
-    public List<MessageRoom> ReadMessageRoomsByUserId(Long id){
+    public List<MessageRoomInfoDto> ReadMessageRoomsByUserId(Long id){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        List<MessageRoom> totalMsgRoom = new ArrayList<>();
-        totalMsgRoom.addAll(member.getBuyingRooms());
-        totalMsgRoom.addAll(member.getSellingRooms());
+        List<MessageRoomInfoDto> totalMsgRoomDtoList = new ArrayList<>();
+        for(MessageRoom msgRoom : member.getBuyingRooms()){
+            MessageRoomInfoDto msgRoomInfoDto = msgRoom.toMessageRoomInfo();
+            totalMsgRoomDtoList.add(msgRoomInfoDto);
+        }
+//        List<MessageRoom> totalMsgRoom = new ArrayList<>();
+//        totalMsgRoom.addAll(member.getBuyingRooms());
+//        totalMsgRoom.addAll(member.getSellingRooms());
 
-        return totalMsgRoom;
+        return totalMsgRoomDtoList;
     }
 
     //유저에서 sellingRoom 조회
     @Transactional(readOnly = true)
-    public List<MessageRoom> ReadSellingMessageRoomsByUserId(Long id){
+    public List<MessageRoomInfoDto> ReadSellingMessageRoomsByUserId(Long id){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        return member.getSellingRooms();
+        List<MessageRoomInfoDto> sellingRoomsInfoDto = new ArrayList<>();
+        for(MessageRoom msgRoom : member.getSellingRooms()){
+            MessageRoomInfoDto msgRoomInfoDto = msgRoom.toMessageRoomInfo();
+            sellingRoomsInfoDto.add(msgRoomInfoDto);
+        }
+        return sellingRoomsInfoDto;
     }
     //유저에서 BuyingRoom 조회
     @Transactional(readOnly = true)
-    public List<MessageRoom> ReadBuyingMessageRoomsByUserId(Long id){
+    public List<MessageRoomInfoDto> ReadBuyingMessageRoomsByUserId(Long id){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        return member.getBuyingRooms();
+        List <MessageRoomInfoDto> buyingRoomsInfoDto = new ArrayList<>();
+        for(MessageRoom msgRoom : member.getBuyingRooms()){
+            MessageRoomInfoDto buyingRoomInfoDto = msgRoom.toMessageRoomInfo();
+            buyingRoomsInfoDto.add(buyingRoomInfoDto);
+        }
+
+        return buyingRoomsInfoDto;
     }
+
+    //채팅방에서 "메시지들" 조회
     @Transactional(readOnly = true)
-    public List<Message> ReadMessagesByMessageRoomId(Long id){
+    public List<MessageInfoDto> ReadMessagesByMessageRoomId(Long id){
        MessageRoom messageRoom = messageRoomRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        return messageRoom.getMessages();
+       List <MessageInfoDto> totalMsgInfoDto = new ArrayList<>();
+       for(Message msg : messageRoom.getMessages()){
+           MessageInfoDto msgInfoDto = msg.toMessageInfo();
+           totalMsgInfoDto.add(msgInfoDto);
+       }
+        return totalMsgInfoDto;
     }
 
     //포스트에 포함된 메시지룸 수
