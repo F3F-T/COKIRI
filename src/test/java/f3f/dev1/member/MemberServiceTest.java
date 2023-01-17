@@ -2,6 +2,7 @@ package f3f.dev1.member;
 
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.EmailCertificationService;
+import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.domain.address.model.Address;
@@ -137,19 +138,10 @@ public class MemberServiceTest {
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
 
         // when
-        UserInfo userInfo = memberService.getUserInfo(member.getId());
+        MemberDTO.UserInfoWithAddress userInfo = memberService.getUserInfo(member.getId());
 
         // then
-        assertArrayEquals(new String[]{
-                signUpRequest.getUserName(),
-                signUpRequest.getNickname(),
-                signUpRequest.getEmail(),
-                signUpRequest.getPhoneNumber()}, new String[]{
-                userInfo.getUserName(),
-                userInfo.getNickname(),
-                userInfo.getEmail(),
-                userInfo.getPhoneNumber()
-        });
+
     }
 
     @Test

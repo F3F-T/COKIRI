@@ -1,16 +1,13 @@
 package f3f.dev1.domain.member.api;
 
-import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
-import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 
@@ -21,14 +18,18 @@ public class MemberController {
     private final MemberService memberService;
 
 
-    private final AuthService authService;
-
     // 유저 정보 조회
     @GetMapping(value = "/user")
-    public ResponseEntity<UserInfo> getUserInfo() {
+    public ResponseEntity<UserInfoWithAddress> getUserInfo() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(memberService.getUserInfo(currentMemberId));
 
+    }
+    // 유저 디테일 조회
+    @GetMapping(value = "/user/detail")
+    public ResponseEntity<UserDetail> getUserDetail() {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.getUserDetail(currentMemberId));
     }
 
     // 유저 정보 수정
@@ -54,11 +55,6 @@ public class MemberController {
 
     }
 
-    @PatchMapping(value = "/user/image")
-    public ResponseEntity<String> updateUserImage(@RequestBody UpdateUserImage updateUserImage) {
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.updateUserImage(updateUserImage, currentMemberId));
-    }
 
     // 유저 닉네임 업데이트
     @PatchMapping(value = "/user/nickname")
@@ -84,24 +80,26 @@ public class MemberController {
         return ResponseEntity.ok(memberService.updateDescription(currentMemberId, updateDescriptionDto));
     }
 
+    // 유저 이미지 url 업데이트
+    @PatchMapping(value = "/user/imageUrl")
+    public ResponseEntity<NewImageUrlDto> updateUserImageUrl(@RequestBody UpdateUserImage updateUserImage) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        return ResponseEntity.ok(memberService.updateUserImage(updateUserImage, currentMemberId));
+    }
+
     // 유저 주소 업데이트 --> AddressController로 변경
 
-    // 로그아웃
-    @DeleteMapping("/user/logout")
-    public ResponseEntity<String> logout(HttpServletRequest request) throws IOException {
 
-        String token = request.getHeader("Authorization").split(" ")[1];
-        System.out.println("token = " + token);
-        return ResponseEntity.ok(authService.logout(token));
-    }
 
 
     // 마이페이지용 조회 - 유저가 작성한 게시글 리스트 리턴
     @GetMapping("/user/posts")
-    public ResponseEntity<GetUserPostDto> getUserPosts() {
+    public ResponseEntity<Page<GetUserPost>> getUserPosts(Pageable pageable) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.getUserPostDto(currentMemberId));
+        return ResponseEntity.ok(memberService.getUserPostDto(currentMemberId, pageable));
     }
+
+
 
     // 유저가 속한 채팅방 리스트 리턴
     @GetMapping("/user/messagerooms")
@@ -112,8 +110,8 @@ public class MemberController {
 
     // 유저 주소 리스트 조회
     @GetMapping("/user/address")
-    public ResponseEntity<GetMemberAddressListDTO> getMemberAddress() {
+    public ResponseEntity<GetMemberAddressesDTO> getMemberAddress() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.getMemberAddressListDTO(currentMemberId));
+        return ResponseEntity.ok(memberService.getMemberAddressesDTO(currentMemberId));
     }
 }

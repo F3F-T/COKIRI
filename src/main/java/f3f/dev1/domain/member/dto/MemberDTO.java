@@ -1,14 +1,12 @@
 package f3f.dev1.domain.member.dto;
 
-import f3f.dev1.domain.address.dto.AddressDTO;
+import com.querydsl.core.annotations.QueryProjection;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import f3f.dev1.domain.post.dao.PostRepository;
+import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -107,7 +105,60 @@ public class MemberDTO {
         private String birthDate;
 
         private UserLoginType loginType;
+
+
+
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class UserInfoWithAddress {
+        private UserDetail userDetail;
+
+        private List<AddressInfoDTO> address;
+    }
+
+
+
+    @Builder
+    @NoArgsConstructor
+    @Getter
+    public static class UserDetail {
+        private Long id;
+
+        private Long scrapId;
+        private String userName;
+
+        private String imageUrl;
+
+        private String nickname;
+
+        private String description;
+
+        private String phoneNumber;
+
+        private String email;
+
+        private String birthDate;
+
+        private UserLoginType loginType;
+        @QueryProjection
+        public UserDetail(Long id, Long scrapId, String userName, String imageUrl, String nickname, String description, String phoneNumber, String email, String birthDate, UserLoginType loginType) {
+            this.id = id;
+            this.scrapId = scrapId;
+            this.userName = userName;
+            this.imageUrl = imageUrl;
+            this.nickname = nickname;
+            this.description = description;
+            this.phoneNumber = phoneNumber;
+            this.email = email;
+            this.birthDate = birthDate;
+            this.loginType = loginType;
+        }
+    }
+
 
     @Builder
     @AllArgsConstructor
@@ -259,7 +310,7 @@ public class MemberDTO {
     @NoArgsConstructor
     @Getter
     public static class UserLoginDto {
-        private UserInfo userInfo;
+        private UserInfoWithAddress userInfo;
 
         private TokenIssueDTO tokenInfo;
     }
@@ -355,7 +406,16 @@ public class MemberDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    public static class GetMemberAddressListDTO{
+    public static class NewImageUrlDto {
+        private String newImageUrl;
+    }
+
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class GetMemberAddressesDTO {
         private List<AddressInfoDTO> memberAddress;
     }
 
@@ -366,4 +426,40 @@ public class MemberDTO {
     public static class ImageUrlDto {
         private List<String> imageUrls;
     }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class SimpleLoginDto {
+
+        private String userId;
+
+        private TokenIssueDTO tokenInfo;
+
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class GetUserPost {
+        private Long postId;
+        private String thumbNail;
+        private String title;
+        private String tradeStatus;
+        private String wishCategory;
+        private Long likeCount;
+
+
+        public GetUserPost(PostRepository.GetUserPostInterface getUserPostInterface) {
+            this.postId = getUserPostInterface.getPostId();
+            this.thumbNail = null;
+            this.title = getUserPostInterface.getTitle();
+            this.tradeStatus = getUserPostInterface.getTradeStatus();
+            this.wishCategory = getUserPostInterface.getName();
+            this.likeCount = getUserPostInterface.getLikes();
+        }
+    }
+
 }

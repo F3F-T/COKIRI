@@ -47,6 +47,7 @@ const PostUpload = () => {
 
     const onChangePrice = (e) => {
         const inputPrice = e.target.value;
+        console.log(inputPrice);
         setUploadData((prevState) => {
             return {...prevState, price: inputPrice}
         })
@@ -138,6 +139,7 @@ const PostUpload = () => {
         const jsonObj = {
             "title": uploadData.title,
             "content":uploadData.content,
+            "price":uploadData.price,
             "tradeEachOther": tradeEachOther,
             "authorId": store.userInfoReducer.id,
             "productCategory" : uploadData.productCategory,
@@ -146,8 +148,22 @@ const PostUpload = () => {
         };
 
         uploadPost(jsonObj);
-
     }
+
+    /**
+     * 로그인 상태를 확인하고 비로그인일때 이전화면으로 돌아가기
+     */
+    useEffect(()=>{
+        if(store.jwtTokenReducer.authenticated)
+        {
+            console.log("로그인 상태")
+        }
+        else
+        {
+            alert("로그인후에 가능한 서비스입니다.")
+            navigate(-1);
+        }
+    },[store.jwtTokenReducer.authenticated])
 
 
     return (
@@ -165,7 +181,7 @@ const PostUpload = () => {
                     <p className={styles.star}>*</p><input type="text" className={styles.item2_2} placeholder="글 제목을 적어주세요." onBlur={onChangeTitle} />
                 </div>
                 <div className={styles.item2}>
-                    <p className={styles.star}>*</p><input type="text" className={styles.item2_2} placeholder="생각하는 물건의 가격대를 적어주세요." onBlur={onChangePrice}/>
+                    <p className={styles.star}>*</p><input type="number" className={styles.item2_2} placeholder="생각하는 물건의 가격대를 적어주세요." onBlur={onChangePrice}/>
                 </div>
                 <div className={styles.item2}>
                     <p className={styles.star}>*</p>
@@ -178,7 +194,7 @@ const PostUpload = () => {
                 <div className={styles.categoryBox2}>
                     <select className={styles.categoryToggle} placeholder="올릴 물건의 카테고리를 선택해주세요." onChange={onChangeProductCategory} >
                         {categories.map((category:string)=> (
-                            <option value={category}>{category}</option>
+                            <option key={category} value={category}>{category}</option>
                         ))}
                     </select>
                 </div>
@@ -188,7 +204,7 @@ const PostUpload = () => {
                 <div className={styles.categoryBox2}>
                     <select className={styles.categoryToggle} placeholder="원하는 물건의 카테고리를 선택해주세요." onChange={onChangeWishCategory} >
                         {categories.map((category:string)=> (
-                            <option value={category}>{category}</option>
+                            <option key={category} value={category}>{category}</option>
                         ))}
                     </select>
                 </div>

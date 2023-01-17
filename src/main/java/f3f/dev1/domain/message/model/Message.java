@@ -1,6 +1,8 @@
 package f3f.dev1.domain.message.model;
 
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.message.dto.MessageDTO;
+import f3f.dev1.domain.message.dto.MessageRoomDTO;
 import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.trade.model.Trade;
@@ -10,6 +12,8 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import javax.persistence.*;
+
+import static f3f.dev1.domain.message.dto.MessageRoomDTO.*;
 
 @Getter
 @NoArgsConstructor
@@ -42,6 +46,20 @@ public class Message extends BaseTimeEntity {
         this.sender = sender;
         this.receiver = receiver;
         this.messageRoom = messageRoom;
+
+    }
+
+    public MessageDTO.MessageInfoDto toMessageInfo(){
+        return MessageDTO.MessageInfoDto.builder()
+                .id(this.getId())
+                .senderNickname(this.sender.getNickname())
+                .receiverNickname(this.receiver.getNickname())
+                .content(this.content)
+                .senderId(this.sender.getId())
+                .receiverId(this.receiver.getId())
+                .messageRoomId(this.messageRoom.getId())
+                .build();
+
 
     }
 

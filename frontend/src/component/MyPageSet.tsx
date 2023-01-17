@@ -5,7 +5,7 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import photo from "../img/photoSelect.png"
 import PriceBox from "../component/trade/PriceBox";
-import profile from "../img/profile.jpeg"
+import profile2 from "../img/profile.jpeg"
 import PostContainer from "../component/trade/PostContainer";
 import axios from "axios";
 import Api from "../utils/api"
@@ -13,10 +13,13 @@ import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
 import {Simulate} from "react-dom/test-utils";
 import input = Simulate.input;
-import {setUserInfo, setUserNick} from "../store/userInfoReducer";
+import {setUserInfo, setUserNick, setUserProfile, setOnelineIntro, deleteUserInfo,logoutUserInfo} from "../store/userInfoReducer";
 import {userInfo} from "os";
 import TextInput from "./common/TextInput";
 import Message from "./로그인 & 회원가입/Message";
+import Modal from "../routes/로그인 & 회원가입/NeighborModal";
+import {deleteToken,logoutToken} from "../store/jwtTokenReducer";
+import {resetaddress1,resetaddress2} from "../store/userAddressInfoReducer";
 
 // interface TextInputProps {
 //     init: string;
@@ -28,19 +31,15 @@ const MyPage = () =>  {
         newNickname: string;
 
     }
-
     type checkNicknameTypes = 'invalid' | 'valid' | 'duplicated'
-
     interface ValidationCheck {
         nicknameCheck: checkNicknameTypes;
         nicknameCheckBoolean: boolean;
     }
-
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
-    console.log("닉네임입니다.", info.nickname)
     const [userInfo, setuserInfo] = useState<UserInfo>(null);
 
     const [validationCheck, setValidationCheck] = useState<ValidationCheck>(
@@ -49,6 +48,49 @@ const MyPage = () =>  {
             nicknameCheckBoolean: undefined,
         }
     );
+    useEffect(()=>{
+        getMyPostList();
+    },[])
+    useEffect(()=>{
+        readNickName()
+    },[])
+    const [newNick,setNewNick]=useState(info.nickname)
+    const [postNum,setNum]=useState('');
+    //모달창
+    const [isOpenModal, setOpenModal] = useState<boolean>(false);
+
+    const onClickToggleModal = useCallback(() => {
+        setOpenModal(!isOpenModal);
+    }, [isOpenModal]);
+    //프로필사진
+    const[profile,setProfile] = useState("")
+    const fileInput = useRef(null)
+    //한줄소개
+    const[intro,setIntro] = useState("")
+    //로그아웃
+    const[count,setCount]=useState(0);
+
+    useEffect(() => {
+        console.log("들어오긴하나?")
+
+        if(count==1){
+         console.log("들어오긴해?")
+         dispatch(deleteToken())
+         dispatch(deleteUserInfo())
+     }
+    }, [count]);
+
+    console.log("리덕스.", info.nickname)
+    console.log("useState.", newNick)
+    if (! readNickName) {
+        return null
+    }
+    if (! nicknameChange) {
+        return null
+    }
+    if (! getMyPostList) {
+        return null
+    }
     const onChangeNickname = (e) => {
         let inputNickname = e.target.value;
         //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
@@ -69,9 +111,8 @@ const MyPage = () =>  {
 
         try {
             const res = await axios.post("http://localhost:8080/auth/check-nickname", nickname);
-            console.log("dd닉ㄴ아럼닏ㄴㄹ",res);
             const result = res.data;
-            console.log("dd닉네임ㅇㄴ아럼닏ㄴㄹ",result);
+            console.log("체크닉듀플리케잇 들어옴",result);
             const duplicated = result.exists
 
             if (duplicated) //중복인 경우 -> true 반환
@@ -89,6 +130,7 @@ const MyPage = () =>  {
                         ...prevState, newNickname: nickname["nickname"]
                     }
                 })
+                // dispatch(setUserNick(nickname["nickname"]))
 
             }
 
@@ -98,11 +140,17 @@ const MyPage = () =>  {
 
         }
     }
+    console.log("리덕스리덕스리덕스리덕스리덕스.", info)
 
-    const [newNick,setNewNick]=useState(info.nickname)
     async function nicknameChange() {
         try {
-            const res = await Api.patch("/user/nickname", userInfo);
+            console.log("닉넴체인지들어옴");
+
+            const userInfo1={
+                userId: userInfo.userId,
+                newNickname: userInfo.newNickname
+            }
+            const res = await Api.patch("/user/nickname", userInfo1);
 
             const result = {
                 status: res.status + "-" + res.statusText,
@@ -110,21 +158,24 @@ const MyPage = () =>  {
                 data: res.data,
             };
             console.log(result);
-            console.log("바뀐 유저정보", userInfo);
+            console.log("바뀐 유저정보", userInfo.newNickname);
             console.log("바뀐 닉넴정보", res.data.newNickname);
             setNewNick(res.data.newNickname)
-            dispatch(setUserInfo(newNick));
-
+            // dispatch(setUserNick(newNick))
+            dispatch(setUserNick(res.data.newNickname))
+            console.log("리덕스에 들어갔나?.", info)
             alert('닉넴 변경 성공');
-
-
+            // if(info.nickname==undefined){
+            //     console.log("?????.")에
+            //     dispatch(setUserNick(res.data.newNickname));
+            //     dispatch(setUserNick( userInfo.newNickname));
+            // }
         } catch (err) {
             console.log(err);
             alert('닉넴 변경 실패');
 
         }
     }
-
 
 
     async function readNickName(){
@@ -136,28 +187,20 @@ const MyPage = () =>  {
                     ...prevState, userId: res.data.id
                 }
             })
-
         }
         catch (err){
             console.log(err);
-            alert("실패")
+            alert("실패??")
         }
     }
-    const [value,setValue]=useState();
 
-    const onChange = useCallback(e=>{
-        setValue((e.target.value))
-    },[])
-    console.log("value",value);
-    useEffect(()=>{
-        readNickName()
-    },[])
-    const [postNum,setNum]=useState('');
+
+
+    // console.log("value",value);
+
     async function getMyPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-            dispatch(setUserNick(newNick));
-
             const res = await Api.get('/user/posts');
             console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
             // @ts-ignore
@@ -166,22 +209,93 @@ const MyPage = () =>  {
         catch (err)
         {
             console.log(err)
-            alert("get 실패");
+            alert("get 실패2");
         }
     }
-    useEffect(()=>{
-        getMyPostList();
-    },[])
+    const onChangeImg = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        if(e.target.files){
+            const uploadFile = e.target.files[0]
+            console.log('uploadFile',uploadFile);
+            const formData = new FormData()
+            formData.append('imageFiles',uploadFile)
+            const res = await axios.post("http://localhost:8080/auth/image", formData);
+            console.log("리턴 데이터 ", res.data.imageUrls[0])
+            dispatch(setUserProfile(res.data.imageUrls[0]))
+            const mbody = {
+                userId : info.id,
+                newImageUrl : res.data.imageUrls[0],
+            }
+            const res2 = await Api.patch("/user/imageUrl",mbody);
+        }
+    }
+
+    async function oneLineIntro(inputIntro:string) {
+        try{
+            const intro={
+                userId: info.id,
+                description: inputIntro
+            }
+            const res = await Api.patch('/user/description',intro);
+            console.log("한줄소개 리덕스",res.data.newDescription)
+            console.log("한줄소개 리덕스2",info.onelineIntro)
+
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("한줄소개 실패");
+        }
+    }
+    const inputIntro= (e) => {
+        let inputIntro = e.target.value;
+        if (inputIntro.length > 0) {
+            setIntro(inputIntro);
+            dispatch(setOnelineIntro(inputIntro));
+            oneLineIntro(inputIntro)
+            console.log("한줄소개입니다.",info.onelineIntro)
+
+        }
+        else{
+        }
+    }
+    console.log("한줄소개입니다.",info.onelineIntro)
+
+    async function logOut() {
+        try{
+            const res = await Api.get('/logout');
+            alert("로그아웃");
+            dispatch(logoutToken());
+            dispatch(logoutUserInfo());
+            dispatch(resetaddress1())
+            dispatch(resetaddress2())
+
+            navigate(`/`)
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("로그아웃 실패");
+        }
+    }
 
     return (
             <>
             <div className={styles.profile}>
+                {isOpenModal && (
+                    <Modal onClickToggleModal={onClickToggleModal}>
+                        <embed type="text/html"  width="800" height="608"/>
+                    </Modal>
+                )}
                 <div className={styles.profileImage}>
-                    <img className={styles.Image} src={profile}/>
+                    <img className={styles.Image} src={info.imageUrl} onClick={()=>{fileInput.current.click()}}/>
+                    <form>
+                        <input type="file" style={{display:'none'}} accept="image/*" onChange={onChangeImg} ref={fileInput}/>
+                    </form>
                 </div>
                 <div className={styles.userInfo}>
                     <div className={styles.nickName}>{newNick}</div>
-                    <TextInput placeholder={info.nickname} onBlur={onChangeNickname}/>
+                    <TextInput placeholder={info.nickname} onChange={onChangeNickname}/>
                     {(validationCheck.nicknameCheck === undefined &&
                             <Message validCheck={validationCheck.nicknameCheckBoolean} content={""}/>)
                         ||
@@ -194,7 +308,9 @@ const MyPage = () =>  {
                         (validationCheck.nicknameCheck === "duplicated" &&
                             <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}
                     <button className={styles.nickChangeBtn} onClick={nicknameChange}>변경</button>
-                    <input className={styles.intro} placeholder={"한 줄 소개를 입력하세요."}></input>
+                    <input className={styles.intro} placeholder={info.onelineIntro} onChange={inputIntro} ></input>
+                    <button className={styles.nickChangeBtn} onClick={()=>{setCount(count+1);logOut();}}>로그아웃</button>
+
                     <div className={styles.intro2}>
                         <div className={styles.i1}>
                             <p>게시글</p> <p className={styles.postNum}>{postNum}</p>
@@ -203,6 +319,9 @@ const MyPage = () =>  {
                             <p>상품 거래</p> <p className={styles.tradeNum}>8</p>
                         </div>
                     </div>
+                    <button className={styles.gpsBox} onClick={() => onClickToggleModal()}>
+                        동네 등록을 해주세요.
+                    </button>
                 </div>
             </div>
                 <Outlet/>

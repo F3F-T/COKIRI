@@ -1,0 +1,15 @@
+.gps1{
+    display: flex;
+    border: 2px solid rgba(0, 0, 0, 1);
+    margin-top: 10rem;
+}
+.gps1_1{
+    border: 2px solid rgba(0, 0, 0, 1);
+    width: 10rem;
+
+}
+.box{
+    border: 2px solid rgba(0, 0, 0, 1);
+    width: 1080px;
+    height: 700px;
+}

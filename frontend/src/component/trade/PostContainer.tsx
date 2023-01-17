@@ -6,7 +6,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import myImage from "../../img/cokkiriLogo.png"
 import Card from "../tradeCard/Card"
 import Comments from "../comments/Comments";
-import {storeCategory} from "../../store/categoryReducer";
+import categoryReducer, {storeCategory} from "../../store/categoryReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {storePostDetail} from "../../store/postDetailReducer";
 import TalkList from "../talk/TalkList";
@@ -32,11 +32,19 @@ interface PostType {
     tagNames? : string[];
 }
 
+type categoryOption = "wishCategory" | "productCategory" | "both"
+interface postProps {
+    categoryOption? : categoryOption,
+}
+const PostContainer = (postProps : postProps) => {
 
-const PostContainer = () => {
-
+    console.log(postProps.categoryOption);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    let wishCategory = "";
+    let productCategory = "";
+    let minPrice = "";
+    let maxPrice = "";
 
     const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
 
@@ -44,15 +52,55 @@ const PostContainer = () => {
 
     const [postList,setPostList] = useState<PostType[]>(null)
     const [loading,setLoading] = useState(false);
+
+    if(postProps.categoryOption === "wishCategory")
+    {
+        wishCategory = store.categoryReducer.category;
+    }
+    else if(postProps.categoryOption === "productCategory")
+    {
+        productCategory = store.categoryReducer.category;
+    }
+    else if(postProps.categoryOption === "both")
+    {
+        wishCategory = store.categoryReducer.category;
+        productCategory = store.categoryReducer.category;
+    }
+
+    if(wishCategory === "전체")
+    {
+        wishCategory = "";
+    }
+
+    if(productCategory === "전체")
+    {
+        productCategory = "";
+        console.log(store.priceReducer.maxPrice);
+        console.log(store.priceReducer.minPrice);
+    }
+
+    if(store.priceReducer.minPrice !=null)
+    {
+        minPrice = store.priceReducer.minPrice;
+    }
+
+    if(store.priceReducer.maxPrice !=null)
+    {
+        maxPrice = store.priceReducer.maxPrice;
+    }
+
+
+
     async function getPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-            const res = await Api.get('/post');
+            //query string 날리기
+            const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
+            console.log(res);
             console.log(res.data)
             setPostList(prevState => {
-                return [...res.data];
+                return [...res.data.content];
             })
-            console.log("포리포리",postList);
         }
         catch (err)
         {
@@ -64,7 +112,7 @@ const PostContainer = () => {
     // getPostList();
     useEffect(()=>{
         getPostList();
-    },[])
+    },[wishCategory,productCategory,minPrice,maxPrice])
 
     /**
      * 중요) postList를 async로 받긴 하지만 받아오는 시간 전까지는 postList가 null이기 때문에 밑에있는 render 에서 postList.map 이 null을 접근하게 돼서 오류가 발생하고, 켜지지 않는다
