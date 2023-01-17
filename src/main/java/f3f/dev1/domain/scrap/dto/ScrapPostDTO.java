@@ -16,19 +16,15 @@ public class ScrapPostDTO {
         private String thumbNail;
         private String title;
         private TradeStatus tradeStatus;
-        private String author;
-        private Long price;
-        private String productCategory;
         private String wishCategory;
+        private Long likeCount;
         @QueryProjection
-        public GetUserScrapPost(Long postId, String title, TradeStatus tradeStatus, String author, Long price, String productCategory, String wishCategory) {
+        public GetUserScrapPost(Long postId, String title, TradeStatus tradeStatus, String wishCategory, Long likeCount) {
             this.postId = postId;
             this.title = title;
             this.tradeStatus = tradeStatus;
-            this.author = author;
-            this.price = price;
-            this.productCategory = productCategory;
             this.wishCategory = wishCategory;
+            this.likeCount = likeCount;
         }
     }
 }
