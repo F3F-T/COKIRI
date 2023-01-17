@@ -16,6 +16,9 @@ import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
@@ -200,15 +204,10 @@ public class MemberService {
     // TODO 마이페이지 조회 메소드 필요할 것 같음 추가예정 - 조회할떄 각 정보 DTO로 감싸서 리턴하게 해야함, 각 도메인 별로 조회용 DTO 생성되면 구현 예정
     // QUERYDSL 적용해야함
     @Transactional(readOnly = true)
-    public GetUserPostDto getUserPostDto(Long memberId) {
-        List<Post> byAuthorId = postRepository.findByAuthorId(memberId);
-        List<PostInfoDto> userPosts = new ArrayList<>();
-        // TODO SPOTCAST 코드 보고 리스트 DTO로 뱉는거로 바꿀 예정
-        for (Post post : byAuthorId) {
-            userPosts.add(post.toInfoDto());
-        }
+    public Page<GetUserPost> getUserPostDto(Long memberId, Pageable pageable) {
+        List<GetUserPost> collect = postRepository.getUserPostById(memberId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
+        return new PageImpl<>(collect);
 
-        return GetUserPostDto.builder().userPosts(userPosts).build();
 
     }
 

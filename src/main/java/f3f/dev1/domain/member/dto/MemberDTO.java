@@ -5,10 +5,8 @@ import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import f3f.dev1.domain.post.dao.PostRepository;
+import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -439,6 +437,29 @@ public class MemberDTO {
 
         private TokenIssueDTO tokenInfo;
 
+    }
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class GetUserPost {
+        private Long postId;
+        private String thumbNail;
+        private String title;
+        private String tradeStatus;
+        private String wishCategory;
+        private Long likeCount;
+
+
+        public GetUserPost(PostRepository.GetUserPostInterface getUserPostInterface) {
+            this.postId = getUserPostInterface.getPostId();
+            this.thumbNail = null;
+            this.title = getUserPostInterface.getTitle();
+            this.tradeStatus = getUserPostInterface.getTradeStatus();
+            this.wishCategory = getUserPostInterface.getName();
+            this.likeCount = getUserPostInterface.getLikes();
+        }
     }
 
 }

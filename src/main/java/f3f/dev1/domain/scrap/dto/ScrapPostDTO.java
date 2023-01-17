@@ -17,14 +17,14 @@ public class ScrapPostDTO {
         private String title;
         private TradeStatus tradeStatus;
         private String wishCategory;
-        private Long likeCount;
+        private Long scrapCount;
         @QueryProjection
         public GetUserScrapPost(Long postId, String title, TradeStatus tradeStatus, String wishCategory, Long likeCount) {
             this.postId = postId;
             this.title = title;
             this.tradeStatus = tradeStatus;
             this.wishCategory = wishCategory;
-            this.likeCount = likeCount;
+            this.scrapCount = likeCount;
         }
     }
 }

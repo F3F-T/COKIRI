@@ -4,6 +4,8 @@ import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -92,10 +94,12 @@ public class MemberController {
 
     // 마이페이지용 조회 - 유저가 작성한 게시글 리스트 리턴
     @GetMapping("/user/posts")
-    public ResponseEntity<GetUserPostDto> getUserPosts() {
+    public ResponseEntity<Page<GetUserPost>> getUserPosts(Pageable pageable) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.getUserPostDto(currentMemberId));
+        return ResponseEntity.ok(memberService.getUserPostDto(currentMemberId, pageable));
     }
+
+
 
     // 유저가 속한 채팅방 리스트 리턴
     @GetMapping("/user/messagerooms")
