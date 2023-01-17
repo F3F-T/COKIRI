@@ -57,6 +57,7 @@ const KiriKiriTrade = () => {
                             : <button className={`${styles["newsetBtn" + (tab1 === "next" ? "active" : "")]}`}
                                       onClick={() => {
                                           setDealTab('next')
+                                          setFilterType('recent')
                                       }}>최신순</button>
                         }
                         {tab1 === 'curr' ? <button className={`${styles["pupularBtn" + (tab1 === "curr" ? "active" : "")]}`}
