@@ -1,9 +1,9 @@
 package f3f.dev1.domain.member.application;
 
 import f3f.dev1.domain.address.dao.AddressRepository;
-import f3f.dev1.domain.address.dto.AddressDTO;
 import f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
 import f3f.dev1.domain.address.model.Address;
+import f3f.dev1.domain.member.dao.MemberCustomRepositoryImpl;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.*;
 import f3f.dev1.domain.member.model.Member;
@@ -45,6 +45,8 @@ public class MemberService {
     private final MessageRoomRepository messageRoomRepository;
     private final ScrapRepository scrapRepository;
 
+    private final MemberCustomRepositoryImpl memberCustomRepositoryImpl;
+
 
     @Transactional(readOnly = true)
     public RedunCheckDto existsByEmail(String email) {
@@ -65,11 +67,10 @@ public class MemberService {
     // 조회 메소드
     // 아이디로 유저 정보 조회
     @Transactional(readOnly = true)
-    public UserInfo getUserInfo(Long userId) {
+    public UserInfoWithAddress getUserInfo(Long userId) {
         log.info("유저 정보 조회 호출됐음");
-        Member byId = memberRepository.findById(userId).orElseThrow(NotFoundByIdException::new);
 
-        return byId.toUserInfo(byId.getScrap().getId());
+        return memberCustomRepositoryImpl.getUserInfo(userId);
 
     }
 
@@ -197,7 +198,7 @@ public class MemberService {
 
 
     // TODO 마이페이지 조회 메소드 필요할 것 같음 추가예정 - 조회할떄 각 정보 DTO로 감싸서 리턴하게 해야함, 각 도메인 별로 조회용 DTO 생성되면 구현 예정
-
+    // QUERYDSL 적용해야함
     @Transactional(readOnly = true)
     public GetUserPostDto getUserPostDto(Long memberId) {
         List<Post> byAuthorId = postRepository.findByAuthorId(memberId);
@@ -222,14 +223,15 @@ public class MemberService {
     // 멤버 주소 리스트 조회
     // TODO QueryDSL로 리팩터링 해야된다
     @Transactional(readOnly = true)
-    public GetMemberAddressListDTO getMemberAddressListDTO(Long memberId) {
-        List<Address> byMemberId = addressRepository.findByMemberId(memberId);
-        List<AddressInfoDTO> memberAddress = new ArrayList<>();
-        for (Address address : byMemberId) {
-            memberAddress.add(address.toInfoDto());
+    public GetMemberAddressesDTO getMemberAddressesDTO(Long memberId) {
+        List<AddressInfoDTO> userAddress = memberCustomRepositoryImpl.getUserAddress(memberId);
 
-        }
+        return GetMemberAddressesDTO.builder().memberAddress(userAddress).build();
+    }
 
-        return GetMemberAddressListDTO.builder().memberAddress(memberAddress).build();
+    // 멤버 디테일 조회
+    @Transactional(readOnly = true)
+    public UserDetail getUserDetail(Long memberId) {
+        return memberCustomRepositoryImpl.getUserDetail(memberId);
     }
 }

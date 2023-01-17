@@ -49,6 +49,9 @@ import PriceReducer from "./store/priceReducer";
 const persistConfig = {
     key: 'root',
     storage,
+    //여기서 영구적으로 저장하고 싶지 않은 reducer를 blackList로 설정해준다.
+    // (정렬기준에서 가격은 새로고침 되면 없어지게 하고싶으므로 priceReducer를 추가해주었음)
+    blacklist : ['priceReducer']
 };
 
 const rootReducer = combineReducers({

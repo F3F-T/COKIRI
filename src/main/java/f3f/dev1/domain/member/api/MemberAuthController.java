@@ -134,12 +134,18 @@ public class MemberAuthController {
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserLoginDto> loginJson(@RequestBody LoginRequest loginRequest) {
         log.info("로그인 호출됐음");
+        log.info("json 형식으로 데이터 넘어옴");
+        log.info("email " + loginRequest.getEmail());
+        log.info("pwd " + loginRequest.getPassword());
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<UserLoginDto> loginForm(LoginRequest loginRequest) {
         log.info("로그인 호출됐음");
+        log.info("form 형식으로 데이터 넘어옴");
+        log.info("email " + loginRequest.getEmail());
+        log.info("pwd " + loginRequest.getPassword());
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
@@ -172,9 +178,9 @@ public class MemberAuthController {
         System.out.println("code = " + code);
 
         UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code);
-        if (userLoginDto.getUserInfo().getNickname() == null) {
-            return new ResponseEntity<>(userLoginDto, HttpStatus.CREATED);
-        }
+//        if (userLoginDto.getUserInfo().getNickname() == null) {
+//            return new ResponseEntity<>(userLoginDto, HttpStatus.CREATED);
+//        }
         return ResponseEntity.ok(userLoginDto);
     }
 

@@ -79,12 +79,12 @@ const PostContainer = (postProps : postProps) => {
         console.log(store.priceReducer.minPrice);
     }
 
-    if(store.priceReducer.minPrice !=undefined)
+    if(store.priceReducer.minPrice !=null)
     {
         minPrice = store.priceReducer.minPrice;
     }
 
-    if(store.priceReducer.maxPrice !=undefined)
+    if(store.priceReducer.maxPrice !=null)
     {
         maxPrice = store.priceReducer.maxPrice;
     }
