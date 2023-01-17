@@ -150,7 +150,7 @@ const MyPage = () =>  {
             console.log("유저정보",res.data.id)
             setuserInfo((prevState) => {
                 return {
-                    ...prevState, userId: res.data.id
+                    ...prevState, userId: res.data.userDetail.id
                 }
             })
         }

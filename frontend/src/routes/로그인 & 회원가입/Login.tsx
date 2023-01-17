@@ -21,6 +21,13 @@ import {
     setUserName,
     setOnelineIntro, logoutUserInfo,
 } from "../../store/userInfoReducer";
+import {
+    parcelAddress1, parcelAddress2,
+    setAddress1,
+    setAddress2,
+    setAddressName1, setAddressName2, setLat1, setLat2, setLng1, setLng2,
+    setUserAddressInfo1, setUserAddressInfo2
+} from "../../store/userAddressInfoReducer";
 
 const Login = () => {
 
@@ -32,8 +39,6 @@ const Login = () => {
     const onClickToggleModal = useCallback(() => {
         setOpenModal(!isOpenModal);
     }, [isOpenModal]);
-
-
 
     const [email,setEmail] = useState('');
     const [google,setGoogle] = useState('');
@@ -85,11 +90,28 @@ const Login = () => {
             //jwt 토큰 redux에 넣기
             const jwtToken = accessToken.tokenInfo;
             console.log(jwtToken)
-            console.log(res.data.userInfo)
+            console.log("바뀐address",res.data.userInfo.address[1])
             dispatch(setToken(jwtToken));
-            dispatch(setUserInfo(res.data.userInfo))
-            dispatch(setOnelineIntro(res.data.userInfo.description))
+            dispatch(setUserInfo(res.data.userInfo.userDetail))
+            dispatch(setOnelineIntro(res.data.userInfo.userDetail.description))
 
+            if(res.data.userInfo.address[0]!=null){
+                dispatch(setUserAddressInfo1(res.data.userInfo.address[0].id))
+                dispatch(setAddressName1(res.data.userInfo.address[0].addressName))
+                dispatch(parcelAddress1(res.data.userInfo.address[0].postalAddress))
+                dispatch(setLat1(res.data.userInfo.address[0].latitude))
+                dispatch(setLng1(res.data.userInfo.address[0].longitude))
+            }
+            if(res.data.userInfo.address[1]!=null){
+                dispatch(setUserAddressInfo2(res.data.userInfo.address[1].id))
+                dispatch(setAddressName2(res.data.userInfo.address[1].addressName))
+                dispatch(parcelAddress2(res.data.userInfo.address[1].postalAddress))
+                dispatch(setLat2(res.data.userInfo.address[1].latitude))
+                dispatch(setLng2(res.data.userInfo.address[1].longitude))
+            }
+
+            // dispatch(setAddress1(res.data.userInfo.address[0]))
+            // dispatch(setAddress2(res.data.userInfo.address[1]))
             console.log("store",store)
             alert("로그인 성공")
             navigate(`/`)
@@ -100,23 +122,20 @@ const Login = () => {
                 alert("로그인에 실패하였습니다." + `\n` +
                     "아이디 혹은 비밀번호를 다시 확인해주세요")
             }
-
-
             // console.log(store.jwtTokenReducer);
             // console.log(store.jwtTokenReducer.accessToken);
             // console.log(store.jwtTokenReducer.authenticated);
             // console.log(store.jwtTokenReducer.accessTokenExpiresIn);
-
     }
     const handleClick= () => {
         console.log(userInfo);
         postLoginData();
     }
-    const googleLogin = useGoogleLogin({
+    const googleLogin_2 = useGoogleLogin({
         onSuccess: (codeResponse) => console.log(codeResponse),
         flow: 'auth-code',
     })
-    const googleLo2gin = useGoogleLogin({
+    const googleLogin = useGoogleLogin({
         onSuccess: async response => {
             try {
                 const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
