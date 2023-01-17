@@ -11,6 +11,7 @@ import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.global.common.constants.OAuthConstants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import static f3f.dev1.domain.member.dto.MemberDTO.LoginRequest;
 import static f3f.dev1.domain.member.dto.MemberDTO.SignUpRequest;
 import static f3f.dev1.domain.member.dto.OAuthDTO.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class OAuth2UserService {
@@ -77,6 +79,7 @@ public class OAuth2UserService {
 
         switch (loginType) {
             case OAuthConstants.GOOGLE: {
+                log.info("구글 로그인 코드" + code);
                 // 구글로 일회성 코드를 보내 액세스 토큰이 담긴 응답 객체를 받아옴
                 ResponseEntity<String> accessTokenResponse = googleAuth.requestAccessToken(code);
                 // 응답객체가 JSON 형식으로 되어 있으니, 이를 역직렬화해서 자바 객체에 담음
