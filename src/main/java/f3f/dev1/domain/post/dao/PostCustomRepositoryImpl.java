@@ -11,7 +11,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import f3f.dev1.domain.message.model.QMessageRoom;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.QScrapPost;
-import f3f.dev1.domain.post.model.SortOrder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
