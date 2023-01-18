@@ -13,7 +13,12 @@ import {resetCategory} from "../store/categoryReducer";
 
 
 const MulmulTrade1 = () => {
-    const [tab1, setTab] = useState('curr');
+    const [tab1, setTab] = useState('next');
+
+    type filtertype = "recent" | "popular"
+    const [filterType, setFilterType]= useState<filtertype>("recent");
+
+
     function setDealTab(tab){
         setTab(tab)
     }
@@ -25,18 +30,33 @@ const MulmulTrade1 = () => {
         <div className={styles.mulmulTrade}>
             <div className={styles.mulmulTradeContent}>
                 { categories2.includes(store.categoryReducer.category)?
-                    <div className={styles.navPostOrWant}>{store.categoryReducer.category}을 올린 사람들이에요</div> :
-                    <div className={styles.navPostOrWant}>{store.categoryReducer.category}를 올린 사람들이에요</div>
+                    <div className={styles.navPostOrWant}>{store.categoryReducer.category}을 올린 사람들이에요.</div> :
+                    <div className={styles.navPostOrWant}>{store.categoryReducer.category}를 올린 사람들이에요.</div>
                 }
                 <div className={styles.popularOrNewest}>
-                    {tab1 === 'curr' ? <button className={`${styles["pupularBtn"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>✓인기도순</button>
-                    : <button className={`${styles["pupularBtn"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>인기도순</button>
+                    {tab1 === 'next' ? <button className={`${styles["newsetBtn" + (tab1 === "next" ? "active" : "")]}`}
+                                               onClick={() => {
+                                                   setDealTab('next')
+                                                   setFilterType('recent')
+                                               }}>✓최신순</button>
+                        : <button className={`${styles["newsetBtn" + (tab1 === "next" ? "active" : "")]}`}
+                                  onClick={() => {
+                                      setDealTab('next')
+                                  }}>최신순</button>
                     }
-                    {tab1 === 'next' ? <button className={`${styles["newsetBtn"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>✓누적도순</button>
-                        : <button className={`${styles["newsetBtn"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>누적도순</button>
+                    {tab1 === 'curr' ? <button className={`${styles["pupularBtn" + (tab1 === "curr" ? "active" : "")]}`}
+                                               onClick={() => {
+                                                   setDealTab('curr')
+                                                   setFilterType('popular')
+                                               }}>✓인기도순</button>
+                        : <button className={`${styles["pupularBtn" + (tab1 === "curr" ? "active" : "")]}`}
+                                  onClick={() => {
+                                      setDealTab('curr')
+                                      setFilterType('popular')
+                                  }}>인기도순</button>
                     }
                 </div>
-                <PostContainer categoryOption = {"productCategory"}/>
+                <PostContainer categoryOption = {"productCategory"} filterType={filterType}/>
             </div>
         </div>
     );
