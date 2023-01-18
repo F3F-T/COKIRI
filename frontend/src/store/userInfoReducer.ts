@@ -53,7 +53,6 @@ const userInfoSlice = createSlice({
             state.imageUrl = action.payload.imageUrl;
             state.scrapId = action.payload.scrapId;
             state.address = action.payload.address;
-
         },
         setUserNick(state,action){
             state.nickname = action.payload;

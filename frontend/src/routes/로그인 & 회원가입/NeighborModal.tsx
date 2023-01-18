@@ -11,7 +11,7 @@ import {
     parcelAddress2, resetaddress1, resetaddress2,
     setAddressName1, setAddressName2,
     setUserAddressInfo1,
-    setUserAddressInfo2,setClick1,setClick2
+    setUserAddressInfo2, setClick1, setClick2, setLat2, setLng2,setLat1, setLng1
 } from "../../store/userAddressInfoReducer";
 
 interface ModalDefaultType {
@@ -48,6 +48,7 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
     const [count1,setCount1]=useState(0);
     const [count2,setCount2]=useState(0);
 
+    console.log("주소1이 잘 들어갔나",addressR)
 
     //주소 추가
     async function postAddressData_1() {
@@ -59,6 +60,9 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
             dispatch(setUserAddressInfo1((res.data.id)))
             dispatch(setAddressName1((res.data.addressName)))
             dispatch(setClick1(1))
+            dispatch(setLat1(JSON.stringify(location.coordinates.lat)))
+            dispatch(setLng1(JSON.stringify(location.coordinates.lng)))
+
             // alert("추가 성공")
         }
         catch (err)
@@ -77,6 +81,9 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
             dispatch(setUserAddressInfo2((res.data.id)))
             dispatch(setAddressName2((res.data.addressName)))
             dispatch(setClick2(1))
+            dispatch(setLat2(JSON.stringify(location.coordinates.lat)))
+            dispatch(setLng2(JSON.stringify(location.coordinates.lng)))
+
             // alert("추가 성공")
         }
         catch (err)
@@ -223,7 +230,7 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
                     <div className={styles.registerBox}>
                         <div className={styles.inputBox}>
                             {tab1 === 'curr' ?
-                                addressR.click1==0?
+                                    addressR.parcelName1==undefined?
                                     <>  <p className={styles.input1}>주소 이름</p>
                                         <input type="text" placeholder={'첫번째 주소 이름을 적어주세요.       [ 예시:  집, 회사 ]'}  className={`${styles["input2"+(tab1 ==="curr"? "active" : "")]}`} onChange={inputAddressName_1}/>
                                         <button className={styles.registerBtn} onClick={()=>{postAddressData_1();setCount1(count1+1)}}>등록</button>
@@ -236,7 +243,7 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
 
                                 :
 
-                                addressR.click2==0?
+                                addressR.parcelName2==undefined?
                                     <>  <p className={styles.input1}>주소 이름</p>
                                         <input type="text" placeholder={'두번째 주소 이름을 적어주세요.       [ 예시:  집, 회사 ]'}  className={`${styles["input2_2"+(tab1 ==="curr"? "active" : "")]}`} onChange={inputAddressName_2} />
                                         <button className={styles.registerBtn} onClick={()=>{postAddressData_2();setCount2(count2+1)}}>등록</button>
