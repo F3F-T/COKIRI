@@ -10,7 +10,8 @@ spring:
   OAuth2:
     google:
       url: https://accounts.google.com/o/oauth2/v2/auth
-      callback-url : http://localhost:8080/auth/social_login/google/callback
+      callback-url: storagerelay%3A%2F%2Fhttp%2Flocalhost%3A3000%3Fid%3Dauth792457
+#      callback-url : http://localhost:8080/auth/social_login/google/callback
       scope : https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
       token_request : "https://oauth2.googleapis.com/token"
       userinfo_request: "https://www.googleapis.com/oauth2/v1/userinfo"
