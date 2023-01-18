@@ -1,10 +1,8 @@
 package f3f.dev1.domain.scrap.api;
 
-import f3f.dev1.domain.post.dto.PostDTO;
+import f3f.dev1.domain.scrap.dto.ScrapPostDTO;
 import f3f.dev1.domain.scrap.application.ScrapService;
-import f3f.dev1.domain.scrap.dto.ScrapDTO;
 import f3f.dev1.domain.scrap.dto.ScrapDTO.CreateScrapPostDTO;
-import f3f.dev1.domain.scrap.dto.ScrapDTO.GetScrapPostDTO;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +24,7 @@ public class ScrapController {
 
     // 스크랩 포스트 조회 요청
     @GetMapping(value = "/user/scrap")
-    public ResponseEntity<Page<PostDTO.PostInfoDto>> getScrapPosts(Pageable pageable) {
+    public ResponseEntity<Page<ScrapPostDTO.GetUserScrapPost>> getScrapPosts(Pageable pageable) {
         return new ResponseEntity<>(scrapService.getUserScrapPosts(SecurityUtil.getCurrentMemberId(), pageable), HttpStatus.OK);
     }
     // 유저 스크랩에 포스트 추가 요청

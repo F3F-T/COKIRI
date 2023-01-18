@@ -251,7 +251,7 @@ public class CommentServiceTest {
 
     @Test
     @WithMockCustomUser
-    @DisplayName("댓글 생성 테스트 - 자식댓글")
+    @DisplayName("댓글 생성 및 조회 테스트 - 자식댓글")
     public void createChildCommentTestForSuccess() throws Exception {
         //given
         Long postId = createPost();
@@ -294,6 +294,37 @@ public class CommentServiceTest {
         assertThat(thirdCommentChilds).extracting("content")
                 .hasSize(2).contains("세번째 댓글의 첫번째 자식 댓글", "세번째 댓글의 두번째 자식 댓글");
 
+    }
+
+    @Test
+    @DisplayName("After QueryDsl - 게시글Id로 댓글 조회")
+    public void findCommentByPostIdWithQueryDSL() throws Exception {
+        //given
+        Long postId = createPost();
+        Post post = postRepository.findById(postId).get();
+        Member member = post.getAuthor();
+        CreateCommentRequest commentRequest = createCommentRequest(member, postId, "첫번째 댓글", null);
+        CreateCommentRequest secondCommentRequest = createCommentRequest(member, postId, "두번째 댓글", null);
+        CreateCommentRequest thirdCommentRequest = createCommentRequest(member, postId, "세번째 댓글", null);
+
+        //when
+        CommentInfoDto commentInfoDto = commentService.saveComment(commentRequest, member.getId());
+        CommentInfoDto secondCommentInfoDto = commentService.saveComment(secondCommentRequest, member.getId());
+        CommentInfoDto thirdCommentInfoDto = commentService.saveComment(thirdCommentRequest, member.getId());
+
+        CreateCommentRequest firstCommentChildRequest = createCommentRequest(member, postId, "첫번째 댓글의 자식 댓글", commentInfoDto.getId());
+        CreateCommentRequest thirdCommentFirstChildRequest = createCommentRequest(member, postId, "세번째 댓글의 첫번째 자식 댓글", thirdCommentInfoDto.getId());
+        CreateCommentRequest thirdCommentSecondChildRequest = createCommentRequest(member, postId, "세번째 댓글의 두번째 자식 댓글", thirdCommentInfoDto.getId());
+
+        CommentInfoDto firstChildInfoDto = commentService.saveComment(firstCommentChildRequest, member.getId());
+        CommentInfoDto secondChildInfoDto = commentService.saveComment(thirdCommentFirstChildRequest, member.getId());
+        CommentInfoDto thirdChildInfoDto = commentService.saveComment(thirdCommentSecondChildRequest, member.getId());
+
+        //then
+        List<CommentInfoDto> resultList = commentService.findCommentDtosByPostId(postId);
+        assertThat(resultList).extracting("content")
+                .hasSize(6)
+                .contains("첫번째 댓글", "두번째 댓글", "세번째 댓글", "첫번째 댓글의 자식 댓글", "세번째 댓글의 첫번째 자식 댓글", "세번째 댓글의 두번째 자식 댓글");
     }
 
     @Test

@@ -11,6 +11,7 @@ import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.global.common.constants.OAuthConstants;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ import static f3f.dev1.domain.member.dto.MemberDTO.LoginRequest;
 import static f3f.dev1.domain.member.dto.MemberDTO.SignUpRequest;
 import static f3f.dev1.domain.member.dto.OAuthDTO.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class OAuth2UserService {
@@ -73,16 +75,17 @@ public class OAuth2UserService {
         return SocialLoginUrlDto.builder().url(redirectUrl).build();
     }
     @Transactional
-    public UserLoginDto oAuthLogin(String loginType, String code) throws IOException {
+    public UserLoginDto oAuthLogin(String loginType, String token) throws IOException {
 
         switch (loginType) {
             case OAuthConstants.GOOGLE: {
-                // 구글로 일회성 코드를 보내 액세스 토큰이 담긴 응답 객체를 받아옴
-                ResponseEntity<String> accessTokenResponse = googleAuth.requestAccessToken(code);
+//                log.info("구글 로그인 코드" + code);
+//                // 구글로 일회성 코드를 보내 액세스 토큰이 담긴 응답 객체를 받아옴
+//                ResponseEntity<String> accessTokenResponse = googleAuth.requestAccessToken(code);
                 // 응답객체가 JSON 형식으로 되어 있으니, 이를 역직렬화해서 자바 객체에 담음
-                GoogleOAuthToken oAuthToken = googleAuth.getAccessToken(accessTokenResponse);
+//                GoogleOAuthToken oAuthToken = googleAuth.getAccessToken(token);
                 // 액세스 토큰을 다시 구글로 보내 사용자 정보가 담긴 응답 객체를 받아옴
-                ResponseEntity<String> userInfoResponse = googleAuth.requestUserInfo(oAuthToken);
+                ResponseEntity<String> userInfoResponse = googleAuth.requestUserInfo(token);
                 // 다시 Json 형식의 응답 객체를 자바 객체로 역 직렬화
                 GoogleUser googleUser = googleAuth.getUserInfo(userInfoResponse);
                 Optional<Member> byEmail = memberRepository.findByEmail(googleUser.getEmail());

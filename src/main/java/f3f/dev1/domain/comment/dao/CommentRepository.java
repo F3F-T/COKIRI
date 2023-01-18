@@ -13,7 +13,7 @@ import java.util.Optional;
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 
 @Repository
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentCustomRepository {
 
     Optional<Comment> findById(Long id);
 

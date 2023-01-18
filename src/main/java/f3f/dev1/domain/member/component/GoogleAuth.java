@@ -76,13 +76,13 @@ public class GoogleAuth implements SocialAuth{
 
     }
 
-    public GoogleOAuthToken getAccessToken(ResponseEntity<String> response) throws JsonProcessingException {
-        return objectMapper.readValue(response.getBody(), GoogleOAuthToken.class);
+    public GoogleOAuthToken getAccessToken(String token) throws JsonProcessingException {
+        return objectMapper.readValue(token, GoogleOAuthToken.class);
     }
 
-    public ResponseEntity<String> requestUserInfo(GoogleOAuthToken oAuthToken) {
+    public ResponseEntity<String> requestUserInfo(String token) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "Bearer " + oAuthToken.getAccess_token());
+        httpHeaders.add("Authorization", "Bearer " + token);
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(httpHeaders);
         return restTemplate.exchange(GOOGLE_USERINFO_REQUEST_URL, HttpMethod.GET, request, String.class);

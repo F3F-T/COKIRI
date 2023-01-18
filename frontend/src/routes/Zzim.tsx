@@ -9,42 +9,54 @@ import profile from "../img/profile.jpeg"
 import PostContainer from "../component/trade/PostContainer";
 import MyPageSet from "../component/MyPageSet";
 import Card from "../component/tradeCard/Card";
+import Api from "../utils/api";
 
-// interface TextInputProps {
-//     init: string;
-// }
-
-const MyPage = () =>  {
+interface PostType {
+    content:[
+        {
+            postId?: number;
+            title?: string;
+            thumbNail?: string,
+            scrapCount: number,
+            tradeStatus:string,
+            wishCategory?: string;
+        }
+    ]
+}
+const MyPageZZIM = () =>  {
     const [tab1, setTab] = useState('curr');
+    const [scrapList,setScrapList] = useState<PostType[]>(null)
+
     function setDealTab(tab){
         setTab(tab)
         console.log("zzim 페이지")
         console.log(tab1)
-        // return tab
     }
     const navigate = useNavigate();
+    async function getMySrapPostList() {
+        try{
+            const res = await Api.get('/user/scrap');
+            console.log("내 게시글들임", res.data.content[0])
+            setScrapList(prevState => {
+                return [ ...res.data.content];
+            })
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("내 스크랩 불러오기 실패");
+        }
+    }
 
-
-    // const ref = useRef(null);
-    // const [text, setText] = useState(init);
-    // const [editable, setEditable] = useState(false);
-    // const editOn = () => {
-    //     setEditable(true);
-    // };
-    // const handleChange = (e) => {
-    //     setText(e.target.value);
-    // };
-    // const handleKeyDown = (e) => {
-    //     if (e.key === "Enter") {
-    //         setEditable(!editable);
-    //     }
-    // };
-    // const handleClickOutside = (e) => {
-    //     if (editable == true && !ref.current.contains(e.target)) setEditable(false);
-    // };
-    // useEffect(() => {
-    //     window.addEventListener("click", handleClickOutside, true);
-    // });
+    useEffect(()=>{
+        getMySrapPostList();
+    },[])
+    if (!scrapList) {
+        return null
+    }
+    const onClickPost = (post) => {
+        navigate(`/post/${post.postId}`)
+    }
 
     return (
         <>
@@ -62,19 +74,16 @@ const MyPage = () =>  {
                     <button className={styles.zzim} onClick={()=>{ setDealTab('next')}}>관심 상품</button>
                 </div>
                 <div className={styles.container}>
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={3} comment={5} wishCategory={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={4} comment={8} wishCategory={"음식"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={7} comment={5} wishCategory={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={3} comment={5} wishCategory={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={3} comment={5} wishCategory={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={3} comment={5} wishCategory={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"}  like={3} comment={5} wishCategory={"가구"} />
-                    <Card className={"forMypage"} postTitle={"찜해놓은거임"} like={3} comment={5} wishCategory={"가구"} />
-
+                    {
+                        scrapList.map((SingleObject:Object)=>(
+                            <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['scrapCount']} wishCategory={SingleObject['wishCategory']}
+                                   onClick={() => {onClickPost(SingleObject)}}/>
+                        ))
+                    }
                 </div>
             </div>
         </>
     );
 }
 
-export default MyPage;
+export default MyPageZZIM;

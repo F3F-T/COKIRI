@@ -17,6 +17,7 @@ interface UserInfo {
     imageUrl : string;
     scrapId : Number;
     address : object;
+    onelineIntro : string;
 }
 
 const initialUserInfoState : UserInfo = {
@@ -29,7 +30,8 @@ const initialUserInfoState : UserInfo = {
     nickname: "",
     phoneNumber: "",
     scrapId: 0,
-    userName: ""
+    userName: "",
+    onelineIntro:""
 }
 
 //state는 이 상태의 현재 상태 값을 의미한다
@@ -54,10 +56,31 @@ const userInfoSlice = createSlice({
         },
         setUserNick(state,action){
             state.nickname = action.payload;
-
+        },
+        setUserProfile(state,action){
+            state.imageUrl = action.payload;
+        },
+        setUserName(state,action){
+            state.userName = action.payload;
+        },
+        setOnelineIntro(state,action){
+            state.onelineIntro = action.payload;
         },
         deleteUserInfo(state){
-            state = initialUserInfoState;
+            return initialUserInfoState
+        },
+        logoutUserInfo(state){
+            state.id = undefined;
+            state.email =undefined;
+            state.userName = undefined;
+            state.birthDate = undefined;
+            state.nickname = undefined;
+            state.phoneNumber = undefined;
+            state.email =undefined;
+            state.loginType = undefined;
+            state.imageUrl = undefined;
+            state.scrapId = undefined;
+            state.address = undefined;
         }
     }
 })
@@ -65,7 +88,7 @@ const userInfoSlice = createSlice({
 
 //위에서 선언해준 counterSlice의 reducer를 export해준다
 export default userInfoSlice.reducer;
-export const {setUserInfo,deleteUserInfo,setUserNick} = userInfoSlice.actions;
+export const {setUserInfo,deleteUserInfo,setUserNick,setUserProfile,setUserName,setOnelineIntro,logoutUserInfo} = userInfoSlice.actions;
 //이제 이걸다른 컴포턴트에서 dispatch로 사용한다.
 
 //여기선 알아서 api가 해주는구나, 대충 여기서 선언한 initial state, type, action을 보내주면 된다고 생각하면 되겠네

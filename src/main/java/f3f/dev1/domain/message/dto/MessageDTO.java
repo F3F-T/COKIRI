@@ -13,29 +13,28 @@ public class MessageDTO {
     @NoArgsConstructor
     @Getter
     public static class MessageSaveRequest{
-        //TODO ID로 다 바꾸기
 
         @NonNull
         private String content;
 
         @NonNull
-        private Member sender;
+        private Long senderId;
 
         @NonNull
-        private Member receiver;
+        private Long receiverId;
 
         @NonNull
-        private Post post;
+        private Long postId;
 
         @NonNull
-        private MessageRoom messageRoom;
+        private Long messageRoomId;
 
-        public Message toEntity(){
+        public Message toEntity(Member sender, Member receiver, Post post, MessageRoom messageRoom){
             return Message.builder()
                     .content(this.content)
-                    .sender(this.sender)
-                    .receiver(this.receiver)
-                    .messageRoom(this.messageRoom)
+                    .sender(sender)
+                    .receiver(receiver)
+                    .messageRoom(messageRoom)
                     .build();
 
         }
@@ -54,7 +53,21 @@ public class MessageDTO {
     public static class DeleteMessageRequest{
         private Long id;
         private Long senderId;
-        private MessageRoom messageRoom;
+        private Long messageRoomId;
 
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MessageInfoDto{
+        private Long id;
+        private String senderNickname;
+        private String receiverNickname;
+        private String content;
+        private Long senderId;
+        private Long receiverId;
+        private Long messageRoomId;
     }
 }

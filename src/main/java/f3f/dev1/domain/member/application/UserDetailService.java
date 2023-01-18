@@ -25,12 +25,12 @@ public class UserDetailService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        log.info("loadbyusername 실행됨");
+        log.info("load by username 실행됨");
         Optional<Member> byEmail = memberRepository.findByEmail(username);
         if (byEmail.isPresent()) {
             return createUserDetails(byEmail.get());
         } else {
-            log.info("에러 던지는 조건문 들어옴");
+            log.info("데이터베이스에 유저가 존재하지 않음");
             throw new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다.");
         }
 
@@ -39,7 +39,7 @@ public class UserDetailService implements UserDetailsService {
     // DB 에 User 값이 존재한다면 UserDetails 객체로 만들어서 리턴
     private UserDetails createUserDetails(Member member) {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(member.getAuthority().toString());
-        log.info("이거보이면 안된다 철웅아");
+        log.info("User Detail 객체 생성");
         return new User(
                 String.valueOf(member.getId()),
                 member.getPassword(),
