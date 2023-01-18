@@ -131,30 +131,41 @@ const Login = () => {
         console.log(userInfo);
         postLoginData();
     }
-    const googleLogin_2 = useGoogleLogin({
-        onSuccess: (codeResponse) => console.log(codeResponse),
+    const googleLogin4 = useGoogleLogin({
+        onSuccess: async (codeResponse) => {
+            console.log(codeResponse)
+            const googleCode = codeResponse.code;
+            console.log("code", codeResponse.code)
+            const res = await axios.get(`http://localhost:8080/auth/social_login/google?code=${googleCode}`)
+            console.log("res", res)
+        },
         flow: 'auth-code',
+    })
+    const googleLogin3 = useGoogleLogin({
+        onSuccess: (codeResponse) => console.log(codeResponse),
+        flow: 'auth-code'
     })
     const googleLogin = useGoogleLogin({
         onSuccess: async response => {
             try {
                 const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+
                     headers: {
                         "Authorization": `Bearer ${response.access_token}`
                     }
                 })
+                console.log("이건가??",response.access_token);
                 const data = res.data
                 console.log("d",data);
-                console.log("code확인",res.request);
+                console.log("code확인",res);
                 console.log("code확인",);
 
 
                 const googleUserInfo1 ={
-                    email:data.email,
-                    name:data.name
+                    token :response.access_token
                 }
                 console.log("유저정보",googleUserInfo1)
-                const res1 = await axios.post("http://localhost:8080/auth/google_login", googleUserInfo1)
+                const res1 = await axios.post("http://localhost:8080/auth/social_login/google", googleUserInfo1)
                 console.log("res2...", res1)
                 const jwtToken = res1.data.tokenInfo;
                 console.log("토큰",jwtToken)

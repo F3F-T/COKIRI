@@ -167,15 +167,15 @@ const MyPage = () =>  {
     async function getMyPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-            const res = await Api.get('/user/posts');
-            console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
+            const res = await Api.get('/user/posts?');
+            console.log("내 게시글rdd",Object.keys(res.data.content).length);
             // @ts-ignore
-            setNum(Object.keys(res.data.userPosts).length);
+            setNum(Object.keys(res.data.content).length);
         }
         catch (err)
         {
             console.log(err)
-            alert("get 실패2");
+            alert("게시글 수 불러오기 실패");
         }
     }
     const onChangeImg = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -243,7 +243,7 @@ const MyPage = () =>  {
             alert("로그아웃 실패");
         }
     }
-
+    // logOut()
     return (
             <>
             <div className={styles.profile}>
