@@ -68,19 +68,6 @@ const Login = () => {
             return {...prevState, password: e.target.value}
         })
     }
-
-    // async function googleLogin(){
-    //     try{
-    //         const res = await axios.get("http://localhost:8080/auth/social_login/google")
-    //         console.log("링크",res.data.url)
-    //         setGoogle(res.data.url)
-    //         alert("전송")
-    //     }
-    //     catch (err){
-    //         console.log(err);
-    //         alert("실패")
-    //     }
-    // }
     async function postLoginData() {
             //interceptor를 사용한 방식 (header에 token값 전달)
         try{
@@ -131,20 +118,6 @@ const Login = () => {
         console.log(userInfo);
         postLoginData();
     }
-    const googleLogin4 = useGoogleLogin({
-        onSuccess: async (codeResponse) => {
-            console.log(codeResponse)
-            const googleCode = codeResponse.code;
-            console.log("code", codeResponse.code)
-            const res = await axios.get(`http://localhost:8080/auth/social_login/google?code=${googleCode}`)
-            console.log("res", res)
-        },
-        flow: 'auth-code',
-    })
-    const googleLogin3 = useGoogleLogin({
-        onSuccess: (codeResponse) => console.log(codeResponse),
-        flow: 'auth-code'
-    })
     const googleLogin = useGoogleLogin({
         onSuccess: async response => {
             try {
@@ -154,13 +127,7 @@ const Login = () => {
                         "Authorization": `Bearer ${response.access_token}`
                     }
                 })
-                console.log("이건가??",response.access_token);
                 const data = res.data
-                console.log("d",data);
-                console.log("code확인",res);
-                console.log("code확인",);
-
-
                 const googleUserInfo1 ={
                     token :response.access_token
                 }
@@ -169,12 +136,28 @@ const Login = () => {
                 console.log("res2...", res1)
                 const jwtToken = res1.data.tokenInfo;
                 console.log("토큰",jwtToken)
-                console.log("구글유저정보", res1.data.userInfo)
+                console.log("구글유저정보", res1.data.userInfo.userDetail)
                 dispatch(logoutToken());
                 dispatch(setToken(jwtToken));
-                dispatch(logoutUserInfo())
+                dispatch(logoutUserInfo());
                 // dispatch(setUserInfo(res.data.userInfo))
-                dispatch(setUserInfo(res1.data.userInfo))
+                dispatch(setUserInfo(res1.data.userInfo.userDetail));
+                dispatch(setOnelineIntro(res1.data.userInfo.userDetail.description))
+
+                if(res1.data.userInfo.address[0]!=null){
+                    dispatch(setUserAddressInfo1(res1.data.userInfo.address[0].id))
+                    dispatch(setAddressName1(res1.data.userInfo.address[0].addressName))
+                    dispatch(parcelAddress1(res1.data.userInfo.address[0].postalAddress))
+                    dispatch(setLat1(res1.data.userInfo.address[0].latitude))
+                    dispatch(setLng1(res1.data.userInfo.address[0].longitude))
+                }
+                if(res1.data.userInfo.address[1]!=null){
+                    dispatch(setUserAddressInfo2(res1   .data.userInfo.address[1].id))
+                    dispatch(setAddressName2(res1.data.userInfo.address[1].addressName))
+                    dispatch(parcelAddress2(res1    .data.userInfo.address[1].postalAddress))
+                    dispatch(setLat2(res1.data.userInfo.address[1].latitude))
+                    dispatch(setLng2(res1.data.userInfo.address[1].longitude))
+                }
                 // dispatch(setUserNick(res1.data.userInfo.nickname))//얘는 뱉는거로
                 // dispatch(setUserName(res1.data.userInfo.userName))
                 // dispatch(setUserProfile(res1.data.userInfo.imageUrl))
