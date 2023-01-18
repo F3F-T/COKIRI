@@ -59,6 +59,8 @@ const MyPage = () =>  {
     //모달창
     const [isOpenModal, setOpenModal] = useState<boolean>(false);
 
+
+
     const onClickToggleModal = useCallback(() => {
         setOpenModal(!isOpenModal);
     }, [isOpenModal]);

@@ -1,16 +1,16 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
-import styles from "../styles/trade/Trade.module.css"
+import styles from "../../styles/trade/Trade.module.css"
 import {useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import myImage from "../img/cokkiriLogo.png"
-import TradeCategory from "../component/trade/TradeCategory";
-import PriceBox from "../component/trade/PriceBox";
-import PostContainer from "../component/trade/PostContainer";
+import myImage from "../../img/cokkiriLogo.png"
+import TradeCategory from "../../component/trade/TradeCategory";
+import PriceBox from "../../component/trade/PriceBox";
+import PostContainer from "../../component/trade/PostContainer";
 import {useDispatch, useSelector} from "react-redux";
-import {Rootstate} from "../index";
-import {resetCategory} from "../store/categoryReducer";
-import Button from "../component/common/Button";
+import {Rootstate} from "../../index";
+import {resetCategory} from "../../store/categoryReducer";
+import Button from "../../component/common/Button";
 
 
 const KiriKiriTrade = () => {
