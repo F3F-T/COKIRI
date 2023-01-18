@@ -4,8 +4,7 @@ import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.dao.ScrapPostRepository;
-import f3f.dev1.domain.post.dto.PostDTO;
+import f3f.dev1.domain.scrap.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
@@ -15,21 +14,16 @@ import f3f.dev1.domain.tag.exception.NotFoundByTagNameException;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
-import f3f.dev1.global.util.DeduplicationUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.Valid;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static f3f.dev1.domain.tag.dto.TagDTO.*;
-import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
 
 @Service
 @Validated

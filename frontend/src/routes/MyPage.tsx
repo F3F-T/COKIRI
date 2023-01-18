@@ -58,7 +58,6 @@ const MyPage = () =>  {
             })
             console.log("내 게시글 리스트얌",postList);
             // console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
-
         }
         catch (err)
         {

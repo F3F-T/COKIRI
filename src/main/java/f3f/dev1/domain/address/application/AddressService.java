@@ -2,9 +2,11 @@ package f3f.dev1.domain.address.application;
 
 import f3f.dev1.domain.address.dao.AddressRepository;
 import f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
+import f3f.dev1.domain.address.exception.InvalidDeleteRequest;
 import f3f.dev1.domain.address.exception.WrongUserException;
 import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +36,11 @@ public class AddressService {
     @Transactional
     public AddressInfoDTO addAddress(Long memberId, CreateAddressDto createAddressDto) {
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        if (!memberId.equals(createAddressDto.getUserId())) {
+            throw new NotAuthorizedException();
+        }
         Address address = createAddressDto.toEntity(member);
         addressRepository.save(address);
-
         return address.toInfoDto();
     }
 
@@ -54,11 +58,12 @@ public class AddressService {
     // 주소 삭제
     @Transactional
     public String deleteAddress(Long memberId, DeleteAddressDTO deleteAddressDTO) {
-        Address address = addressRepository.findById(deleteAddressDTO.getAddressId()).orElseThrow(NotFoundByIdException::new);
-        if (!address.getMember().getId().equals(memberId)) {
-            throw new WrongUserException();
+        if (!memberId.equals(deleteAddressDTO.getUserId())) {
+            throw new NotAuthorizedException();
         }
+        Address address = addressRepository.findById(deleteAddressDTO.getAddressId()).orElseThrow(NotFoundByIdException::new);
         addressRepository.delete(address);
+
         return "DELETE";
     }
 

@@ -5,15 +5,22 @@ import {useNavigate} from "react-router-dom";
 import TextInput from "../../component/common/TextInput";
 import Button from "../../component/common/Button";
 import axios from "axios";
-import Modal from "../../routes/로그인 & 회원가입/GoogleLoginModal"
+import Modal from "./NeighborModal"
 import GoogleButton from "./GoogleButton.js"
 import { useGoogleLogin } from '@react-oauth/google'
 import {useDispatch, useSelector} from "react-redux";
 // import {gapi} from 'gapi-script';
-import {setToken, deleteToken} from "../../store/jwtTokenReducer";
+import {setToken, deleteToken, logoutToken} from "../../store/jwtTokenReducer";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api"
-import {setUserInfo} from "../../store/userInfoReducer";
+import {
+    setUserInfo,
+    setUserProfile,
+    deleteUserInfo,
+    setUserNick,
+    setUserName,
+    setOnelineIntro, logoutUserInfo
+} from "../../store/userInfoReducer";
 
 const Login = () => {
 
@@ -44,6 +51,7 @@ const Login = () => {
         navigate(`/signup`)
     }
 
+
     const onChangeEmail = (e) => {
         setuserInfo((prevState) => {
             return {...prevState, email: e.target.value}
@@ -56,33 +64,36 @@ const Login = () => {
         })
     }
 
-    async function googleLogin(){
-        try{
-            const res = await axios.get("http://localhost:8080/auth/social_login/google")
-            console.log("링크",res.data.url)
-            setGoogle(res.data.url)
-            alert("전송")
-        }
-        catch (err){
-            console.log(err);
-            alert("실패")
-        }
-    }
+    // async function googleLogin(){
+    //     try{
+    //         const res = await axios.get("http://localhost:8080/auth/social_login/google")
+    //         console.log("링크",res.data.url)
+    //         setGoogle(res.data.url)
+    //         alert("전송")
+    //     }
+    //     catch (err){
+    //         console.log(err);
+    //         alert("실패")
+    //     }
+    // }
     async function postLoginData() {
 
             //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-            const res = await Api.post('/auth/login',userInfo);
+            const res = await Api.post('/login',userInfo);
             console.log(res)
             const accessToken = res.data;
 
             //jwt 토큰 redux에 넣기
             const jwtToken = accessToken.tokenInfo;
             console.log(jwtToken)
+            console.log(res.data.userInfo)
 
             dispatch(setToken(jwtToken));
             dispatch(setUserInfo(res.data.userInfo))
-            console.log(store)
+            dispatch(setOnelineIntro(res.data.userInfo.description))
+
+            console.log("store",store)
             alert("로그인 성공")
             navigate(`/`)
             }
@@ -100,24 +111,11 @@ const Login = () => {
             // console.log(store.jwtTokenReducer.accessTokenExpiresIn);
 
     }
-
     const handleClick= () => {
         console.log(userInfo);
         postLoginData();
     }
-
-    const googleClick=()=>{
-        googleLogin();
-    }
-    // googleLogin();
-    const url = google;
-    interface googleUserInfo {
-        email: string;
-        name: string;
-    }
-    const [userInfoG, setUserInfoG] = useState<googleUserInfo>(null);
-
-    const login2 = useGoogleLogin({
+    const googleLogin = useGoogleLogin({
         onSuccess: async response => {
             try {
                 const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
@@ -128,67 +126,47 @@ const Login = () => {
                 const data = res.data
                 console.log("d",data);
 
-                setUserInfoG((prevState) => {
-                    return {
-                        ...prevState, email:data.email , name:data.name
-                    }
-
-                })
-                console.log("유저정보",userInfoG)
-                setUserInfoG((prevState) => {
-                    return {
-                        ...prevState, email:data.email , name:data.name
-                    }
-
-                })
-                const res1 = await axios.post("http://localhost:8080/auth/google_login", userInfoG)
+                // setUserInfoG((prevState) => {
+                //     return {
+                //         ...prevState, email:data.email , name:data.name
+                //     }
+                //
+                // })
+                const googleUserInfo1 ={
+                    email:data.email,
+                    name:data.name
+                }
+                console.log("유저정보",googleUserInfo1)
+                const res1 = await axios.post("http://localhost:8080/auth/google_login", googleUserInfo1)
                 console.log("res2...", res1)
-                // if(userInfoG != null){
-                //     console.log("유저정보",userInfoG)
-                //     const res1 = await axios.post("http://localhost:8080/auth/google_login",userInfoG)
-                //     console.log("res2...",res1)
-                // }
+                //jwt 토큰 redux에 넣기
+                const jwtToken = res1.data.tokenInfo;
+                console.log("tststaD토큰",jwtToken)
+                console.log("구글유저정보", res1.data)
+                dispatch(logoutToken());
+                dispatch(setToken(jwtToken));
+                dispatch(logoutUserInfo())
+                dispatch(setUserNick(res1.data.userInfo.nickname))//얘는 뱉는거로
+                dispatch(setUserName(res1.data.userInfo.userName))
+                dispatch(setUserProfile(res1.data.userInfo.imageUrl))
+                dispatch(setOnelineIntro(res1.data.userInfo.description))
+
+                navigate(`/`)
                 }
             catch (err) {
                 console.log(err)
             }
         }
     });
-    // async function Login3(data) {
-    //     try {
-    //         console.log("erㅇㅇㅇㅇr")
-    //
-    //         setUserInfoG((prevState) => {
-    //             return {
-    //                 ...prevState, email:data.email , name:data.name
-    //             }
-    //
-    //         })
-    //         const res1 = await axios.post("http://localhost:8080/auth/google_login", userInfoG)
-    //         console.log("res2...", res1)
-    //     } catch(err) {
-    //         console.log("err",err)
-    //     }
-    //
-    // }
-    // const f3 =()=>{
-    //     return new Promise((res,rej)=>{
-    //         setTimeout(()=>{
-    //             res("ㄴㅇㄹㅁㄴㅇㄹ");
-    //         },5000)
-    //     })
-    // }
 
 
     return (
         <><div className={styles.box}>
-            {/*<button onClick={()=>{window.open(url)}}>2324234</button>*/}
-            {/*<GoogleButton/>*/}
-            {isOpenModal && (
-                <Modal onClickToggleModal={onClickToggleModal}>
-                    <embed type="text/html" src={url} width="800" height="608"/>
-                </Modal>
-            )}
+            {/*{isOpenModal && (*/}
+            {/*    <Modal onClickToggleModal={onClickToggleModal}>*/}
+            {/*        <embed type="text/html" src={url} width="800" height="608"/>*/}
+            {/*    </Modal>*/}
+            {/*)}*/}
             <div className={styles.loginAllContent}>
                 <section className={styles.header}>
                     <img src={loginImg} className={styles.loginImg}></img>
@@ -218,10 +196,9 @@ const Login = () => {
                         <span>비밀번호 찾기</span>
                     </div>
                 </section>
-                {/*<Button className={"white"} onClick={()=>{ googleClick(); onClickToggleModal(); }} content={"구글 로그인"}/>*/}
-                {/*<GoogleButton/>*/}
+                {/*<Button className={"white"} onClick={()=>{  onClickToggleModal(); }} content={"구글 로그인"}/>*/}
                 {/*@ts-ignore*/}
-                <Button className={"white"} onClick={login2} content={"구글 로그인"}/>
+                <Button className={"white"} onClick={googleLogin} content={"구글 로그인"}/>
             </div>
         </div>
         </>
@@ -229,11 +206,4 @@ const Login = () => {
 }
 //
 
-function Modal2(){
-    return(
-        <div className={styles.modal}>
-            모달창입니다.
-        </div>
-    )
-}
 export default Login;

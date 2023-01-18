@@ -91,6 +91,8 @@ Api.interceptors.response.use(
                             }
                         }//reissue가 실패했을때 ( refreshToken도 만료가 됐을때)
                         catch (err) {
+                            console.log("나중에 이부분확인")
+                            console.log(err);
                             console.log("refreshToken이 만료돼서 accesToken을 재발급할수없음")
                             alert("accessToken의 만료기간이 지나서 백엔드 accessToken의 검증실패, reissue로 refresh token을 활용하여 accessToken 재발급 시도," +
                                 "refresh token의 만료기간도 지나 재로그인 요청")

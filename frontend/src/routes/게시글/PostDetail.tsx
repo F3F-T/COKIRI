@@ -9,13 +9,17 @@ import like from "../../img/heart.png"
 import talk from "../../img/send.png"
 
 import Comments from "../../component/comments/Comments";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api";
 import {useNavigate, useParams} from "react-router-dom";
 import {AiOutlineHeart, AiTwotoneHeart} from "react-icons/ai";
 import Card from "../../component/tradeCard/Card";
 import Message from "../../component/로그인 & 회원가입/Message";
+import {HiPencil} from "react-icons/hi";
+import {resetCategory} from "../../store/categoryReducer";
+import {changeRefreshState} from "../../store/refreshReducer";
+import comments from "../../component/comments/Comments";
 
 
 
@@ -41,11 +45,40 @@ const PostDetail = () => {
         createdTime? : string;
     }
 
+    type CommentTypes = "primary" | "secondary";
+    interface CommentType {
+        id : number;
+        postId? : number;
+        memberId : Number;
+        memberNickname : String;
+        imageUrl : String;
+        content : String;
+        depth : Number;
+        parentCommentId : number | null;
+
+        //댓글인지 대댓글인지 확인
+    }
+
+
+    //글 작성
+    interface WriteCommentType {
+        authorId : Number;
+        postId : number;
+        depth : number;
+        content : string;
+        parendCommentId : number | null;
+    }
+
     const params = useParams();
     console.log(params)
     const postId = params.id;
 
     const [post,setPost] = useState<PostType>(null)
+    const [commentList,setCommentList] = useState<CommentType[]>(null)
+    const [writeComment,setWriteComment] = useState<WriteCommentType>(null)
+    const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
+    const dispatch = useDispatch();
+    const store = useSelector((state:Rootstate) => state);
 
     async function getPost() {
 
@@ -57,8 +90,27 @@ const PostDetail = () => {
             setPost(prevState => {
                 return {...prevState, ...res.data};
             })
+
             console.log(post)
 
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("get 실패");
+        }
+    }
+
+    async function getComments() {
+
+        //interceptor를 사용한 방식 (header에 token값 전달)
+        try{
+            const res = await Api.get(`/post/${postId}/comments`);
+
+            console.log(res)
+            setCommentList(prevState => {
+                return [...res.data];
+            })
         }
         catch (err)
         {
@@ -75,15 +127,10 @@ const PostDetail = () => {
 
     useEffect(()=>{
         getPost();
-    },[])
+        getComments();
+    },[store.refreshReducer.commentChange])
 
-    const store = useSelector((state:Rootstate) => state);
 
-    // useEffect(()=>{
-    //     console.log("jwt 토큰이 바뀜")
-    //     console.log(store.jwtTokenReducer.accessToken);
-    //
-    // },[store.jwtTokenReducer.accessToken]) //
 
     const [scrapSaved,setScrapSaved] = useState<boolean>(true);
     const onClickScrap = async () => {
@@ -103,12 +150,70 @@ const PostDetail = () => {
         }
     }
 
+    const onChangeComment = (e) => {
+        const inputComment = e.target.value;
+        setWriteComment((prevState) => {
+            return {...prevState, authorId: store.userInfoReducer.id,
+                postId : post.id,
+                depth : 0,
+                content : inputComment,
+                parendCommentId : null,
+            }
+        })
+
+        console.log(writeComment);
+    }
+
+    const UploadComment = async () => {
+        try{
+            const res = await Api.post(`/post/${postId}/comments`, writeComment);
+            console.log(writeComment);
+            console.log(res);
+            dispatch(changeRefreshState());
+            setRefreshFetch((prevState) => {
+                return {...prevState,commentChange : true
+                }
+            })
+            alert("댓글 작성 성공")
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("댓글 작성 실패")
+        }
+    }
+
+
+
+
     if(!post)
     {
         return null;
     }
 
+    if (!commentList) {
+        return null
+    }
 
+    const primaryComment = commentList.filter((comment) => {
+        return comment.depth === 0
+    })
+
+    const secondaryComment = commentList.filter((comment) => {
+        return comment.depth === 1
+    })
+
+    //댓글, 대댓글을 순서대로 배열에 담는 로직, 댓글 대댓글을 연결
+    let result = primaryComment.reduce((prev,cur)=>{
+        prev.push(cur);
+        secondaryComment.forEach(secondary => {
+            if(secondary.parentCommentId === cur.id)
+            {
+                prev.push(secondary);
+            }
+        })
+        return prev;
+    },[]);
 
     return (
         <div className={styles.postDetail}>
@@ -165,14 +270,19 @@ const PostDetail = () => {
                 </section>
             </article>
             <section className={styles.comments}>
-                <Comments className={"primary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
-                <Comments className={"secondary"}  userID={"함민혁"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
-                <Comments className={"secondary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
-                <Comments className={"secondary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
-                <Comments className={"secondary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
-                <Comments className={"primary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
-                <Comments className={"primary"}  userID={"홍의성"} content={"댓글 내용입니다."} time={"12/21 12:00"}  />
+                {
+                    result.map((comment)=>(
+                        <>
+                            {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
+                            {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
+                        </>
+                    ))
+                }
             </section>
+            <div className = {styles.writeComments}>
+                <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onBlurCapture={onChangeComment}/>
+                 <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
+            </div>
         </div>
     );
 }

@@ -90,6 +90,31 @@ public class Post extends BaseTimeEntity {
         this.id = id;
     }
 
+    public PostSearchResponseDto toSearchResponseDto(Long messageRoomCount, Long scrapCount) {
+        return PostSearchResponseDto.builder()
+                .productCategory(this.productCategory.getName())
+                .authorNickname(this.author.getNickname())
+                .wishCategory(this.wishCategory.getName())
+                .messageRoomCount(messageRoomCount)
+                .createdTime(super.getCreateDate())
+                .scrapCount(scrapCount)
+                .content(this.content)
+                .title(this.title)
+                .price(this.price)
+                .id(this.id)
+                .build();
+    }
+
+    public PostInfoDtoForGET toInfoDtoForGET() {
+        // TODO 필드 프론트랑 합의 후 추가될 수 있음
+        return PostInfoDtoForGET.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .authorNickname(this.author.getNickname())
+                .build();
+    }
+
 
     public PostInfoDto toInfoDto() {
         TradeStatus tradeStatus;

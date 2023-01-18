@@ -1,5 +1,6 @@
 package f3f.dev1.domain.address.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
 import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.member.model.Member;
 import lombok.AllArgsConstructor;
@@ -26,24 +27,22 @@ public class AddressDTO {
         public Address toEntity(Member member) {
             return Address.builder()
                     .addressName(addressName)
+                    .member(member)
                     .postalAddress(postalAddress)
                     .latitude(latitude)
                     .longitude(longitude)
-                    .member(member)
                     .build();
 
         }
     }
 
     @Builder
-    @AllArgsConstructor
     @NoArgsConstructor
     @Getter
     public static class AddressInfoDTO {
 
         private Long id;
 
-        private Long memberId;
         private String addressName;
 
         private String postalAddress;
@@ -51,6 +50,14 @@ public class AddressDTO {
         private String latitude;
 
         private String longitude;
+        @QueryProjection
+        public AddressInfoDTO(Long id, String addressName, String postalAddress, String latitude, String longitude) {
+            this.id = id;
+            this.addressName = addressName;
+            this.postalAddress = postalAddress;
+            this.latitude = latitude;
+            this.longitude = longitude;
+        }
     }
 
     @Builder
