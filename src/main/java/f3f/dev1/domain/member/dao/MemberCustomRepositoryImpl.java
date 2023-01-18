@@ -1,33 +1,18 @@
 package f3f.dev1.domain.member.dao;
 
-import com.querydsl.core.QueryResults;
-import com.querydsl.core.types.NullExpression;
-import com.querydsl.core.types.Order;
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import f3f.dev1.domain.address.dto.AddressDTO;
 import f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
 import f3f.dev1.domain.address.dto.QAddressDTO_AddressInfoDTO;
-import f3f.dev1.domain.member.dto.MemberDTO;
-import f3f.dev1.domain.member.dto.QMemberDTO_GetUserPost;
 import f3f.dev1.domain.member.dto.QMemberDTO_UserDetail;
-import f3f.dev1.domain.post.model.QPost;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-import static f3f.dev1.domain.category.model.QCategory.category;
-import static f3f.dev1.domain.member.dto.MemberDTO.*;
-import static f3f.dev1.domain.member.model.QMember.member;
 import static f3f.dev1.domain.address.model.QAddress.address;
-import static f3f.dev1.domain.post.model.QPost.post;
-import static f3f.dev1.domain.post.model.QScrapPost.scrapPost;
+import static f3f.dev1.domain.member.dto.MemberDTO.UserDetail;
+import static f3f.dev1.domain.member.dto.MemberDTO.UserInfoWithAddress;
+import static f3f.dev1.domain.member.model.QMember.member;
 import static f3f.dev1.domain.scrap.model.QScrap.scrap;
-import static f3f.dev1.domain.trade.model.QTrade.trade;
 
 @RequiredArgsConstructor
 public class MemberCustomRepositoryImpl implements MemberCustomRepository {
