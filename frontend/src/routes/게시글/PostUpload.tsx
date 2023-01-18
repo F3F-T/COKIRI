@@ -14,6 +14,7 @@ import {setToken} from "../../store/jwtTokenReducer";
 import {setUserInfo} from "../../store/userInfoReducer";
 import {Rootstate, store} from "../../index";
 import {useSelector} from "react-redux";
+import axios from "axios/index";
 //https://github.com/yairEO/tagify 에서 tagify 참조
 
 const PostUpload = () => {
@@ -30,6 +31,8 @@ const PostUpload = () => {
     const [uploadData, setUploadData] = useState<UploadData>()
     let tradeEachOther : boolean = undefined;
     const store = useSelector((state:Rootstate) => state);
+    const fileInput = useRef(null)
+    const [photoData,setPhotoData] = useState<string[]>(null)
 
 
     const categories: string[] =
@@ -150,6 +153,21 @@ const PostUpload = () => {
         uploadPost(jsonObj);
     }
 
+    const onChangeImg = async(e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+
+        if(e.target.files){
+            const uploadFile = e.target.files[0];
+            console.log(uploadFile)
+            const formData = new FormData()
+            formData.append('imageFiles',uploadFile);
+            const res = await Api.post("http://localhost:8080/auth/image", formData);
+            console.log(res);
+            setPhotoData(prevState => [...res.data.imageUrls])
+        }
+    }
+
+
     /**
      * 로그인 상태를 확인하고 비로그인일때 이전화면으로 돌아가기
      */
@@ -175,7 +193,12 @@ const PostUpload = () => {
             </div>
             <div className={styles.container}>
                 <div className={styles.item1}>
+                    <img className={styles.photos} src={photo} onClick={()=>{fileInput.current.click()}}/>
                     <img className={styles.photos} src={photo}/>
+                    <img className={styles.photos} src={photo}/>
+                    <form>
+                        <input type="file" style={{display:'none'}} accept="image/*" onChange={onChangeImg} ref={fileInput}/>
+                    </form>
                 </div>
                 <div className={styles.item2}>
                     <p className={styles.star}>*</p><input type="text" className={styles.item2_2} placeholder="글 제목을 적어주세요." onBlur={onChangeTitle} />

@@ -99,14 +99,11 @@ const PostContainer = (postProps : postProps) => {
     {
         sortType = `scrapPosts.size,DESC`;
     }
-
-
-
     async function getPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
             //query string 날리기
-            const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}`);
+            const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=20`);
             console.log(res);
             console.log(res.data)
             setPostList(prevState => {
