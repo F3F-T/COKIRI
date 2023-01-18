@@ -84,6 +84,7 @@ const PostDetail = () => {
 
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
+            console.log("getPost 요청")
             const res = await Api.get(`/post/${postId}`);
 
             console.log(res)

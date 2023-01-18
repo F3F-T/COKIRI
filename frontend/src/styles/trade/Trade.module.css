@@ -95,3 +95,10 @@ postOrWant_2{
 .buttonMargin{
     margin-right: 1rem;
 }
+
+.red{
+    background-color: red;
+}
+.blue{
+    background-color: blue;
+}

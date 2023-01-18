@@ -1,7 +1,6 @@
 package f3f.dev1.domain.post.api;
 
 import f3f.dev1.domain.post.application.PostService;
-import f3f.dev1.domain.post.model.SortOrder;
 import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.global.util.SecurityUtil;
@@ -40,7 +39,6 @@ public class PostController {
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
             @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
             @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
-            @RequestParam(value = "sortOrder", required = false, defaultValue = "CURRENT") SortOrder sortOrder,
             Pageable pageable) {
             SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
                     .productCategory(productCategoryName)
@@ -55,7 +53,6 @@ public class PostController {
     @GetMapping(value = "/post/tagSearch")
     public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithTagNames(
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
-            @RequestParam(value = "sortOrder", required = false, defaultValue = "CURRENT") SortOrder sortOrder,
             Pageable pageable) {
         Page<PostSearchResponseDto> resultList;
 
