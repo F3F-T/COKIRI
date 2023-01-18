@@ -456,7 +456,13 @@ public class MemberDTO {
             this.postId = getUserPostInterface.getPostId();
             this.thumbNail = null;
             this.title = getUserPostInterface.getTitle();
-            this.tradeStatus = getUserPostInterface.getTradeStatus();
+            if (getUserPostInterface.getTradeStatus().equals("0")) {
+                this.tradeStatus = TradeStatus.TRADABLE.name();
+            } else if (getUserPostInterface.getTradeStatus().equals("1")) {
+                this.tradeStatus = TradeStatus.TRADING.name();
+            } else {
+                this.tradeStatus = TradeStatus.TRADED.name();
+            }
             this.wishCategory = getUserPostInterface.getName();
             this.likeCount = getUserPostInterface.getLikes();
         }
