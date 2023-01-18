@@ -165,12 +165,11 @@ public class MemberAuthController {
     }
 
     // 외부 API 로그인 요청
-    @GetMapping(value = "/auth/social_login/{loginType}")
-    public ResponseEntity<UserLoginDto> socialLogin(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
-        log.debug("code " + code);
-        System.out.println("code = " + code);
+    @PostMapping(value = "/auth/social_login/{loginType}")
+    public ResponseEntity<UserLoginDto> socialLogin(@PathVariable(name = "loginType") String loginType, @RequestBody GoogleTokenDto googleTokenDto) throws IOException {
+        log.debug("token " + googleTokenDto.getToken());
 
-        UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code);
+        UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), googleTokenDto.getToken());
 
         return ResponseEntity.ok(userLoginDto);
 
