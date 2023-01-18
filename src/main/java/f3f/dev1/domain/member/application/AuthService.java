@@ -1,5 +1,6 @@
 package f3f.dev1.domain.member.application;
 
+import f3f.dev1.domain.member.dao.MemberCustomRepositoryImpl;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
@@ -43,7 +44,7 @@ public class AuthService {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-
+    private final MemberCustomRepositoryImpl memberCustomRepositoryImpl;
 
     @Transactional
     public String signUp(SignUpRequest signUpRequest) {
@@ -69,17 +70,29 @@ public class AuthService {
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
         // 4. refesh token 저장
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(authenticate.getName(), tokenInfoDTO.getRefreshToken());
         valueOperations.set(tokenInfoDTO.getAccessToken(), tokenInfoDTO.getRefreshToken());
-        redisTemplate.expire(authenticate.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
         redisTemplate.expire(tokenInfoDTO.getAccessToken(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
         // 5. 토큰 발급
 
-        Member member = memberRepository.findById(Long.parseLong(authenticate.getName())).orElseThrow(NotFoundByIdException::new);
-        Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).orElseThrow(NotFoundByIdException::new);
+        return UserLoginDto.builder().userInfo(memberCustomRepositoryImpl.getUserInfo(Long.parseLong(authenticate.getName()))).tokenInfo(tokenInfoDTO.toTokenIssueDTO()).build();
+    }
 
+    @Transactional
+    public SimpleLoginDto simpleLogin(LoginRequest loginRequest) {
+        // 1. 이메일, 비밀번호 기반으로 토큰 생성
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = loginRequest.toAuthentication();
+        // 2. 실제로 검증이 이뤄지는 부분,
+        // authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
+        Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(usernamePasswordAuthenticationToken);
 
-        return UserLoginDto.builder().userInfo(member.toUserInfo(scrap.getId())).tokenInfo(tokenInfoDTO.toTokenIssueDTO()).build();
+        // 3. 인증 정보를 기반으로 jwt 토큰 생성
+        TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authenticate);
+        // 4. refesh token 저장
+        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        valueOperations.set(tokenInfoDTO.getAccessToken(), tokenInfoDTO.getRefreshToken());
+        redisTemplate.expire(tokenInfoDTO.getAccessToken(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        // 5. 토큰 발급
+        return SimpleLoginDto.builder().userId(authenticate.getName()).tokenInfo(tokenInfoDTO.toTokenIssueDTO()).build();
     }
 
     @Transactional
@@ -89,32 +102,18 @@ public class AuthService {
         if (refreshByAccess == null) {
             throw new ExpireRefreshTokenException();
         }
-        // 1. refresh token 검증
+        // refresh token 검증
         if (!jwtTokenProvider.validateToken(refreshByAccess)) {
             throw new InvalidRefreshTokenException();
         }
 
-        // 2. Access Token에서 멤버 아이디 가져오기
+        // Access Token에서 멤버 아이디 가져오기
         Authentication authentication = jwtTokenProvider.getAuthentication(accessTokenDTO.getAccessToken());
 
-        // 3. 저장소에서 member id를 기반으로 refresh token 값 가져옴
-        String refreshByMemberId = valueOperations.get(authentication.getName());
-        if (refreshByMemberId == null) {
-            throw new LogoutUserException();
-        }
-
-        // 4. refresh token이 일치하는지 검사,
-
-        if (!refreshByMemberId.equals(refreshByAccess)) {
-            throw new TokenNotMatchException();
-        }
-
-        // 5. 새로운 토큰 생성
+        // 새로운 토큰 생성
         TokenInfoDTO tokenInfoDTO = jwtTokenProvider.generateTokenDto(authentication);
-        // 6. 저장소 정보 업데이트
-        valueOperations.set(authentication.getName(), tokenInfoDTO.getRefreshToken());
+        // 저장소 정보 업데이트
         valueOperations.set(tokenInfoDTO.getAccessToken(), tokenInfoDTO.getRefreshToken());
-        redisTemplate.expire(authentication.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
         redisTemplate.expire(tokenInfoDTO.getAccessToken(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
 
 

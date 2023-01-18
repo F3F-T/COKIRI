@@ -10,10 +10,24 @@ import GoogleButton from "./GoogleButton.js"
 import { useGoogleLogin } from '@react-oauth/google'
 import {useDispatch, useSelector} from "react-redux";
 // import {gapi} from 'gapi-script';
-import {setToken, deleteToken} from "../../store/jwtTokenReducer";
+import {setToken, deleteToken, logoutToken} from "../../store/jwtTokenReducer";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api"
-import {setUserInfo, setUserProfile, deleteUserInfo, setUserNick, setUserName} from "../../store/userInfoReducer";
+import {
+    setUserInfo,
+    setUserProfile,
+    deleteUserInfo,
+    setUserNick,
+    setUserName,
+    setOnelineIntro, logoutUserInfo,
+} from "../../store/userInfoReducer";
+import {
+    parcelAddress1, parcelAddress2,
+    setAddress1,
+    setAddress2,
+    setAddressName1, setAddressName2, setLat1, setLat2, setLng1, setLng2,
+    setUserAddressInfo1, setUserAddressInfo2
+} from "../../store/userAddressInfoReducer";
 
 const Login = () => {
 
@@ -25,8 +39,6 @@ const Login = () => {
     const onClickToggleModal = useCallback(() => {
         setOpenModal(!isOpenModal);
     }, [isOpenModal]);
-
-
 
     const [email,setEmail] = useState('');
     const [google,setGoogle] = useState('');
@@ -43,6 +55,7 @@ const Login = () => {
     const signInClick = () => {
         navigate(`/signup`)
     }
+
 
     const onChangeEmail = (e) => {
         setuserInfo((prevState) => {
@@ -69,20 +82,37 @@ const Login = () => {
     //     }
     // }
     async function postLoginData() {
-
             //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-            const res = await Api.post('/auth/login',userInfo);
+            const res = await Api.post('/login',userInfo);
             console.log(res)
             const accessToken = res.data;
-
             //jwt 토큰 redux에 넣기
             const jwtToken = accessToken.tokenInfo;
             console.log(jwtToken)
-
+            console.log("바뀐address",res.data.userInfo.address[1])
             dispatch(setToken(jwtToken));
-            dispatch(setUserInfo(res.data.userInfo))
-            console.log(store)
+            dispatch(setUserInfo(res.data.userInfo.userDetail))
+            dispatch(setOnelineIntro(res.data.userInfo.userDetail.description))
+
+            if(res.data.userInfo.address[0]!=null){
+                dispatch(setUserAddressInfo1(res.data.userInfo.address[0].id))
+                dispatch(setAddressName1(res.data.userInfo.address[0].addressName))
+                dispatch(parcelAddress1(res.data.userInfo.address[0].postalAddress))
+                dispatch(setLat1(res.data.userInfo.address[0].latitude))
+                dispatch(setLng1(res.data.userInfo.address[0].longitude))
+            }
+            if(res.data.userInfo.address[1]!=null){
+                dispatch(setUserAddressInfo2(res.data.userInfo.address[1].id))
+                dispatch(setAddressName2(res.data.userInfo.address[1].addressName))
+                dispatch(parcelAddress2(res.data.userInfo.address[1].postalAddress))
+                dispatch(setLat2(res.data.userInfo.address[1].latitude))
+                dispatch(setLng2(res.data.userInfo.address[1].longitude))
+            }
+
+            // dispatch(setAddress1(res.data.userInfo.address[0]))
+            // dispatch(setAddress2(res.data.userInfo.address[1]))
+            console.log("store",store)
             alert("로그인 성공")
             navigate(`/`)
             }
@@ -92,18 +122,19 @@ const Login = () => {
                 alert("로그인에 실패하였습니다." + `\n` +
                     "아이디 혹은 비밀번호를 다시 확인해주세요")
             }
-
-
             // console.log(store.jwtTokenReducer);
             // console.log(store.jwtTokenReducer.accessToken);
             // console.log(store.jwtTokenReducer.authenticated);
             // console.log(store.jwtTokenReducer.accessTokenExpiresIn);
-
     }
     const handleClick= () => {
         console.log(userInfo);
         postLoginData();
     }
+    const googleLogin_2 = useGoogleLogin({
+        onSuccess: (codeResponse) => console.log(codeResponse),
+        flow: 'auth-code',
+    })
     const googleLogin = useGoogleLogin({
         onSuccess: async response => {
             try {
@@ -114,13 +145,10 @@ const Login = () => {
                 })
                 const data = res.data
                 console.log("d",data);
+                console.log("code확인",res.request);
+                console.log("code확인",);
 
-                // setUserInfoG((prevState) => {
-                //     return {
-                //         ...prevState, email:data.email , name:data.name
-                //     }
-                //
-                // })
+
                 const googleUserInfo1 ={
                     email:data.email,
                     name:data.name
@@ -128,14 +156,18 @@ const Login = () => {
                 console.log("유저정보",googleUserInfo1)
                 const res1 = await axios.post("http://localhost:8080/auth/google_login", googleUserInfo1)
                 console.log("res2...", res1)
-                //jwt 토큰 redux에 넣기
                 const jwtToken = res1.data.tokenInfo;
-                console.log("tststaD토큰",jwtToken)
-                dispatch(deleteToken());
+                console.log("토큰",jwtToken)
+                console.log("구글유저정보", res1.data.userInfo)
+                dispatch(logoutToken());
                 dispatch(setToken(jwtToken));
-                dispatch(deleteUserInfo())
-                dispatch(setUserNick(res1.data.userInfo.nickname))//얘는 뱉는거로
-                dispatch(setUserName(res1.data.userInfo.userName))
+                dispatch(logoutUserInfo())
+                // dispatch(setUserInfo(res.data.userInfo))
+                dispatch(setUserInfo(res1.data.userInfo))
+                // dispatch(setUserNick(res1.data.userInfo.nickname))//얘는 뱉는거로
+                // dispatch(setUserName(res1.data.userInfo.userName))
+                // dispatch(setUserProfile(res1.data.userInfo.imageUrl))
+                // dispatch(setOnelineIntro(res1.data.userInfo.description))
                 navigate(`/`)
                 }
             catch (err) {
@@ -191,11 +223,4 @@ const Login = () => {
 }
 //
 
-function Modal2(){
-    return(
-        <div className={styles.modal}>
-            모달창입니다.
-        </div>
-    )
-}
 export default Login;

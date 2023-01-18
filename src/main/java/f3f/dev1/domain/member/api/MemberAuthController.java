@@ -12,12 +12,14 @@ import f3f.dev1.domain.member.dto.OAuthDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.Multipart;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,19 +130,30 @@ public class MemberAuthController {
         return new ResponseEntity<>(authService.signUp(signUpRequest), HttpStatus.CREATED);
     }
 
-    // 로그인
-    @PostMapping(value = "/login")
-    public ResponseEntity<UserLoginDto> login(@RequestBody LoginRequest loginRequest) {
+    // 로그인 - TODO 크롬 자동 로그인 이용하려면 form data 형식도 열어놔야할듯
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserLoginDto> loginJson(@RequestBody LoginRequest loginRequest) {
         log.info("로그인 호출됐음");
+        log.info("json 형식으로 데이터 넘어옴");
+        log.info("email " + loginRequest.getEmail());
+        log.info("pwd " + loginRequest.getPassword());
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 
-    // 로그인 리다이렉트 페이지
-    @GetMapping(value = "/login")
-    public ResponseEntity<String> loginRedirect(HttpServletRequest request) throws IOException {
-        String token = request.getHeader("Authorization").split(" ")[1];
-        log.info("token = " + token);
-        return ResponseEntity.ok(authService.logout(token));
+    @PostMapping(value = "/login", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<UserLoginDto> loginForm(LoginRequest loginRequest) {
+        log.info("로그인 호출됐음");
+        log.info("form 형식으로 데이터 넘어옴");
+        log.info("email " + loginRequest.getEmail());
+        log.info("pwd " + loginRequest.getPassword());
+        return ResponseEntity.ok(authService.login(loginRequest));
+    }
+
+
+    // 로그아웃 리다이렉트 페이지
+    @GetMapping(value = "/logout-redirect")
+    public ResponseEntity<String> loginRedirect(){
+        return ResponseEntity.ok("LOGOUT");
     }
 
     // 로그아웃은 스프링 시큐리티에서 기본적으로 제공해주는 기능사용
@@ -153,23 +166,28 @@ public class MemberAuthController {
 
     // 외부 API 로그인 요청
     @GetMapping(value = "/auth/social_login/{loginType}")
-    public ResponseEntity<SocialLoginUrlDto> socialLogin(@PathVariable(name = "loginType") String loginType) {
-        return ResponseEntity.ok(oAuth2UserService.request(loginType.toUpperCase()));
-
-    }
-
-    // 구글 로그인 콜백 처리
-    @GetMapping(value = "/auth/social_login/{loginType}/callback")
-    public ResponseEntity<UserLoginDto> callback(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
+    public ResponseEntity<UserLoginDto> socialLogin(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
         log.debug("code " + code);
         System.out.println("code = " + code);
 
         UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code);
-        if (userLoginDto.getUserInfo().getNickname() == null) {
-            return new ResponseEntity<>(userLoginDto, HttpStatus.CREATED);
-        }
+
         return ResponseEntity.ok(userLoginDto);
+
     }
+
+    // 구글 로그인 콜백 처리
+//    @GetMapping(value = "/auth/social_login/{loginType}/callback")
+//    public ResponseEntity<UserLoginDto> callback(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
+//        log.debug("code " + code);
+//        System.out.println("code = " + code);
+//
+//        UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code);
+////        if (userLoginDto.getUserInfo().getNickname() == null) {
+////            return new ResponseEntity<>(userLoginDto, HttpStatus.CREATED);
+////        }
+//        return ResponseEntity.ok(userLoginDto);
+//    }
 
 
 

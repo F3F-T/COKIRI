@@ -1,12 +1,15 @@
 package f3f.dev1.domain.comment.dao;
 
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import f3f.dev1.domain.comment.dto.CommentDTO.CommentInfoDto;
-import f3f.dev1.domain.comment.model.QComment;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static f3f.dev1.domain.comment.model.QComment.*;
@@ -18,6 +21,7 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository{
 
     @Override
     public List<CommentInfoDto> findCommentDtoByPostId(Long postId) {
+
         List<CommentInfoDto> results = jpaQueryFactory
                 .select(Projections.constructor(CommentInfoDto.class,
                         comment.id,
@@ -27,7 +31,8 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository{
                         comment.author.imageUrl,
                         comment.content,
                         comment.depth,
-                        comment.parent.id))
+                        comment.parent.id,
+                        comment.createDate))
                 .from(comment)
                 .where(comment.post.id.eq(postId))
                 .fetch();

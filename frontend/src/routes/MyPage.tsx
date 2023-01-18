@@ -51,7 +51,7 @@ const MyPage = () =>  {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
             const res = await Api.get('/user/posts');
-            console.log("내 게시글들임", res.data.userPosts)
+            // console.log("내 게시글들임", res.data.userPosts)
             setPostList(prevState => {
                 // return [...res.data.userPosts];
                 return [ ...res.data.userPosts];

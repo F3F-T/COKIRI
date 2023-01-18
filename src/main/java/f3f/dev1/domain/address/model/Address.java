@@ -46,7 +46,6 @@ public class Address {
 
     public AddressInfoDTO toInfoDto() {
         return AddressInfoDTO.builder()
-                .memberId(member.getId())
                 .addressName(addressName)
                 .postalAddress(postalAddress)
                 .latitude(latitude)

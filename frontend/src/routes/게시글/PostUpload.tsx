@@ -47,6 +47,7 @@ const PostUpload = () => {
 
     const onChangePrice = (e) => {
         const inputPrice = e.target.value;
+        console.log(inputPrice);
         setUploadData((prevState) => {
             return {...prevState, price: inputPrice}
         })
@@ -138,6 +139,7 @@ const PostUpload = () => {
         const jsonObj = {
             "title": uploadData.title,
             "content":uploadData.content,
+            "price":uploadData.price,
             "tradeEachOther": tradeEachOther,
             "authorId": store.userInfoReducer.id,
             "productCategory" : uploadData.productCategory,
@@ -179,7 +181,7 @@ const PostUpload = () => {
                     <p className={styles.star}>*</p><input type="text" className={styles.item2_2} placeholder="글 제목을 적어주세요." onBlur={onChangeTitle} />
                 </div>
                 <div className={styles.item2}>
-                    <p className={styles.star}>*</p><input type="text" className={styles.item2_2} placeholder="생각하는 물건의 가격대를 적어주세요." onBlur={onChangePrice}/>
+                    <p className={styles.star}>*</p><input type="number" className={styles.item2_2} placeholder="생각하는 물건의 가격대를 적어주세요." onBlur={onChangePrice}/>
                 </div>
                 <div className={styles.item2}>
                     <p className={styles.star}>*</p>

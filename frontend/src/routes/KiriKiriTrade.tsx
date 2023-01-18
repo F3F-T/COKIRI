@@ -14,10 +14,15 @@ import Button from "../component/common/Button";
 
 
 const KiriKiriTrade = () => {
-    const [tab1, setTab] = useState('curr');
+    const [tab1, setTab] = useState('next');
+
+    type filtertype = "recent" | "popular"
+    const [filterType, setFilterType]= useState<filtertype>("recent");
+
     function setDealTab(tab){
         setTab(tab)
     }
+
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
 
@@ -44,15 +49,30 @@ const KiriKiriTrade = () => {
                 <div className={styles.navPostOrWant}>{store.categoryReducer.category}끼리 교환해요</div>
                 <div className={styles.popularOrNewest}>
                     <div className={styles.popularOrNewest}>
-                        {tab1 === 'curr' ? <button className={`${styles["pupularBtn"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>✓인기도순</button>
-                            : <button className={`${styles["pupularBtn"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>인기도순</button>
+                        {tab1 === 'next' ? <button className={`${styles["newsetBtn" + (tab1 === "next" ? "active" : "")]}`}
+                                                   onClick={() => {
+                                                       setDealTab('next')
+                                                       setFilterType('recent')
+                                                   }}>✓최신순</button>
+                            : <button className={`${styles["newsetBtn" + (tab1 === "next" ? "active" : "")]}`}
+                                      onClick={() => {
+                                          setDealTab('next')
+                                      }}>최신순</button>
                         }
-                        {tab1 === 'next' ? <button className={`${styles["newsetBtn"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>✓누적도순</button>
-                            : <button className={`${styles["newsetBtn"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>누적도순</button>
+                        {tab1 === 'curr' ? <button className={`${styles["pupularBtn" + (tab1 === "curr" ? "active" : "")]}`}
+                                                   onClick={() => {
+                                                       setDealTab('curr')
+                                                       setFilterType('popular')
+                                                   }}>✓인기도순</button>
+                            : <button className={`${styles["pupularBtn" + (tab1 === "curr" ? "active" : "")]}`}
+                                      onClick={() => {
+                                          setDealTab('curr')
+                                          setFilterType('popular')
+                                      }}>인기도순</button>
                         }
                     </div>
                 </div>
-                <PostContainer categoryOption={"both"}/>
+                <PostContainer categoryOption={"both"}  filterType={filterType}/>
             </div>
         </div>
     );

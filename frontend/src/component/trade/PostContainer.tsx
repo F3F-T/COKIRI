@@ -17,7 +17,6 @@ import styled from "../../styles/card/cards.module.scss";
 import Api from "../../utils/api";
 import {setToken} from "../../store/jwtTokenReducer";
 import {setUserInfo} from "../../store/userInfoReducer";
-import {log} from "util";
 import nav from "../Nav";
 
 interface PostType {
@@ -33,16 +32,21 @@ interface PostType {
 }
 
 type categoryOption = "wishCategory" | "productCategory" | "both"
+type filtertype = "recent" | "popular"
 interface postProps {
     categoryOption? : categoryOption,
+    filterType? : filtertype,
 }
 const PostContainer = (postProps : postProps) => {
+    console.log(postProps.filterType);
 
     console.log(postProps.categoryOption);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     let wishCategory = "";
     let productCategory = "";
+    let minPrice = "";
+    let maxPrice = "";
 
     const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
 
@@ -73,14 +77,27 @@ const PostContainer = (postProps : postProps) => {
     if(productCategory === "전체")
     {
         productCategory = "";
+        console.log(store.priceReducer.maxPrice);
+        console.log(store.priceReducer.minPrice);
     }
+
+    if(store.priceReducer.minPrice !=null)
+    {
+        minPrice = store.priceReducer.minPrice;
+    }
+
+    if(store.priceReducer.maxPrice !=null)
+    {
+        maxPrice = store.priceReducer.maxPrice;
+    }
+
 
 
     async function getPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
             //query string 날리기
-            const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=&maxPrice=`);
+            const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}`);
             console.log(res);
             console.log(res.data)
             setPostList(prevState => {
@@ -97,7 +114,7 @@ const PostContainer = (postProps : postProps) => {
     // getPostList();
     useEffect(()=>{
         getPostList();
-    },[wishCategory,productCategory])
+    },[wishCategory,productCategory,minPrice,maxPrice])
 
     /**
      * 중요) postList를 async로 받긴 하지만 받아오는 시간 전까지는 postList가 null이기 때문에 밑에있는 render 에서 postList.map 이 null을 접근하게 돼서 오류가 발생하고, 켜지지 않는다
