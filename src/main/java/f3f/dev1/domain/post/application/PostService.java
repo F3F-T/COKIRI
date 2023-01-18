@@ -15,7 +15,6 @@ import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.scrap.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
-import f3f.dev1.domain.post.model.SortOrder;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.post.model.ScrapPost;
