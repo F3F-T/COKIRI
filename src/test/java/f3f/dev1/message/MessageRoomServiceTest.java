@@ -404,9 +404,9 @@ public class MessageRoomServiceTest {
 
         //given
         List<MessageRoomInfoDto> totalMsgRoom = messageRoomService.ReadMessageRoomsByUserId(admin.getId());
-        List<MessageRoomInfoDto> adminBuyingRoom = messageRoomService.ReadBuyingMessageRoomsByUserId(admin.getId());
-        List<MessageRoomInfoDto> adminSellingRoom = messageRoomService.ReadSellingMessageRoomsByUserId(admin.getId());
-        List<MessageRoomInfoDto> userSellingRoom = messageRoomService.ReadBuyingMessageRoomsByUserId(user.getId());
+        List<BuyingRoomInfoDto> adminBuyingRoom = messageRoomService.ReadBuyingMessageRoomsByUserId(admin.getId());
+        List<SellingRoomInfoDto> adminSellingRoom = messageRoomService.ReadSellingMessageRoomsByUserId(admin.getId());
+        List<SellingRoomInfoDto> userSellingRoom = messageRoomService.ReadSellingMessageRoomsByUserId(user.getId());
         //then
         assertThat(totalMsgRoom.size()).isEqualTo(3);
         assertThat(admin.getBuyingRooms().size()).isEqualTo(1);
