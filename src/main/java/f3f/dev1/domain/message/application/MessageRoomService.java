@@ -108,6 +108,10 @@ public class MessageRoomService {
             MessageRoomInfoDto msgRoomInfoDto = msgRoom.toMessageRoomInfo();
             totalMsgRoomDtoList.add(msgRoomInfoDto);
         }
+        for(MessageRoom msgRoom : member.getSellingRooms()){
+            MessageRoomInfoDto msgRoomInfoDto = msgRoom.toMessageRoomInfo();
+            totalMsgRoomDtoList.add(msgRoomInfoDto);
+        }
 //        List<MessageRoom> totalMsgRoom = new ArrayList<>();
 //        totalMsgRoom.addAll(member.getBuyingRooms());
 //        totalMsgRoom.addAll(member.getSellingRooms());
@@ -117,22 +121,22 @@ public class MessageRoomService {
 
     //유저에서 sellingRoom 조회
     @Transactional(readOnly = true)
-    public List<MessageRoomInfoDto> ReadSellingMessageRoomsByUserId(Long id){
+    public List<SellingRoomInfoDto> ReadSellingMessageRoomsByUserId(Long id){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        List<MessageRoomInfoDto> sellingRoomsInfoDto = new ArrayList<>();
+        List<SellingRoomInfoDto> sellingRoomsInfoDto = new ArrayList<>();
         for(MessageRoom msgRoom : member.getSellingRooms()){
-            MessageRoomInfoDto msgRoomInfoDto = msgRoom.toMessageRoomInfo();
+            SellingRoomInfoDto msgRoomInfoDto = msgRoom.toSellingRoomInfo();
             sellingRoomsInfoDto.add(msgRoomInfoDto);
         }
         return sellingRoomsInfoDto;
     }
     //유저에서 BuyingRoom 조회
     @Transactional(readOnly = true)
-    public List<MessageRoomInfoDto> ReadBuyingMessageRoomsByUserId(Long id){
+    public List<BuyingRoomInfoDto> ReadBuyingMessageRoomsByUserId(Long id){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        List <MessageRoomInfoDto> buyingRoomsInfoDto = new ArrayList<>();
+        List <BuyingRoomInfoDto> buyingRoomsInfoDto = new ArrayList<>();
         for(MessageRoom msgRoom : member.getBuyingRooms()){
-            MessageRoomInfoDto buyingRoomInfoDto = msgRoom.toMessageRoomInfo();
+            BuyingRoomInfoDto buyingRoomInfoDto = msgRoom.toBuyingRoomInfo();
             buyingRoomsInfoDto.add(buyingRoomInfoDto);
         }
 

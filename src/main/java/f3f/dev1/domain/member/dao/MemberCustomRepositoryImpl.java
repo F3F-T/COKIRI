@@ -10,7 +10,6 @@ import f3f.dev1.domain.address.dto.AddressDTO;
 import f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
 import f3f.dev1.domain.address.dto.QAddressDTO_AddressInfoDTO;
 import f3f.dev1.domain.member.dto.MemberDTO;
-import f3f.dev1.domain.member.dto.QMemberDTO_GetUserPost;
 import f3f.dev1.domain.member.dto.QMemberDTO_UserDetail;
 import f3f.dev1.domain.post.model.QPost;
 import lombok.RequiredArgsConstructor;
