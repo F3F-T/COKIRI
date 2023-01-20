@@ -9,7 +9,6 @@ public class ScrapPostDTO {
 
     @Builder
     @NoArgsConstructor
-    @AllArgsConstructor
     @Data
     public static class GetUserScrapPost{
         private Long postId;
@@ -19,9 +18,10 @@ public class ScrapPostDTO {
         private String wishCategory;
         private Long scrapCount;
         @QueryProjection
-        public GetUserScrapPost(Long postId, String title, TradeStatus tradeStatus, String wishCategory, Long likeCount) {
+        public GetUserScrapPost(Long postId, String title, String thumbNail, TradeStatus tradeStatus, String wishCategory, Long likeCount) {
             this.postId = postId;
             this.title = title;
+            this.thumbNail = thumbNail;
             this.tradeStatus = tradeStatus;
             this.wishCategory = wishCategory;
             this.scrapCount = likeCount;

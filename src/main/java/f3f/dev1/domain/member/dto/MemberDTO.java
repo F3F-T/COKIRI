@@ -454,7 +454,7 @@ public class MemberDTO {
 
         public GetUserPost(PostRepository.GetUserPostInterface getUserPostInterface) {
             this.postId = getUserPostInterface.getPostId();
-            this.thumbNail = null;
+            this.thumbNail = getUserPostInterface.getThumbnail();
             this.title = getUserPostInterface.getTitle();
             if (getUserPostInterface.getTradeStatus().equals("0")) {
                 this.tradeStatus = TradeStatus.TRADABLE.name();

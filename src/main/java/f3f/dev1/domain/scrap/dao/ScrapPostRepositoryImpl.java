@@ -28,7 +28,7 @@ public class ScrapPostRepositoryImpl implements ScrapPostCustomRepository{
     public Page<ScrapPostDTO.GetUserScrapPost> findUserScrapPost(Long scrapId, Pageable pageable) {
         QScrapPost newScrapPost = new QScrapPost("newScrapPost");
         log.info("유저 스크랩 포스트 조회 호출됌");
-        QueryResults<ScrapPostDTO.GetUserScrapPost> getUserScrapPostQueryResults = queryFactory.select(new QScrapPostDTO_GetUserScrapPost(post.id, post.title, trade.tradeStatus, category.name, scrapPost.scrap.count()))
+        QueryResults<ScrapPostDTO.GetUserScrapPost> getUserScrapPostQueryResults = queryFactory.select(new QScrapPostDTO_GetUserScrapPost(post.id, post.title, post.thumbnailImgPath, trade.tradeStatus, category.name, scrapPost.scrap.count()))
                 .from(scrapPost)
                 .join(scrapPost.post, post).on(scrapPost.post.id.eq(post.id))
                 .join(post.trade, trade).on(trade.post.id.eq(scrapPost.post.id))
