@@ -32,7 +32,6 @@ public class PostController {
 
 
     // 게시글 전체 조회 세분화 - 태그 제외 조건들 검색
-    // TODO Enum 쿼리스트링으로 받았을때 변환해줄 컨버터 등록하기 - 완료, 테스트 미실시
     @GetMapping(value = "/post")
     public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithConditionExcludeTags(
             @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
