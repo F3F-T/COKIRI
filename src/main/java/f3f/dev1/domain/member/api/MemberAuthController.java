@@ -8,7 +8,6 @@ import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.EmailCertificationService;
 import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.member.application.OAuth2UserService;
-import f3f.dev1.domain.member.dto.OAuthDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,15 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.mail.Multipart;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
-import static f3f.dev1.domain.member.dto.OAuthDTO.*;
+import static f3f.dev1.domain.member.dto.OAuthDTO.GoogleLoginRequest;
+import static f3f.dev1.domain.member.dto.OAuthDTO.GoogleTokenDto;
 import static f3f.dev1.domain.token.dto.TokenDTO.AccessTokenDTO;
 import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 
@@ -33,7 +30,7 @@ import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 @RestController
 @RequiredArgsConstructor
 public class MemberAuthController {
-    private final String S3Bucket = "cokiri-image/image/profileImage";
+    private final String S3Bucket = "cokiri-image/image/";
     private final MemberService memberService;
 
     private final EmailCertificationService emailCertificationService;
@@ -46,7 +43,7 @@ public class MemberAuthController {
 
     // 이미지 테스트 업로드
     @PostMapping(value = "/auth/image")
-    public ResponseEntity<ImageUrlDto> upload(MultipartFile[] imageFiles) throws IOException {
+    public ResponseEntity<ImageUrlDto> upload(MultipartFile[] imageFiles, @RequestParam(name = "imageType") String imageType) throws IOException {
         List<String> imagePathList = new ArrayList<>();
 
         for(MultipartFile multipartFile: imageFiles) {
@@ -59,11 +56,11 @@ public class MemberAuthController {
 
             // S3에 업로드
             amazonS3Client.putObject(
-                    new PutObjectRequest(S3Bucket, originalName, multipartFile.getInputStream(), objectMetaData)
+                    new PutObjectRequest(S3Bucket+imageType, originalName, multipartFile.getInputStream(), objectMetaData)
                             .withCannedAcl(CannedAccessControlList.PublicRead)
             );
 
-            String imagePath = amazonS3Client.getUrl(S3Bucket, originalName).toString(); // 접근가능한 URL 가져오기
+            String imagePath = amazonS3Client.getUrl(S3Bucket+imageType, originalName).toString(); // 접근가능한 URL 가져오기
             imagePathList.add(imagePath);
         }
 

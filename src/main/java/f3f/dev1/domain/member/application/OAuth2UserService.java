@@ -3,8 +3,6 @@ package f3f.dev1.domain.member.application;
 import f3f.dev1.domain.member.component.GoogleAuth;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.dto.MemberDTO.UserLoginDto;
-import f3f.dev1.domain.member.dto.OAuthDTO;
-import f3f.dev1.domain.member.dto.OAuthDTO.GoogleOAuthToken;
 import f3f.dev1.domain.member.dto.OAuthDTO.SocialLoginUrlDto;
 import f3f.dev1.domain.member.exception.UnknownLoginException;
 import f3f.dev1.domain.member.model.Member;
@@ -17,13 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Optional;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.LoginRequest;
 import static f3f.dev1.domain.member.dto.MemberDTO.SignUpRequest;
-import static f3f.dev1.domain.member.dto.OAuthDTO.*;
+import static f3f.dev1.domain.member.dto.OAuthDTO.GoogleLoginRequest;
+import static f3f.dev1.domain.member.dto.OAuthDTO.GoogleUser;
 
 @Slf4j
 @RequiredArgsConstructor
