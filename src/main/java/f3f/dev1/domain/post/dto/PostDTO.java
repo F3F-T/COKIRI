@@ -41,6 +41,15 @@ public class PostDTO {
         @NotNull
         private List<String> tagNames;
 
+        private List<String> originImagePath;
+        private String thumbnailImagePath;
+
+        // postService에서 이미지가 null이 아니라면 아래의 로직이 호출됨.
+        public void setImages(List<String> imagePaths, String thumbnailImagePath) {
+            originImagePath = imagePaths;
+            this.thumbnailImagePath = thumbnailImagePath;
+        }
+
         public Post toEntity(Member author, Category product, Category wish, List<PostTag> postTags) {
             return Post.builder()
                     .tradeEachOther(tradeEachOther)

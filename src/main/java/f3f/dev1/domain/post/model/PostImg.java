@@ -19,6 +19,8 @@ public class PostImg {
     // 이미지 S3 경로
     private String imgPath;
 
+    // TODO 사진 이름이 우리도 필요한가..? 필요 없을 듯 한데 조금 더 생각해봐야 할 것 같다.
+
     // 썸네일인지 아닌지 여부
     private Boolean isThumbnail;
 
