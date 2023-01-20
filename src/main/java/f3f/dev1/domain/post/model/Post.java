@@ -44,6 +44,8 @@ public class Post extends BaseTimeEntity {
 
     private Long price;
 
+    private String thumbnailImgPath;
+
     @ManyToOne
     @JoinColumn(name = "productCategory_id")
     private Category productCategory;
