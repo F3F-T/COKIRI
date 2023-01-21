@@ -11,14 +11,12 @@ input[type=number] {
 }
 
 .postBox{
-
-    height: 1200px;
-
+    /*height: 1200px;*/
 }
 .postUpload {
     padding-top: 5rem;
     width : 700px;
-    height: 1000px;
+    /*height: 1000px;*/
     text-align: left;
     /*border: 1px solid red;*/
     margin : auto; /*가운데 정렬*/
@@ -43,12 +41,12 @@ input[type=number] {
 
 }
 .container{
-    height: 100%;
+    /*height: 100%;*/
     /*border: 1px solid red;*/
     border-radius: 10px;
     width: 100%;
     display: grid;
-    grid-template-rows: repeat(7,1fr);
+    /*grid-template-rows: repeat(7,1fr);*/
     gap: 10px;
 }
 .item1{
@@ -61,6 +59,7 @@ input[type=number] {
 }
 
 .item2{
+    height: 2.68rem;
     display: flex;
     justify-content: left;
     margin-top: 1rem;
@@ -68,6 +67,7 @@ input[type=number] {
     border-bottom: 2px solid rgba(150, 150, 150, 0.2);
 }
 .item2_2{
+
     width: 100%;
     margin-bottom: 1rem ;
     border-top : none;
@@ -80,6 +80,7 @@ input[type=number] {
     color: red;
 }
 .categoryBox{
+
     display: flex;
     justify-content: left;
     margin-top: 1rem;
@@ -134,6 +135,7 @@ input[type=number] {
 .photos{
     width: 12rem;
     height: 12rem;
+    padding: 1rem;
 }
 
 .photoText{
@@ -141,5 +143,19 @@ input[type=number] {
     margin-bottom: 1rem ;
     margin-top : 1rem;
     color: grey;
+}
 
+.contentArea{
+    width: 100%;
+    height: 10rem;
+    border: none;
+    resize: none;
+    color: black;
+    outline: none;
+}
+
+.contentAreaBox{
+    display: flex;
+    justify-content: left;
+    height: 10rem;
 }

@@ -17,6 +17,7 @@ import {useSelector} from "react-redux";
 import axios from "axios/index";
 //https://github.com/yairEO/tagify 에서 tagify 참조
 import { NumericFormat } from 'react-number-format';
+import Select from "react-select";
 
 const PostUpload = () => {
 
@@ -33,11 +34,35 @@ const PostUpload = () => {
     let tradeEachOther : boolean = undefined;
     const store = useSelector((state:Rootstate) => state);
     const fileInput = useRef(null)
-    const [photoData,setPhotoData] = useState<string[]>(null)
+    const [photoData,setPhotoData] = useState(null)
 
-    const categories: string[] =
-        ['전체', '도서', '생활가전', '의류', '유아도서', '유아동', '여성의류', '남성의류', '뷰티/미용', '스포츠/레저',
-            '티켓/교환권', '식물', '가구', '반려동물용품', '가공용품', '취미/게임', '인테리어', '생활/주방']
+    // const categories: string[] =
+    //     ['전체', '도서', '생활가전', '의류', '유아도서', '유아동', '여성의류', '남성의류', '뷰티/미용', '스포츠/레저',
+    //         '티켓/교환권', '식물', '가구', '반려동물용품', '가공용품', '취미/게임', '인테리어', '생활/주방']
+
+    interface Category {
+        name: string;
+    }
+    
+    const categories : Category[] = 
+        [
+            {name : '전체'}, 
+            {name : '생활가전'}, 
+            {name : '의류'}, 
+            {name : '유아도서'}, 
+            {name : '유아동'}, 
+            {name : '여성의류'}, 
+            {name : '남성의류'}, 
+            {name : '스포츠/레저'}, 
+            {name : '티켓/교환권'}, 
+            {name : '식물'}, 
+            {name : '가구'}, 
+            {name : '반려동물용품'}, 
+            {name : '가공용품'}, 
+            {name : '취미/게임'}, 
+            {name : '인테리어'}, 
+            {name : '생활/주방'}]
+    
 
     const navigate = useNavigate();
     const [showImages,setShowImages] = useState([]);
@@ -49,9 +74,11 @@ const PostUpload = () => {
         })
     }
 
-    const onChangePrice = (e) => {
+    const onChangePrice = (e,value) => {
         const inputPrice = e.target.value;
         console.log(inputPrice);
+
+
         setUploadData((prevState) => {
             return {...prevState, price: inputPrice}
         })
@@ -61,20 +88,6 @@ const PostUpload = () => {
         const inputContent = e.target.value;
         setUploadData((prevState) => {
             return {...prevState, content: inputContent}
-        })
-    }
-
-    const onChangeProductCategory = (e) => {
-        const selectedCategory = e.target.value;
-        setUploadData((prevState) => {
-            return {...prevState, productCategory: selectedCategory}
-        })
-    }
-
-    const onChangeWishCategory = (e) => {
-        const selectedCategory = e.target.value;
-        setUploadData((prevState) => {
-            return {...prevState, wishCategory: selectedCategory}
         })
     }
 
@@ -124,6 +137,19 @@ const PostUpload = () => {
 
     }
 
+    const imageUpload = async () => {
+        try {
+            const res = await Api.post("/auth/image", photoData);
+            console.log(res)
+            alert("이미지 업로드 성공")
+        } catch (err) {
+            console.log(err)
+            alert("이미지 업로드 실패")
+        }
+
+
+    }
+
     const onClickUploadButton = () => {
         console.log(uploadData);
 
@@ -135,7 +161,6 @@ const PostUpload = () => {
             console.log("true")
         }else{
             tradeEachOther = false;
-
             console.log(tradeEachOther);
             console.log("false")
         }
@@ -151,7 +176,12 @@ const PostUpload = () => {
             "tagNames" : [...uploadData.tag]
         };
 
+
+        // //사진 업로드
+        imageUpload();
         uploadPost(jsonObj);
+
+
     }
 
     const onChangeImg = async(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,24 +190,33 @@ const PostUpload = () => {
         if(e.target.files){
             const imageLists = e.target.files;
             let imageUrlLists = [...showImages];
+            const formData = new FormData()
 
             for(let i =0; i< imageLists.length ; i++)
             {
+                //미리보기 파일 imgeUrlLists에 추가
                 const currentImageUrl = URL.createObjectURL(imageLists[i]);
                 imageUrlLists.push(currentImageUrl);
+                //API 통신을 위한 formData에도 추가
+                formData.append("imageFiles",imageLists[i]);
             }
+
 
             //max를 10장으로 설정
             if(imageUrlLists.length > 10)
             {
-
                 imageUrlLists = imageUrlLists.slice(0,10)
+                alert("사진 업로드는 최대 10장입니다.")
             }
 
+            //미리보기 데이터
             setShowImages(imageUrlLists);
-
             console.log(showImages);
 
+            //api 통신
+            setPhotoData(formData);
+
+            console.log(photoData);
             // console.log(uploadFile)
             // const formData = new FormData()
             // formData.append('imageFiles',uploadFile);
@@ -186,7 +225,24 @@ const PostUpload = () => {
             // setPhotoData(prevState => [...res.data.imageUrls])
         }
     }
+    interface ArrayObjectSelectState {
+        selectedCategory: Category | null;
+    }
 
+    const [productState, setProductState] = React.useState<ArrayObjectSelectState>({
+        selectedCategory: null,
+    });
+
+    const [wishState, setWishState] = React.useState<ArrayObjectSelectState>({
+        selectedCategory: null,
+    });
+
+
+    const onChangePriceSecond = (value) => {
+        setUploadData((prevState) => {
+            return {...prevState, price: value}
+        })
+    }
 
     /**
      * 로그인 상태를 확인하고 비로그인일때 이전화면으로 돌아가기
@@ -213,12 +269,12 @@ const PostUpload = () => {
             </div>
             <div className={styles.container}>
                 <div className={styles.item1}>
+                    <img className={styles.photos} src={photo} onClick={()=>{fileInput.current.click()}}/>
                     {
                         showImages.map((image,id)=>(
                                 <img className={styles.photos} alt={`${image}-${id}`} key={id} src={image}/>
                         ))
                     }
-                    <img className={styles.photos} src={photo} onClick={()=>{fileInput.current.click()}}/>
                     <form>
                         <input type="file" style={{display:'none'}} multiple accept="image/*" onChange={onChangeImg} ref={fileInput}/>
                     </form>
@@ -228,32 +284,66 @@ const PostUpload = () => {
                     <p className={styles.star}>*</p><input type="text" className={styles.item2_2} placeholder="글 제목을 적어주세요." onBlur={onChangeTitle} />
                 </div>
                 <div className={styles.item2}>
-                    <p className={styles.star}>*</p> <NumericFormat className={styles.item2_2} placeholder="생각하는 물건의 가격대를 숫자로 적어주세요." prefix={"₩"} allowLeadingZeros thousandSeparator=","  onBlur={onChangePrice}/>
+                    <p className={styles.star}>*</p> <NumericFormat className={styles.item2_2} placeholder="생각하는 물건의 가격대를 숫자로 적어주세요." prefix={"₩"} allowLeadingZeros thousandSeparator=","
+                                                                    onValueChange={(values) => {
+                                                                        onChangePriceSecond(values.floatValue);
+                                                                    }} />
                 </div>
-                <div className={styles.item2}>
+                <div className={styles.contentAreaBox}>
                     <p className={styles.star}>*</p>
-                    <textarea className={styles.item2_2} cols={50} rows={6} placeholder="상도1동에 올릴 게시글을 적어주세요." onBlur={onChangeContent}/>
+                    <textarea className={styles.contentArea} placeholder="상도1동에 올릴 게시글을 적어주세요." onBlur={onChangeContent} spellCheck={"false"}/>
                 </div>
                 <div className={styles.categoryBox}>
                     <p className={styles.star}>*</p>
                     <p className={styles.categoryText} >올릴 물건의 카테고리를 선택해주세요.</p>
                 </div>
                 <div className={styles.categoryBox2}>
-                    <select className={styles.categoryToggle} placeholder="올릴 물건의 카테고리를 선택해주세요." onChange={onChangeProductCategory} >
-                        {categories.map((category:string)=> (
-                            <option key={category} value={category}>{category}</option>
-                        ))}
-                    </select>
+                    <Select
+                        styles={{ // zIndex
+                            menu: provided => ({...provided, zIndex: 999})
+                        }}
+                        // If you don't need a state you can remove the two following lines value & onChange
+                        value={productState.selectedCategory}
+                        onChange={(option: Category | null) => {
+                            setUploadData((prevState) => {
+                                return {...prevState, productCategory: option.name}
+                            })
+                            setProductState({ selectedCategory: option });
+                        }}
+                        getOptionLabel={(category: Category) => category.name}
+                        getOptionValue={(category: Category) => category.name}
+                        options={categories}
+                        isClearable={true}
+                        backspaceRemovesValue={true}
+                        placeholder={"전체"}
+                    />
+
                 </div>
                 <div className={styles.categoryBox}>
+                    <p className={styles.star}>*</p>
                     <p className={styles.categoryText2}>원하는 물건의 카테고리를 선택해주세요.</p>
                 </div>
                 <div className={styles.categoryBox2}>
-                    <select className={styles.categoryToggle} placeholder="원하는 물건의 카테고리를 선택해주세요." onChange={onChangeWishCategory} >
-                        {categories.map((category:string)=> (
-                            <option key={category} value={category}>{category}</option>
-                        ))}
-                    </select>
+                    <Select
+                        styles={{ // zIndex
+                            menu: provided => ({...provided, zIndex: 999})
+                        }}
+                        // If you don't need a state you can remove the two following lines value & onChange
+                        value={wishState.selectedCategory}
+                        onChange={(option: Category | null) => {
+                            setUploadData((prevState) => {
+                                return {...prevState, wishCategory: option.name}
+                            })
+                            setWishState({ selectedCategory: option });
+                        }}
+                        getOptionLabel={(category: Category) => category.name}
+                        getOptionValue={(category: Category) => category.name}
+                        options={categories}
+                        isClearable={true}
+                        backspaceRemovesValue={true}
+                        placeholder={"전체"}
+                    />
+
                 </div>
 
                     <Tags
@@ -268,6 +358,7 @@ const PostUpload = () => {
 
 
             </div>
+
             <div className={styles.btnPlace}>
                 <button className={styles.uploadBtn} onClick={onClickUploadButton}>내 물건 올리기</button>
             </div>

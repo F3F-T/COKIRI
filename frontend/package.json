@@ -32,6 +32,7 @@
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.6.1",
     "react-scripts": "5.0.1",
+    "react-select": "^5.7.0",
     "react-tagify": "^0.1.4",
     "redux": "^4.2.0",
     "redux-persist": "^6.0.0",
