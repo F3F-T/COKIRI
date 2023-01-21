@@ -67,7 +67,7 @@ const userInfoSlice = createSlice({
             state.onelineIntro = action.payload;
         },
         deleteUserInfo(state){
-            state = initialUserInfoState;
+            return initialUserInfoState
         },
         logoutUserInfo(state){
             state.id = undefined;
