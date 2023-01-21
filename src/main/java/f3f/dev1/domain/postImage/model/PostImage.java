@@ -2,6 +2,7 @@ package f3f.dev1.domain.postImage.model;
 
 import f3f.dev1.domain.post.model.Post;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,4 +29,12 @@ public class PostImage {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    @Builder
+    public PostImage(Long id, String imgPath, Boolean isThumbnail, Post post) {
+        this.id = id;
+        this.imgPath = imgPath;
+        this.isThumbnail = isThumbnail;
+        this.post = post;
+    }
 }

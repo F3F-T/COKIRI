@@ -68,7 +68,7 @@ public class PostService {
 
     // TODO 게시글 사진 개수 제한 걸기
     @Transactional
-    public Long savePost(PostSaveRequest postSaveRequest, Long currentMemberId, @Nullable MultipartFile[] postImgs) {
+    public Long savePost(PostSaveRequest postSaveRequest, Long currentMemberId) {
 
         Member member = memberRepository.findById(postSaveRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         List<PostTag> resultsList = new ArrayList<>();
@@ -76,13 +76,6 @@ public class PostService {
         Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
 
-        if(postImgs != null) {
-            /*
-            TODO postSaveRequest에 이미지 관련 필드 만들고,
-             여기서 선택적으로 호출해서 사진 정보 기입할 수 있게 update method 만들어 두기
-             ex : postSaveRequest.setImages( ... );
-             */
-        }
 
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
         member.getPosts().add(post);

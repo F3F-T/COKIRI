@@ -1,6 +1,7 @@
 package f3f.dev1.domain.post.api;
 
 import f3f.dev1.domain.post.application.PostService;
+import f3f.dev1.domain.postImage.application.PostImageService;
 import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.global.util.SecurityUtil;
@@ -29,6 +30,8 @@ public class PostController {
     private final TagService tagService;
 
     private final PostTagService postTagService;
+
+    private final PostImageService postImageService;
 
 
     // 게시글 전체 조회 세분화 - 태그 제외 조건들 검색
@@ -65,10 +68,15 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping(value = "/post")
-    public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest) {
+    public ResponseEntity<Long> createPost(@RequestBody PostSaveRequest postSaveRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        // TODO 썸네일 사진 (images에서 제일 앞에 있는 녀석으로 강제하겠음) 프론트가 따로 주면 관련 로직 추가하기
         Long postId = postService.savePost(postSaveRequest, currentMemberId);
         tagService.addTagsToPost(postId, postSaveRequest.getTagNames());
+        List<String> images = postSaveRequest.getImages();
+
+        // 프론트에서 넘겨준 이미지 URL들 엔티티로 저장해주기
+        postImageService.savePostImages(images, postId);
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }
 
