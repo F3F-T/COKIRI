@@ -95,7 +95,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO)  {
+    public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         String refreshByAccess = valueOperations.get(accessTokenDTO.getAccessToken());
         if (refreshByAccess == null) {
@@ -129,7 +129,6 @@ public class AuthService {
 
         return "SUCCESS";
     }
-
 
 
 }

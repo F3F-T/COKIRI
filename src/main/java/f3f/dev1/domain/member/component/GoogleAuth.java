@@ -52,7 +52,9 @@ public class GoogleAuth implements SocialAuth{
         params.put("client_id", GOOGLE_SNS_CLIENT_ID);
         params.put("redirect_uri", GOOGLE_SNS_CALLBACK_URL);
 
-        String parameterString = params.entrySet().stream()
+        String parameterString = params
+                .entrySet()
+                .stream()
                 .map(x -> x.getKey() + "=" + x.getValue())
                 .collect(Collectors.joining("&"));
         String redirectURL = GOOGLE_SNS_LOGIN_URL + "?" + parameterString;
