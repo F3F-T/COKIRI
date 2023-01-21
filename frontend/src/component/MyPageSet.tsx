@@ -232,6 +232,7 @@ const MyPage = () =>  {
     async function logOut() {
         try{
             const res = await Api.get('/logout');
+            console.log(res);
             alert("로그아웃");
             dispatch(logoutToken());
             dispatch(logoutUserInfo());

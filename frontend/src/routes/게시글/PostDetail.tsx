@@ -43,9 +43,23 @@ const PostDetail = () => {
         scrapCount? : number;
         messageRoomCount? : number;
         createdTime? : string;
+        userInfo? : UserInfo;
     }
 
     type CommentTypes = "primary" | "secondary";
+    interface UserInfo {
+        id : number;
+        email : string;
+        birthDate : string;
+        description : string;
+        imageUrl : string;
+        loginType : string;
+        phoneNumber : string;
+        scrapId : number;
+        userName : string;
+        nickname :string;
+
+    }
     interface CommentType {
         id : number;
         postId? : number;
@@ -55,7 +69,7 @@ const PostDetail = () => {
         content : String;
         depth : Number;
         parentCommentId : number | null;
-
+        userInfo : UserInfo;
         //댓글인지 대댓글인지 확인
     }
 
@@ -70,7 +84,7 @@ const PostDetail = () => {
     }
 
     const params = useParams();
-    console.log(params)
+    // console.log(params)
     const postId = params.id;
 
     const [post,setPost] = useState<PostType>(null)
@@ -129,6 +143,7 @@ const PostDetail = () => {
     useEffect(()=>{
         getPost();
         getComments();
+        console.log(post)
     },[store.refreshReducer.commentChange])
 
 
@@ -221,9 +236,9 @@ const PostDetail = () => {
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
-                        <img className={styles.postTopProfileImg} src={profileImg}></img>
+                        <img className={styles.postTopProfileImg} src={post.userInfo.imageUrl}></img>
                         <div className={styles.postTopProfileInfo}>
-                            <div className={styles.postTopNickname}>{post.authorNickname}</div>
+                            <div className={styles.postTopNickname}>{post.userInfo.nickname}</div>
                             <div className={styles.postTopAddress}>상도 1동 33길</div>
                         </div>
                     </div>

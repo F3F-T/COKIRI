@@ -107,7 +107,7 @@ const PostContainer = (postProps : postProps) => {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
             //query string 날리기
-            const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=20`);
+            const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=20&page=0`);
             console.log(res);
             console.log(res.data)
             setPostList(prevState => {
