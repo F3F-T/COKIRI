@@ -44,6 +44,7 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.List;
 
+import static f3f.dev1.domain.message.dto.MessageRoomDTO.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -194,8 +195,8 @@ public class MessageRoomServiceTest {
         return saveRequest;
     }
 
-    private MessageRoomDTO.MessageRoomSaveRequest messageRoomSaveRequest (Long postId, Long buyerId){
-        MessageRoomDTO.MessageRoomSaveRequest saveRequest = new MessageRoomDTO.MessageRoomSaveRequest(postId, buyerId);
+    private MessageRoomSaveRequest messageRoomSaveRequest (Long postId, Long buyerId){
+        MessageRoomSaveRequest saveRequest = new MessageRoomSaveRequest(postId, buyerId);
         return saveRequest;
     }
     private MessageDTO.MessageSaveRequest messageSaveRequest(String content, Long senderId, Long receiverId, Long postId, Long messageRoomId){
@@ -230,9 +231,9 @@ public class MessageRoomServiceTest {
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
 
-        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
+        MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
         //when
-        MessageRoomDTO.MessageRoomInfoDto msgRoomDto = messageRoomService.createMessageRoom(messageRoomDTO1, user.getId());
+        MessageRoomInfoDto msgRoomDto = messageRoomService.createMessageRoom(messageRoomDTO1, user.getId());
 
         //when
         assertThat(messageRoomRepository.existsById(msgRoomDto.getId())).isEqualTo(true);
@@ -263,7 +264,7 @@ public class MessageRoomServiceTest {
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
 
-        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), admin.getId());
+        MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), admin.getId());
         //when
         assertThrows(CanNotMakeMessegeRoom.class, () -> {
             Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1, admin.getId()).getId();
@@ -293,7 +294,7 @@ public class MessageRoomServiceTest {
         Long postId = postService.savePost(postSaveRequest, admin.getId());
         Post post = postRepository.findById(postId).get();
 
-        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
+        MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user.getId());
 //        TradeDTO.CreateTradeDto tradeDto = TradeDTO.CreateTradeDto.builder().sellerId(user.getId()).postId(postId).build();
 //        Long tradeId = tradeService.createTrade(tradeDto, user.getId());
         Trade trade = tradeRepository.findByPostId(postId).get();
@@ -334,7 +335,7 @@ public class MessageRoomServiceTest {
         Post post = postRepository.findById(postId).get();
 
         //given
-        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
+        MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
         Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1, user2.getId()).getId();
 
         MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
@@ -377,11 +378,11 @@ public class MessageRoomServiceTest {
         Post post2 = postRepository.findById(postId2).get();
 
         //given
-        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
+        MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
         Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1, user2.getId()).getId();
-        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO2 = messageRoomSaveRequest(post.getId(), user.getId());
+        MessageRoomSaveRequest messageRoomDTO2 = messageRoomSaveRequest(post.getId(), user.getId());
         Long msgRoomId2 = messageRoomService.createMessageRoom(messageRoomDTO2, user.getId()).getId();
-        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO3 = messageRoomSaveRequest(post2.getId(), admin.getId());
+        MessageRoomSaveRequest messageRoomDTO3 = messageRoomSaveRequest(post2.getId(), admin.getId());
         Long msgRoomId3 = messageRoomService.createMessageRoom(messageRoomDTO3, admin.getId()).getId();
 
         MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
@@ -402,10 +403,10 @@ public class MessageRoomServiceTest {
         Long messageId7 = messageService.createMessage(messageDTO7, user.getId()).getId();
 
         //given
-        List<MessageRoom> totalMsgRoom = messageRoomService.ReadMessageRoomsByUserId(admin.getId());
-        List<MessageRoom> adminBuyingRoom = messageRoomService.ReadBuyingMessageRoomsByUserId(admin.getId());
-        List<MessageRoom> adminSellingRoom = messageRoomService.ReadSellingMessageRoomsByUserId(admin.getId());
-        List<MessageRoom> userSellingRoom = messageRoomService.ReadBuyingMessageRoomsByUserId(user.getId());
+        List<MessageRoomInfoDto> totalMsgRoom = messageRoomService.ReadMessageRoomsByUserId(admin.getId());
+        List<BuyingRoomInfoDto> adminBuyingRoom = messageRoomService.ReadBuyingMessageRoomsByUserId(admin.getId());
+        List<SellingRoomInfoDto> adminSellingRoom = messageRoomService.ReadSellingMessageRoomsByUserId(admin.getId());
+        List<SellingRoomInfoDto> userSellingRoom = messageRoomService.ReadSellingMessageRoomsByUserId(user.getId());
         //then
         assertThat(totalMsgRoom.size()).isEqualTo(3);
         assertThat(admin.getBuyingRooms().size()).isEqualTo(1);
@@ -444,11 +445,11 @@ public class MessageRoomServiceTest {
         Post post = postRepository.findById(postId).get();
 
         //given
-        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
+        MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
         Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1, user2.getId()).getId();
-        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO2 = messageRoomSaveRequest(post.getId(), user.getId());
+        MessageRoomSaveRequest messageRoomDTO2 = messageRoomSaveRequest(post.getId(), user.getId());
         Long msgRoomId2 = messageRoomService.createMessageRoom(messageRoomDTO2,user.getId()).getId();
-        MessageRoomDTO.MessageRoomSaveRequest messageRoomDTO3 = messageRoomSaveRequest(post.getId(), user.getId());
+        MessageRoomSaveRequest messageRoomDTO3 = messageRoomSaveRequest(post.getId(), user.getId());
         Long msgRoomId3 = messageRoomService.createMessageRoom(messageRoomDTO3, user.getId()).getId();
 
         //then

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static f3f.dev1.domain.scrap.dto.ScrapDTO.AddScrapPostDTO;
 import static f3f.dev1.domain.scrap.dto.ScrapDTO.DeleteScrapPostDTO;
+import static f3f.dev1.domain.scrap.dto.ScrapPostDTO.*;
 
 @Slf4j
 @RestController
@@ -24,7 +25,7 @@ public class ScrapController {
 
     // 스크랩 포스트 조회 요청
     @GetMapping(value = "/user/scrap")
-    public ResponseEntity<Page<ScrapPostDTO.GetUserScrapPost>> getScrapPosts(Pageable pageable) {
+    public ResponseEntity<Page<GetUserScrapPost>> getScrapPosts(Pageable pageable) {
         return new ResponseEntity<>(scrapService.getUserScrapPosts(SecurityUtil.getCurrentMemberId(), pageable), HttpStatus.OK);
     }
     // 유저 스크랩에 포스트 추가 요청

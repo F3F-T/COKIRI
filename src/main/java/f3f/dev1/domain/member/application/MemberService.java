@@ -2,14 +2,12 @@ package f3f.dev1.domain.member.application;
 
 import f3f.dev1.domain.address.dao.AddressRepository;
 import f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
-import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.member.dao.MemberCustomRepositoryImpl;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.*;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
 import f3f.dev1.domain.scrap.model.Scrap;
@@ -23,14 +21,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
-import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static f3f.dev1.global.common.constants.RandomCharacter.RandomCharacters;
 
 

@@ -27,14 +27,20 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
 
     @Override
     public List<AddressInfoDTO> getUserAddress(Long userId) {
-        return queryFactory.select(new QAddressDTO_AddressInfoDTO(address.id, address.addressName, address.postalAddress, address.latitude, address.longitude)).from(address)
+        return queryFactory
+                .select(new QAddressDTO_AddressInfoDTO(
+                        address.id, address.addressName, address.postalAddress, address.latitude, address.longitude)
+                ).from(address)
                 .join(address.member, member).on(address.member.id.eq(member.id))
                 .where(member.id.eq(userId)).fetch();
     }
 
     @Override
     public UserDetail getUserDetail(Long userId) {
-        return queryFactory.select(new QMemberDTO_UserDetail(member.id, scrap.id, member.userName, member.imageUrl, member.nickname, member.description, member.phoneNumber, member.email, member.birthDate, member.userLoginType)).from(member)
+        return queryFactory
+                .select(new QMemberDTO_UserDetail(
+                        member.id, scrap.id, member.userName, member.imageUrl, member.nickname, member.description, member.phoneNumber, member.email, member.birthDate, member.userLoginType)
+                ).from(member)
                 .join(member.scrap, scrap).on(scrap.member.id.eq(member.id))
                 .where(member.id.eq(userId)).fetchOne();
     }

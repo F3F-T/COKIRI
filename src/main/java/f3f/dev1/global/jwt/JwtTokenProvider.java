@@ -29,13 +29,15 @@ public class JwtTokenProvider {
     private final Key key;
 
     public JwtTokenProvider() {
-        byte[] keyBytes = Decoders.BASE64.decode( getenv("JWT_SECRET"));
+        byte[] keyBytes = Decoders.BASE64.decode(getenv("JWT_SECRET"));
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public TokenInfoDTO generateTokenDto(Authentication authentication) {
         // 권한들 가져오기
-        String authorities = authentication.getAuthorities().stream()
+        String authorities = authentication
+                .getAuthorities()
+                .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
@@ -75,8 +77,9 @@ public class JwtTokenProvider {
 
         // 클레임에서 권한 정보 가져오기
         Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
+                Arrays.stream(
+                                claims.get(AUTHORITIES_KEY).toString().split(",")
+                        ).map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
         // UserDetails 객체를 만들어서 Authentication 리턴
