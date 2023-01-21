@@ -1,5 +1,6 @@
-package f3f.dev1.domain.post.model;
+package f3f.dev1.domain.postImage.model;
 
+import f3f.dev1.domain.post.model.Post;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class PostImg {
+public class PostImage {
     @Id
     @GeneratedValue
     @Column(name = "img_id")
