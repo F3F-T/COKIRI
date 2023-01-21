@@ -29,6 +29,8 @@ interface PostType {
     productCategory? : string;
     tradeStatus? : string;
     tagNames? : string[];
+    scrapCount? : number;
+    messageRoomCount? : number;
 }
 
 type categoryOption = "wishCategory" | "productCategory" | "both"
@@ -140,7 +142,7 @@ const PostContainer = (postProps : postProps) => {
         <div className={styles.postContainer}>
             {
                 postList.map((post)=>(
-                    <Card key = {post.id} className={"forTrade"} postTitle={post.title} postContent={post.content} wishCategory={post.wishCategory}
+                    <Card key = {post.id} className={"forTrade"} like={post.scrapCount} postTitle={post.title} postContent={post.content} wishCategory={post.wishCategory} messageRoomCount={post.messageRoomCount}
                           onClick={() => {onClickPost(post)}}/>
                 ))
             }
