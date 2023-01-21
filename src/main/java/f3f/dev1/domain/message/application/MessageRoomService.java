@@ -39,6 +39,7 @@ public class MessageRoomService {
     private final MessageRepository messageRepository;
     private final MessageService messageService;
 
+    @Transactional
     public MessageRoomInfoDto createMessageRoom(MessageRoomSaveRequest saveRequest, Long currentMemberId){
         Post post = postRepository.findById(saveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         //파는 사람이 유효한지 확인(메시지를 받는 입장임)
@@ -101,8 +102,11 @@ public class MessageRoomService {
 
     //유저 채팅방 전체 조회
     @Transactional(readOnly = true)
-    public List<MessageRoomInfoDto> ReadMessageRoomsByUserId(Long id){
+    public List<MessageRoomInfoDto> ReadMessageRoomsByUserId(Long id, Long currentMemberId){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        if(!id.equals(currentMemberId)){
+            throw new NotAuthorizedException("로그인한 요청자가 아닙니다!");
+        }
         List<MessageRoomInfoDto> totalMsgRoomDtoList = new ArrayList<>();
         for(MessageRoom msgRoom : member.getBuyingRooms()){
             MessageRoomInfoDto msgRoomInfoDto = msgRoom.toMessageRoomInfo();
@@ -121,8 +125,11 @@ public class MessageRoomService {
 
     //유저에서 sellingRoom 조회
     @Transactional(readOnly = true)
-    public List<SellingRoomInfoDto> ReadSellingMessageRoomsByUserId(Long id){
+    public List<SellingRoomInfoDto> ReadSellingMessageRoomsByUserId(Long id, Long currentMemberId){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        if(!id.equals(currentMemberId)){
+            throw new NotAuthorizedException("로그인한 요청자가 아닙니다!");
+        }
         List<SellingRoomInfoDto> sellingRoomsInfoDto = new ArrayList<>();
         for(MessageRoom msgRoom : member.getSellingRooms()){
             SellingRoomInfoDto msgRoomInfoDto = msgRoom.toSellingRoomInfo();
@@ -132,8 +139,11 @@ public class MessageRoomService {
     }
     //유저에서 BuyingRoom 조회
     @Transactional(readOnly = true)
-    public List<BuyingRoomInfoDto> ReadBuyingMessageRoomsByUserId(Long id){
+    public List<BuyingRoomInfoDto> ReadBuyingMessageRoomsByUserId(Long id, Long currentMemberId){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+        if(!id.equals(currentMemberId)){
+            throw new NotAuthorizedException("로그인한 요청자가 아닙니다!");
+        }
         List <BuyingRoomInfoDto> buyingRoomsInfoDto = new ArrayList<>();
         for(MessageRoom msgRoom : member.getBuyingRooms()){
             BuyingRoomInfoDto buyingRoomInfoDto = msgRoom.toBuyingRoomInfo();
@@ -145,7 +155,7 @@ public class MessageRoomService {
 
     //채팅방에서 "메시지들" 조회
     @Transactional(readOnly = true)
-    public List<MessageInfoDto> ReadMessagesByMessageRoomId(Long id){
+    public List<MessageInfoDto> ReadMessagesByMessageRoomId(Long id, Long currentMemberId){
        MessageRoom messageRoom = messageRoomRepository.findById(id).orElseThrow(NotFoundByIdException::new);
        List <MessageInfoDto> totalMsgInfoDto = new ArrayList<>();
        for(Message msg : messageRoom.getMessages()){
