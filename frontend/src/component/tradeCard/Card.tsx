@@ -6,6 +6,8 @@ import myImage from "../../img/cokkiriLogo.png";
 import PostContainer from "../trade/PostContainer";
 import transfer from "../../img/transfer.png"
 import tradeEx from "../../img/tradeEx.jpeg"
+import {AiOutlineHeart} from "react-icons/ai";
+import talk from "../../img/send.png";
 
 
 //classNames로 styles를 bind해서 styles에 쉽게 접근하고 css 조건문을 쉽게 달수있게 돕는 API
@@ -16,37 +18,35 @@ type cardTypes = "forTrade" | "forMypage"
 
 
 //props에서 받을 카드 속 컨탠츠들
-interface props{
+interface props {
     className?: cardTypes; //옵셔널로 준 이유가 뭐라 그랬지
     postTitle?: string;
     postContent?: string;
     like?: number;
     comment?: number;
-    wishCategory? : string; //나중에 enum사용해서 다시 해보던가 할듯 없는 카테고리 못들어오게 막아야지
+    wishCategory?: string; //나중에 enum사용해서 다시 해보던가 할듯 없는 카테고리 못들어오게 막아야지
     onClick?: any;
-}
-interface props{
-    className?: cardTypes; //옵셔널로 준 이유가 뭐라 그랬지
-    postTitle?: string;
-    postContent?: string;
-    like?: number;
-    comment?: number;
-    wishCategory? : string; //나중에 enum사용해서 다시 해보던가 할듯 없는 카테고리 못들어오게 막아야지
-    onClick?: any;
+    messageRoomCount?: number;
 }
 
-const TradeCard = (props1:props)=>{
-    return(
+
+const TradeCard = (props1: props) => {
+    return (
         <>
             <div className={styles.postItem}>
-                <img className={styles.postImage} src = {tradeEx}/>
+                <img className={styles.postImage} src={tradeEx}/>
                 <p className={styles.postTitle}>{props1.postTitle}</p>
                 <p className={styles.postContent}>{props1.postContent}</p>
                 <div className={styles.detail}>
-                    <p className={styles.like}>좋아요 {props1.like}개</p>
+                    <div className={styles.heart}>
+                        <AiOutlineHeart className={styles.likeImg}/>
+                        <span className={styles.like}>{props1.like}</span>
+                        <img className={styles.commentImg} src={talk}/>
+                        <span className={styles.commmentNum}>{props1.messageRoomCount}</span>
+                    </div>
                     <div className={styles.detail2}>
-                        <img className={styles.tradeImage} src = {transfer}/>
-                        <p className={styles.like}>{props1.wishCategory}</p>
+                        <img className={styles.tradeImage} src={transfer}/>
+                        <span className={styles.like}>{props1.wishCategory}</span>
                     </div>
                 </div>
             </div>
@@ -54,16 +54,16 @@ const TradeCard = (props1:props)=>{
         </>
     )
 }
-const MypageCard = (props1:props)=>{
-    return(
+const MypageCard = (props1: props) => {
+    return (
         <>
             <div className={styles.postItem}>
-                <img className={styles.postImage} src = {tradeEx}/>
+                <img className={styles.postImage} src={tradeEx}/>
                 <p className={styles.postTitle}>{props1.postTitle}</p>
                 <div className={styles.detail}>
                     <p className={styles.like}>좋아요 {props1.like}개</p>
                     <div className={styles.detail2}>
-                        <img className={styles.tradeImage} src = {transfer}/>
+                        <img className={styles.tradeImage} src={transfer}/>
                         <p className={styles.like}>{props1.wishCategory}</p>
                     </div>
                 </div>
@@ -74,16 +74,18 @@ const MypageCard = (props1:props)=>{
 }
 
 
-const Card = (props1: props)=>{
-    return(
+const Card = (props1: props) => {
+    return (
         <>
             {props1.className === "forTrade" &&
-                <div className={ ck(props1.className)} onClick={props1.onClick}>
-                    <TradeCard postTitle={props1.postTitle} postContent={props1.postContent} like={props1.like} comment={props1.comment} wishCategory={props1.wishCategory}/>
+                <div className={ck(props1.className)} onClick={props1.onClick}>
+                    <TradeCard postTitle={props1.postTitle} postContent={props1.postContent} like={props1.like} messageRoomCount={props1.messageRoomCount}
+                               comment={props1.comment} wishCategory={props1.wishCategory}/>
                 </div>}
             {props1.className === "forMypage" &&
-                <div className={ ck(props1.className)} onClick={props1.onClick}>
-                    <MypageCard postTitle={props1.postTitle} like={props1.like} comment={props1.comment} wishCategory={props1.wishCategory}/>
+                <div className={ck(props1.className)} onClick={props1.onClick}>
+                    <MypageCard postTitle={props1.postTitle} postContent={props1.postContent} like={props1.like} messageRoomCount={props1.messageRoomCount}
+                                comment={props1.comment} wishCategory={props1.wishCategory}/>
                 </div>}
 
         </>
