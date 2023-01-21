@@ -93,13 +93,15 @@ const PostContainer = (postProps : postProps) => {
     {
         maxPrice = store.priceReducer.maxPrice;
     }
-
+    //최신순 필터링
     if(postProps.filterType === "recent")
     {
         sortType = `createDate,DESC`;
-    }else if(postProps.filterType === "popular")
+    }
+    //인기순 필터링 : scrap 순 -> messageRoom 순 -> post ID 역순(최신순)
+    else if(postProps.filterType === "popular")
     {
-        sortType = `scrapPosts.size,DESC`;
+        sortType = `scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC`;
     }
     async function getPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)

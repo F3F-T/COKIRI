@@ -44,11 +44,6 @@ const TradeCard = (props1: props) => {
                         <img className={styles.commentImg} src={talk}/>
                         <span className={styles.commmentNum}>{props1.messageRoomCount}</span>
                     </div>
-                    {/*<div className={styles.commentBox}>*/}
-                    {/*    <img className={styles.commentImg} src={talk}/>*/}
-                    {/*    /!*<p className={styles.commmentNum}>{props1.messageRoomCount}</p>*!/*/}
-                    {/*</div>*/}
-
                     <div className={styles.detail2}>
                         <img className={styles.tradeImage} src={transfer}/>
                         <span className={styles.like}>{props1.wishCategory}</span>
@@ -89,8 +84,8 @@ const Card = (props1: props) => {
                 </div>}
             {props1.className === "forMypage" &&
                 <div className={ck(props1.className)} onClick={props1.onClick}>
-                    <MypageCard postTitle={props1.postTitle} like={props1.like} comment={props1.comment}
-                                wishCategory={props1.wishCategory}/>
+                    <MypageCard postTitle={props1.postTitle} postContent={props1.postContent} like={props1.like} messageRoomCount={props1.messageRoomCount}
+                                comment={props1.comment} wishCategory={props1.wishCategory}/>
                 </div>}
 
         </>
