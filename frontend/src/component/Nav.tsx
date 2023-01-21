@@ -27,9 +27,9 @@ const Nav1 = () => {
             prev.push(cur.value)
             return prev;
         },[]);
-//
+
         console.log(tagList);
-//
+
         setTagSearch((prevState) => {
             return tagList
         })

@@ -3,7 +3,7 @@ import styles from "../../styles/loginAndSignup/PostUpload.module.css"
 import {useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import photo from "../../img/photoSelect.png"
+import photo from "../../img/add.png"
 import PriceBox from "../../component/trade/PriceBox";
 import Tags from "@yaireo/tagify/dist/react.tagify" // React-wrapper file
 // import "@yaireo/tagify/src/tagify.scss"
@@ -16,6 +16,7 @@ import {Rootstate, store} from "../../index";
 import {useSelector} from "react-redux";
 import axios from "axios/index";
 //https://github.com/yairEO/tagify 에서 tagify 참조
+import { NumericFormat } from 'react-number-format';
 
 const PostUpload = () => {
 
@@ -34,12 +35,12 @@ const PostUpload = () => {
     const fileInput = useRef(null)
     const [photoData,setPhotoData] = useState<string[]>(null)
 
-
     const categories: string[] =
         ['전체', '도서', '생활가전', '의류', '유아도서', '유아동', '여성의류', '남성의류', '뷰티/미용', '스포츠/레저',
             '티켓/교환권', '식물', '가구', '반려동물용품', '가공용품', '취미/게임', '인테리어', '생활/주방']
 
     const navigate = useNavigate();
+    const [showImages,setShowImages] = useState([]);
 
     const onChangeTitle = (e) => {
         const inputTitle = e.target.value;
@@ -157,13 +158,32 @@ const PostUpload = () => {
         e.preventDefault();
 
         if(e.target.files){
-            const uploadFile = e.target.files[0];
-            console.log(uploadFile)
-            const formData = new FormData()
-            formData.append('imageFiles',uploadFile);
-            const res = await Api.post("http://localhost:8080/auth/image", formData);
-            console.log(res);
-            setPhotoData(prevState => [...res.data.imageUrls])
+            const imageLists = e.target.files;
+            let imageUrlLists = [...showImages];
+
+            for(let i =0; i< imageLists.length ; i++)
+            {
+                const currentImageUrl = URL.createObjectURL(imageLists[i]);
+                imageUrlLists.push(currentImageUrl);
+            }
+
+            //max를 10장으로 설정
+            if(imageUrlLists.length > 10)
+            {
+
+                imageUrlLists = imageUrlLists.slice(0,10)
+            }
+
+            setShowImages(imageUrlLists);
+
+            console.log(showImages);
+
+            // console.log(uploadFile)
+            // const formData = new FormData()
+            // formData.append('imageFiles',uploadFile);
+            // const res = await Api.post("http://localhost:8080/auth/image", formData);
+            // console.log(res);
+            // setPhotoData(prevState => [...res.data.imageUrls])
         }
     }
 
@@ -193,18 +213,22 @@ const PostUpload = () => {
             </div>
             <div className={styles.container}>
                 <div className={styles.item1}>
+                    {
+                        showImages.map((image,id)=>(
+                                <img className={styles.photos} alt={`${image}-${id}`} key={id} src={image}/>
+                        ))
+                    }
                     <img className={styles.photos} src={photo} onClick={()=>{fileInput.current.click()}}/>
-                    <img className={styles.photos} src={photo}/>
-                    <img className={styles.photos} src={photo}/>
                     <form>
-                        <input type="file" style={{display:'none'}} accept="image/*" onChange={onChangeImg} ref={fileInput}/>
+                        <input type="file" style={{display:'none'}} multiple accept="image/*" onChange={onChangeImg} ref={fileInput}/>
                     </form>
+                    <p className={styles.photoText}>최대 10장의 사진을 등록해주세요.</p>
                 </div>
                 <div className={styles.item2}>
                     <p className={styles.star}>*</p><input type="text" className={styles.item2_2} placeholder="글 제목을 적어주세요." onBlur={onChangeTitle} />
                 </div>
                 <div className={styles.item2}>
-                    <p className={styles.star}>*</p><input type="number" className={styles.item2_2} placeholder="생각하는 물건의 가격대를 적어주세요." onBlur={onChangePrice}/>
+                    <p className={styles.star}>*</p> <NumericFormat className={styles.item2_2} placeholder="생각하는 물건의 가격대를 숫자로 적어주세요." prefix={"₩"} allowLeadingZeros thousandSeparator=","  onBlur={onChangePrice}/>
                 </div>
                 <div className={styles.item2}>
                     <p className={styles.star}>*</p>
