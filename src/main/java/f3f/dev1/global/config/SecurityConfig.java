@@ -27,7 +27,6 @@ public class SecurityConfig {
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
 
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -58,7 +57,7 @@ public class SecurityConfig {
                 // 로그인, 회원가입 API 는 토큰이 없는 상태에서 요청이 들어오기 때문에 permitAll 설정
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.OPTIONS,"**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "**").permitAll()
                 .antMatchers(HttpMethod.GET, "/post").permitAll()
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/login").permitAll()
@@ -76,8 +75,7 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/logout-redirect")
                 .clearAuthentication(true)
                 .logoutSuccessHandler(customLogoutSuccessHandler)
-                ;
-
+        ;
 
 
         return http.build();

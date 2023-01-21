@@ -3,7 +3,6 @@ package f3f.dev1.domain.member.application;
 import f3f.dev1.domain.member.dto.MemberDTO.CodeConfirmDto;
 import f3f.dev1.domain.member.dto.MemberDTO.EmailConfirmCodeDto;
 import f3f.dev1.domain.member.exception.EmailCertificationExpireException;
-import f3f.dev1.domain.member.exception.InvalidCertificationCodeException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;

@@ -10,7 +10,7 @@ import exp from "constants";
 
 const cx = classNames.bind(styles)
 
-type ButtonTypes = 'black' | 'white' | 'lightblue'
+type ButtonTypes = 'black' | 'white' | 'lightblue' | 'red'
 type ButtonColor = "white" | "black"
 type ButtonSize = "large" | "medium" | "small";
 
@@ -48,6 +48,15 @@ const Button = (buttonProps: ButtonProps) => {
             }
 
             {buttonProps.className === "lightblue" &&
+                <button className={cx('btnLightBlue',
+                    buttonProps.hover ? 'hoverLightBlueEnable' : '',
+                    buttonProps.size
+                )} type={"button"}
+                        onClick={buttonProps.onClick}>{buttonProps.content}
+                </button>
+            }
+
+            {buttonProps.className === "red" &&
                 <button className={cx('btnLightBlue',
                     buttonProps.hover ? 'hoverLightBlueEnable' : '',
                     buttonProps.size

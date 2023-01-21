@@ -50,4 +50,12 @@ public class OAuthDTO {
         public String name;
     }
 
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class GoogleTokenDto {
+        public String token;
+    }
+
 }

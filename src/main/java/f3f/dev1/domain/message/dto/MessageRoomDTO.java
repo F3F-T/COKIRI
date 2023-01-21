@@ -67,5 +67,25 @@ public class MessageRoomDTO {
 
     }
 
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class SellingRoomInfoDto{
+        private Long id;
+        private String PostTitle;
+        private String buyerNickname;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class BuyingRoomInfoDto{
+        private Long id;
+        private String PostTitle;
+        private String sellerNickname;
+    }
+
 
 }
