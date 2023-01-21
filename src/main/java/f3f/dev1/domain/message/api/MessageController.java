@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -27,5 +24,12 @@ public class MessageController {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         MessageInfoDto messageInfoDto = messageService.createMessage(messageSaveRequest, currentMemberId);
         return new ResponseEntity<>(messageInfoDto, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(value="/messageRooms/{messageId}")
+    public ResponseEntity<String> deleteMessage(@PathVariable(name="messageId") Long messageId, @RequestBody @Valid MessageDTO.DeleteMessageRequest deleteMessageRequest){
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        String delete = messageService.deleteMessage(deleteMessageRequest, currentMemberId);
+        return new ResponseEntity<>(delete, HttpStatus.OK);
     }
 }
