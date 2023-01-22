@@ -80,7 +80,8 @@ public class Post extends BaseTimeEntity {
     }
 
     @Builder
-    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags, Long price) {
+    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags, Long price, String thumbnailImgPath) {
+        this.thumbnailImgPath = thumbnailImgPath;
         this.productCategory = productCategory;
         this.tradeEachOther = tradeEachOther;
         this.wishCategory = wishCategory;
@@ -162,7 +163,7 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
-    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfo userInfo, List<CommentInfoDto> commentInfoDtoList) {
+    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList) {
         return SinglePostInfoDto.builder()
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
@@ -173,7 +174,7 @@ public class Post extends BaseTimeEntity {
                 .tradeStatus(this.trade.getTradeStatus())
                 .scrapCount(scrapCount)
                 .content(this.content)
-                .userInfo(userInfo)
+                .userInfoWithAddress(userInfo)
                 .tagNames(tagNames)
                 .title(this.title)
                 .price(this.price)
