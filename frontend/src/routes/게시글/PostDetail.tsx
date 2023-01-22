@@ -20,6 +20,8 @@ import {HiPencil} from "react-icons/hi";
 import {resetCategory} from "../../store/categoryReducer";
 import {changeRefreshState} from "../../store/refreshReducer";
 import comments from "../../component/comments/Comments";
+import timeConvert from "../../utils/timeConvert";
+import {LocalDateTime} from "js-joda";
 
 
 
@@ -105,8 +107,6 @@ const PostDetail = () => {
             setPost(prevState => {
                 return {...prevState, ...res.data};
             })
-
-            console.log(post)
 
         }
         catch (err)
@@ -202,6 +202,7 @@ const PostDetail = () => {
 
 
 
+
     if(!post)
     {
         return null;
@@ -210,6 +211,10 @@ const PostDetail = () => {
     if (!commentList) {
         return null
     }
+
+    const timeDiffer = timeConvert(post.createdTime);
+    console.log(timeDiffer);
+
 
     const primaryComment = commentList.filter((comment) => {
         return comment.depth === 0
