@@ -284,7 +284,7 @@ const PostDetail = () => {
                         </div>
                         <div className={styles.timeBox}>
                             <img className={styles.timeImg} src={clock}/>
-                            <p className={styles.timeNum}>4분전</p>
+                            <p className={styles.timeNum}>{timeDiffer}</p>
                         </div>
                     </div>
                     <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
