@@ -7,6 +7,7 @@ import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.ScrapPost;
+import f3f.dev1.domain.postImage.dto.PostImageDTO;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
 import lombok.*;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
+import static f3f.dev1.domain.postImage.dto.PostImageDTO.*;
 
 
 public class PostDTO {
@@ -41,14 +43,6 @@ public class PostDTO {
         @NotNull
         private List<String> tagNames;
 
-//        private List<String> originImagePath;
-//        private String thumbnailImagePath;
-//
-//        // postService에서 이미지가 null이 아니라면 아래의 로직이 호출됨.
-//        public void setImages(List<String> imagePaths, String thumbnailImagePath) {
-//            originImagePath = imagePaths;
-//            this.thumbnailImagePath = thumbnailImagePath;
-//        }
 
         private List<String> images;
         private String thumbnail;
@@ -118,6 +112,11 @@ public class PostDTO {
         private String productCategory;
         private String wishCategory;
         private List<String> tagNames;
+
+        /* TODO
+            사진들 수정할 수 있게 해야함.
+            다시 변경된 사진을 통째로 받아오는게 좋으려나?
+         */
     }
 
     @Getter
@@ -133,6 +132,7 @@ public class PostDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // member, scrap 등 외부에서 사용하는 post 관련 DTO
     public static class PostInfoDto{
 
         private Long id;
@@ -157,28 +157,30 @@ public class PostDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    // 동재 피드백 - 1 : 단순 조회를 위한 가벼운 DTO
+    // 단순 조회를 위한 가벼운 DTO
+    // 당장은 안쓰이는데 일단 유지하겠다.
     public static class PostInfoDtoForGET {
         private Long id;
         private String title;
         private String content;
+        private String thumbnail;
         private String authorNickname;
     }
 
-    // 조인에 필요한 필드를 모두 가지는 1차 DTO.
-    // QueryDSL에서 이 DTO의 형태로 1차로 받아오고,
-    // 최종적으로 PostInfoDtoForGET으로 변환해서 뱉어준다.
     @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // 조인에 필요한 필드를 모두 가지는 1차 DTO.
+    // QueryDSL에서 이 DTO의 형태로 1차로 받아오고,
+    // 최종적으로 PostInfoDtoForGET으로 변환해서 뱉어준다.
     public static class PostSearchResponseDto {
         private Long id;
         private String title;
         private String content;
+        private String thumbnail;
         private String authorNickname;
         private String productCategory;
-        // TODO 썸네일 추가하기
         private LocalDateTime createdTime;
         private Long messageRoomCount;
         private String wishCategory;
@@ -210,6 +212,10 @@ public class PostDTO {
         private TradeStatus tradeStatus;
 
         private List<String> tagNames;
+
+        private List<String> images;
+
+        private String thumbnail;
 
         private Long scrapCount;
 
@@ -246,6 +252,8 @@ public class PostDTO {
         private List<CommentInfoDto> commentInfoDtoList;
 
         private List<String> tagNames;
+
+        private List<postImageInfoDto> images;
 
         private Long scrapCount;
 
