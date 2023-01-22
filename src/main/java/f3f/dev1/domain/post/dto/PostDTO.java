@@ -6,8 +6,6 @@ import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.post.model.ScrapPost;
-import f3f.dev1.domain.postImage.dto.PostImageDTO;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
 import lombok.*;
@@ -42,7 +40,6 @@ public class PostDTO {
         private String wishCategory;
         @NotNull
         private List<String> tagNames;
-
 
         private List<String> images;
         private String thumbnail;
@@ -171,9 +168,6 @@ public class PostDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    // 조인에 필요한 필드를 모두 가지는 1차 DTO.
-    // QueryDSL에서 이 DTO의 형태로 1차로 받아오고,
-    // 최종적으로 PostInfoDtoForGET으로 변환해서 뱉어준다.
     public static class PostSearchResponseDto {
         private Long id;
         private String title;

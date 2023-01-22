@@ -102,6 +102,7 @@ public class Post extends BaseTimeEntity {
                 .wishCategory(this.wishCategory.getName())
                 .messageRoomCount(messageRoomCount)
                 .createdTime(super.getCreateDate())
+                .thumbnail(this.thumbnailImgPath)
                 .scrapCount(scrapCount)
                 .content(this.content)
                 .title(this.title)
