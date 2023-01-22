@@ -10,7 +10,6 @@ import javax.persistence.*;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class PostImage {
     @Id

@@ -163,7 +163,7 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
-    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfo userInfo, List<CommentInfoDto> commentInfoDtoList) {
+    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList) {
         return SinglePostInfoDto.builder()
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
@@ -174,7 +174,7 @@ public class Post extends BaseTimeEntity {
                 .tradeStatus(this.trade.getTradeStatus())
                 .scrapCount(scrapCount)
                 .content(this.content)
-                .userInfo(userInfo)
+                .userInfoWithAddress(userInfo)
                 .tagNames(tagNames)
                 .title(this.title)
                 .price(this.price)

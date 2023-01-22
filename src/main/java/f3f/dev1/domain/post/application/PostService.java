@@ -6,6 +6,7 @@ import f3f.dev1.domain.category.exception.NotFoundWishCategoryNameException;
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.dao.MemberCustomRepositoryImpl;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
@@ -64,7 +65,7 @@ public class PostService {
     private final PostTagRepository postTagRepository;
     // Custom repository
     private final PostCustomRepositoryImpl postCustomRepository;
-
+    private final MemberCustomRepositoryImpl memberCustomRepository;
 
     // TODO 게시글 사진 개수 제한 걸기
     @Transactional
@@ -166,8 +167,8 @@ public class PostService {
         }
         List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
         List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-        UserInfoWithAddress userInfoWithAddress = post.getAuthor().toUserInfo(scrap.getId());
-        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfoWithAddress, commentInfoDtoList);
+        UserInfoWithAddress userInfo = memberCustomRepository.getUserInfo(post.getAuthor().getId());
+        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfo, commentInfoDtoList);
         return response;
     }
 
