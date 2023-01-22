@@ -135,8 +135,6 @@ const PostUpload = () => {
             console.log(err)
             alert("업로드 실패")
         }
-
-
     }
 
     const imageUpload = async () => {
@@ -193,9 +191,6 @@ const PostUpload = () => {
             uploadPost(jsonObj);
             console.log("업로드 성공")
         }
-
-
-
     }
 
     const onChangeImg = async(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -231,11 +226,7 @@ const PostUpload = () => {
             setPhotoData(formData);
 
             console.log(photoData);
-            // console.log(uploadFile)
-            // const formData = new FormData()
-            // formData.append('imageFiles',uploadFile);
-            // console.log(res);
-            // setPhotoData(prevState => [...res.data.imageUrls])
+
         }
     }
     interface ArrayObjectSelectState {
