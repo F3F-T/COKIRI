@@ -48,7 +48,8 @@ const PostUpload = () => {
     const categories : Category[] = 
         [
             {name : '전체'}, 
-            {name : '생활가전'}, 
+            {name : '도서'},
+            {name : '생활가전'},
             {name : '의류'}, 
             {name : '유아도서'}, 
             {name : '유아동'}, 

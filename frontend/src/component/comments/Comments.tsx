@@ -64,8 +64,6 @@ const PrimaryComment = (commentInfo: CommentProps) => {
         setEnableReComment(prevState => !prevState);
     }
 
-    console.log(commentInfo)
-
     const UploadComment = async () => {
         try{
             const res = await Api.post(`/post/${commentInfo.postId}/comments`, writeComment);

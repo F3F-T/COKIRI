@@ -46,6 +46,9 @@ const PostDetail = () => {
         messageRoomCount? : number;
         createdTime? : string;
         userInfo? : UserInfo;
+        userInfoWithAddress : {
+            userDetail : UserInfo
+        }
     }
 
     type CommentTypes = "primary" | "secondary";
@@ -219,8 +222,8 @@ const PostDetail = () => {
         return null
     }
 
-    console.log(post)
-    console.log(commentList);
+    // console.log(post)
+    // console.log(commentList);
 
     const primaryComment = commentList.filter((comment) => {
         return comment.depth === 0
@@ -247,9 +250,9 @@ const PostDetail = () => {
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
-                        <img className={styles.postTopProfileImg} src={post.userInfo.imageUrl} onClick={()=>navigate('/mypage')}></img>
+                        <img className={styles.postTopProfileImg} src={post.userInfoWithAddress.userDetail.imageUrl} onClick={()=>navigate('/mypage')}></img>
                         <div className={styles.postTopProfileInfo}>
-                            <div className={styles.postTopNickname}>{post.userInfo.nickname}</div>
+                            <div className={styles.postTopNickname}>{post.userInfoWithAddress.userDetail.nickname}</div>
                             <div className={styles.postTopAddress}>상도 1동 33길</div>
                         </div>
                     </div>
