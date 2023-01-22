@@ -141,14 +141,8 @@ const PostUpload = () => {
     const imageUpload = async () => {
         try {
             const res = await Api.post("/auth/image/postImage", photoData);
-            console.log(res)
-            console.log(res.data.imageUrls);
-            // return new Promise(resolve=> {
-            //     resolve(res.data.imageUrls);
-            // })
             return res.data.imageUrls;
-            // setPhotoUrl([res.data.imageUrl])
-            alert("이미지 업로드 성공")
+
         } catch (err) {
             console.log(err)
             alert("이미지 업로드 실패")
@@ -174,31 +168,30 @@ const PostUpload = () => {
 
 
 
-        // //사진 업로드
+        //사진 업로드
         const photoUrlList = await imageUpload();
-        // if(!photoUrlList)
-        // {
-        //     console.log("image 저장중")
-        //     return null;
-        // }
-        // else{
+        if(!photoUrlList)
+        {
+            console.log("image 저장중")
+            return null;
+        }
+        else{
         console.log(photoUrlList);
-            // const jsonObj = {
-            //     "title": uploadData.title,
-            //     "content":uploadData.content,
-            //     "price":uploadData.price,
-            //     "tradeEachOther": tradeEachOther,
-            //     "authorId": store.userInfoReducer.id,
-            //     "productCategory" : uploadData.productCategory,
-            //     "wishCategory" : uploadData.wishCategory,
-            //     "tagNames" : [...uploadData.tag],
-            //     "imgUrl" : [...photoUrlList],
-            //     "thumbnail" : photoUrlList[0]
-            // };
-            // uploadPost(jsonObj);
-            // console.log(jsonObj);
+            const jsonObj = {
+                "title": uploadData.title,
+                "content":uploadData.content,
+                "price":uploadData.price,
+                "tradeEachOther": tradeEachOther,
+                "authorId": store.userInfoReducer.id,
+                "productCategory" : uploadData.productCategory,
+                "wishCategory" : uploadData.wishCategory,
+                "tagNames" : [...uploadData.tag],
+                "images" : [...photoUrlList],
+                "thumbnail" : photoUrlList[0]
+            };
+            uploadPost(jsonObj);
             console.log("업로드 성공")
-        // }
+        }
 
 
 
