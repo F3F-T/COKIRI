@@ -33,7 +33,6 @@ interface CommentProps {
     className?: CommentTypes;
     userID: String;
     postId? : number;
-
     //userProfileImg : string; (url, string형식?)
     content: String;
     time: String;
@@ -64,6 +63,8 @@ const PrimaryComment = (commentInfo: CommentProps) => {
     const onClickReComment = (comment) => {
         setEnableReComment(prevState => !prevState);
     }
+
+    console.log(commentInfo)
 
     const UploadComment = async () => {
         try{

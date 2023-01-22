@@ -35,6 +35,7 @@ const PostUpload = () => {
     const store = useSelector((state:Rootstate) => state);
     const fileInput = useRef(null)
     const [photoData,setPhotoData] = useState(null)
+    const [photoUrl, setPhotoUrl] = useState<string[]>(null);
 
     // const categories: string[] =
     //     ['전체', '도서', '생활가전', '의류', '유아도서', '유아동', '여성의류', '남성의류', '뷰티/미용', '스포츠/레저',
@@ -141,6 +142,7 @@ const PostUpload = () => {
         try {
             const res = await Api.post("/auth/image/postImage", photoData);
             console.log(res)
+            setPhotoUrl([res.data.imageUrl])
             alert("이미지 업로드 성공")
         } catch (err) {
             console.log(err)
@@ -165,21 +167,32 @@ const PostUpload = () => {
             console.log("false")
         }
 
-        const jsonObj = {
-            "title": uploadData.title,
-            "content":uploadData.content,
-            "price":uploadData.price,
-            "tradeEachOther": tradeEachOther,
-            "authorId": store.userInfoReducer.id,
-            "productCategory" : uploadData.productCategory,
-            "wishCategory" : uploadData.wishCategory,
-            "tagNames" : [...uploadData.tag]
-        };
 
 
         // //사진 업로드
         imageUpload();
-        uploadPost(jsonObj);
+        if(!photoUrl)
+        {
+            return null;
+            console.log("image 저장중")
+        }
+        else{
+            const jsonObj = {
+                "title": uploadData.title,
+                "content":uploadData.content,
+                "price":uploadData.price,
+                "tradeEachOther": tradeEachOther,
+                "authorId": store.userInfoReducer.id,
+                "productCategory" : uploadData.productCategory,
+                "wishCategory" : uploadData.wishCategory,
+                "tagNames" : [...uploadData.tag],
+                "imgUrl" : [...photoUrl],
+                "thumbnail" : photoUrl[0]
+            };
+            uploadPost(jsonObj);
+        }
+
+
 
 
     }

@@ -219,9 +219,8 @@ const PostDetail = () => {
         return null
     }
 
-    const timeDiffer = timeConvert(post.createdTime);
-    console.log(timeDiffer);
-
+    console.log(post)
+    console.log(commentList);
 
     const primaryComment = commentList.filter((comment) => {
         return comment.depth === 0
@@ -291,7 +290,7 @@ const PostDetail = () => {
                         </div>
                         <div className={styles.timeBox}>
                             <img className={styles.timeImg} src={clock}/>
-                            <p className={styles.timeNum}>{timeDiffer}</p>
+                            <p className={styles.timeNum}>{timeConvert(post.createdTime)}</p>
                         </div>
                     </div>
                     <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
