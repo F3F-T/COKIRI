@@ -7,6 +7,7 @@ import Api from "../../utils/api";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import {changeRefreshState} from "../../store/refreshReducer";
+import {useNavigate} from "react-router-dom";
 
 /**
  * Props 부모 : PostDetail.tsx
@@ -37,6 +38,7 @@ interface CommentProps {
     content: String;
     time: String;
     id?: number;
+    imageUrl? : string;
 }
 
 //글 작성
@@ -55,7 +57,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
     const [enableReComment,setEnableReComment] = useState<boolean>(false);
     const [writeComment,setWriteComment] = useState<WriteCommentType>(null)
     const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
-
+    const navigate = useNavigate();
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
     const [reCommentText, setReCommentText] = useState("");
@@ -99,13 +101,14 @@ const PrimaryComment = (commentInfo: CommentProps) => {
     return(
        <>
         <div className={cx('Profile')}>
-            <img className={cx('ProfileImg')} src={profileImg}></img>
+            <img className={cx('ProfileImg')} src={commentInfo.imageUrl} onClick={()=>navigate('/mypage')} ></img>
             <div className={styles.ProfileInfo}>
                 {commentInfo.userID}
             </div>
             <ul className={styles.ProfileActionList}>
                 <li onClick={()=> onClickReComment(commentInfo)}>대댓글</li>
                 <li>신고</li>
+
             </ul>
         </div>
         <div className={styles.comments}>
@@ -128,10 +131,12 @@ const PrimaryComment = (commentInfo: CommentProps) => {
 }
 
 const SecondaryComment = (commentInfo: CommentProps) => {
+    const navigate = useNavigate();
+
     return(
         <>
             <div className={cx('Profile')}>
-                <img className={cx('ProfileImg')} src={profileImg}></img>
+                <img className={cx('ProfileImg')} src={commentInfo.imageUrl} onClick={()=>navigate('/mypage')}></img>
                 <div className={styles.ProfileInfo}>
                     {commentInfo.userID}
                 </div>
@@ -156,13 +161,13 @@ const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps
         <>
             {commentInfo.className === "primary" &&
                 <div className={cx(commentInfo.className)}>
-                    <PrimaryComment postId = {commentInfo.postId} id= {commentInfo.id} userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}/>
+                    <PrimaryComment postId = {commentInfo.postId} id= {commentInfo.id} userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time} imageUrl={commentInfo.imageUrl} />
                 </div>
             }
 
             {commentInfo.className === "secondary" &&
                 <div className={cx(commentInfo.className)}>
-                    <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}/>
+                    <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time} imageUrl={commentInfo.imageUrl}/>
                 </div>
             }
         </>

@@ -149,6 +149,7 @@ const PostDetail = () => {
         getPost();
         getComments();
         console.log(post)
+        console.log(commentList);
     },[store.refreshReducer.commentChange])
 
 
@@ -247,7 +248,7 @@ const PostDetail = () => {
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
-                        <img className={styles.postTopProfileImg} src={post.userInfo.imageUrl}></img>
+                        <img className={styles.postTopProfileImg} src={post.userInfo.imageUrl} onClick={()=>navigate('/mypage')}></img>
                         <div className={styles.postTopProfileInfo}>
                             <div className={styles.postTopNickname}>{post.userInfo.nickname}</div>
                             <div className={styles.postTopAddress}>상도 1동 33길</div>
@@ -300,8 +301,8 @@ const PostDetail = () => {
                 {
                     result.map((comment)=>(
                         <div key={comment.id}>
-                            {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
-                            {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
+                            {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl} />}
+                            {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl}   />}
                         </div>
                     ))
                 }
