@@ -73,7 +73,6 @@ public class PostController {
         Long postId = postService.savePost(postSaveRequest, currentMemberId);
         tagService.addTagsToPost(postId, postSaveRequest.getTagNames());
         List<String> images = postSaveRequest.getImages();
-        // 프론트에서 넘겨준 이미지 URL들 엔티티로 저장해주기
         postImageService.savePostImages(images, postId);
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }
