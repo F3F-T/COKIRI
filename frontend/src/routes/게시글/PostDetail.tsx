@@ -20,6 +20,8 @@ import {HiPencil} from "react-icons/hi";
 import {resetCategory} from "../../store/categoryReducer";
 import {changeRefreshState} from "../../store/refreshReducer";
 import comments from "../../component/comments/Comments";
+import timeConvert from "../../utils/timeConvert";
+import {LocalDateTime} from "js-joda";
 
 
 
@@ -43,9 +45,26 @@ const PostDetail = () => {
         scrapCount? : number;
         messageRoomCount? : number;
         createdTime? : string;
+        userInfo? : UserInfo;
+        userInfoWithAddress : {
+            userDetail : UserInfo
+        }
     }
 
     type CommentTypes = "primary" | "secondary";
+    interface UserInfo {
+        id : number;
+        email : string;
+        birthDate : string;
+        description : string;
+        imageUrl : string;
+        loginType : string;
+        phoneNumber : string;
+        scrapId : number;
+        userName : string;
+        nickname :string;
+
+    }
     interface CommentType {
         id : number;
         postId? : number;
@@ -55,7 +74,7 @@ const PostDetail = () => {
         content : String;
         depth : Number;
         parentCommentId : number | null;
-
+        userInfo : UserInfo;
         //댓글인지 대댓글인지 확인
     }
 
@@ -70,15 +89,20 @@ const PostDetail = () => {
     }
 
     const params = useParams();
-    console.log(params)
+    // console.log(params)
     const postId = params.id;
 
     const [post,setPost] = useState<PostType>(null)
     const [commentList,setCommentList] = useState<CommentType[]>(null)
     const [writeComment,setWriteComment] = useState<WriteCommentType>(null)
     const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
+
     const dispatch = useDispatch();
     const store = useSelector((state:Rootstate) => state);
+    //댓글 작성 후 input text 초기화를 위한 state
+    //<input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
+    //에서 value를 사용하기 위해선 onBlur가 아닌 onChange를 사용해야만 한다
+    const [commentText, setCommentText] = useState("");
 
     async function getPost() {
 
@@ -91,8 +115,6 @@ const PostDetail = () => {
             setPost(prevState => {
                 return {...prevState, ...res.data};
             })
-
-            console.log(post)
 
         }
         catch (err)
@@ -129,6 +151,8 @@ const PostDetail = () => {
     useEffect(()=>{
         getPost();
         getComments();
+        console.log(post)
+        console.log(commentList);
     },[store.refreshReducer.commentChange])
 
 
@@ -153,6 +177,7 @@ const PostDetail = () => {
 
     const onChangeComment = (e) => {
         const inputComment = e.target.value;
+        setCommentText(inputComment);
         setWriteComment((prevState) => {
             return {...prevState, authorId: store.userInfoReducer.id,
                 postId : post.id,
@@ -162,7 +187,6 @@ const PostDetail = () => {
             }
         })
 
-        console.log(writeComment);
     }
 
     const UploadComment = async () => {
@@ -175,6 +199,7 @@ const PostDetail = () => {
                 return {...prevState,commentChange : true
                 }
             })
+            setCommentText("");
             alert("댓글 작성 성공")
         }
         catch (err)
@@ -187,6 +212,7 @@ const PostDetail = () => {
 
 
 
+
     if(!post)
     {
         return null;
@@ -195,6 +221,9 @@ const PostDetail = () => {
     if (!commentList) {
         return null
     }
+
+    // console.log(post)
+    // console.log(commentList);
 
     const primaryComment = commentList.filter((comment) => {
         return comment.depth === 0
@@ -221,9 +250,9 @@ const PostDetail = () => {
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
-                        <img className={styles.postTopProfileImg} src={profileImg}></img>
+                        <img className={styles.postTopProfileImg} src={post.userInfoWithAddress.userDetail.imageUrl} onClick={()=>navigate('/mypage')}></img>
                         <div className={styles.postTopProfileInfo}>
-                            <div className={styles.postTopNickname}>{post.authorNickname}</div>
+                            <div className={styles.postTopNickname}>{post.userInfoWithAddress.userDetail.nickname}</div>
                             <div className={styles.postTopAddress}>상도 1동 33길</div>
                         </div>
                     </div>
@@ -264,7 +293,7 @@ const PostDetail = () => {
                         </div>
                         <div className={styles.timeBox}>
                             <img className={styles.timeImg} src={clock}/>
-                            <p className={styles.timeNum}>4분전</p>
+                            <p className={styles.timeNum}>{timeConvert(post.createdTime)}</p>
                         </div>
                     </div>
                     <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
@@ -273,15 +302,15 @@ const PostDetail = () => {
             <section className={styles.comments}>
                 {
                     result.map((comment)=>(
-                        <>
-                            {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
-                            {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
-                        </>
+                        <div key={comment.id}>
+                            {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl} />}
+                            {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl}   />}
+                        </div>
                     ))
                 }
             </section>
             <div className = {styles.writeComments}>
-                <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onBlurCapture={onChangeComment}/>
+                <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
                  <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
             </div>
         </div>

@@ -6,6 +6,7 @@ import f3f.dev1.domain.category.exception.NotFoundWishCategoryNameException;
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.dao.MemberCustomRepositoryImpl;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
@@ -33,9 +34,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +65,7 @@ public class PostService {
     private final PostTagRepository postTagRepository;
     // Custom repository
     private final PostCustomRepositoryImpl postCustomRepository;
-
+    private final MemberCustomRepositoryImpl memberCustomRepository;
 
     // TODO 게시글 사진 개수 제한 걸기
     @Transactional
@@ -73,6 +76,7 @@ public class PostService {
         Category productCategory = categoryRepository.findCategoryByName(postSaveRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
         Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+
 
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
         member.getPosts().add(post);
@@ -163,7 +167,7 @@ public class PostService {
         }
         List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
         List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-        UserInfo userInfo = post.getAuthor().toUserInfo(scrap.getId());
+        UserInfoWithAddress userInfo = memberCustomRepository.getUserInfo(post.getAuthor().getId());
         SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfo, commentInfoDtoList);
         return response;
     }
