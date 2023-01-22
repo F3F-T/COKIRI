@@ -139,7 +139,7 @@ const PostUpload = () => {
 
     const imageUpload = async () => {
         try {
-            const res = await Api.post("/auth/image", photoData);
+            const res = await Api.post("/auth/image/postImage", photoData);
             console.log(res)
             alert("이미지 업로드 성공")
         } catch (err) {
@@ -220,7 +220,6 @@ const PostUpload = () => {
             // console.log(uploadFile)
             // const formData = new FormData()
             // formData.append('imageFiles',uploadFile);
-            // const res = await Api.post("http://localhost:8080/auth/image", formData);
             // console.log(res);
             // setPhotoData(prevState => [...res.data.imageUrls])
         }

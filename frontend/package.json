@@ -20,6 +20,7 @@
     "classnames": "^2.3.2",
     "history": "^5.3.0",
     "http-proxy-middleware": "^2.0.6",
+    "js-joda": "^1.11.0",
     "jwt-decode": "^3.1.2",
     "list": "^2.0.19",
     "node-sass": "^7.0.3",
