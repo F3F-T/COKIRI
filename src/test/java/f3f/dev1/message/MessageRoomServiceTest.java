@@ -403,10 +403,10 @@ public class MessageRoomServiceTest {
         Long messageId7 = messageService.createMessage(messageDTO7, user.getId()).getId();
 
         //given
-        List<MessageRoomInfoDto> totalMsgRoom = messageRoomService.ReadMessageRoomsByUserId(admin.getId());
-        List<BuyingRoomInfoDto> adminBuyingRoom = messageRoomService.ReadBuyingMessageRoomsByUserId(admin.getId());
-        List<SellingRoomInfoDto> adminSellingRoom = messageRoomService.ReadSellingMessageRoomsByUserId(admin.getId());
-        List<SellingRoomInfoDto> userSellingRoom = messageRoomService.ReadSellingMessageRoomsByUserId(user.getId());
+        List<MessageRoomInfoDto> totalMsgRoom = messageRoomService.ReadMessageRoomsByUserId(admin.getId(), admin.getId());
+        List<BuyingRoomInfoDto> adminBuyingRoom = messageRoomService.ReadBuyingMessageRoomsByUserId(admin.getId(), admin.getId());
+        List<SellingRoomInfoDto> adminSellingRoom = messageRoomService.ReadSellingMessageRoomsByUserId(admin.getId(), admin.getId());
+        List<SellingRoomInfoDto> userSellingRoom = messageRoomService.ReadSellingMessageRoomsByUserId(user.getId(), user.getId());
         //then
         assertThat(totalMsgRoom.size()).isEqualTo(3);
         assertThat(admin.getBuyingRooms().size()).isEqualTo(1);
