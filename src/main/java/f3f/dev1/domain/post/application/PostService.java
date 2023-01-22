@@ -166,8 +166,8 @@ public class PostService {
         }
         List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
         List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-        UserInfo userInfo = post.getAuthor().toUserInfo(scrap.getId());
-        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfo, commentInfoDtoList);
+        UserInfoWithAddress userInfoWithAddress = post.getAuthor().toUserInfo(scrap.getId());
+        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfoWithAddress, commentInfoDtoList);
         return response;
     }
 

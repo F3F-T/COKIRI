@@ -70,11 +70,9 @@ public class PostController {
     @PostMapping(value = "/post")
     public ResponseEntity<Long> createPost(@RequestBody PostSaveRequest postSaveRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        // TODO 썸네일 사진 (images에서 제일 앞에 있는 녀석으로 강제하겠음) 프론트가 따로 주면 관련 로직 추가하기
         Long postId = postService.savePost(postSaveRequest, currentMemberId);
         tagService.addTagsToPost(postId, postSaveRequest.getTagNames());
         List<String> images = postSaveRequest.getImages();
-
         // 프론트에서 넘겨준 이미지 URL들 엔티티로 저장해주기
         postImageService.savePostImages(images, postId);
         return new ResponseEntity<>(postId, HttpStatus.CREATED);

@@ -51,9 +51,11 @@ public class PostDTO {
 //        }
 
         private List<String> images;
+        private String thumbnail;
 
         public Post toEntity(Member author, Category product, Category wish, List<PostTag> postTags) {
             return Post.builder()
+                    .thumbnailImgPath(this.thumbnail)
                     .tradeEachOther(tradeEachOther)
                     .productCategory(product)
                     .content(this.content)
@@ -176,6 +178,7 @@ public class PostDTO {
         private String content;
         private String authorNickname;
         private String productCategory;
+        // TODO 썸네일 추가하기
         private LocalDateTime createdTime;
         private Long messageRoomCount;
         private String wishCategory;
@@ -221,6 +224,8 @@ public class PostDTO {
     @AllArgsConstructor
     public static class SinglePostInfoDto{
 
+        // TODO 사진들 추가하기 : 조인으로 받아와야 하나?? 근데 게시글 렌더링 따로 이미지 렌더링 따로는 어떻게 구현하지??
+
         private Long id;
         private String title;
 
@@ -228,7 +233,7 @@ public class PostDTO {
 
         private Boolean tradeEachOther;
 
-        private UserInfo userInfo;
+        private UserInfoWithAddress userInfoWithAddress;
 
         private String wishCategory;
 
