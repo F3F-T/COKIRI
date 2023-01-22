@@ -93,8 +93,13 @@ const PostDetail = () => {
     const [commentList,setCommentList] = useState<CommentType[]>(null)
     const [writeComment,setWriteComment] = useState<WriteCommentType>(null)
     const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
+
     const dispatch = useDispatch();
     const store = useSelector((state:Rootstate) => state);
+    //댓글 작성 후 input text 초기화를 위한 state
+    //<input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
+    //에서 value를 사용하기 위해선 onBlur가 아닌 onChange를 사용해야만 한다
+    const [commentText, setCommentText] = useState("");
 
     async function getPost() {
 
@@ -168,6 +173,7 @@ const PostDetail = () => {
 
     const onChangeComment = (e) => {
         const inputComment = e.target.value;
+        setCommentText(inputComment);
         setWriteComment((prevState) => {
             return {...prevState, authorId: store.userInfoReducer.id,
                 postId : post.id,
@@ -177,7 +183,6 @@ const PostDetail = () => {
             }
         })
 
-        console.log(writeComment);
     }
 
     const UploadComment = async () => {
@@ -190,6 +195,7 @@ const PostDetail = () => {
                 return {...prevState,commentChange : true
                 }
             })
+            setCommentText("");
             alert("댓글 작성 성공")
         }
         catch (err)
@@ -293,15 +299,15 @@ const PostDetail = () => {
             <section className={styles.comments}>
                 {
                     result.map((comment)=>(
-                        <>
+                        <div key={comment.id}>
                             {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
                             {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
-                        </>
+                        </div>
                     ))
                 }
             </section>
             <div className = {styles.writeComments}>
-                <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onBlurCapture={onChangeComment}/>
+                <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
                  <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
             </div>
         </div>

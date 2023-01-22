@@ -58,6 +58,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
 
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
+    const [reCommentText, setReCommentText] = useState("");
     const onClickReComment = (comment) => {
         setEnableReComment(prevState => !prevState);
     }
@@ -67,6 +68,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
             const res = await Api.post(`/post/${commentInfo.postId}/comments`, writeComment);
             dispatch(changeRefreshState());
             console.log(writeComment);
+            setReCommentText("");
             alert("대댓글 작성 성공")
         }
         catch (err)
@@ -78,6 +80,8 @@ const PrimaryComment = (commentInfo: CommentProps) => {
 
     const onChangeComment = (e) => {
         const inputComment = e.target.value;
+        setReCommentText(inputComment);
+
 
         setWriteComment((prevState) => {
             return {...prevState,
@@ -114,7 +118,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
                enableReComment ?
                    (
                <div className = {styles.writeComments}>
-               <input type={"text"} className={styles.writeCommentsInput} placeholder={"대댓글을 입력하세요"} onBlurCapture={onChangeComment}/>
+               <input type={"text"} className={styles.writeCommentsInput} placeholder={"대댓글을 입력하세요"} onChange={onChangeComment} value={reCommentText}/>
                <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
                </div>
                    )
