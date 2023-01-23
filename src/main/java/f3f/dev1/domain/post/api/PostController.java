@@ -1,6 +1,7 @@
 package f3f.dev1.domain.post.api;
 
 import f3f.dev1.domain.post.application.PostService;
+import f3f.dev1.domain.postImage.application.PostImageService;
 import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.global.util.SecurityUtil;
@@ -30,9 +31,10 @@ public class PostController {
 
     private final PostTagService postTagService;
 
+    private final PostImageService postImageService;
+
 
     // 게시글 전체 조회 세분화 - 태그 제외 조건들 검색
-    // TODO Enum 쿼리스트링으로 받았을때 변환해줄 컨버터 등록하기 - 완료, 테스트 미실시
     @GetMapping(value = "/post")
     public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithConditionExcludeTags(
             @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
@@ -66,10 +68,12 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping(value = "/post")
-    public ResponseEntity<Long> createPost(@RequestBody @Valid PostSaveRequest postSaveRequest) {
+    public ResponseEntity<Long> createPost(@RequestBody PostSaveRequest postSaveRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Long postId = postService.savePost(postSaveRequest, currentMemberId);
         tagService.addTagsToPost(postId, postSaveRequest.getTagNames());
+        List<String> images = postSaveRequest.getImages();
+        postImageService.savePostImages(images, postId);
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }
 

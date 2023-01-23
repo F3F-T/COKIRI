@@ -22,8 +22,8 @@ import static f3f.dev1.domain.message.dto.MessageDTO.*;
 @RequiredArgsConstructor
 public class MessageController {
     private static MessageService messageService;
-    @PostMapping(value="/messageRooms/{messageRoom_id}")
-    public ResponseEntity<MessageInfoDto> createMessage(@PathVariable(name="messageRoomId") Long messageRoomId, @RequestBody @Validated MessageSaveRequest messageSaveRequest){
+    @PostMapping(value="/messageRooms/{messageRoomId}")
+    public ResponseEntity<MessageInfoDto> createMessage(@PathVariable(name="messageRoomId") Long messageRoomId,@RequestBody @Valid MessageSaveRequest messageSaveRequest){
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         MessageInfoDto messageInfoDto = messageService.createMessage(messageSaveRequest, currentMemberId);
         return new ResponseEntity<>(messageInfoDto, HttpStatus.CREATED);

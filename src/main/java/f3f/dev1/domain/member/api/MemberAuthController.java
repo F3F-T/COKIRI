@@ -8,7 +8,6 @@ import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.EmailCertificationService;
 import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.member.application.OAuth2UserService;
-import f3f.dev1.domain.member.dto.OAuthDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,15 +16,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.mail.Multipart;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
-import static f3f.dev1.domain.member.dto.OAuthDTO.*;
+import static f3f.dev1.domain.member.dto.OAuthDTO.GoogleLoginRequest;
+import static f3f.dev1.domain.member.dto.OAuthDTO.GoogleTokenDto;
 import static f3f.dev1.domain.token.dto.TokenDTO.AccessTokenDTO;
 import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 
@@ -33,7 +30,6 @@ import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 @RestController
 @RequiredArgsConstructor
 public class MemberAuthController {
-    private final String S3Bucket = "cokiri-image/image/profileImage";
     private final MemberService memberService;
 
     private final EmailCertificationService emailCertificationService;
@@ -44,12 +40,12 @@ public class MemberAuthController {
 
     private final AmazonS3Client amazonS3Client;
 
-    // 이미지 테스트 업로드
-    @PostMapping(value = "/auth/image")
-    public ResponseEntity<ImageUrlDto> upload(MultipartFile[] imageFiles) throws IOException {
+    // 이미지 유저 프로필 사진 업로드
+    @PostMapping(value = "/auth/image/profileImage")
+    public ResponseEntity<ImageUrlDto> profileUpload(MultipartFile[] imageFiles) throws IOException {
         List<String> imagePathList = new ArrayList<>();
-
-        for(MultipartFile multipartFile: imageFiles) {
+        String S3Bucket = "cokiri-image/image/profileImage";
+        for (MultipartFile multipartFile : imageFiles) {
             String originalName = multipartFile.getOriginalFilename(); // 파일 이름
             long size = multipartFile.getSize(); // 파일 크기
 
@@ -59,8 +55,11 @@ public class MemberAuthController {
 
             // S3에 업로드
             amazonS3Client.putObject(
-                    new PutObjectRequest(S3Bucket, originalName, multipartFile.getInputStream(), objectMetaData)
-                            .withCannedAcl(CannedAccessControlList.PublicRead)
+                    new PutObjectRequest(
+                            S3Bucket,
+                            originalName, multipartFile.getInputStream(),
+                            objectMetaData
+                    ).withCannedAcl(CannedAccessControlList.PublicRead)
             );
 
             String imagePath = amazonS3Client.getUrl(S3Bucket, originalName).toString(); // 접근가능한 URL 가져오기
@@ -70,6 +69,34 @@ public class MemberAuthController {
         return ResponseEntity.ok(ImageUrlDto.builder().imageUrls(imagePathList).build());
     }
 
+    // 게시글 이미지 업로드
+    @PostMapping(value = "/auth/image/postImage")
+    public ResponseEntity<ImageUrlDto> postUpload(MultipartFile[] imageFiles) throws IOException {
+        List<String> imagePathList = new ArrayList<>();
+        String S3Bucket = "cokiri-image/image/postImage";
+        for (MultipartFile multipartFile : imageFiles) {
+            String originalName = multipartFile.getOriginalFilename(); // 파일 이름
+            long size = multipartFile.getSize(); // 파일 크기
+
+            ObjectMetadata objectMetaData = new ObjectMetadata();
+            objectMetaData.setContentType(multipartFile.getContentType());
+            objectMetaData.setContentLength(size);
+
+            // S3에 업로드
+            amazonS3Client.putObject(
+                    new PutObjectRequest(
+                            S3Bucket,
+                            originalName, multipartFile.getInputStream(),
+                            objectMetaData
+                    ).withCannedAcl(CannedAccessControlList.PublicRead)
+            );
+
+            String imagePath = amazonS3Client.getUrl(S3Bucket, originalName).toString(); // 접근가능한 URL 가져오기
+            imagePathList.add(imagePath);
+        }
+
+        return ResponseEntity.ok(ImageUrlDto.builder().imageUrls(imagePathList).build());
+    }
 
     // 이메일 중복 확인
     @PostMapping(value = "/auth/check-email")
@@ -152,7 +179,7 @@ public class MemberAuthController {
 
     // 로그아웃 리다이렉트 페이지
     @GetMapping(value = "/logout-redirect")
-    public ResponseEntity<String> loginRedirect(){
+    public ResponseEntity<String> loginRedirect() {
         return ResponseEntity.ok("LOGOUT");
     }
 
@@ -165,12 +192,11 @@ public class MemberAuthController {
     }
 
     // 외부 API 로그인 요청
-    @GetMapping(value = "/auth/social_login/{loginType}")
-    public ResponseEntity<UserLoginDto> socialLogin(@PathVariable(name = "loginType") String loginType, @RequestParam(name = "code") String code) throws IOException {
-        log.debug("code " + code);
-        System.out.println("code = " + code);
+    @PostMapping(value = "/auth/social_login/{loginType}")
+    public ResponseEntity<UserLoginDto> socialLogin(@PathVariable(name = "loginType") String loginType, @RequestBody GoogleTokenDto googleTokenDto) throws IOException {
+        log.debug("token " + googleTokenDto.getToken());
 
-        UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), code);
+        UserLoginDto userLoginDto = oAuth2UserService.oAuthLogin(loginType.toUpperCase(), googleTokenDto.getToken());
 
         return ResponseEntity.ok(userLoginDto);
 
@@ -190,13 +216,11 @@ public class MemberAuthController {
 //    }
 
 
-
     // 재발급
     @PostMapping(value = "/auth/reissue")
     public ResponseEntity<TokenIssueDTO> reissue(@RequestBody AccessTokenDTO accessTokenDTO) {
         return ResponseEntity.ok(authService.reissue(accessTokenDTO));
     }
-
 
 
 }

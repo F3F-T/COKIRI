@@ -17,13 +17,17 @@ import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static f3f.dev1.domain.scrap.dto.ScrapDTO.*;
+import static f3f.dev1.domain.scrap.dto.ScrapPostDTO.*;
 
 @Slf4j
 @Service
@@ -50,13 +54,13 @@ public class ScrapService {
 
     // 스크랩에 있는 포스트조회 메서드
     @Transactional(readOnly = true)
-    public Page<ScrapPostDTO.GetUserScrapPost> getUserScrapPosts(Long memberId, Pageable pageable) {
+    public Page<GetUserScrapPost> getUserScrapPosts(Long memberId, Pageable pageable) {
 
 
         Scrap scrapByUserId = scrapRepository.findScrapByMemberId(memberId).orElseThrow(NotFoundByIdException::new);
 
-
-
+//        List<GetUserScrapPost> collect = scrapPostRepository.findUserScrapPostByNativeQuery(scrapByUserId.getId(), pageable).stream().map(GetUserScrapPost::new).collect(Collectors.toList());
+//        return new PageImpl<>(collect);
         return scrapPostRepositoryImpl.findUserScrapPost(scrapByUserId.getId(), pageable);
     }
 

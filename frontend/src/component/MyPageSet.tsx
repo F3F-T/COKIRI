@@ -59,6 +59,8 @@ const MyPage = () =>  {
     //모달창
     const [isOpenModal, setOpenModal] = useState<boolean>(false);
 
+
+
     const onClickToggleModal = useCallback(() => {
         setOpenModal(!isOpenModal);
     }, [isOpenModal]);
@@ -167,15 +169,15 @@ const MyPage = () =>  {
     async function getMyPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-            const res = await Api.get('/user/posts');
-            console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
+            const res = await Api.get('/user/posts?');
+            console.log("내 게시글rdd",Object.keys(res.data.content).length);
             // @ts-ignore
-            setNum(Object.keys(res.data.userPosts).length);
+            setNum(Object.keys(res.data.content).length);
         }
         catch (err)
         {
             console.log(err)
-            alert("get 실패2");
+            alert("게시글 수 불러오기 실패");
         }
     }
     const onChangeImg = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,7 +187,7 @@ const MyPage = () =>  {
             console.log('uploadFile',uploadFile);
             const formData = new FormData()
             formData.append('imageFiles',uploadFile)
-            const res = await axios.post("http://localhost:8080/auth/image", formData);
+            const res = await axios.post("http://localhost:8080/auth/image/profileImage", formData);
             console.log("리턴 데이터 ", res.data.imageUrls[0])
             dispatch(setUserProfile(res.data.imageUrls[0]))
             const mbody = {
@@ -230,9 +232,10 @@ const MyPage = () =>  {
     async function logOut() {
         try{
             const res = await Api.get('/logout');
+            console.log(res);
             alert("로그아웃");
-            dispatch(logoutToken());
-            dispatch(logoutUserInfo());
+            // dispatch(logoutToken());
+            // dispatch(logoutUserInfo());
             dispatch(resetaddress1());
             dispatch(resetaddress2());
             navigate(`/`)
@@ -244,6 +247,9 @@ const MyPage = () =>  {
         }
     }
 
+
+
+    // logOut()
     return (
             <>
             <div className={styles.profile}>

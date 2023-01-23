@@ -7,8 +7,8 @@ import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.token.dto.TokenDTO.AccessTokenDTO;
 import f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
-import f3f.dev1.domain.token.exception.*;
-import f3f.dev1.global.error.exception.NotFoundByIdException;
+import f3f.dev1.domain.token.exception.ExpireRefreshTokenException;
+import f3f.dev1.domain.token.exception.InvalidRefreshTokenException;
 import f3f.dev1.global.jwt.JwtTokenProvider;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,6 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -96,7 +95,7 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO)  {
+    public TokenIssueDTO reissue(AccessTokenDTO accessTokenDTO) {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         String refreshByAccess = valueOperations.get(accessTokenDTO.getAccessToken());
         if (refreshByAccess == null) {
@@ -130,7 +129,6 @@ public class AuthService {
 
         return "SUCCESS";
     }
-
 
 
 }

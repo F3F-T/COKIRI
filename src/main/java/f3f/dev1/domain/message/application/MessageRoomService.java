@@ -39,6 +39,7 @@ public class MessageRoomService {
     private final MessageRepository messageRepository;
     private final MessageService messageService;
 
+    @Transactional
     public MessageRoomInfoDto createMessageRoom(MessageRoomSaveRequest saveRequest, Long currentMemberId){
         Post post = postRepository.findById(saveRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         //파는 사람이 유효한지 확인(메시지를 받는 입장임)
@@ -99,32 +100,69 @@ public class MessageRoomService {
 //        return totalMsgRoom;
 //    }
 
+    //유저 채팅방 전체 조회
     @Transactional(readOnly = true)
-    public List<MessageRoom> ReadMessageRoomsByUserId(Long id){
+    public List<MessageRoomInfoDto> ReadMessageRoomsByUserId(Long id, Long currentMemberId){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        List<MessageRoom> totalMsgRoom = new ArrayList<>();
-        totalMsgRoom.addAll(member.getBuyingRooms());
-        totalMsgRoom.addAll(member.getSellingRooms());
+        if(!id.equals(currentMemberId)){
+            throw new NotAuthorizedException("로그인한 요청자가 아닙니다!");
+        }
+        List<MessageRoomInfoDto> totalMsgRoomDtoList = new ArrayList<>();
+        for(MessageRoom msgRoom : member.getBuyingRooms()){
+            MessageRoomInfoDto msgRoomInfoDto = msgRoom.toMessageRoomInfo();
+            totalMsgRoomDtoList.add(msgRoomInfoDto);
+        }
+        for(MessageRoom msgRoom : member.getSellingRooms()){
+            MessageRoomInfoDto msgRoomInfoDto = msgRoom.toMessageRoomInfo();
+            totalMsgRoomDtoList.add(msgRoomInfoDto);
+        }
+//        List<MessageRoom> totalMsgRoom = new ArrayList<>();
+//        totalMsgRoom.addAll(member.getBuyingRooms());
+//        totalMsgRoom.addAll(member.getSellingRooms());
 
-        return totalMsgRoom;
+        return totalMsgRoomDtoList;
     }
 
     //유저에서 sellingRoom 조회
     @Transactional(readOnly = true)
-    public List<MessageRoom> ReadSellingMessageRoomsByUserId(Long id){
+    public List<SellingRoomInfoDto> ReadSellingMessageRoomsByUserId(Long id, Long currentMemberId){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        return member.getSellingRooms();
+        if(!id.equals(currentMemberId)){
+            throw new NotAuthorizedException("로그인한 요청자가 아닙니다!");
+        }
+        List<SellingRoomInfoDto> sellingRoomsInfoDto = new ArrayList<>();
+        for(MessageRoom msgRoom : member.getSellingRooms()){
+            SellingRoomInfoDto msgRoomInfoDto = msgRoom.toSellingRoomInfo();
+            sellingRoomsInfoDto.add(msgRoomInfoDto);
+        }
+        return sellingRoomsInfoDto;
     }
     //유저에서 BuyingRoom 조회
     @Transactional(readOnly = true)
-    public List<MessageRoom> ReadBuyingMessageRoomsByUserId(Long id){
+    public List<BuyingRoomInfoDto> ReadBuyingMessageRoomsByUserId(Long id, Long currentMemberId){
         Member member = memberRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        return member.getBuyingRooms();
+        if(!id.equals(currentMemberId)){
+            throw new NotAuthorizedException("로그인한 요청자가 아닙니다!");
+        }
+        List <BuyingRoomInfoDto> buyingRoomsInfoDto = new ArrayList<>();
+        for(MessageRoom msgRoom : member.getBuyingRooms()){
+            BuyingRoomInfoDto buyingRoomInfoDto = msgRoom.toBuyingRoomInfo();
+            buyingRoomsInfoDto.add(buyingRoomInfoDto);
+        }
+
+        return buyingRoomsInfoDto;
     }
+
+    //채팅방에서 "메시지들" 조회
     @Transactional(readOnly = true)
-    public List<Message> ReadMessagesByMessageRoomId(Long id){
+    public List<MessageInfoDto> ReadMessagesByMessageRoomId(Long id, Long currentMemberId){
        MessageRoom messageRoom = messageRoomRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        return messageRoom.getMessages();
+       List <MessageInfoDto> totalMsgInfoDto = new ArrayList<>();
+       for(Message msg : messageRoom.getMessages()){
+           MessageInfoDto msgInfoDto = msg.toMessageInfo();
+           totalMsgInfoDto.add(msgInfoDto);
+       }
+        return totalMsgInfoDto;
     }
 
     //포스트에 포함된 메시지룸 수

@@ -6,12 +6,17 @@ import f3f.dev1.domain.category.exception.NotFoundWishCategoryNameException;
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.dao.MemberCustomRepositoryImpl;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
+import f3f.dev1.domain.postImage.dao.PostImageCustomRepositoryImpl;
+import f3f.dev1.domain.postImage.dao.PostImageRepository;
+import f3f.dev1.domain.postImage.dto.PostImageDTO;
+import f3f.dev1.domain.postImage.model.PostImage;
 import f3f.dev1.domain.scrap.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
@@ -33,9 +38,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +50,7 @@ import java.util.List;
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static f3f.dev1.domain.postImage.dto.PostImageDTO.*;
 import static f3f.dev1.domain.trade.dto.TradeDTO.*;
 
 @Service
@@ -62,7 +70,8 @@ public class PostService {
     private final PostTagRepository postTagRepository;
     // Custom repository
     private final PostCustomRepositoryImpl postCustomRepository;
-
+    private final MemberCustomRepositoryImpl memberCustomRepository;
+    private final PostImageCustomRepositoryImpl postImageCustomRepository;
 
     // TODO 게시글 사진 개수 제한 걸기
     @Transactional
@@ -73,6 +82,7 @@ public class PostService {
         Category productCategory = categoryRepository.findCategoryByName(postSaveRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
         Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+
 
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
         member.getPosts().add(post);
@@ -149,7 +159,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public SinglePostInfoDto findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-//        // TODO 거래 가능 상태인지 확인하기
+        // TODO 거래 가능 상태인지 확인하기
         List<String> tagNames = new ArrayList<>();
         List<PostTag> postTags = postTagRepository.findByPost(post);
         for (PostTag postTag : postTags) {
@@ -163,8 +173,9 @@ public class PostService {
         }
         List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
         List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-        UserInfo userInfo = post.getAuthor().toUserInfo(scrap.getId());
-        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfo, commentInfoDtoList);
+        UserInfoWithAddress userInfo = memberCustomRepository.getUserInfo(post.getAuthor().getId());
+        List<postImageInfoDto> postImages = postImageCustomRepository.findByPostId(post.getId());
+        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfo, commentInfoDtoList, postImages);
         return response;
     }
 

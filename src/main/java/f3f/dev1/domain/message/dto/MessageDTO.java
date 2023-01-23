@@ -14,16 +14,14 @@ public class MessageDTO {
     @Getter
     public static class MessageSaveRequest{
 
-        @NonNull
+
         private String content;
 
         @NonNull
         private Long senderId;
 
-        @NonNull
         private Long receiverId;
 
-        @NonNull
         private Long postId;
 
         @NonNull

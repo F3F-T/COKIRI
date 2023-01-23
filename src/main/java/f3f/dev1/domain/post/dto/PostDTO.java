@@ -6,7 +6,6 @@ import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
 import lombok.*;
@@ -17,6 +16,7 @@ import java.util.List;
 
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
+import static f3f.dev1.domain.postImage.dto.PostImageDTO.*;
 
 
 public class PostDTO {
@@ -41,8 +41,12 @@ public class PostDTO {
         @NotNull
         private List<String> tagNames;
 
+        private List<String> images;
+        private String thumbnail;
+
         public Post toEntity(Member author, Category product, Category wish, List<PostTag> postTags) {
             return Post.builder()
+                    .thumbnailImgPath(this.thumbnail)
                     .tradeEachOther(tradeEachOther)
                     .productCategory(product)
                     .content(this.content)
@@ -105,6 +109,11 @@ public class PostDTO {
         private String productCategory;
         private String wishCategory;
         private List<String> tagNames;
+
+        /* TODO
+            사진들 수정할 수 있게 해야함.
+            다시 변경된 사진을 통째로 받아오는게 좋으려나?
+         */
     }
 
     @Getter
@@ -120,6 +129,7 @@ public class PostDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    // member, scrap 등 외부에서 사용하는 post 관련 DTO
     public static class PostInfoDto{
 
         private Long id;
@@ -144,17 +154,16 @@ public class PostDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    // 동재 피드백 - 1 : 단순 조회를 위한 가벼운 DTO
+    // 단순 조회를 위한 가벼운 DTO
+    // 당장은 안쓰이는데 일단 유지하겠다.
     public static class PostInfoDtoForGET {
         private Long id;
         private String title;
         private String content;
+        private String thumbnail;
         private String authorNickname;
     }
 
-    // 조인에 필요한 필드를 모두 가지는 1차 DTO.
-    // QueryDSL에서 이 DTO의 형태로 1차로 받아오고,
-    // 최종적으로 PostInfoDtoForGET으로 변환해서 뱉어준다.
     @Getter
     @Builder
     @NoArgsConstructor
@@ -163,6 +172,7 @@ public class PostDTO {
         private Long id;
         private String title;
         private String content;
+        private String thumbnail;
         private String authorNickname;
         private String productCategory;
         private LocalDateTime createdTime;
@@ -197,6 +207,10 @@ public class PostDTO {
 
         private List<String> tagNames;
 
+        private List<String> images;
+
+        private String thumbnail;
+
         private Long scrapCount;
 
         private Long messageRoomCount;
@@ -210,6 +224,8 @@ public class PostDTO {
     @AllArgsConstructor
     public static class SinglePostInfoDto{
 
+        // TODO 사진들 추가하기 : 조인으로 받아와야 하나?? 근데 게시글 렌더링 따로 이미지 렌더링 따로는 어떻게 구현하지??
+
         private Long id;
         private String title;
 
@@ -217,7 +233,7 @@ public class PostDTO {
 
         private Boolean tradeEachOther;
 
-        private UserInfo userInfo;
+        private UserInfoWithAddress userInfoWithAddress;
 
         private String wishCategory;
 
@@ -230,6 +246,8 @@ public class PostDTO {
         private List<CommentInfoDto> commentInfoDtoList;
 
         private List<String> tagNames;
+
+        private List<postImageInfoDto> images;
 
         private Long scrapCount;
 

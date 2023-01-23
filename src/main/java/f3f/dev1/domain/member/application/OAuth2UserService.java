@@ -3,8 +3,6 @@ package f3f.dev1.domain.member.application;
 import f3f.dev1.domain.member.component.GoogleAuth;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.dto.MemberDTO.UserLoginDto;
-import f3f.dev1.domain.member.dto.OAuthDTO;
-import f3f.dev1.domain.member.dto.OAuthDTO.GoogleOAuthToken;
 import f3f.dev1.domain.member.dto.OAuthDTO.SocialLoginUrlDto;
 import f3f.dev1.domain.member.exception.UnknownLoginException;
 import f3f.dev1.domain.member.model.Member;
@@ -17,13 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Optional;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.LoginRequest;
 import static f3f.dev1.domain.member.dto.MemberDTO.SignUpRequest;
-import static f3f.dev1.domain.member.dto.OAuthDTO.*;
+import static f3f.dev1.domain.member.dto.OAuthDTO.GoogleLoginRequest;
+import static f3f.dev1.domain.member.dto.OAuthDTO.GoogleUser;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -75,17 +72,17 @@ public class OAuth2UserService {
         return SocialLoginUrlDto.builder().url(redirectUrl).build();
     }
     @Transactional
-    public UserLoginDto oAuthLogin(String loginType, String code) throws IOException {
+    public UserLoginDto oAuthLogin(String loginType, String token) throws IOException {
 
         switch (loginType) {
             case OAuthConstants.GOOGLE: {
-                log.info("구글 로그인 코드" + code);
-                // 구글로 일회성 코드를 보내 액세스 토큰이 담긴 응답 객체를 받아옴
-                ResponseEntity<String> accessTokenResponse = googleAuth.requestAccessToken(code);
+//                log.info("구글 로그인 코드" + code);
+//                // 구글로 일회성 코드를 보내 액세스 토큰이 담긴 응답 객체를 받아옴
+//                ResponseEntity<String> accessTokenResponse = googleAuth.requestAccessToken(code);
                 // 응답객체가 JSON 형식으로 되어 있으니, 이를 역직렬화해서 자바 객체에 담음
-                GoogleOAuthToken oAuthToken = googleAuth.getAccessToken(accessTokenResponse);
+//                GoogleOAuthToken oAuthToken = googleAuth.getAccessToken(token);
                 // 액세스 토큰을 다시 구글로 보내 사용자 정보가 담긴 응답 객체를 받아옴
-                ResponseEntity<String> userInfoResponse = googleAuth.requestUserInfo(oAuthToken);
+                ResponseEntity<String> userInfoResponse = googleAuth.requestUserInfo(token);
                 // 다시 Json 형식의 응답 객체를 자바 객체로 역 직렬화
                 GoogleUser googleUser = googleAuth.getUserInfo(userInfoResponse);
                 Optional<Member> byEmail = memberRepository.findByEmail(googleUser.getEmail());
