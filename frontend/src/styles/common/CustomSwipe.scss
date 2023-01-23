@@ -1,0 +1,19 @@
+.swiper-slide{
+  font-size: 10rem;
+}
+
+.swiper-container
+{
+  height: 30rem;
+}
+
+//.swiper-pagination-bullet {
+//  background: red !important;
+//}
+//.swiper-pagination-bullet-active {
+//  background: yellow !important;
+//}
+
+@import 'swiper/swiper.scss';
+@import 'swiper/components/navigation/navigation.scss';
+@import 'swiper/components/pagination/pagination.scss';

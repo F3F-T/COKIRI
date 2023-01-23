@@ -22,7 +22,7 @@ import {changeRefreshState} from "../../store/refreshReducer";
 import comments from "../../component/comments/Comments";
 import timeConvert from "../../utils/timeConvert";
 import {LocalDateTime} from "js-joda";
-
+import CustomSwiper from "../../component/common/CustomSwiper";
 
 
 const PostDetail = () => {
@@ -48,6 +48,9 @@ const PostDetail = () => {
         userInfo? : UserInfo;
         userInfoWithAddress : {
             userDetail : UserInfo
+            address? : {
+                postalAddress? : string
+            }
         }
     }
 
@@ -253,12 +256,13 @@ const PostDetail = () => {
                         <img className={styles.postTopProfileImg} src={post.userInfoWithAddress.userDetail.imageUrl} onClick={()=>navigate('/mypage')}></img>
                         <div className={styles.postTopProfileInfo}>
                             <div className={styles.postTopNickname}>{post.userInfoWithAddress.userDetail.nickname}</div>
-                            <div className={styles.postTopAddress}>상도 1동 33길</div>
+                            <div className={styles.postTopAddress}>{post.userInfoWithAddress.address[0].postalAddress}</div>
                         </div>
                     </div>
                 </section>
                 <section className={styles.postBody}>
                     <div className={styles.postImg}>
+                        {/*<CustomSwiper/>*/}
                         <img className={styles.postBodyImg} src={coatImg}></img>
                     </div>
                     <div className={styles.postDetailInfo}>
@@ -313,7 +317,10 @@ const PostDetail = () => {
                 <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
                  <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
             </div>
+            <CustomSwiper/>
         </div>
+
+
     );
 }
 
