@@ -97,23 +97,42 @@ public class PostDTO {
     public static class UpdatePostRequest {
         // 태그도 수정될 수 있으니 태그 리스트를 받은 뒤 Post의 UpdatePostTags에서 수정하도록 하겠다.
         // 카테고리도 같은 맥락
-        @NotNull
-        private Long id;
-        @NotNull
-        private Long authorId;
+//        @NotNull
+//        private Long id;
+//        @NotNull
+//        private Long authorId;
+//
+//        private String title;
+//
+//        private String content;
+//        private Long price;
+//        private String productCategory;
+//        private String wishCategory;
+//        private List<String> tagNames;
+
+        /*
+            Patch 메서드라서 게시글 생성 요청이랑 같은 형식을 가져야 한다.
+         */
 
         private String title;
 
         private String content;
+
+        private Boolean tradeEachOther;
+
+        private Long authorId;
+
         private Long price;
+
         private String productCategory;
+
         private String wishCategory;
+
         private List<String> tagNames;
 
-        /* TODO
-            사진들 수정할 수 있게 해야함.
-            다시 변경된 사진을 통째로 받아오는게 좋으려나?
-         */
+        private List<String> images;
+
+        private String thumbnail;
     }
 
     @Getter

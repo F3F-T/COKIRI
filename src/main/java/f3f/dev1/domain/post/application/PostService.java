@@ -184,9 +184,9 @@ public class PostService {
      */
 
     @Transactional
-    public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long currentMemberId) {
+    public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long postId,Long currentMemberId) {
 
-        Post post = postRepository.findById(updatePostRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
         Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
         Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         List<Tag> tags = tagRepository.findByNameIn(updatePostRequest.getTagNames());

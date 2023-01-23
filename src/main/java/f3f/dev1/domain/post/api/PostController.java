@@ -91,7 +91,7 @@ public class PostController {
     public ResponseEntity<PostInfoDtoWithTag> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         postTagService.deletePostTagFromPost(postId);
-        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, currentMemberId);
+        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, currentMemberId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
 

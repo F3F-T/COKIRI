@@ -142,7 +142,6 @@ public class PostServiceTest {
 
     public UpdatePostRequest createUpdatePostRequest() {
         return UpdatePostRequest.builder()
-                .id(1L)
                 .title("제목 맘에 안들어서 바꿈")
                 .content("내용도 바꿀래요")
                 .productCategory(null)
@@ -240,7 +239,6 @@ public class PostServiceTest {
     // 업데이트 요청
     public UpdatePostRequest createUpdatePostRequest(Long postId, Long authorId, String title, String content, String productCategoryName, String wishCategoryName, List<String> tagNames) {
         return UpdatePostRequest.builder()
-                .id(postId)
                 .authorId(authorId)
                 .title(title)
                 .content(content)
@@ -650,12 +648,11 @@ public class PostServiceTest {
         Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, member.getId(), "변경한 제목", "변경한 내용", post.getProductCategory().getName(), post.getWishCategory().getName(), new ArrayList<>());
-        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
+        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, member.getId());
 
         //then
         assertThat(postInfoDto.getTitle()).isEqualTo(updatePostRequest.getTitle());
         assertThat(postInfoDto.getContent()).isEqualTo(updatePostRequest.getContent());
-        assertThat(postInfoDto.getId()).isEqualTo(updatePostRequest.getId());
 
         // then +
         Post updatedPost = postRepository.findById(postInfoDto.getId()).get();
@@ -702,7 +699,7 @@ public class PostServiceTest {
         UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, member.getId(),"변경한 제목", "변경한 내용", post.getProductCategory().getName(), post.getWishCategory().getName(), secondTagNameList);
         // 컨트롤러에서는 update 하기 전에 postTagService에서 레포지토리를 삭제한다. 똑같은 환경으로 테스트 하기 위해 여기서도 그렇게 하겠다.
         postTagService.deletePostTagFromPost(postId);
-        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
+        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, member.getId());
 
         //then
         Post updatedPost = postRepository.findById(postInfoDto.getId()).get();
@@ -768,7 +765,7 @@ public class PostServiceTest {
         updatedTagNames.add(tagRequest3.getName());
         UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, member.getId(),"변경한 제목", "변경한 내용", productRequest.getName(), wishRequest.getName(), updatedTagNames);
         postTagService.deletePostTagFromPost(postId);
-        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
+        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, member.getId());
 
         //then
 

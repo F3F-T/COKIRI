@@ -117,7 +117,6 @@ public class PostControllerTest {
 
     public UpdatePostRequest createUpdatePostRequest() {
         return UpdatePostRequest.builder()
-                .id(1L)
                 .authorId(1L)
                 .title("제목 맘에 안들어서 바꿈")
                 .content("내용도 바꿀래요")
@@ -225,7 +224,7 @@ public class PostControllerTest {
     public void updatePostSuccessTest() throws Exception {
         //given
         PostInfoDtoWithTag postInfoDto = PostInfoDtoWithTag.builder().title("제목 맘에 안들어서 바꿈").build();
-        doReturn(postInfoDto).when(postService).updatePost(any(), any());
+        doReturn(postInfoDto).when(postService).updatePost(any(), any(), any());
         Member member = createMember();
 
         //when
