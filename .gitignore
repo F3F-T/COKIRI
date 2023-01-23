@@ -3,7 +3,7 @@ HELP.md
 .gradle
 build/
 lib/*
-
+/src/main/resources/application.yml
 
 ### IntelliJ IDEA ###
 .idea
