@@ -6,11 +6,6 @@ import React from 'react';
 
 import 'swiper/swiper.scss';
 import '../../styles/common/CustomSwipe.scss'
-// import 'swiper/components/navigation/navigation.scss';
-// import 'swiper/components/pagination/pagination.scss';
-import coatImg from "../../img/coat.png"
-import styles from "../../styles/post/PostDetail.module.css";
-import tradeEx from "../../img/tradeEx.jpeg";
 
 
 interface imageProps{
@@ -27,12 +22,6 @@ const CustomSwiper = (imageProps) => {
     {
         return null;
     }
-
-
-    // imageProps.imageList.map((image, index) => {
-    //     console.log(image);
-    // });
-
 
     SwiperCore.use([Navigation, Pagination, Autoplay]);
 
@@ -64,22 +53,8 @@ const CustomSwiper = (imageProps) => {
                             </SwiperSlide>
                     )
 
-                    // <div key = {index}>
-                    // <SwiperSlide key={index}>
-                    // <img className="image" src={image.imgPath}></img>
-                    // </SwiperSlide>
-                    // </div>
                 ))}
-                {/*<SwiperSlide>*/}
-                {/*    /!*<img src={imageProps.imageList[0].imgPath}></img>*!/*/}
-                {/*</SwiperSlide>*/}
-                {/*<SwiperSlide>Slide 2</SwiperSlide>*/}
-                {/*<SwiperSlide>Slide 3</SwiperSlide>*/}
-                {/*<SwiperSlide>Slide 4</SwiperSlide>*/}
-                {/*<SwiperSlide>Slide 5</SwiperSlide>*/}
-                {/*<SwiperSlide>Slide 6</SwiperSlide>*/}
-                {/*<SwiperSlide>Slide 7</SwiperSlide>*/}
-                {/*<SwiperSlide>Slide 8</SwiperSlide>*/}
+
             </Swiper>
         </>
     );
