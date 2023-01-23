@@ -23,6 +23,7 @@ import comments from "../../component/comments/Comments";
 import timeConvert from "../../utils/timeConvert";
 import {LocalDateTime} from "js-joda";
 import CustomSwiper from "../../component/common/CustomSwiper";
+import tradeEx from "../../img/tradeEx.jpeg";
 
 
 const PostDetail = () => {
@@ -48,9 +49,11 @@ const PostDetail = () => {
         userInfo? : UserInfo;
         userInfoWithAddress : {
             userDetail : UserInfo
-            address? : {
-                postalAddress? : string
-            }
+            address? : [
+                {
+                    postalAddress?: string
+                }
+                ]
         }
     }
 
@@ -255,8 +258,14 @@ const PostDetail = () => {
                     <div className={styles.postTopProfile}>
                         <img className={styles.postTopProfileImg} src={post.userInfoWithAddress.userDetail.imageUrl} onClick={()=>navigate('/mypage')}></img>
                         <div className={styles.postTopProfileInfo}>
+
                             <div className={styles.postTopNickname}>{post.userInfoWithAddress.userDetail.nickname}</div>
-                            <div className={styles.postTopAddress}>{post.userInfoWithAddress.address[0].postalAddress}</div>
+                            {
+                                ((post.userInfoWithAddress.address.length <1 )?
+                                        null :
+                                        <div className={styles.postTopAddress}>{post.userInfoWithAddress.address[0].postalAddress}</div>
+                                )
+                            }
                         </div>
                     </div>
                 </section>
