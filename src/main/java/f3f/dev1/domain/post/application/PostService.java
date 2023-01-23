@@ -13,6 +13,10 @@ import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
+import f3f.dev1.domain.postImage.dao.PostImageCustomRepositoryImpl;
+import f3f.dev1.domain.postImage.dao.PostImageRepository;
+import f3f.dev1.domain.postImage.dto.PostImageDTO;
+import f3f.dev1.domain.postImage.model.PostImage;
 import f3f.dev1.domain.scrap.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
@@ -46,6 +50,7 @@ import java.util.List;
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static f3f.dev1.domain.postImage.dto.PostImageDTO.*;
 import static f3f.dev1.domain.trade.dto.TradeDTO.*;
 
 @Service
@@ -66,6 +71,7 @@ public class PostService {
     // Custom repository
     private final PostCustomRepositoryImpl postCustomRepository;
     private final MemberCustomRepositoryImpl memberCustomRepository;
+    private final PostImageCustomRepositoryImpl postImageCustomRepository;
 
     // TODO 게시글 사진 개수 제한 걸기
     @Transactional
@@ -153,7 +159,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public SinglePostInfoDto findPostById(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-//        // TODO 거래 가능 상태인지 확인하기
+        // TODO 거래 가능 상태인지 확인하기
         List<String> tagNames = new ArrayList<>();
         List<PostTag> postTags = postTagRepository.findByPost(post);
         for (PostTag postTag : postTags) {
@@ -168,7 +174,8 @@ public class PostService {
         List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
         List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
         UserInfoWithAddress userInfo = memberCustomRepository.getUserInfo(post.getAuthor().getId());
-        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfo, commentInfoDtoList);
+        List<postImageInfoDto> postImages = postImageCustomRepository.findByPostId(post.getId());
+        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfo, commentInfoDtoList, postImages);
         return response;
     }
 

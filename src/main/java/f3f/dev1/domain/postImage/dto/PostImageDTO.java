@@ -9,4 +9,13 @@ import java.util.List;
 
 public class PostImageDTO {
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class postImageInfoDto {
+        private Long id;
+        private String imgPath;
+//        private Boolean isThumbnail;
+    }
 }
