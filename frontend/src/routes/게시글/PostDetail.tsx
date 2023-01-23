@@ -55,6 +55,7 @@ const PostDetail = () => {
                 }
                 ]
         }
+        images : string[];
     }
 
     type CommentTypes = "primary" | "secondary";
@@ -117,7 +118,6 @@ const PostDetail = () => {
             console.log("getPost 요청")
             const res = await Api.get(`/post/${postId}`);
 
-            console.log(res)
             setPost(prevState => {
                 return {...prevState, ...res.data};
             })
@@ -223,6 +223,7 @@ const PostDetail = () => {
     {
         return null;
     }
+    console.log(post.images)
 
     if (!commentList) {
         return null
@@ -271,8 +272,13 @@ const PostDetail = () => {
                 </section>
                 <section className={styles.postBody}>
                     <div className={styles.postImg}>
-                        {/*<CustomSwiper/>*/}
-                        <img className={styles.postBodyImg} src={coatImg}></img>
+                        {
+                            ((post.images.length < 1) ?
+                                    <img className={styles.postBodyImg} src={coatImg}></img> :
+                                    <CustomSwiper imageList = {post.images}/>
+                            )
+                        }
+                        {/*<CustomSwiper imageList = {post.images}/>*/}
                     </div>
                     <div className={styles.postDetailInfo}>
                         <h2 className={styles.postDetailTitle}>{post.title}</h2>
