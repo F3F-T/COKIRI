@@ -38,28 +38,28 @@ public class MessageRoomController {
 //    @RequestParam(value="buyingmessageRooms", required = false, defaultValue ="") String buyingMessageRooms
 
     // 채팅방 전체 조회 컨트롤러
-    @GetMapping(value = "/user/{userId}/totalMessegeRooms")
+    @GetMapping(value = "/user/{userId}/totalMessageRooms")
     public ResponseEntity<List<MessageRoomDTO.MessageRoomInfoDto>> readTotalMessageRooms(@PathVariable(name="userId")Long userId){
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         List<MessageRoomInfoDto> totalMessageRoomsDto = messageRoomService.ReadMessageRoomsByUserId(userId, currentMemberId);
         return new ResponseEntity<>(totalMessageRoomsDto, HttpStatus.OK);
     }
     //sellingRoom 조회
-    @GetMapping(value = "/user/{userId}/sellingMessegeRooms")
+    @GetMapping(value = "/user/{userId}/sellingMessageRooms")
     public ResponseEntity<List<SellingRoomInfoDto>> readSellingMessageRooms(@PathVariable(name="userId")Long userId){
         Long currentMemberid = SecurityUtil.getCurrentMemberId();
         List<SellingRoomInfoDto> sellingMessageRoomsDto = messageRoomService.ReadSellingMessageRoomsByUserId(userId, currentMemberid);
         return new ResponseEntity<>(sellingMessageRoomsDto, HttpStatus.OK);
     }
     //buyingRoom 조회
-    @GetMapping(value = "/user/{userId}/buyingMessegeRooms")
+    @GetMapping(value = "/user/{userId}/buyingMessageRooms")
     public ResponseEntity<List<BuyingRoomInfoDto>> readbuyingMessageRooms(@PathVariable(name="userId")Long userId){
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         List<MessageRoomDTO.BuyingRoomInfoDto> buyingMessageRoomsDto = messageRoomService.ReadBuyingMessageRoomsByUserId(userId, currentMemberId);
         return new ResponseEntity<>(buyingMessageRoomsDto, HttpStatus.OK);
     }
     //메시지룸 아이디로 메시지들 조회
-    @GetMapping(value = "/MessegeRooms/{messageRoomId}")
+    @GetMapping(value = "/messageRooms/{messageRoomId}")
     public ResponseEntity<List<MessageDTO.MessageInfoDto>> readMessagesInMessageRoom(@PathVariable(name="messageRoomId")Long messageRoomId){
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         List<MessageDTO.MessageInfoDto> messagesDto = messageRoomService.ReadMessagesByMessageRoomId(messageRoomId, currentMemberId);
