@@ -31,6 +31,7 @@ interface PostType {
     tagNames? : string[];
     scrapCount? : number;
     messageRoomCount? : number;
+    thumbnail?: string;
 }
 
 type categoryOption = "wishCategory" | "productCategory" | "both"
@@ -145,7 +146,7 @@ const PostContainer = (postProps : postProps) => {
             {
                 postList.map((post)=>(
                     <Card key = {post.id} className={"forTrade"} like={post.scrapCount} postTitle={post.title} postContent={post.content} wishCategory={post.wishCategory} messageRoomCount={post.messageRoomCount}
-                          onClick={() => {onClickPost(post)}}/>
+                          onClick={() => {onClickPost(post)}} thumbnail={post.thumbnail}/>
                 ))
             }
         </div>

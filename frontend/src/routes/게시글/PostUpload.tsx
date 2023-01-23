@@ -20,7 +20,6 @@ import { NumericFormat } from 'react-number-format';
 import Select from "react-select";
 
 const PostUpload = () => {
-
     interface UploadData {
         title: string;
         price: string;
@@ -63,8 +62,8 @@ const PostUpload = () => {
             {name : '가공용품'}, 
             {name : '취미/게임'}, 
             {name : '인테리어'}, 
-            {name : '생활/주방'}]
-    
+            {name : '생활/주방'}
+        ]
 
     const navigate = useNavigate();
     const [showImages,setShowImages] = useState([]);
@@ -78,8 +77,6 @@ const PostUpload = () => {
 
     const onChangePrice = (e,value) => {
         const inputPrice = e.target.value;
-        console.log(inputPrice);
-
 
         setUploadData((prevState) => {
             return {...prevState, price: inputPrice}
@@ -139,6 +136,7 @@ const PostUpload = () => {
 
     const imageUpload = async () => {
         try {
+
             const res = await Api.post("/auth/image/postImage", photoData);
             return res.data.imageUrls;
 
@@ -169,6 +167,7 @@ const PostUpload = () => {
 
         //사진 업로드
         const photoUrlList = await imageUpload();
+
         if(!photoUrlList)
         {
             console.log("image 저장중")
