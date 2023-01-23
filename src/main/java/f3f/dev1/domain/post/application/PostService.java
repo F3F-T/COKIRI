@@ -186,6 +186,11 @@ public class PostService {
     @Transactional
     public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long postId,Long currentMemberId) {
 
+        /*
+            TODO
+             이미지 변경 부분이 없어서 찾아보다가 사고가 났다.
+             지금 구현한건 PUT이고 PATCH로 구현해야하는데, 그럼 로직이 달라진다.
+         */
         Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
         Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
         Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
@@ -203,6 +208,7 @@ public class PostService {
         if(tags.isEmpty()) {
             post.updatePostInfos(updatePostRequest, productCategory, wishCategory, new ArrayList<>());
         } else {
+            // TODO 기존 태그랑 비교를 먼저 해주는게 좋을거같은데??
             // PostTag가 없으면 여기서 새로 만들어서 추가까지 해줘야 한다.
             for (Tag tag : tags) {
                 if(!postTagRepository.existsByPostAndTag(post,tag)) {
@@ -232,6 +238,38 @@ public class PostService {
         List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
         PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
         return response;
+    }
+
+    @Transactional
+    public PostInfoDtoWithTag updatePostWithPatch(UpdatePostRequest updatePostRequest, Long postId, Long currentMemberId) {
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
+        // 이 포스트에서 변경요청이 들어온 값들만 바꿔주겠다.
+//        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
+//        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
+
+        if(!updatePostRequest.getAuthorId().equals(currentMemberId)) {
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
+        }
+        if(!post.getAuthor().getId().equals(updatePostRequest.getAuthorId())) {
+            throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
+        }
+
+        if(updatePostRequest.getProductCategory() != null) {
+            Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundByIdException::new);
+            post.updateProductCategory(productCategory);
+        }
+
+        if(updatePostRequest.getWishCategory() != null) {
+            Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundByIdException::new);
+            post.updateWishCategory(wishCategory);
+        }
+
+
+        List<Tag> tags = tagRepository.findByNameIn(updatePostRequest.getTagNames());
+        List<PostTag> postTags = new ArrayList<>();
+        // Patch 요청이므로 그에 맞게 로직을 작성해야 한다.
+        // 넘어오는 데이터는 변경 예정인 데이터만 존재하며 변경되지 않은 데이터는 모두 null임을 생각해야한다.
+
     }
 
     @Transactional
