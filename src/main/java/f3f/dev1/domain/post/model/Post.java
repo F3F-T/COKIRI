@@ -9,6 +9,7 @@ import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.dto.PostDTO;
+import f3f.dev1.domain.postImage.dto.PostImageDTO;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
 import lombok.Builder;
@@ -22,6 +23,7 @@ import java.util.List;
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
+import static f3f.dev1.domain.postImage.dto.PostImageDTO.*;
 
 @Getter
 @NoArgsConstructor
@@ -43,6 +45,8 @@ public class Post extends BaseTimeEntity {
     private Trade trade;
 
     private Long price;
+
+    private String thumbnailImgPath;
 
     @ManyToOne
     @JoinColumn(name = "productCategory_id")
@@ -78,7 +82,8 @@ public class Post extends BaseTimeEntity {
     }
 
     @Builder
-    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags, Long price) {
+    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags, Long price, String thumbnailImgPath) {
+        this.thumbnailImgPath = thumbnailImgPath;
         this.productCategory = productCategory;
         this.tradeEachOther = tradeEachOther;
         this.wishCategory = wishCategory;
@@ -97,6 +102,7 @@ public class Post extends BaseTimeEntity {
                 .wishCategory(this.wishCategory.getName())
                 .messageRoomCount(messageRoomCount)
                 .createdTime(super.getCreateDate())
+                .thumbnail(this.thumbnailImgPath)
                 .scrapCount(scrapCount)
                 .content(this.content)
                 .title(this.title)
@@ -160,13 +166,7 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
-    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfo userInfo, List<CommentInfoDto> commentInfoDtoList) {
-//        TradeStatus tradeStatus;
-//        if (this.trade == null) {
-//            tradeStatus = TradeStatus.TRADABLE;
-//        } else {
-//            tradeStatus = this.trade.getTradeStatus();
-//        }
+    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList, List<postImageInfoDto> images) {
         return SinglePostInfoDto.builder()
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
@@ -177,10 +177,11 @@ public class Post extends BaseTimeEntity {
                 .tradeStatus(this.trade.getTradeStatus())
                 .scrapCount(scrapCount)
                 .content(this.content)
-                .userInfo(userInfo)
+                .userInfoWithAddress(userInfo)
                 .tagNames(tagNames)
                 .title(this.title)
                 .price(this.price)
+                .images(images)
                 .id(this.id)
                 .build();
     }

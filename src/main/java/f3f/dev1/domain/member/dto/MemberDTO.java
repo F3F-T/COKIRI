@@ -10,6 +10,7 @@ import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static f3f.dev1.domain.address.dto.AddressDTO.*;
@@ -323,22 +324,7 @@ public class MemberDTO {
         List<PostInfoDto> userPosts;
     }
 
-    @Builder
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Getter
-    public static class GetUserMessageRoomDto {
-        private Long messageRoomId;
 
-        private Long postId;
-
-        private String opponentNickname;
-
-        private String lastMessage;
-
-        private TradeStatus tradeStatus;
-
-    }
 
 
     @Builder
@@ -454,11 +440,44 @@ public class MemberDTO {
 
         public GetUserPost(PostRepository.GetUserPostInterface getUserPostInterface) {
             this.postId = getUserPostInterface.getPostId();
-            this.thumbNail = null;
+            this.thumbNail = getUserPostInterface.getThumbnail();
             this.title = getUserPostInterface.getTitle();
-            this.tradeStatus = getUserPostInterface.getTradeStatus();
+            if (getUserPostInterface.getTradeStatus().equals("0")) {
+                this.tradeStatus = TradeStatus.TRADABLE.name();
+            } else if (getUserPostInterface.getTradeStatus().equals("1")) {
+                this.tradeStatus = TradeStatus.TRADING.name();
+            } else {
+                this.tradeStatus = TradeStatus.TRADED.name();
+            }
             this.wishCategory = getUserPostInterface.getName();
             this.likeCount = getUserPostInterface.getLikes();
+        }
+    }
+
+
+    @Builder
+    @NoArgsConstructor
+    @Getter
+    public static class GetUserMessageRoom{
+        private Long messageRoomId;
+        private Long authorId;
+        private String lastMsg;
+        private LocalDateTime createdDate;
+        private String buyerNickname;
+        private String sellerNickname;
+        private String buyerThumbnail;
+        private String sellerThumbnail;
+
+        @QueryProjection
+        public GetUserMessageRoom(Long messageRoomId, Long authorId, String lastMsg, LocalDateTime createdDate, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail) {
+            this.messageRoomId = messageRoomId;
+            this.authorId = authorId;
+            this.lastMsg = lastMsg;
+            this.createdDate = createdDate;
+            this.buyerNickname = buyerNickname;
+            this.sellerNickname = sellerNickname;
+            this.buyerThumbnail = buyerThumbnail;
+            this.sellerThumbnail = sellerThumbnail;
         }
     }
 

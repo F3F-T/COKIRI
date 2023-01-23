@@ -4,9 +4,9 @@ import React, {useEffect} from "react";
 import Home from "./routes/Home";
 import { Route, Routes } from "react-router-dom";
 import MyPage from "./routes/MyPage";
-import MulmulTrade from "./routes/MulmulTrade";
-import MulmulTrade2 from "./routes/MulmulTrade2";
-import KiriKiriTrade from "./routes/KiriKiriTrade";
+import MulmulTrade from "./routes/물물교환, 끼리끼리 화면/MulmulTrade";
+import MulmulTrade2 from "./routes/물물교환, 끼리끼리 화면/MulmulTrade2";
+import KiriKiriTrade from "./routes/물물교환, 끼리끼리 화면/KiriKiriTrade";
 import Nav from "./component/Nav";
 import { Navigate } from "react-router-dom";
 import NotFound from "./component/NotFound";
@@ -21,7 +21,7 @@ import NeighborAuth from "./routes/로그인 & 회원가입/NeighborAuth";
 import styles from "./styles/App.module.css";
 import EmailCheckOK from "./routes/로그인 & 회원가입/EmailCheckOK";
 import PostDetail from "./routes/게시글/PostDetail";
-import MulmulTrade1 from "./routes/MulMulTrade1";
+import MulmulTrade1 from "./routes/물물교환, 끼리끼리 화면/MulMulTrade1";
 import KokiriTalk from "./routes/KokiriTalk";
 import GoogleButton from "./routes/로그인 & 회원가입/GoogleButton.js";
 import { GoogleOAuthProvider } from '@react-oauth/google'
@@ -29,9 +29,10 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "./index";
 import MyPageSet from "./component/MyPageSet";
+import TagSearch from "./routes/물물교환, 끼리끼리 화면/TagSearch";
 
 function App() {
-
+//
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
 
@@ -61,6 +62,8 @@ function App() {
                 </Route>
 
                 <Route path="/kirikiritrade" element={<KiriKiriTrade/>} />
+                <Route path="/tagsearch" element={<TagSearch/>} />
+
 
                 <Route path="/mypage" element={<MyPageSet/>} >
                     <Route path="" element={<MyPage/>}/>

@@ -53,7 +53,6 @@ const userInfoSlice = createSlice({
             state.imageUrl = action.payload.imageUrl;
             state.scrapId = action.payload.scrapId;
             state.address = action.payload.address;
-
         },
         setUserNick(state,action){
             state.nickname = action.payload;
@@ -68,7 +67,7 @@ const userInfoSlice = createSlice({
             state.onelineIntro = action.payload;
         },
         deleteUserInfo(state){
-            state = initialUserInfoState;
+            return initialUserInfoState
         },
         logoutUserInfo(state){
             state.id = undefined;

@@ -59,6 +59,8 @@ const MyPage = () =>  {
     //모달창
     const [isOpenModal, setOpenModal] = useState<boolean>(false);
 
+
+
     const onClickToggleModal = useCallback(() => {
         setOpenModal(!isOpenModal);
     }, [isOpenModal]);
@@ -68,20 +70,6 @@ const MyPage = () =>  {
     //한줄소개
     const[intro,setIntro] = useState("")
     //로그아웃
-    const[count,setCount]=useState(0);
-
-    useEffect(() => {
-        console.log("들어오긴하나?")
-
-        if(count==1){
-         console.log("들어오긴해?")
-         dispatch(deleteToken())
-         dispatch(deleteUserInfo())
-     }
-    }, [count]);
-
-    console.log("리덕스.", info.nickname)
-    console.log("useState.", newNick)
     if (! readNickName) {
         return null
     }
@@ -112,7 +100,6 @@ const MyPage = () =>  {
         try {
             const res = await axios.post("http://localhost:8080/auth/check-nickname", nickname);
             const result = res.data;
-            console.log("체크닉듀플리케잇 들어옴",result);
             const duplicated = result.exists
 
             if (duplicated) //중복인 경우 -> true 반환
@@ -140,36 +127,17 @@ const MyPage = () =>  {
 
         }
     }
-    console.log("리덕스리덕스리덕스리덕스리덕스.", info)
 
     async function nicknameChange() {
         try {
-            console.log("닉넴체인지들어옴");
-
             const userInfo1={
                 userId: userInfo.userId,
                 newNickname: userInfo.newNickname
             }
             const res = await Api.patch("/user/nickname", userInfo1);
-
-            const result = {
-                status: res.status + "-" + res.statusText,
-                headers: res.headers,
-                data: res.data,
-            };
-            console.log(result);
-            console.log("바뀐 유저정보", userInfo.newNickname);
-            console.log("바뀐 닉넴정보", res.data.newNickname);
             setNewNick(res.data.newNickname)
-            // dispatch(setUserNick(newNick))
             dispatch(setUserNick(res.data.newNickname))
-            console.log("리덕스에 들어갔나?.", info)
             alert('닉넴 변경 성공');
-            // if(info.nickname==undefined){
-            //     console.log("?????.")에
-            //     dispatch(setUserNick(res.data.newNickname));
-            //     dispatch(setUserNick( userInfo.newNickname));
-            // }
         } catch (err) {
             console.log(err);
             alert('닉넴 변경 실패');
@@ -184,7 +152,7 @@ const MyPage = () =>  {
             console.log("유저정보",res.data.id)
             setuserInfo((prevState) => {
                 return {
-                    ...prevState, userId: res.data.id
+                    ...prevState, userId: res.data.userDetail.id
                 }
             })
         }
@@ -201,15 +169,15 @@ const MyPage = () =>  {
     async function getMyPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
-            const res = await Api.get('/user/posts');
-            console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
+            const res = await Api.get('/user/posts?');
+            console.log("내 게시글rdd",Object.keys(res.data.content).length);
             // @ts-ignore
-            setNum(Object.keys(res.data.userPosts).length);
+            setNum(Object.keys(res.data.content).length);
         }
         catch (err)
         {
             console.log(err)
-            alert("get 실패2");
+            alert("게시글 수 불러오기 실패");
         }
     }
     const onChangeImg = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -219,7 +187,7 @@ const MyPage = () =>  {
             console.log('uploadFile',uploadFile);
             const formData = new FormData()
             formData.append('imageFiles',uploadFile)
-            const res = await axios.post("http://localhost:8080/auth/image", formData);
+            const res = await axios.post("http://localhost:8080/auth/image/profileImage", formData);
             console.log("리턴 데이터 ", res.data.imageUrls[0])
             dispatch(setUserProfile(res.data.imageUrls[0]))
             const mbody = {
@@ -264,12 +232,12 @@ const MyPage = () =>  {
     async function logOut() {
         try{
             const res = await Api.get('/logout');
+            console.log(res);
             alert("로그아웃");
             dispatch(logoutToken());
             dispatch(logoutUserInfo());
-            dispatch(resetaddress1())
-            dispatch(resetaddress2())
-
+            dispatch(resetaddress1());
+            dispatch(resetaddress2());
             navigate(`/`)
         }
         catch (err)
@@ -278,7 +246,7 @@ const MyPage = () =>  {
             alert("로그아웃 실패");
         }
     }
-
+    // logOut()
     return (
             <>
             <div className={styles.profile}>
@@ -309,7 +277,7 @@ const MyPage = () =>  {
                             <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}
                     <button className={styles.nickChangeBtn} onClick={nicknameChange}>변경</button>
                     <input className={styles.intro} placeholder={info.onelineIntro} onChange={inputIntro} ></input>
-                    <button className={styles.nickChangeBtn} onClick={()=>{setCount(count+1);logOut();}}>로그아웃</button>
+                    <button className={styles.nickChangeBtn} onClick={logOut}>로그아웃</button>
 
                     <div className={styles.intro2}>
                         <div className={styles.i1}>

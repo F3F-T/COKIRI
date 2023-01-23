@@ -18,16 +18,14 @@ import {log} from "util";
 //     init: string;
 // }
 interface PostType {
-    userPosts:[
+    content:[
         {
-            id?: number;
+            postId?: number;
             title?: string;
-            // authorNickname?: string;
+            thumbNail?: string,
+            likeCount: number,
+            tradeStatus:string,
             wishCategory?: string;
-            content?: string;
-            // productCategory?: string;
-            // tradeEachOther: boolean;
-            // tradeStatus: string;
         }
     ]
 }
@@ -48,21 +46,17 @@ const MyPage = () =>  {
     }
 
     async function getMyPostList() {
-        //interceptor를 사용한 방식 (header에 token값 전달)
         try{
             const res = await Api.get('/user/posts');
-            console.log("내 게시글들임", res.data.userPosts)
+            console.log("내 게시글들임", res.data.content[0])
             setPostList(prevState => {
-                // return [...res.data.userPosts];
-                return [ ...res.data.userPosts];
+                return [ ...res.data.content];
             })
-            console.log("내 게시글 리스트얌",postList);
-            // console.log("내 게시글rdd",Object.keys(res.data.userPosts).length);
         }
         catch (err)
         {
             console.log(err)
-            alert("get 실패");
+            alert("내 게시글 불러오기 실패");
         }
     }
 
@@ -75,7 +69,7 @@ const MyPage = () =>  {
         return null
     }
     const onClickPost = (post) => {
-        navigate(`/post/${post.id}`)
+        navigate(`/post/${post.postId}`)
     }
 
     return (
@@ -89,7 +83,7 @@ const MyPage = () =>  {
               <div className={styles.container}>
                   {
                       postList.map((SingleObject:Object)=>(
-                      <Card  className={"forMypage"} postTitle={SingleObject['title']} like={20} wishCategory={SingleObject['wishCategory']}
+                      <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['likeCount']} wishCategory={SingleObject['wishCategory']}
                       onClick={() => {onClickPost(SingleObject)}}/>
                       ))
                       // postList.map((post)=>(

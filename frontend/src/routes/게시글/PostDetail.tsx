@@ -20,6 +20,8 @@ import {HiPencil} from "react-icons/hi";
 import {resetCategory} from "../../store/categoryReducer";
 import {changeRefreshState} from "../../store/refreshReducer";
 import comments from "../../component/comments/Comments";
+import timeConvert from "../../utils/timeConvert";
+import {LocalDateTime} from "js-joda";
 
 
 
@@ -43,9 +45,23 @@ const PostDetail = () => {
         scrapCount? : number;
         messageRoomCount? : number;
         createdTime? : string;
+        userInfo? : UserInfo;
     }
 
     type CommentTypes = "primary" | "secondary";
+    interface UserInfo {
+        id : number;
+        email : string;
+        birthDate : string;
+        description : string;
+        imageUrl : string;
+        loginType : string;
+        phoneNumber : string;
+        scrapId : number;
+        userName : string;
+        nickname :string;
+
+    }
     interface CommentType {
         id : number;
         postId? : number;
@@ -55,7 +71,7 @@ const PostDetail = () => {
         content : String;
         depth : Number;
         parentCommentId : number | null;
-
+        userInfo : UserInfo;
         //댓글인지 대댓글인지 확인
     }
 
@@ -70,7 +86,7 @@ const PostDetail = () => {
     }
 
     const params = useParams();
-    console.log(params)
+    // console.log(params)
     const postId = params.id;
 
     const [post,setPost] = useState<PostType>(null)
@@ -84,14 +100,13 @@ const PostDetail = () => {
 
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
+            console.log("getPost 요청")
             const res = await Api.get(`/post/${postId}`);
 
             console.log(res)
             setPost(prevState => {
                 return {...prevState, ...res.data};
             })
-
-            console.log(post)
 
         }
         catch (err)
@@ -128,6 +143,7 @@ const PostDetail = () => {
     useEffect(()=>{
         getPost();
         getComments();
+        console.log(post)
     },[store.refreshReducer.commentChange])
 
 
@@ -186,6 +202,7 @@ const PostDetail = () => {
 
 
 
+
     if(!post)
     {
         return null;
@@ -194,6 +211,10 @@ const PostDetail = () => {
     if (!commentList) {
         return null
     }
+
+    const timeDiffer = timeConvert(post.createdTime);
+    console.log(timeDiffer);
+
 
     const primaryComment = commentList.filter((comment) => {
         return comment.depth === 0
@@ -220,9 +241,9 @@ const PostDetail = () => {
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
-                        <img className={styles.postTopProfileImg} src={profileImg}></img>
+                        <img className={styles.postTopProfileImg} src={post.userInfo.imageUrl}></img>
                         <div className={styles.postTopProfileInfo}>
-                            <div className={styles.postTopNickname}>{post.authorNickname}</div>
+                            <div className={styles.postTopNickname}>{post.userInfo.nickname}</div>
                             <div className={styles.postTopAddress}>상도 1동 33길</div>
                         </div>
                     </div>

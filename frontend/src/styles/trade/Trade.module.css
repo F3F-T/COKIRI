@@ -8,7 +8,9 @@
     font-size: 0.75rem;
 
 }
-.mulmulTradeContent {
+.mulmulTradeContent
+{
+    padding-top: 3rem;
     width : 1200px;
     height: 100%;
     text-align: center;
@@ -94,4 +96,11 @@ postOrWant_2{
 
 .buttonMargin{
     margin-right: 1rem;
+}
+
+.red{
+    background-color: red;
+}
+.blue{
+    background-color: blue;
 }
