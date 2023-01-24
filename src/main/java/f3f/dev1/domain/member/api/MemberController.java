@@ -100,12 +100,12 @@ public class MemberController {
     }
 
 
-
     // 유저가 속한 채팅방 리스트 리턴
-    @GetMapping("/user/messagerooms")
-    public ResponseEntity<GetUserMessageRoomDto> getUserMessageRooms() {
+    @GetMapping("/user/messageRooms")
+    public ResponseEntity<Page<GetUserMessageRoom>> getUserMessageRooms(Pageable pageable) {
+
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.getUserMessageRoomDto(currentMemberId));
+        return ResponseEntity.ok(memberService.getUserMessageRoom(currentMemberId, pageable));
     }
 
     // 유저 주소 리스트 조회
