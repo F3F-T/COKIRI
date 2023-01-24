@@ -84,13 +84,29 @@ public class PostController {
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
 
+//    // 게시글 정보 수정
+//    // 기존 PathVariable 에서 RequestBody로 변경
+//    // TODO 태그가 업데이트DTO로 들어오면 생성때랑 마찬가지로 추가를 해줘야 한다. 그리고 원래 있던 PostTag는 지워줘야 한다...
+//    @PatchMapping(value = "/post/{postId}")
+//    public ResponseEntity<PostInfoDtoWithTag> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
+//        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+//        postTagService.deletePostTagFromPost(postId);
+//        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, currentMemberId);
+//        return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
+//    }
+
     // 게시글 정보 수정
     // 기존 PathVariable 에서 RequestBody로 변경
     // TODO 태그가 업데이트DTO로 들어오면 생성때랑 마찬가지로 추가를 해줘야 한다. 그리고 원래 있던 PostTag는 지워줘야 한다...
     @PatchMapping(value = "/post/{postId}")
     public ResponseEntity<PostInfoDtoWithTag> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        postTagService.deletePostTagFromPost(postId);
+        if(updatePostRequest.getTagNames() != null) {
+            postTagService.updatePostTagWithPatch(postId, updatePostRequest);
+        }
+        if(updatePostRequest.getImages() != null) {
+
+        }
         PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, currentMemberId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
