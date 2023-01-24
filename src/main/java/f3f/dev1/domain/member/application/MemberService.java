@@ -6,6 +6,7 @@ import f3f.dev1.domain.member.dao.MemberCustomRepositoryImpl;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.*;
 import f3f.dev1.domain.member.model.Member;
+import f3f.dev1.domain.message.dao.MessageRoomCustomRepositoryImpl;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
@@ -42,10 +43,11 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
     private final PostRepository postRepository;
 
-    private final MessageRoomRepository messageRoomRepository;
     private final ScrapRepository scrapRepository;
 
     private final MemberCustomRepositoryImpl memberCustomRepositoryImpl;
+
+    private final MessageRoomCustomRepositoryImpl messageRoomCustomRepositoryImpl;
 
 
     @Transactional(readOnly = true)
@@ -209,9 +211,8 @@ public class MemberService {
 
     // TODO 아직 미구현
     @Transactional(readOnly = true)
-    public GetUserMessageRoomDto getUserMessageRoomDto(Long memberId) {
-//        messageRoomRepository.
-        return null;
+    public Page<GetUserMessageRoom> getUserMessageRoom(Long memberId, Pageable pageable) {
+        return messageRoomCustomRepositoryImpl.findUserMessageRoom(memberId, pageable);
 
     }
 

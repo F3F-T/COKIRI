@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface MessageRoomRepository extends JpaRepository<MessageRoom, Long> {
+public interface MessageRoomRepository extends JpaRepository<MessageRoom, Long>, MessageRoomCustomRepository {
 
     boolean existsById(Long id);
     Optional<MessageRoom> findById(Long id);
