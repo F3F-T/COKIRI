@@ -39,7 +39,7 @@ public class MessageRoomController {
 
     // 채팅방 전체 조회 컨트롤러
     @GetMapping(value = "/user/{userId}/totalMessageRooms")
-    public ResponseEntity<List<MessageRoomDTO.MessageRoomInfoDto>> readTotalMessageRooms(@PathVariable(name="userId")Long userId){
+    public ResponseEntity<List<MessageRoomInfoDto>> readTotalMessageRooms(@PathVariable(name="userId")Long userId){
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         List<MessageRoomInfoDto> totalMessageRoomsDto = messageRoomService.ReadMessageRoomsByUserId(userId, currentMemberId);
         return new ResponseEntity<>(totalMessageRoomsDto, HttpStatus.OK);
@@ -55,7 +55,7 @@ public class MessageRoomController {
     @GetMapping(value = "/user/{userId}/buyingMessageRooms")
     public ResponseEntity<List<BuyingRoomInfoDto>> readbuyingMessageRooms(@PathVariable(name="userId")Long userId){
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        List<MessageRoomDTO.BuyingRoomInfoDto> buyingMessageRoomsDto = messageRoomService.ReadBuyingMessageRoomsByUserId(userId, currentMemberId);
+        List<BuyingRoomInfoDto> buyingMessageRoomsDto = messageRoomService.ReadBuyingMessageRoomsByUserId(userId, currentMemberId);
         return new ResponseEntity<>(buyingMessageRoomsDto, HttpStatus.OK);
     }
     //메시지룸 아이디로 메시지들 조회
@@ -64,5 +64,12 @@ public class MessageRoomController {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         List<MessageDTO.MessageInfoDto> messagesDto = messageRoomService.ReadMessagesByMessageRoomId(messageRoomId, currentMemberId);
         return new ResponseEntity<>(messagesDto, HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/messageRooms/{messageRoomId}")
+    public ResponseEntity<String> deleteMessageRoom(@PathVariable(name="messageRoomId")Long messageRoomId,@RequestBody @Valid DeleteMessageRoomRequest deleteMessageRoomRequest){
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        String deleteMessageRoom = messageRoomService.deleteMessageRoom(deleteMessageRoomRequest, currentMemberId);
+        return new ResponseEntity<>(deleteMessageRoom, HttpStatus.OK);
     }
 }

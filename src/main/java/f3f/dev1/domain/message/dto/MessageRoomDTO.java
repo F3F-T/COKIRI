@@ -45,24 +45,22 @@ public class MessageRoomDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class DeleteMessageRoomDto{
+    public static class DeleteMessageRoomRequest{
         private Long id;
         private Long memberId;
-        private Long postId;
-        private boolean delStatus;
+        //private Long postId;
         //boolean deleteStatus;
 
     }
 
-//    @Getter
-//    @NoArgsConstructor
-//    @AllArgsConstructor
-//    @Builder
-//    public static class DeleteMessageRoomInfoDto{
-//        private Long messageRoomId;
-//        private Long memberId;
-//        private boolean delStatus;
-//    }
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class DeleteMessageRoomInfoDto{
+        private Long id;
+        private boolean delStatus;
+    }
 
     @Getter
     @AllArgsConstructor
@@ -88,6 +86,7 @@ public class MessageRoomDTO {
         private Long id;
         private String PostTitle;
         private String buyerNickname;
+        private boolean delStatus;
     }
 
     @Getter
@@ -98,6 +97,7 @@ public class MessageRoomDTO {
         private Long id;
         private String PostTitle;
         private String sellerNickname;
+        private boolean delStatus;
     }
 
 
