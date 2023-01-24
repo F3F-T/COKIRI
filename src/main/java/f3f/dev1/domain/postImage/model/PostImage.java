@@ -25,7 +25,7 @@ public class PostImage {
     // 썸네일인지 아닌지 여부
     private Boolean isThumbnail;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne
     @JoinColumn(name = "post_id")
     private Post post;
 

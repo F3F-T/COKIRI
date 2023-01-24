@@ -47,7 +47,7 @@ public class PostImageService {
         boolean changedFlagLIst[] = new boolean[updateRequestImages.size()];
 //        List<ProjectionImagePath> imagePathsByPostId = postImageRepository.findImagePathsByPostId(postId);
         for(int i=0; i<postImages.size(); i++) {
-            for(int k=0; k<updateRequestImages.size(); i++) {
+            for(int k=0; k<updateRequestImages.size(); k++) {
                 if(postImages.get(i).getImgPath().equals(updateRequestImages.get(k))) {
                     originalFlagList[i] = true;
                     changedFlagLIst[k] = true;

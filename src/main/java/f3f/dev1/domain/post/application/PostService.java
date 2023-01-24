@@ -100,7 +100,6 @@ public class PostService {
     }
 
 
-    // TODO 페이징 적용하기
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     // controller에서 사용되지 않는 로직. 현재 테스트에서만 사용되고 있다.
     @Transactional(readOnly = true)
@@ -230,49 +229,48 @@ public class PostService {
         for (PostTag postTag : postTagsOfPost) {
             tagNames.add(postTag.getTag().getName());
         }
+        // TODO post.getScrapPosts로 대체 고려해보기
         List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
         List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
         PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
         return response;
     }
 
-//    @Transactional
-//    public PostInfoDtoWithTag updatePostWithPatch(UpdatePostRequest updatePostRequest, Long postId) {
-//        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
-//        // 이 포스트에서 변경요청이 들어온 값들만 바꿔주겠다.
-////        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
-////        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
-//
-//        if(updatePostRequest.getAuthorId() == null) {
-//            throw new NotContainAuthorInfoException();
-//        }
-//
-//        if(!post.getAuthor().getId().equals(updatePostRequest.getAuthorId())) {
-//            throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
-//        }
-//
-//        if(updatePostRequest.getTitle() != null) {
-//            post.updateTitle(updatePostRequest.getTitle());
-//        }
-//
-//        if(updatePostRequest.getProductCategory() != null) {
-//            Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundByIdException::new);
-//            post.updateProductCategory(productCategory);
-//        }
-//
-//        if(updatePostRequest.getWishCategory() != null) {
-//            Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundByIdException::new);
-//            post.updateWishCategory(wishCategory);
-//        }
-//
-//        if(updatePostRequest.getThumbnail() != null) {
-//            String thumbnail = updatePostRequest.getThumbnail();
-//            post.updateThumbnail(thumbnail);
-//        }
-//
-//
-//
-//    }
+    @Transactional
+    public void updatePostWithPatch(UpdatePostRequest updatePostRequest, Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
+        // 이 포스트에서 변경요청이 들어온 값들만 바꿔주겠다.
+//        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
+//        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
+
+        if(updatePostRequest.getAuthorId() == null) {
+            throw new NotContainAuthorInfoException();
+        }
+
+        if(!post.getAuthor().getId().equals(updatePostRequest.getAuthorId())) {
+            throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
+        }
+
+        if(updatePostRequest.getTitle() != null) {
+            post.updateTitle(updatePostRequest.getTitle());
+        }
+
+        if(updatePostRequest.getProductCategory() != null) {
+            Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundByIdException::new);
+            post.updateProductCategory(productCategory);
+        }
+
+        if(updatePostRequest.getWishCategory() != null) {
+            Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundByIdException::new);
+            post.updateWishCategory(wishCategory);
+        }
+
+        if(updatePostRequest.getThumbnail() != null) {
+            String thumbnail = updatePostRequest.getThumbnail();
+            post.updateThumbnail(thumbnail);
+        }
+
+    }
 
     @Transactional
     public String deletePost(DeletePostRequest deletePostRequest, Long currentMemberId) {

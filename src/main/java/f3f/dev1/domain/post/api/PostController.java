@@ -100,7 +100,7 @@ public class PostController {
     // 기존 PathVariable 에서 RequestBody로 변경
     // TODO 태그가 업데이트DTO로 들어오면 생성때랑 마찬가지로 추가를 해줘야 한다. 그리고 원래 있던 PostTag는 지워줘야 한다...
     @PatchMapping(value = "/post/{postId}")
-    public ResponseEntity<PostInfoDtoWithTag> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
+    public String updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
 
         // currentMemberId 관련 예외는 여기서 일괄 처리하겠다.
@@ -116,8 +116,9 @@ public class PostController {
         if(updatePostRequest.getImages() != null) {
             postImageService.updatePostImagesWithPatch(postId, updatePostRequest.getImages());
         }
-        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, currentMemberId);
-        return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
+        postService.updatePostWithPatch(updatePostRequest, postId);
+//        return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
+        return "redirect:/post/" + postId;
     }
 
     // 게시글 삭제
