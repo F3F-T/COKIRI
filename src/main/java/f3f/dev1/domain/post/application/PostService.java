@@ -13,6 +13,7 @@ import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
+import f3f.dev1.domain.post.exception.NotContainAuthorInfoException;
 import f3f.dev1.domain.postImage.dao.PostImageCustomRepositoryImpl;
 import f3f.dev1.domain.postImage.dao.PostImageRepository;
 import f3f.dev1.domain.postImage.dto.PostImageDTO;
@@ -45,6 +46,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
@@ -247,11 +249,19 @@ public class PostService {
 //        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
 //        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
 
+        if(updatePostRequest.getAuthorId() == null) {
+            throw new NotContainAuthorInfoException();
+        }
+
         if(!updatePostRequest.getAuthorId().equals(currentMemberId)) {
             throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
         if(!post.getAuthor().getId().equals(updatePostRequest.getAuthorId())) {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
+        }
+
+        if(updatePostRequest.getTitle() != null) {
+            post.updateTitle(updatePostRequest.getTitle());
         }
 
         if(updatePostRequest.getProductCategory() != null) {
@@ -264,6 +274,52 @@ public class PostService {
             post.updateWishCategory(wishCategory);
         }
 
+        if(updatePostRequest.getThumbnail() != null) {
+            String thumbnail = updatePostRequest.getThumbnail();
+            post.updateThumbnail(thumbnail);
+        }
+
+        if(updatePostRequest.getTagNames() != null) {
+            List<String> originalList = new ArrayList<>();
+            /*
+                추가된 태그, 삭제된 태그를 식별하고 반영해주기 위해 필요한 리스트
+                연산이 끝나고 결과에서
+                    originalFlagList의 값이 false인 인덱스의 태그는 삭제되며
+                    changedFlagList의 값이 false인 인덱스의 태그는 새로 추가된다.
+             */
+            boolean originalFlagList[] = new boolean[post.getPostTags().size()];
+            boolean changedFlagList[] = new boolean[updatePostRequest.getTagNames().size()];
+            for (PostTag postTag : post.getPostTags()) {
+                originalList.add(postTag.getTag().getName());
+            }
+            if(!originalList.containsAll(updatePostRequest.getTagNames())) {
+                // 태그가 달라졌다면, 어떤 태그가 달라졌는지 루프를 돌면서 찾고, 추가해준다.
+                // 또한 수정하면서 삭제된 태그가 있다면, boolean 배열을 통해 체크하고 직접 지워준다.
+                for(int i=0; i<originalList.size(); i++) {
+                    // 어쩔 수 없이 2중 for문을 돌기로 하겠다.
+                    for(int k=0; k<updatePostRequest.getTagNames().size(); k++) {
+                        if(originalList.get(i).equals(updatePostRequest.getTagNames().get(k))) {
+                            originalFlagList[i] = true;
+                            changedFlagList[k] = true;
+                        }
+                    }
+                }
+
+                for(int i=0; i<originalFlagList.length; i++) {
+                    if(!originalFlagList[i]) {
+                        postTagRepository.delete(post.getPostTags().get(i));
+                    }
+                }
+
+                for(int k=0; k< changedFlagList.length; k++) {
+                    if(!changedFlagList[k]) {
+                        // TODO 새로 들어온 태그이름 중 태그 엔티티가 없는 경우는 어떡하지
+                        // 어쩔 수 없이 조회 쿼리를 한번 날리고 태그가 없으면 새로 만들어서 추가해주자.
+                    }
+                }
+
+            }
+        }
 
         List<Tag> tags = tagRepository.findByNameIn(updatePostRequest.getTagNames());
         List<PostTag> postTags = new ArrayList<>();
