@@ -181,23 +181,24 @@ public class MessageRoomService {
     //메시지 룸을 그냥 합치는게 낫지 않을까?
     //내 메시지 방은 우선 내가 관리할 수 있게 함. - 디비에는 남게!
     @Transactional
-    public DeleteMessageRoomRequest deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest, Long currentMemberId){
+    public String deleteMessageRoom(DeleteMessageRoomRequest deleteMessageRoomRequest, Long currentMemberId){
         //메시지룸을 유저가 가지고 있는것과 비교해야함. -> 멤버에는 메시지 룸 리스트가 있음.
         //메시지룸은 어차피 디비상에서는 지워지지 않을거지만 유저와 비교 편리하게 하기 위해 가져옴.
         //유저가 센딩 메시지룸과 리시브 메시지룸을 구별하면 되기 때문에 그냥 객체로 두는게 나은가? 메시지 레포지토리가 아니라 멤버에서 지워야해서 헷갈림.
         MessageRoom messageRoom = messageRoomRepository.findById(deleteMessageRoomRequest.getId()).orElseThrow(NotFoundByIdException::new);
+        //디비에서 안지우니까 사실상 필요 없을 듯
         Member member = memberRepository.findById(deleteMessageRoomRequest.getMemberId()).orElseThrow(NotFoundByIdException::new);
-        Post post = postRepository.findById(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
-        Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        //Post post = postRepository.findById(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        //Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
+        //트레이드 상태 때문에 포스트가 필요한데 우선 둘다 지움.
         if(!member.getId().equals(currentMemberId)){
             throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
+        messageRoom.setDelStatus(true);
 
-//
-//        //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정
-//        //유저 메시지 방에 있는지 확인해야함.
-//        //TODO 그 전에 어디 메시지 룸인지 확인을 해야되나? - 테스트로 확인해보자
-//        //포스트 작성자는 seller이기 때문에 메시지를 받는 사람임. -> 우리는 내가 보낸 메시지방, 리스트로 나눠져있지만 프론트는 아니기때문에 우선 이렇게 구현
+        //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정
+        //유저 메시지 방에 있는지 확인해야함.
+        //포스트 작성자는 seller이기 때문에 메시지를 받는 사람임. -> 우리는 내가 보낸 메시지방, 리스트로 나눠져있지만 프론트는 아니기때문에 우선 이렇게 구현
 //        if(post.getAuthor().equals(member.getId())) {
 //            for (MessageRoom mr : member.getSellingRooms()) {//객체 비교 보다 아이디 비교가 빠르려나?
 //                //selling 방에 지우고자 하는 채팅방이 있으면 메시지 다 지움
@@ -216,7 +217,7 @@ public class MessageRoomService {
 //
 //            }
 //        }
-    return deleteMessageRoomRequest;
+    return "DELETE";
     }
 
 
