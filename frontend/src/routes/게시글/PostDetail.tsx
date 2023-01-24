@@ -225,11 +225,6 @@ const PostDetail = () => {
                     authorId : post.userInfoWithAddress.userDetail.id
                 }
             }
-            // const jsonObj = {
-            //     id : post.id,
-            //     authorId : post.userInfoWithAddress.userDetail.id
-            // }
-            // console.log(jsonObj);
             //삭제는 일반적인 axios 방식과 달리 message body를 config로 넘겨주어야한다.
             const res = await Api.delete(`/post/${postId}`, config);
             alert("게시글 삭제 성공")
@@ -239,8 +234,8 @@ const PostDetail = () => {
         }
     }
 
-    const updatePost = () => {
-
+    const updatePost = async () => {
+        navigate(`/post/${post.id}/edit`)
     }
 
 
@@ -255,6 +250,7 @@ const PostDetail = () => {
     }
 
     console.log(post)
+
     // console.log(commentList);
 
     //게시글 작성자 판단
