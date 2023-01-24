@@ -6,6 +6,7 @@ import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.model.TradeStatus;
+import f3f.dev1.domain.postImage.model.PostImage;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
 import lombok.Builder;
@@ -67,6 +68,9 @@ public class Post extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<PostImage> postImages = new ArrayList<>();
 
     public void updateTitle(String title) {
         this.title = title;

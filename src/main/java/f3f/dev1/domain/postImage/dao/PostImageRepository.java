@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface PostImageRepository extends JpaRepository<PostImage, Long>, PostImageCustomRepository {
     List<PostImage> findByPostId(Long postId);
-    List<ProjectionImagePath> findImagePathsByPostId(Long postId);
 }

@@ -4,7 +4,6 @@ import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.postImage.dao.PostImageRepository;
-import f3f.dev1.domain.postImage.dao.ProjectionImagePath;
 import f3f.dev1.domain.postImage.dto.PostImageDTO;
 import f3f.dev1.domain.postImage.model.PostImage;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
@@ -46,7 +45,7 @@ public class PostImageService {
         // 태그와 마찬가지로 배열을 만들어 처리하겠다.
         boolean originalFlagList[] = new boolean[postImages.size()];
         boolean changedFlagLIst[] = new boolean[updateRequestImages.size()];
-        List<ProjectionImagePath> imagePathsByPostId = postImageRepository.findImagePathsByPostId(postId);
+//        List<ProjectionImagePath> imagePathsByPostId = postImageRepository.findImagePathsByPostId(postId);
         for(int i=0; i<postImages.size(); i++) {
             for(int k=0; k<updateRequestImages.size(); i++) {
                 if(postImages.get(i).getImgPath().equals(updateRequestImages.get(k))) {

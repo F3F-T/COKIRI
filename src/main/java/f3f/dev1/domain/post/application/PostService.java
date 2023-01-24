@@ -287,7 +287,7 @@ public class PostService {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
         }
 
-        postRepository.deleteById(deletePostRequest.getId());
+        postRepository.delete(post);
         return "DELETE";
     }
 
