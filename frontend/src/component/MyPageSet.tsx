@@ -134,6 +134,7 @@ const MyPage = () =>  {
                 userId: userInfo.userId,
                 newNickname: userInfo.newNickname
             }
+
             const res = await Api.patch("/user/nickname", userInfo1);
             setNewNick(res.data.newNickname)
             dispatch(setUserNick(res.data.newNickname))
@@ -246,6 +247,7 @@ const MyPage = () =>  {
             alert("로그아웃 실패");
         }
     }
+
     // logOut()
     return (
             <>

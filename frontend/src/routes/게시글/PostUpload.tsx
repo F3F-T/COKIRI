@@ -148,8 +148,6 @@ const PostUpload = () => {
             console.log(err)
             alert("이미지 업로드 실패")
         }
-
-
     }
 
     const onClickUploadButton = async() => {

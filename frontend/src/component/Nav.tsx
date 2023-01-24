@@ -17,6 +17,7 @@ const Nav1 = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [tagSearch, setTagSearch] = useState<string[]>()
+    const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
 
 
     const onChange = useCallback((e) => {
@@ -96,7 +97,7 @@ const Nav1 = () => {
                 </div>
                 <div>
                     <img className={styles.mypageI} onClick={()=>navigate('/')}  src = {talk}/>
-                    <button className={styles.signBtn3} onClick={()=>navigate('/kokiritalk')}>코끼리 톡</button>
+                    <button className={styles.signBtn3} onClick={()=>navigate(`/kokiriTalk/${info.id}`)}>코끼리 톡</button>
                 </div>
             </Nav>
 

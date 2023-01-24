@@ -198,6 +198,7 @@ const SignUp = () => {
             validationCheck.phoneNumberCheckBoolean) {
             MailConfirm({"email" : userInfo.email})
             navigate('/signup/emailcheck', {state : userInfo})
+
         } else { //유효성 검증 하나라도 실패한 경우 회원가입 실패
             alert("회원가입 정보를 모두 만족시켜주세요")
         }

@@ -22,20 +22,33 @@ import {changeRefreshState} from "../../store/refreshReducer";
 import comments from "../../component/comments/Comments";
 import timeConvert from "../../utils/timeConvert";
 import {LocalDateTime} from "js-joda";
+import {userInfo} from "os";
+import internal from "stream";
+import useGeoLocation from "../../hooks/useGeolocation";
+import {
+    setProductImg,
+    setOpponetNick,
+    setTradeStatus,
+    setTitle,
+    setWishCategory,
+    setTradeCategory,
+    resetTalkCard,
+    setSellerId, setPostId
+} from "../../store/talkListReducer";
+import {FALSE} from "sass";
 
 
 
 const PostDetail = () => {
-
+    let existOrNot : boolean
     // const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
     // console.log("asdfasdfa",detail)
     const navigate = useNavigate();
-
     interface PostType {
         id? : number;
         title? : string;
         content? : string;
-        price: string;
+        price?: string;
         tradeEachOther? : boolean;
         authorNickname? : string;
         wishCategory? : string;
@@ -49,6 +62,9 @@ const PostDetail = () => {
         userInfoWithAddress : {
             userDetail : UserInfo
         }
+        images?:[
+            {id:number, imgPath: string}
+        ]
     }
 
     type CommentTypes = "primary" | "secondary";
@@ -88,6 +104,12 @@ const PostDetail = () => {
         parendCommentId : number | null;
     }
 
+    //
+    interface ExistType{
+        existOrNot : boolean
+    }
+    //
+
     const params = useParams();
     // console.log(params)
     const postId = params.id;
@@ -98,11 +120,16 @@ const PostDetail = () => {
     const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
 
     const dispatch = useDispatch();
+    const talkCard = useSelector((state : Rootstate)=>{return state.talkListReducer})
     const store = useSelector((state:Rootstate) => state);
+    const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
+
     //댓글 작성 후 input text 초기화를 위한 state
     //<input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
     //에서 value를 사용하기 위해선 onBlur가 아닌 onChange를 사용해야만 한다
     const [commentText, setCommentText] = useState("");
+    const [exist,setExist] = useState<ExistType>({existOrNot:false});
+    // dispatch(resetTalkCard())
 
     async function getPost() {
 
@@ -116,12 +143,14 @@ const PostDetail = () => {
                 return {...prevState, ...res.data};
             })
 
+
         }
         catch (err)
         {
             console.log(err)
             alert("get 실패");
         }
+
     }
 
     async function getComments() {
@@ -144,9 +173,64 @@ const PostDetail = () => {
 
     //TODO:함민혁) 코끼리톡 구현할때 이걸 누르면 메시지룸이 생성되게 구현하고, navigate에서 매개변수를 전달해주면 될거야
     //예시 : navigate('/signup/emailcheck', {state : userInfo})
-    const talkButton = () => {
-        navigate('/kokiritalk' )
+    const talkButton = async () => {
+        ////해당 포스트를 들어올때마다 talklistreducer에 값을 다 넣어버리자
+        dispatch(setProductImg(post.images[0].imgPath))
+        dispatch(setTitle(post.title))
+        dispatch(setWishCategory(post.wishCategory))
+        dispatch(setTradeCategory(post.productCategory))
+        dispatch(setTradeStatus(post.tradeStatus))
+        dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
+        dispatch(setPostId(post.id))
+        // await dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
+        await getMessageRoom()
+        console.log("existexist",existOrNot)
+        navigate(`/kokiriTalk/${info.id}`, {state: existOrNot})
     }
+    async function getMessageRoom() {
+        try{
+            const res = await Api.get('/user/messageRooms');
+            alert("메세지룸 조회 성공1")
+            console.log("d",res.data)
+            // res.data.content.map((a:String)=>(
+            //     a['buyerNickname'] === info.nickname ?
+            //         setExist((prevState) => {
+            //             return {...prevState,existOrNot : false
+            //             }
+            //         })
+            //         :
+            //         setExist((prevState) => {
+            //             return {...prevState,existOrNot : true
+            //             }
+            //         })
+            // ))
+            console.log("콘탠츠길이",res.data.content.length)
+            for(let i =0 ; i<res.data.content.length;i++){
+                if(res.data.content[i].buyerNickname === info.nickname)
+                {
+                    if(res.data.content[i].sellerNickname === post.userInfoWithAddress.userDetail.nickname){
+                        console.log("이미방있어요요요요")
+                        existOrNot = true
+                    }
+                    else {
+                        existOrNot = false
+                    }
+
+                }
+
+            }
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("메세지룸 조회 실패1")
+        }
+    }
+    // const onClickPost = (post) => {
+    //     console.log(post)
+    //     console.log(post.id)
+    //     navigate(`/post/${post.id}`)
+    // }
 
     useEffect(()=>{
         getPost();
@@ -186,7 +270,6 @@ const PostDetail = () => {
                 parendCommentId : null,
             }
         })
-
     }
 
     const UploadComment = async () => {
@@ -245,6 +328,30 @@ const PostDetail = () => {
         return prev;
     },[]);
 
+    console.log("유저 아이디", info.id)
+
+    // async function createMessageRoom() {
+    //     console.log("포스트 아이디", postId)
+    //     try{
+    //         const post_buyerId1 = {
+    //             postId: postId,
+    //             buyerId: info.id
+    //         }
+    //         const res = await Api.post(`/post/${postId}/messageRooms`,post_buyerId1);
+    //         dispatch(setOpponetNick(res.data.sellerNickName))
+    //         console.log("메세지룸 추가", res.data)
+    //         alert("메세지룸 추가 성공")
+    //
+    //     }
+    //     catch (err)
+    //     {
+    //         console.log(err)
+    //         alert("메세지룸 추가 실패")
+    //     }
+    // }
+    const hihihihi = () => {
+        console.log("존재유무",exist)
+    }
     return (
         <div className={styles.postDetail}>
             <article className={styles.post}>
@@ -296,7 +403,7 @@ const PostDetail = () => {
                             <p className={styles.timeNum}>{timeConvert(post.createdTime)}</p>
                         </div>
                     </div>
-                    <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
+                    <button className={styles.exchangeBtn} onClick={()=>{talkButton();}}>코끼리톡으로 교환하기</button>
                 </section>
             </article>
             <section className={styles.comments}>
@@ -313,6 +420,7 @@ const PostDetail = () => {
                 <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
                  <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
             </div>
+            <button onClick={hihihihi}>버튼버튼</button>
         </div>
     );
 }
