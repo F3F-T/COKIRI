@@ -3,11 +3,9 @@ package f3f.dev1.domain.post.dto;
 import f3f.dev1.domain.category.model.Category;
 
 import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.tag.model.PostTag;
-import f3f.dev1.domain.trade.model.Trade;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -266,7 +264,7 @@ public class PostDTO {
 
         private List<String> tagNames;
 
-        private List<postImageInfoDto> images;
+        private List<PostImageInfoDto> images;
 
         private Long scrapCount;
 

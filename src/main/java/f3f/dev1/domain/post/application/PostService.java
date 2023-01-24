@@ -15,9 +15,6 @@ import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotContainAuthorInfoException;
 import f3f.dev1.domain.postImage.dao.PostImageCustomRepositoryImpl;
-import f3f.dev1.domain.postImage.dao.PostImageRepository;
-import f3f.dev1.domain.postImage.dto.PostImageDTO;
-import f3f.dev1.domain.postImage.model.PostImage;
 import f3f.dev1.domain.scrap.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
@@ -30,7 +27,6 @@ import f3f.dev1.domain.scrap.model.Scrap;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.exception.NotFoundByPostAndTagException;
-import f3f.dev1.domain.tag.exception.NotFoundByTagNameException;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.domain.trade.dao.TradeRepository;
@@ -40,14 +36,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
@@ -177,7 +170,7 @@ public class PostService {
         List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
         List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
         UserInfoWithAddress userInfo = memberCustomRepository.getUserInfo(post.getAuthor().getId());
-        List<postImageInfoDto> postImages = postImageCustomRepository.findByPostId(post.getId());
+        List<PostImageInfoDto> postImages = postImageCustomRepository.findByPostIdWithQueryDSL(post.getId());
         SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfo, commentInfoDtoList, postImages);
         return response;
     }
@@ -243,54 +236,43 @@ public class PostService {
         return response;
     }
 
-    @Transactional
-    public PostInfoDtoWithTag updatePostWithPatch(UpdatePostRequest updatePostRequest, Long postId, Long currentMemberId) {
-        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
-        // 이 포스트에서 변경요청이 들어온 값들만 바꿔주겠다.
-//        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
-//        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
-
-        if(updatePostRequest.getAuthorId() == null) {
-            throw new NotContainAuthorInfoException();
-        }
-
-        if(!updatePostRequest.getAuthorId().equals(currentMemberId)) {
-            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
-        }
-        if(!post.getAuthor().getId().equals(updatePostRequest.getAuthorId())) {
-            throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
-        }
-
-        if(updatePostRequest.getTitle() != null) {
-            post.updateTitle(updatePostRequest.getTitle());
-        }
-
-        if(updatePostRequest.getProductCategory() != null) {
-            Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundByIdException::new);
-            post.updateProductCategory(productCategory);
-        }
-
-        if(updatePostRequest.getWishCategory() != null) {
-            Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundByIdException::new);
-            post.updateWishCategory(wishCategory);
-        }
-
-        if(updatePostRequest.getThumbnail() != null) {
-            String thumbnail = updatePostRequest.getThumbnail();
-            post.updateThumbnail(thumbnail);
-        }
-
-        //  얘는 따로 처리를 해줘야하겠다.
-        if(updatePostRequest.getImages() != null) {
-
-        }
-
-        List<Tag> tags = tagRepository.findByNameIn(updatePostRequest.getTagNames());
-        List<PostTag> postTags = new ArrayList<>();
-        // Patch 요청이므로 그에 맞게 로직을 작성해야 한다.
-        // 넘어오는 데이터는 변경 예정인 데이터만 존재하며 변경되지 않은 데이터는 모두 null임을 생각해야한다.
-
-    }
+//    @Transactional
+//    public PostInfoDtoWithTag updatePostWithPatch(UpdatePostRequest updatePostRequest, Long postId) {
+//        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
+//        // 이 포스트에서 변경요청이 들어온 값들만 바꿔주겠다.
+////        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
+////        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
+//
+//        if(updatePostRequest.getAuthorId() == null) {
+//            throw new NotContainAuthorInfoException();
+//        }
+//
+//        if(!post.getAuthor().getId().equals(updatePostRequest.getAuthorId())) {
+//            throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
+//        }
+//
+//        if(updatePostRequest.getTitle() != null) {
+//            post.updateTitle(updatePostRequest.getTitle());
+//        }
+//
+//        if(updatePostRequest.getProductCategory() != null) {
+//            Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundByIdException::new);
+//            post.updateProductCategory(productCategory);
+//        }
+//
+//        if(updatePostRequest.getWishCategory() != null) {
+//            Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundByIdException::new);
+//            post.updateWishCategory(wishCategory);
+//        }
+//
+//        if(updatePostRequest.getThumbnail() != null) {
+//            String thumbnail = updatePostRequest.getThumbnail();
+//            post.updateThumbnail(thumbnail);
+//        }
+//
+//
+//
+//    }
 
     @Transactional
     public String deletePost(DeletePostRequest deletePostRequest, Long currentMemberId) {

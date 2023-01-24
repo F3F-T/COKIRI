@@ -1,5 +1,6 @@
 package f3f.dev1.domain.post.api;
 
+import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.postImage.application.PostImageService;
 import f3f.dev1.domain.tag.application.PostTagService;
@@ -101,11 +102,19 @@ public class PostController {
     @PatchMapping(value = "/post/{postId}")
     public ResponseEntity<PostInfoDtoWithTag> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        // currentMemberId 관련 예외는 여기서 일괄 처리하겠다.
+        if(!updatePostRequest.getAuthorId().equals(currentMemberId)) {
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
+        }
+
+        // 아래 두 항목은 각각 코드가 길기도 하고 담당하는 서비스가 나눠지기 때문에 별도로 처리해준다.
+        // 두개를 제외한 나머지 로직은 postService에서 기존처럼 update한다.
         if(updatePostRequest.getTagNames() != null) {
             postTagService.updatePostTagWithPatch(postId, updatePostRequest);
         }
         if(updatePostRequest.getImages() != null) {
-
+            postImageService.updatePostImagesWithPatch(postId, updatePostRequest.getImages());
         }
         PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, currentMemberId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
