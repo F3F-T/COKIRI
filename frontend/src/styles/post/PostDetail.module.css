@@ -12,9 +12,8 @@
 }
 .postTop{
     display : flex;
-    flex-direction: row;
-
-
+    position: relative;
+    /*flex-direction: row;*/
 }
 .postTopProfile{
 
@@ -196,4 +195,27 @@
     background-color: #F8F8F8;
     height: 40px;
     font-size: 25px;
+}
+
+.moreDot{
+    position: absolute;
+    top: 10%;
+    right: 0;
+    font-size: 2.5rem;
+}
+
+
+.ProfileActionList {
+    position: absolute;
+    top: 20%;
+    right: 0;
+    list-style: none;
+    color: gray;
+}
+
+.ProfileActionList li {
+    float: left;
+    font-size: 0.7rem;
+    margin-right: 0.3rem;
+
 }
