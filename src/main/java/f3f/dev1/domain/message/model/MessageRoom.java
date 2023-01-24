@@ -57,6 +57,7 @@ public class MessageRoom extends BaseTimeEntity {
                 .build();
     }
 
+
     public MessageRoomDTO.BuyingRoomInfoDto toBuyingRoomInfo(){
         return MessageRoomDTO.BuyingRoomInfoDto.builder()
                 .id(this.getId())
