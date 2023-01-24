@@ -251,21 +251,30 @@ public class PostService {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
         }
 
-        if(updatePostRequest.getTitle() != null) {
+        /*
+            프론트와 의견 상충 과정에서 아래와 같은 코드 구조가 탄생함.
+            프론트는 특정 필드의 변경사항을 인지하고 바디에 추가하는게 소요가 크다고 했고,
+            나는 불필요한 쿼리의 수를 최대한 줄이고싶었다.
+            그래서 결과적으로 PUT도 PATCH도 아닌 업데이트 메서드가 구현됨 :
+            수정된 필드 뿐만 아니라 수정되지 않은 필드로 함께 바디로 넘어온다.
+            하지만 그 중에서 변동사항이 있는 값만 수정된다.
+         */
+
+        if(updatePostRequest.getTitle() != null && !post.getTitle().equals(updatePostRequest.getTitle())) {
             post.updateTitle(updatePostRequest.getTitle());
         }
 
-        if(updatePostRequest.getProductCategory() != null) {
+        if(updatePostRequest.getProductCategory() != null && !post.getProductCategory().getName().equals(updatePostRequest.getProductCategory())) {
             Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundByIdException::new);
             post.updateProductCategory(productCategory);
         }
 
-        if(updatePostRequest.getWishCategory() != null) {
+        if(updatePostRequest.getWishCategory() != null && !post.getWishCategory().getName().equals(updatePostRequest.getWishCategory())) {
             Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundByIdException::new);
             post.updateWishCategory(wishCategory);
         }
 
-        if(updatePostRequest.getThumbnail() != null) {
+        if(updatePostRequest.getThumbnail() != null && !post.getThumbnailImgPath().equals(updatePostRequest.getThumbnail())) {
             String thumbnail = updatePostRequest.getThumbnail();
             post.updateThumbnail(thumbnail);
         }
