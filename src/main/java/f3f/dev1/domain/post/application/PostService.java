@@ -15,6 +15,7 @@ import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotContainAuthorInfoException;
 import f3f.dev1.domain.postImage.dao.PostImageCustomRepositoryImpl;
+import f3f.dev1.domain.postImage.model.PostImage;
 import f3f.dev1.domain.scrap.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
@@ -166,11 +167,13 @@ public class PostService {
         for (Comment comment : comments) {
             commentInfoDtoList.add(comment.toInfoDto());
         }
-        List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-        List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+
         UserInfoWithAddress userInfo = memberCustomRepository.getUserInfo(post.getAuthor().getId());
-        List<PostImageInfoDto> postImages = postImageCustomRepository.findByPostIdWithQueryDSL(post.getId());
-        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfo, commentInfoDtoList, postImages);
+        List<String> postImages = new ArrayList<>();
+        for (PostImage postImage : post.getPostImages()) {
+            postImages.add(postImage.getImgPath());
+        }
+        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages);
         return response;
     }
 
@@ -179,6 +182,7 @@ public class PostService {
      */
 
     @Transactional
+    // 현재는 컨트롤러에서 사용하지 않는 로직. 테스트에서만 사용하고 있다.
     public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long postId,Long currentMemberId) {
 
         /*
@@ -203,7 +207,6 @@ public class PostService {
         if(tags.isEmpty()) {
             post.updatePostInfos(updatePostRequest, productCategory, wishCategory, new ArrayList<>());
         } else {
-            // TODO 기존 태그랑 비교를 먼저 해주는게 좋을거같은데??
             // PostTag가 없으면 여기서 새로 만들어서 추가까지 해줘야 한다.
             for (Tag tag : tags) {
                 if(!postTagRepository.existsByPostAndTag(post,tag)) {
@@ -229,19 +232,13 @@ public class PostService {
         for (PostTag postTag : postTagsOfPost) {
             tagNames.add(postTag.getTag().getName());
         }
-        // TODO post.getScrapPosts로 대체 고려해보기
-        List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-        List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
+        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size());
         return response;
     }
 
     @Transactional
     public void updatePostWithPatch(UpdatePostRequest updatePostRequest, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
-        // 이 포스트에서 변경요청이 들어온 값들만 바꿔주겠다.
-//        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
-//        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
 
         if(updatePostRequest.getAuthorId() == null) {
             throw new NotContainAuthorInfoException();
@@ -258,6 +255,8 @@ public class PostService {
             그래서 결과적으로 PUT도 PATCH도 아닌 업데이트 메서드가 구현됨 :
             수정된 필드 뿐만 아니라 수정되지 않은 필드로 함께 바디로 넘어온다.
             하지만 그 중에서 변동사항이 있는 값만 수정된다.
+
+            이렇게 여러번 쿼리를 별도로 날리는 것 보다 한번에 일괄로 처리하는게 나으려나?
          */
 
         if(updatePostRequest.getTitle() != null && !post.getTitle().equals(updatePostRequest.getTitle())) {

@@ -264,7 +264,7 @@ public class PostDTO {
 
         private List<String> tagNames;
 
-        private List<PostImageInfoDto> images;
+        private List<String> images;
 
         private Long scrapCount;
 

@@ -198,7 +198,7 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
-    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList, List<PostImageInfoDto> images) {
+    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList, List<String> images) {
         return SinglePostInfoDto.builder()
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())

@@ -79,6 +79,8 @@ public class PostController {
     }
 
     // 게시글 정보 조회
+    // TODO 해당 게시글이 본인이 스크랩한 게시글인지 판단해줘야 함
+    // scrapPost랑 scrap postId로 조인 걸고 userId로 존재하는 scrapPost 있는지 찾아보기 - 네이티브 쿼리로 짜야하나
     @GetMapping(value = "/post/{postId}")
     public ResponseEntity<SinglePostInfoDto> getPostInfo(@PathVariable(name = "postId") Long postId) {
         SinglePostInfoDto postInfoDto = postService.findPostById(postId);
