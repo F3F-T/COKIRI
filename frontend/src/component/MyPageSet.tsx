@@ -20,6 +20,7 @@ import Message from "./로그인 & 회원가입/Message";
 import Modal from "../routes/로그인 & 회원가입/NeighborModal";
 import {deleteToken,logoutToken} from "../store/jwtTokenReducer";
 import {resetaddress1,resetaddress2} from "../store/userAddressInfoReducer";
+import {resetTalkCard} from "../store/talkCardReducer";
 
 // interface TextInputProps {
 //     init: string;
@@ -239,6 +240,7 @@ const MyPage = () =>  {
             dispatch(logoutUserInfo());
             dispatch(resetaddress1());
             dispatch(resetaddress2());
+            dispatch(resetTalkCard());
             navigate(`/`)
         }
         catch (err)

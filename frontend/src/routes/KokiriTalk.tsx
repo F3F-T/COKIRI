@@ -12,7 +12,14 @@ import {HiPencil} from "react-icons/hi";
 import Api from "../utils/api";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
-import {setMessageRoomId, setOpponetNick, setPostId, setSellerId} from "../store/talkListReducer";
+import {
+    setMessageRoomId,
+    setOpponetNick,
+    setPostId,
+    setSellerId,
+    setBuyerId,
+    setProductImg, setTitle, setWishCategory, setTradeCategory, setTradeStatus
+} from "../store/talkCardReducer";
 import {use} from "js-joda";
 import {log} from "util";
 
@@ -36,13 +43,15 @@ interface contentInfo2 {
 }
 const KokiriTalk = () => {
     const navigate = useNavigate();
-    const [key,setKey] = useState<number>(1)
+    const [key,setKey] = useState<number>(null)
     const {state} = useLocation();
+    console.log("이방이 이미 있는거니wwwwwwww???", state)
     const dispatch = useDispatch();
-    const talkCard = useSelector((state : Rootstate)=>{return state.talkListReducer})
+    const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
     const [roomId,setRoomId] = useState();
     const [contentInfo,setContentInfo]=useState(null)
+    const [roomList,setRoomList]=useState(null)
     // const [count,setCount]=useState(0)
 
     const [input,setInput] = useState('');
@@ -74,8 +83,7 @@ const KokiriTalk = () => {
         }
     }
     console.log("이방이 이미 있는거니???", state)
-
-
+    console.log("지금 담겨있는 리덕스 확인해보자",talkCard)
     const objectMessage = [{
         keys: 1,
         partner : "함민혁",
@@ -120,10 +128,10 @@ const KokiriTalk = () => {
         setInput(inputMessage)
         return setInput
     }
-
     const createMessageRoom = async () => {
         console.log("이방이 이미 있는거니???", state)
-        if(state===false || state===null){
+        //얘는 게시글통해서 들어왔을때만 그 톡방이 있는지 확인하면됨
+        if(state===false){
             try{
                 const post_buyerId1 = {
                     postId: talkCard.postId,
@@ -134,6 +142,7 @@ const KokiriTalk = () => {
                 await dispatch(setMessageRoomId(res.data.id))
                 await dispatch(setSellerId(res.data.sellerId))
                 dispatch(setPostId(res.data.postId))
+
                 setRoomId(res.data.id)
                 console.log("메세지룸 추가", res.data)
                 // if(talkCard.id != undefined){
@@ -158,8 +167,38 @@ const KokiriTalk = () => {
     async function getMessageRoom() {
         try{
             const res = await Api.get('/user/messageRooms');
-            console.log("메세지룸 조회", res.data)
-            alert("메세지룸 조회 성공")
+            console.log("메세지룸 조회", res.data.content)
+            const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
+            console.log("메세지룸 조회2",res2.data)
+            // dispatch(setRoomsId(res.data.content.))
+            //첫번째 화면에서 첫번째 게시글을 띄우고싶으면 여기에다가 리덕스를 추가해
+            // dispatch(setProductImg(res.data.content.))
+            // dispatch(setTitle(post.title))
+            // dispatch(setWishCategory(post.wishCategory))
+            // dispatch(setTradeCategory(post.productCategory))
+            // dispatch(setTradeStatus(post.tradeStatus))
+            // dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
+
+
+            // dispatch(setPostId(res2.data[0].postId))
+            // dispatch(setMessageRoomId(res2.data[0].id))
+            // dispatch(setBuyerId(res2.data[0].buyerId))
+            // if(info.id === res2.data[0].buyerId){
+            //     dispatch(setOpponetNick(res2.data[0].sellerNickName))
+            // }
+            // else{
+            //     dispatch(setOpponetNick(res2.data[0].buyerNickName))
+            // }
+
+            setRoomList(()=>{
+                return [...res.data.content]
+            })
+
+            getMessageContent(res2.data[0].id);
+
+            alert("메세지룸 조회 성공in kokiritalk")
+
+            return res2.data[0].id
         }
         catch (err)
         {
@@ -170,10 +209,10 @@ const KokiriTalk = () => {
     async function sendMessage(loading) {
         let messageInfo1={
             content:input,
-            senderId:info.id,
-            receiverId:0,
-            postId:talkCard.postId,
-            messageRoomId:loading
+            senderId:undefined,
+            receiverId:undefined,
+            postId:undefined,
+            messageRoomId:undefined
         }
         try{
             if(info.id===talkCard.sellerId){
@@ -185,6 +224,7 @@ const KokiriTalk = () => {
                     postId:talkCard.postId,
                     messageRoomId:loading
                 }
+                console.log("messageInfo1파는",messageInfo1)
             }
             else{
                 console.log("메세지보내는사람이 사는 사람이야")
@@ -195,6 +235,8 @@ const KokiriTalk = () => {
                     postId:talkCard.postId,
                     messageRoomId:loading
                 }
+                console.log("messageInfo1사는",messageInfo1)
+
             }
             const res = await Api.post(`/messageRooms/${loading}`,messageInfo1);
             console.log("메세지 전송", res.data)
@@ -224,6 +266,7 @@ const KokiriTalk = () => {
             setContentInfo(()=>{
                 return [...res.data]
             })
+
             // for(let i=0;i<res.data.length;i++){
             //     contentInfo1[i]=res.data[i]
             // }
@@ -233,14 +276,22 @@ const KokiriTalk = () => {
         catch (err)
         {
             console.log(err)
-            alert("메세지룸 내용 조회 실패")
+            alert("메세지룸 내용 조회 실패 in kokiritalk")
         }
     }
+    // const load = await getMessageRoom();
     // const loading = await createMessageRoom();
-    useEffect(()=>{
-        getMessageContent(talkCard.id);
-    },[])
-    console.log(contentInfo)
+    // useEffect(()=>{
+    //     // getMessageContent(talkCard.id);
+    //     getMessageContent(talkCard.id);
+    // },[talkCard.id])
+    // if(!talkCard.id){
+    //     return null;
+    // }
+    // else{
+    //     getMessageContent(talkCard.id);
+    // }
+    console.log("asdfasdfsdafsd",contentInfo)
     const hi = () => {
         console.log("contentInfo",contentInfo)
         // console.log("contentInfo1",contentInfo1[0].content)
@@ -257,7 +308,11 @@ const KokiriTalk = () => {
     if(!contentInfo){
         return null
     }
-    console.log("렌더링",contentInfo)
+    if(!roomList){
+        return null
+    }
+
+    console.log("렌더링",roomList)
 
 
 
@@ -271,9 +326,13 @@ const KokiriTalk = () => {
                  {/*<TalkList keys={1} partner={"함민혁"} lastContent={"주무시나요"} date={"몰라"} onClick = {onClickTalkList} />*/}
                  {/*<TalkList keys={2} partner={"홍의성"} lastContent={"주무시나요2"} date={"몰라"} onClick = {onClickTalkList2} />*/}
                  {/*<TalkList keys={3} partner={"함민혁"} lastContent={"주무시나요3"} date={"몰라"} onClick = {onClickTalkList3} />*/}
-                    {objectMessage.map((SingleObject:object) => (
-                        <TalkList keys={SingleObject["keys"]} partner={SingleObject["partner"]} lastContent={SingleObject["lastContent"]} date={SingleObject["date"]}
-                                  onClick = {onClickTotalTalkList(SingleObject["keys"])} />
+                 {/*   {objectMessage.map((SingleObject:object) => (*/}
+                 {/*       <TalkList keys={SingleObject["keys"]} partner={SingleObject["partner"]} lastContent={SingleObject["lastContent"]} date={SingleObject["date"]}*/}
+                 {/*                 onClick = {onClickTotalTalkList(SingleObject["keys"])} />*/}
+                 {/*   ))}*/}
+                    {roomList.map((SingleObject:object) => (
+                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerId"]} lastContent={SingleObject["lastMsg"]} date={SingleObject["createdDated"]}
+                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} />
                     ))}
                 </div>
                 </div>
@@ -296,24 +355,26 @@ const KokiriTalk = () => {
                     <div className={styles.right_header1_2}>{talkCard.opponentNickname}님과의 쪽지방입니다.</div>
                 </div>
                 <div className={styles.talkContainer2}>
-                    {contentInfo.map((a,i)=>(
-                       contentInfo[i].senderId === info.id?
-                            <div className={styles.receive}>
-                                <div className={styles.receiveTitle}>보낸 쪽지</div>
-                                <p className={styles.receiveContent}>{contentInfo[i].content}</p>
-                            </div>
-                            :
-                            <div className={styles.send}>
-                                <div className={styles.sendTitle}>받은 쪽지</div>
-                                <p className={styles.sendContent}>{contentInfo[i].content}</p>
-                            </div>
-                    ))
-                    }
+                    {/*{contentInfo.map((a,i)=>(*/}
+                    {/*   contentInfo[i].senderId === info.id?*/}
+                    {/*        <div className={styles.receive}>*/}
+                    {/*            <div className={styles.receiveTitle}>보낸 쪽지</div>*/}
+                    {/*            <p className={styles.receiveContent}>{contentInfo[i].content}</p>*/}
+                    {/*        </div>*/}
+                    {/*        :*/}
+                    {/*        <div className={styles.send}>*/}
+                    {/*            <div className={styles.sendTitle}>받은 쪽지</div>*/}
+                    {/*            <p className={styles.sendContent}>{contentInfo[i].content}</p>*/}
+                    {/*        </div>*/}
+                    {/*))*/}
+                    {/*}*/}
                     {/*<div className={styles.send}>*/}
                     {/*    <div className={styles.sendTitle}>받은 쪽지</div>*/}
                     {/*    <p className={styles.sendContent}>{contentInfo[0].content}</p>*/}
                     {/*</div>*/}
-                     {/*<Message keys={key}/>*/}
+                    {key===null?
+                        <></>:<Message keys={key}/>
+                    }
                 </div>
                 <div className = {styles.writeComments}>
                     <input type={"text"} className={styles.writeInput} placeholder={"쪽지를 보내세요"} onChange={onChangeMessage}/>

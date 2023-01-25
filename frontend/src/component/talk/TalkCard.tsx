@@ -2,7 +2,7 @@ import styles from "../../styles/talk/talkList.module.scss";
 import React from "react";
 import TalkList from "./TalkList";
 import transfer from "../../img/transfer.png"
-import {setProductImg,setOpponetNick,setTradeStatus,setTitle,setWishCategory,setTradeCategory,resetTalkCard} from "../../store/talkListReducer";
+import {setProductImg,setOpponetNick,setTradeStatus,setTitle,setWishCategory,setTradeCategory,resetTalkCard} from "../../store/talkCardReducer";
 import {useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 
@@ -31,7 +31,7 @@ interface PostType {
 
 }
 const TalkCard = () => {
-    const talkCard = useSelector((state : Rootstate)=>{return state.talkListReducer})
+    const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
 
     // const objectMessage = [{
     //     keys: 1,

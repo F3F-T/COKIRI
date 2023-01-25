@@ -33,14 +33,14 @@ import {
     setWishCategory,
     setTradeCategory,
     resetTalkCard,
-    setSellerId, setPostId
-} from "../../store/talkListReducer";
+    setSellerId, setPostId, setBuyerId
+} from "../../store/talkCardReducer";
 import {FALSE} from "sass";
 
 
 
 const PostDetail = () => {
-    let existOrNot : boolean
+    let existOrNot : boolean = false
     // const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
     // console.log("asdfasdfa",detail)
     const navigate = useNavigate();
@@ -105,9 +105,9 @@ const PostDetail = () => {
     }
 
     //
-    interface ExistType{
-        existOrNot : boolean
-    }
+    // interface ExistType{
+    //     existOrNot : boolean
+    // }
     //
 
     const params = useParams();
@@ -120,7 +120,7 @@ const PostDetail = () => {
     const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
 
     const dispatch = useDispatch();
-    const talkCard = useSelector((state : Rootstate)=>{return state.talkListReducer})
+    const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
     const store = useSelector((state:Rootstate) => state);
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
 
@@ -128,7 +128,7 @@ const PostDetail = () => {
     //<input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
     //에서 value를 사용하기 위해선 onBlur가 아닌 onChange를 사용해야만 한다
     const [commentText, setCommentText] = useState("");
-    const [exist,setExist] = useState<ExistType>({existOrNot:false});
+    const [exist,setExist] = useState<boolean>(false);
     // dispatch(resetTalkCard())
 
     async function getPost() {
@@ -182,16 +182,21 @@ const PostDetail = () => {
         dispatch(setTradeStatus(post.tradeStatus))
         dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
         dispatch(setPostId(post.id))
+        if(info.id != post.userInfoWithAddress.userDetail.id){
+            dispatch(setOpponetNick(post.userInfoWithAddress.userDetail.nickname))
+        }
         // await dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
         await getMessageRoom()
         console.log("existexist",existOrNot)
-        navigate(`/kokiriTalk/${info.id}`, {state: existOrNot})
+        navigate(`/kokiriTalk/${info.id}`, {state: {existOrNot}})
     }
     async function getMessageRoom() {
         try{
             const res = await Api.get('/user/messageRooms');
             alert("메세지룸 조회 성공1")
             console.log("d",res.data)
+            const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
+            console.log("ddd",res2.data)
             // res.data.content.map((a:String)=>(
             //     a['buyerNickname'] === info.nickname ?
             //         setExist((prevState) => {
@@ -204,20 +209,31 @@ const PostDetail = () => {
             //             }
             //         })
             // ))
-            console.log("콘탠츠길이",res.data.content.length)
             for(let i =0 ; i<res.data.content.length;i++){
                 if(res.data.content[i].buyerNickname === info.nickname)
                 {
                     if(res.data.content[i].sellerNickname === post.userInfoWithAddress.userDetail.nickname){
-                        console.log("이미방있어요요요요")
+                        console.log("이미방있어요요df요요")
                         existOrNot = true
                     }
                     else {
                         existOrNot = false
                     }
-
                 }
-
+            }
+            console.log("콘탠츠길이",res.data.content.length)
+            for(let i =0 ; i<res2.data.content.length;i++){
+                if(res2.data[i].buyerNickname === info.nickname)
+                {
+                    if(res.data[i].postId === post.id){
+                        console.log("이미방있어요요요요")
+                        // dispatch(setBuyerId(res2.data[i].buyerId))
+                        existOrNot = true
+                    }
+                    else {
+                        existOrNot = false
+                    }
+                }
             }
         }
         catch (err)
@@ -330,27 +346,9 @@ const PostDetail = () => {
 
     console.log("유저 아이디", info.id)
 
-    // async function createMessageRoom() {
-    //     console.log("포스트 아이디", postId)
-    //     try{
-    //         const post_buyerId1 = {
-    //             postId: postId,
-    //             buyerId: info.id
-    //         }
-    //         const res = await Api.post(`/post/${postId}/messageRooms`,post_buyerId1);
-    //         dispatch(setOpponetNick(res.data.sellerNickName))
-    //         console.log("메세지룸 추가", res.data)
-    //         alert("메세지룸 추가 성공")
-    //
-    //     }
-    //     catch (err)
-    //     {
-    //         console.log(err)
-    //         alert("메세지룸 추가 실패")
-    //     }
-    // }
+
     const hihihihi = () => {
-        console.log("존재유무",exist)
+        console.log("존재유무",existOrNot)
     }
     return (
         <div className={styles.postDetail}>

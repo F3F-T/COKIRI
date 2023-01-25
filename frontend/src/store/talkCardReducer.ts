@@ -5,7 +5,7 @@
  */
 
 import {createSlice,PayloadAction} from "@reduxjs/toolkit";
-interface talkListInfo {
+interface talkCardInfo {
     id:number,
     sellerId:number,
     buyerId:number,
@@ -18,16 +18,16 @@ interface talkListInfo {
     postId:number;
 }
 
-const initialUserTalkCardInfoState : talkListInfo = {
+const initialUserTalkCardInfoState : talkCardInfo = {
     id:undefined,
     sellerId: undefined,
     buyerId:undefined,
-    opponentNickname: '',
-    productImg: '',
-    tradeStatus: '',
-    title:'',
-    wishCategory:'',
-    tradeCategory:'',
+    opponentNickname: undefined,
+    productImg: undefined,
+    tradeStatus: undefined,
+    title:undefined,
+    wishCategory:undefined,
+    tradeCategory:undefined,
     postId:undefined,
 }
 
@@ -39,7 +39,7 @@ const talkCardInfoSlice = createSlice({
     initialState : initialUserTalkCardInfoState,
     reducers : {
         setReturnMessageRoomInfo(state,action){
-            state.opponentNickname = action.payload.opponentId;
+            state.opponentNickname = action.payload.opponentNickname;
             state.productImg= action.payload.productImg;
             state.tradeStatus= action.payload.tradeStatus;
             state.title=action.payload.title;
@@ -83,6 +83,11 @@ const talkCardInfoSlice = createSlice({
             state.title=undefined
             state.wishCategory=undefined
             state.tradeCategory=undefined
+            state.id=undefined
+            state.productImg=undefined
+            state.sellerId=undefined
+            state.buyerId=undefined
+            state.postId=undefined
         },
 
     }

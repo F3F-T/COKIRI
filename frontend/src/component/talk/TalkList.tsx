@@ -8,6 +8,9 @@ import classNames from "classnames/bind";
 import {storeCategory} from "../../store/categoryReducer";
 import {useDispatch, useSelector} from "react-redux";
 import Message from "./Message";
+import Api from "../../utils/api";
+import {setMessageRoomId, setOpponetNick, setPostId} from "../../store/talkCardReducer";
+import {Rootstate} from "../../index";
 
 
 
@@ -31,9 +34,15 @@ interface props{
 // type keys = keyof objectShape
 
 const TalkListLeft = (props2:props)=>{
-
+    const dispatch = useDispatch();
+    const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
+    const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
     // props2.click =click
     console.log("이건가",props2);
+    console.log("이건가2",props2.keys);
+
+
+
     return(
         <>
                 <div className={styles.talkContent}>
@@ -54,30 +63,9 @@ const TalkListLeft = (props2:props)=>{
         </>
     )
 }
-const TalkListRight = ()=>{
-
-    return(
-        <>
-            <div className={styles.send}>
-                <div className={styles.sendTitle}>받은 쪽지</div>
-                <input className={styles.sendContent} type={"text"} />
-            </div>
-            <div className={styles.receive}>
-                <div className={styles.receiveTitle}>보낸 쪽지</div>
-                <input className={styles.receiveContent} type={"text"} />
-            </div>
-            <div className={styles.receive}>
-                <div className={styles.receiveTitle}>보낸 쪽지</div>
-                <input className={styles.receiveContent} type={"text"} />
-            </div>
-        </>
-    )
-}
 
 
 const TalkList = (props2: props) => {
-    const [click, setClick] = useState<boolean>(false);
-
 
     return (
         <>
