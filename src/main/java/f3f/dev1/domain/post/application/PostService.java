@@ -298,6 +298,10 @@ public class PostService {
             post.updateTitle(updatePostRequest.getTitle());
         }
 
+        if(updatePostRequest.getPrice() != null && !post.getPrice().equals(updatePostRequest.getPrice())) {
+            post.updatePrice(updatePostRequest.getPrice());
+        }
+
         if(updatePostRequest.getProductCategory() != null && !post.getProductCategory().getName().equals(updatePostRequest.getProductCategory())) {
             Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundByIdException::new);
             post.updateProductCategory(productCategory);
@@ -311,6 +315,15 @@ public class PostService {
         if(updatePostRequest.getThumbnail() != null && !post.getThumbnailImgPath().equals(updatePostRequest.getThumbnail())) {
             String thumbnail = updatePostRequest.getThumbnail();
             post.updateThumbnail(thumbnail);
+        }
+
+        //의성 추가
+        if(updatePostRequest.getPrice() != null && !post.getPrice().equals(updatePostRequest.getPrice())) {
+            post.updatePrice(updatePostRequest.getPrice());
+        }
+        //의성 추가
+        if(updatePostRequest.getContent() != null && !post.getContent().equals(updatePostRequest.getContent())) {
+            post.updateContent(updatePostRequest.getContent());
         }
 
     }
