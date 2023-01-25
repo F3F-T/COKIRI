@@ -30,6 +30,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "./index";
 import MyPageSet from "./component/MyPageSet";
 import TagSearch from "./routes/물물교환, 끼리끼리 화면/TagSearch";
+import PostEdit from "./routes/게시글/PostEdit";
 
 function App() {
 //
@@ -77,6 +78,7 @@ function App() {
 
                 <Route path="/post/:id" element={<PostDetail/>}/>
                 <Route path="/upload" element={<PostUpload/>}/>
+                <Route path="/post/:id/edit" element={<PostEdit/>}/>
                 <Route path="/neighborauth" element={<NeighborAuth/>}/>
 
                 <Route path='*' element={<NotFound />}/>

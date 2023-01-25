@@ -142,7 +142,6 @@ public class PostServiceTest {
 
     public UpdatePostRequest createUpdatePostRequest() {
         return UpdatePostRequest.builder()
-                .id(1L)
                 .title("제목 맘에 안들어서 바꿈")
                 .content("내용도 바꿀래요")
                 .productCategory(null)
@@ -240,7 +239,6 @@ public class PostServiceTest {
     // 업데이트 요청
     public UpdatePostRequest createUpdatePostRequest(Long postId, Long authorId, String title, String content, String productCategoryName, String wishCategoryName, List<String> tagNames) {
         return UpdatePostRequest.builder()
-                .id(postId)
                 .authorId(authorId)
                 .title(title)
                 .content(content)
@@ -419,7 +417,7 @@ public class PostServiceTest {
 
         //then
         // 컨트롤러에서 사용하는 포스트 서비스 로직을 그대로 사용하여 테스트해보겠음.
-        SinglePostInfoDto postInfoDtoWithTag = postService.findPostById(postId);
+        SinglePostInfoDto postInfoDtoWithTag = postService.findPostById(postId, member.getId());
         assertThat(postInfoDtoWithTag.getTitle()).isEqualTo("제목");
         assertThat(postInfoDtoWithTag.getTagNames().size()).isEqualTo(3);
         assertThat(postInfoDtoWithTag.getTagNames().containsAll(tagNamesToBeAdded)).isTrue();
@@ -481,24 +479,24 @@ public class PostServiceTest {
 
         //then
         PageRequest pageRequest = PageRequest.of(0, 20);
-        Page<PostSearchResponseDto> postsByCategoryAndPriceRange = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag, member.getId(), pageRequest);
         assertThat(postsByCategoryAndPriceRange).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
 
-        Page<PostSearchResponseDto> postsByCategoryAndPriceRange1 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag1, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange1 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag1, member.getId(), pageRequest);
         assertThat(postsByCategoryAndPriceRange1).extracting("title").hasSize(1).contains("첫번째 게시글");
 
-        Page<PostSearchResponseDto> postsByCategoryAndPriceRange2 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag2, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange2 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag2, member.getId(), pageRequest);
         assertThat(postsByCategoryAndPriceRange2).extracting("title").hasSize(1).contains("두번째 게시글");
 
-        Page<PostSearchResponseDto> postsByCategoryAndPriceRange3 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag3, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange3 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag3, member.getId(), pageRequest);
         assertThat(postsByCategoryAndPriceRange3).extracting("title").hasSize(1).contains("두번째 게시글");
 
-        Page<PostSearchResponseDto> postsByCategoryAndPriceRange4 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag4, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange4 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag4, member.getId(), pageRequest);
         assertThat(postsByCategoryAndPriceRange4).isEmpty();
-        Page<PostSearchResponseDto> postsByCategoryAndPriceRange5 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag5, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange5 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag5, member.getId(), pageRequest);
         assertThat(postsByCategoryAndPriceRange5).extracting("title").hasSize(1).contains("세번째 게시글");
 
-        Page<PostSearchResponseDto> postsByCategoryAndPriceRange6 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag6, pageRequest);
+        Page<PostSearchResponseDto> postsByCategoryAndPriceRange6 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag6, member.getId(), pageRequest);
         assertThat(postsByCategoryAndPriceRange6).extracting("title").hasSize(3).contains("첫번째 게시글", "두번째 게시글", "세번째 게시글");
     }
 
@@ -554,23 +552,23 @@ public class PostServiceTest {
         test1.add("해시태그3");
 
         PageRequest pageRequest = PageRequest.of(0, 20);
-        Page<PostSearchResponseDto> resultList = postService.findPostsWithTagNameList(test1, pageRequest);
+        Page<PostSearchResponseDto> resultList = postService.findPostsWithTagNameList(test1, member.getId(), pageRequest);
         assertThat(resultList).extracting("title").hasSize(1).contains("두번째 게시글");
 
         List<String> test2 = new ArrayList<>();
         test2.add("해시태그1");
         test2.add("해시태그2");
-        Page<PostSearchResponseDto> resultList2 = postService.findPostsWithTagNameList(test2, pageRequest);
+        Page<PostSearchResponseDto> resultList2 = postService.findPostsWithTagNameList(test2, member.getId(), pageRequest);
         assertThat(resultList2).extracting("title").hasSize(1).contains("첫번째 게시글");
 
         List<String> test3 = new ArrayList<>();
         test3.add("해시태그2");
-        Page<PostSearchResponseDto> resultList3 = postService.findPostsWithTagNameList(test3, pageRequest);
+        Page<PostSearchResponseDto> resultList3 = postService.findPostsWithTagNameList(test3, member.getId(), pageRequest);
         assertThat(resultList3).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
 
         List<String> testPlz = new ArrayList<>();
         testPlz.add("해시태그");
-        Page<PostSearchResponseDto> resultListPlz = postService.findPostsWithTagNameList(testPlz, pageRequest);
+        Page<PostSearchResponseDto> resultListPlz = postService.findPostsWithTagNameList(testPlz, member.getId(), pageRequest);
         assertThat(resultListPlz).extracting("title").isEmpty();
         // 빈 리스트는 처리하지 못함. 컨트롤러 단에서 컷해주자.
 //        Page<PostInfoDtoForGET> resultList4 = postService.findPostsWithTagNameList(new ArrayList<>(), pageRequest);
@@ -622,7 +620,7 @@ public class PostServiceTest {
 
         //then
         PageRequest pageRequest = PageRequest.of(0, 20);
-        Page<PostSearchResponseDto> list1 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag, pageRequest);
+        Page<PostSearchResponseDto> list1 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag, member.getId(), pageRequest);
         assertThat(list1).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
         assertThat(list1.getContent().get(0).getScrapCount()).isEqualTo(1L);
     }
@@ -650,12 +648,11 @@ public class PostServiceTest {
         Long postId = postService.savePost(postSaveRequest, member.getId());
         Post post = postRepository.findById(postId).get();
         UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, member.getId(), "변경한 제목", "변경한 내용", post.getProductCategory().getName(), post.getWishCategory().getName(), new ArrayList<>());
-        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
+        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, member.getId());
 
         //then
         assertThat(postInfoDto.getTitle()).isEqualTo(updatePostRequest.getTitle());
         assertThat(postInfoDto.getContent()).isEqualTo(updatePostRequest.getContent());
-        assertThat(postInfoDto.getId()).isEqualTo(updatePostRequest.getId());
 
         // then +
         Post updatedPost = postRepository.findById(postInfoDto.getId()).get();
@@ -702,7 +699,7 @@ public class PostServiceTest {
         UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, member.getId(),"변경한 제목", "변경한 내용", post.getProductCategory().getName(), post.getWishCategory().getName(), secondTagNameList);
         // 컨트롤러에서는 update 하기 전에 postTagService에서 레포지토리를 삭제한다. 똑같은 환경으로 테스트 하기 위해 여기서도 그렇게 하겠다.
         postTagService.deletePostTagFromPost(postId);
-        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
+        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, member.getId());
 
         //then
         Post updatedPost = postRepository.findById(postInfoDto.getId()).get();
@@ -768,7 +765,7 @@ public class PostServiceTest {
         updatedTagNames.add(tagRequest3.getName());
         UpdatePostRequest updatePostRequest = createUpdatePostRequest(postId, member.getId(),"변경한 제목", "변경한 내용", productRequest.getName(), wishRequest.getName(), updatedTagNames);
         postTagService.deletePostTagFromPost(postId);
-        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, member.getId());
+        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, member.getId());
 
         //then
 

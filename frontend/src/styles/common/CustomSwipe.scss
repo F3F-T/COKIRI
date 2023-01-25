@@ -1,0 +1,43 @@
+//--swiper-navigation-size: 44px;
+
+
+:root {
+  --swiper-navigation-size: 25px !important;
+
+}
+
+.swiper-slide{
+  font-size: 2rem;
+}
+
+.swiper-container
+{
+  height: 22rem;
+  width : 22rem
+}
+
+.image{
+  height: 22rem;
+  width : 22rem
+}
+
+.swiper-button-next{
+    color: #5DC8CD !important;
+
+}
+
+.swiper-button-prev{
+  color: #5DC8CD !important;
+
+}
+
+.swiper-pagination-bullet {
+  background: #5DC8CD !important;
+}
+//.swiper-pagination-bullet-active {
+//  background: yellow !important;
+//}
+
+@import 'swiper/swiper.scss';
+@import 'swiper/components/navigation/navigation.scss';
+@import 'swiper/components/pagination/pagination.scss';
