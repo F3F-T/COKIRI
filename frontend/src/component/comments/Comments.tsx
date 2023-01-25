@@ -8,6 +8,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import {changeRefreshState} from "../../store/refreshReducer";
 import {useNavigate} from "react-router-dom";
+import login from "../../routes/로그인 & 회원가입/Login";
 
 /**
  * Props 부모 : PostDetail.tsx
@@ -105,11 +106,32 @@ const PrimaryComment = (commentInfo: CommentProps) => {
         })
     }
 
-    const onClickReport = (comment) => {
+    const onClickDelete = async () => {
+        try {
+            const config = {
+                data: {
+                    id: commentInfo.id,
+                    authorId: commentInfo.memberId,
+                    postId: commentInfo.postId
+                }
+            }
+            //삭제는 일반적인 axios 방식과 달리 message body를 config로 넘겨주어야한다.
+            const res = await Api.delete(`/post/${commentInfo.postId}/comments/ ${commentInfo.id}`, config);
+            if (window.confirm("정말 게시글을 삭제하시겠어요?")) {
+                alert("게시글 삭제 성공")
+                dispatch(changeRefreshState());
+            }
+        }
+        catch (err) {
+            console.log(err)
+            alert("댓글 삭제 실패")
+        }
+
+    }
+
+    const onClickReport = () => {
         alert("신고기능은 아직 없어용");
     }
-    console.log(commentInfo.isAuthor);
-
 
     return (
         <>
@@ -123,13 +145,13 @@ const PrimaryComment = (commentInfo: CommentProps) => {
                         commentInfo.isAuthor || isCommentAuthor ?
                             (<>
                                 <li onClick={() => onClickReComment(commentInfo)}>대댓글</li>
-                                <li>삭제</li>
+                                <li onClick={onClickDelete}>삭제</li>
                             </>)
                             :
                             (
                                 <>
-                                    <li onClick={() => onClickReComment(commentInfo)}>대댓글</li>
-                                    <li onClick={() => onClickReport(commentInfo)}>신고</li>
+                                    <li onClick={onClickDelete}>삭제</li>
+                                    <li onClick={onClickReport}>신고</li>
                                 </>)
                     }
 
@@ -158,6 +180,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
 const SecondaryComment = (commentInfo: CommentProps) => {
     const navigate = useNavigate();
     const store = useSelector((state: Rootstate) => state);
+    const dispatch = useDispatch();
 
     let isCommentAuthor:boolean;
 
@@ -167,8 +190,32 @@ const SecondaryComment = (commentInfo: CommentProps) => {
         isCommentAuthor = false;
     }
 
+    console.log(commentInfo);
 
-    const onClickReport = (comment) => {
+    const onClickDelete = async () => {
+        try {
+            const config = {
+                data: {
+                    id: commentInfo.id,
+                    authorId: commentInfo.memberId,
+                    postId: commentInfo.postId
+                }
+            }
+            //삭제는 일반적인 axios 방식과 달리 message body를 config로 넘겨주어야한다.
+            const res = await Api.delete(`/post/${commentInfo.postId}/comments/ ${commentInfo.id}`, config);
+            if (window.confirm("정말 게시글을 삭제하시겠어요?")) {
+                alert("게시글 삭제 성공")
+                dispatch(changeRefreshState());
+            }
+        }
+        catch (err) {
+            console.log(err)
+            alert("댓글 삭제 실패")
+        }
+
+    }
+
+    const onClickReport = () => {
         alert("신고기능은 아직 없어용");
     }
 
@@ -183,10 +230,10 @@ const SecondaryComment = (commentInfo: CommentProps) => {
                     {
                         commentInfo.isAuthor || isCommentAuthor ?
                             (<>
-                                <li>삭제</li>
+                                <li onClick={onClickDelete}>삭제</li>
                             </>)
                             :
-                            (<li onClick={() => onClickReport(commentInfo)}>신고</li>)
+                            (<li onClick={onClickReport}>신고</li>)
                     }
                 </ul>
             </div>
@@ -215,7 +262,8 @@ const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps
 
             {commentInfo.className === "secondary" &&
                 <div className={cx(commentInfo.className)}>
-                    <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}
+                    <SecondaryComment postId={commentInfo.postId} id={commentInfo.id} userID={commentInfo.userID}
+                                      content={commentInfo.content} time={commentInfo.time}
                                       imageUrl={commentInfo.imageUrl} isAuthor={commentInfo.isAuthor} memberId={commentInfo.memberId}/>
                 </div>
             }

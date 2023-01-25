@@ -393,7 +393,7 @@ const PostDetail = () => {
                                           userID={comment.memberNickname} content={comment.content}
                                           time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl} isAuthor={isAuthor} memberId={comment.memberId}/>}
                             {comment.depth === 1 &&
-                                <Comments key={comment.id + 1} id={comment.id} className={"secondary"}
+                                <Comments key={comment.id + 1} postId={comment.postId} id={comment.id} className={"secondary"}
                                           userID={comment.memberNickname} content={comment.content}
                                           time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl} isAuthor={isAuthor} memberId={comment.memberId}/>}
                         </div>
