@@ -140,7 +140,7 @@ const PostEdit = () => {
                     res.data.images.map((image) => (
                         // setShowImages([image.imgPath])
                         setShowImages(prevState => {
-                            return [...prevState, image.imgPath];
+                            return [...prevState, image];
                         })
                     ))
                 }
@@ -282,10 +282,6 @@ const PostEdit = () => {
             photoUrlList = await imageUpload();
         }
 
-        if (!photoUrlList) {
-            console.log("image 저장중")
-            return null;
-        } else {
             console.log(photoUrlList);
             const jsonObj = {
                 "title": uploadData.title,
@@ -301,7 +297,7 @@ const PostEdit = () => {
             };
             uploadPost(jsonObj);
             console.log("업로드 성공")
-        }
+
     }
 
     const onChangeImg = async (e: React.ChangeEvent<HTMLInputElement>) => {
