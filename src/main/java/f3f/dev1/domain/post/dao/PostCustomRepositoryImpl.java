@@ -34,6 +34,26 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
+    /*
+    public List<BookPageDto> getBookPage (int bookNo, int pageNo) {
+    return queryFactory
+            .select(Projections.fields(BookPageDto.class,
+                    book.name,
+                    Expressions.constantAs(bookNo, book.bookNo) // (1)
+                )
+            )
+            .from(book)
+            .where(book.bookNo.eq(bookNo))
+            .offset(pageNo)
+            .limit(10)
+            .fetch();
+        }
+
+        위 예제 코드처럼 조건절에 사용된 값을 select에서는 제외할 수 있다.
+        위 코드 참고해서 리팩토링 하기
+     */
+
+
     // DTO로 처리하기에는 내부적으로 2차 처리되는 필드가 너무 많다. 그냥 객체로 바로 받아오겠다.
     @Override
     public Page<Post> findPostsByCondition(SearchPostRequestExcludeTag request, Pageable pageable) {

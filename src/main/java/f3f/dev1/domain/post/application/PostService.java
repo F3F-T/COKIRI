@@ -91,12 +91,21 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findAll(Pageable pageable) {
+    public Page<PostSearchResponseDto> findAll(Long currentMemberId, Pageable pageable) {
         Page<Post> all = postRepository.findAll(pageable);
         List<PostSearchResponseDto> resultList = new ArrayList<>();
-        for (Post post : all) {
-            resultList.add(post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size()));
+        if(currentMemberId != null) {
+            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+            for (Post post : all) {
+                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                resultList.add(post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(),isScrap));
+            }
+        } else {
+            for (Post post : all) {
+                resultList.add(post.toSearchResponseDto((long) post.getMessageRooms().size(), (long) post.getScrapPosts().size(), false));
+            }
         }
+
         return new PageImpl<>(resultList);
     }
 
@@ -128,24 +137,46 @@ public class PostService {
 
 
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
+    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Long currentMemberId, Pageable pageable) {
         List<PostSearchResponseDto> list = new ArrayList<>();
         Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
-        for (Post post : dtoPages) {
-            PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size());
-            list.add(build);
+        // 조회하는 사용자가 로그인된 회원인 경우
+        if(currentMemberId != null) {
+            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+            for (Post post : dtoPages) {
+                // 캐싱 적용하기 전에는 이게 최선이다..
+                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
+                list.add(build);
+            }
+        }
+        // 조회하는 사용자가 비회원일 경우
+        else {
+            for (Post post : dtoPages) {
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
+                list.add(build);
+            }
         }
         return new PageImpl<>(list);
     }
 
 
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
+    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, Pageable pageable) {
         Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
         List<PostSearchResponseDto> resultList = new ArrayList<>();
-        for (Post post : dtoList) {
-            PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size());
-            resultList.add(build);
+        if(currentMemberId != null) {
+            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+            for (Post post : dtoList) {
+                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
+                resultList.add(build);
+            }
+        } else {
+            for (Post post : dtoList) {
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
+                resultList.add(build);
+            }
         }
         return new PageImpl<>(resultList);
     }
@@ -153,7 +184,7 @@ public class PostService {
     // TODO 거래 가능한 게시글만 검색하기
 
     @Transactional(readOnly = true)
-    public SinglePostInfoDto findPostById(Long id) {
+    public SinglePostInfoDto findPostById(Long id, Long currentMemberId) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         // TODO 거래 가능 상태인지 확인하기
         List<String> tagNames = new ArrayList<>();
@@ -174,9 +205,10 @@ public class PostService {
             postImages.add(postImage.getImgPath());
         }
 
-        boolean scrapExists = scrapPostRepository.existsByScrapIdAndPostId(userInfo.getUserDetail().getScrapId(), post.getId());
-
-        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, scrapExists);
+        // 어쩔 수 없이 세션에서 받아온 현재 유저의 엔티티를 찾는 쿼리를 한번 날려야겠다.
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+        boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), id);
+        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, isScrap);
         return response;
     }
 

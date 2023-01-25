@@ -43,13 +43,14 @@ public class PostController {
             @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
             @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
             Pageable pageable) {
+        Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
             SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
                     .productCategory(productCategoryName)
                     .wishCategory(wishCategoryName)
                     .minPrice(minPrice)
                     .maxPrice(maxPrice)
                     .build();
-            Page<PostSearchResponseDto> pageDto = postService.findPostsByCategoryAndPriceRange(request, pageable);
+            Page<PostSearchResponseDto> pageDto = postService.findPostsByCategoryAndPriceRange(request, currentMemberId, pageable);
             return new ResponseEntity<>(pageDto, HttpStatus.OK);
     }
 
@@ -58,11 +59,11 @@ public class PostController {
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
             Pageable pageable) {
         Page<PostSearchResponseDto> resultList;
-
+        Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
         if(!tagNames.isEmpty()) {
-            resultList = postService.findPostsWithTagNameList(tagNames, pageable);
+            resultList = postService.findPostsWithTagNameList(tagNames, currentMemberId, pageable);
         } else {
-            resultList = postService.findAll(pageable);
+            resultList = postService.findAll(currentMemberId, pageable);
         }
         return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
@@ -80,11 +81,11 @@ public class PostController {
 
     // 게시글 정보 조회
     // TODO 해당 게시글이 본인이 스크랩한 게시글인지 판단해줘야 함
-    // scrapPost랑 scrap postId로 조인 걸고 userId로 존재하는 scrapPost 있는지 찾아보기 - 네이티브 쿼리로 짜야하나
+    // scrapPost랑 scrap을 postId로 조인 걸고 userId로 존재하는 scrapPost 있는지 찾아보기 - 네이티브 쿼리로 짜야하나
     @GetMapping(value = "/post/{postId}")
     public ResponseEntity<SinglePostInfoDto> getPostInfo(@PathVariable(name = "postId") Long postId) {
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        SinglePostInfoDto postInfoDto = postService.findPostById(postId);
+        Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
+        SinglePostInfoDto postInfoDto = postService.findPostById(postId, currentMemberId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
 

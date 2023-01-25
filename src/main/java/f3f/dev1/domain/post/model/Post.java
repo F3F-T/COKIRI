@@ -127,7 +127,7 @@ public class Post extends BaseTimeEntity {
         this.id = id;
     }
 
-    public PostSearchResponseDto toSearchResponseDto(Long messageRoomCount, Long scrapCount) {
+    public PostSearchResponseDto toSearchResponseDto(Long messageRoomCount, Long scrapCount, boolean isScrap) {
         return PostSearchResponseDto.builder()
                 .productCategory(this.productCategory.getName())
                 .authorNickname(this.author.getNickname())
@@ -139,6 +139,7 @@ public class Post extends BaseTimeEntity {
                 .content(this.content)
                 .title(this.title)
                 .price(this.price)
+                .isScrap(isScrap)
                 .id(this.id)
                 .build();
     }

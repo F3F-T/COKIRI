@@ -195,6 +195,7 @@ public class PostDTO {
         private LocalDateTime createdTime;
         private Long messageRoomCount;
         private String wishCategory;
+        private boolean isScrap;
         private Long scrapCount;
         private Long price;
     }
