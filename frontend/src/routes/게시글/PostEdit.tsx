@@ -265,7 +265,7 @@ const PostEdit = () => {
             const res = await Api.patch(`/post/${postId}`, jsonObj);
 
             alert("수정 성공")
-            navigate(`/`)
+            navigate(`/post/${postId}`);
         } catch (err) {
             console.log(err)
             alert("업로드 실패")

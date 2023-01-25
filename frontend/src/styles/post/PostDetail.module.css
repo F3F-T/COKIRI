@@ -74,7 +74,8 @@
 
 .postDetailInfo{
     margin-left: 2rem;
-    margin-right: 1rem;
+    /*margin-right: 1rem;*/
+    position: relative;
 
 }
 
@@ -96,17 +97,23 @@
 .postDetailInfo .postDetailContent{
     margin-top: 0.7rem;
     font-size: 1rem;
-    margin-right: 3rem;
+    margin-right: 1.8rem;
     font-weight: bold;
+    white-space: pre-wrap;
 }
 
 .postDetailInfo .postDetailTag{
     color: blue;
+    position: absolute;
+    bottom: 3rem;
     margin-top: 0.7rem;
 }
 .postDetailSwapCategoryBox{
     margin-top: 1.5rem;
     display: flex;
+    position: absolute;
+    bottom: 0;
+    right:0;
 }
 .transfer{
     width: 2rem;

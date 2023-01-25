@@ -66,7 +66,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
     const onClickReComment = (comment) => {
         setEnableReComment(prevState => !prevState);
     }
-    console.log(commentInfo);
+    // console.log(commentInfo);
 
     if (commentInfo.memberId === store.userInfoReducer.id) {
         isCommentAuthor = true;
@@ -191,7 +191,6 @@ const SecondaryComment = (commentInfo: CommentProps) => {
         isCommentAuthor = false;
     }
 
-    console.log(commentInfo);
 
     const onClickDelete = async () => {
         try {

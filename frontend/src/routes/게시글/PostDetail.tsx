@@ -379,6 +379,7 @@ const PostDetail = () => {
                         <div className={styles.timeBox}>
                             <img className={styles.timeImg} src={clock}/>
                             <p className={styles.timeNum}>{timeConvert(post.createdTime)}</p>
+                            <button className={styles.exchangeBtn} onClick={talkButton}>거래상태</button>
                         </div>
                     </div>
                     <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
