@@ -133,7 +133,9 @@ public class CommentService {
         if(!commentInPost.getId().equals(comment.getId())) {
             throw new NotMatchingCommentException("요청한 게시글에 삭제하려는 댓글이 없습니다.");
         }
-        if(!commentInPost.getAuthor().getId().equals(deleteCommentRequest.getAuthorId())) {
+        if(!commentInPost.getAuthor().getId().equals(deleteCommentRequest.getAuthorId()) ||
+            !currentMemberId.equals(post.getAuthor().getId())) {
+            // 게시글 작성자는 예외적으로 모든 댓글을 삭제할 수 있다.
             throw new NotMatchingAuthorException("댓글 작성자가 아닙니다");
         }
         if(!currentMemberId.equals(user.getId())) {
