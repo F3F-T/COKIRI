@@ -20,7 +20,6 @@ import { NumericFormat } from 'react-number-format';
 import Select from "react-select";
 
 const PostUpload = () => {
-
     interface UploadData {
         title: string;
         price: string;
@@ -35,6 +34,7 @@ const PostUpload = () => {
     const store = useSelector((state:Rootstate) => state);
     const fileInput = useRef(null)
     const [photoData,setPhotoData] = useState(null)
+    const [photoUrl, setPhotoUrl] = useState<string[]>(null);
 
     // const categories: string[] =
     //     ['전체', '도서', '생활가전', '의류', '유아도서', '유아동', '여성의류', '남성의류', '뷰티/미용', '스포츠/레저',
@@ -47,7 +47,8 @@ const PostUpload = () => {
     const categories : Category[] = 
         [
             {name : '전체'}, 
-            {name : '생활가전'}, 
+            {name : '도서'},
+            {name : '생활가전'},
             {name : '의류'}, 
             {name : '유아도서'}, 
             {name : '유아동'}, 
@@ -61,8 +62,8 @@ const PostUpload = () => {
             {name : '가공용품'}, 
             {name : '취미/게임'}, 
             {name : '인테리어'}, 
-            {name : '생활/주방'}]
-    
+            {name : '생활/주방'}
+        ]
 
     const navigate = useNavigate();
     const [showImages,setShowImages] = useState([]);
@@ -76,8 +77,6 @@ const PostUpload = () => {
 
     const onChangePrice = (e,value) => {
         const inputPrice = e.target.value;
-        console.log(inputPrice);
-
 
         setUploadData((prevState) => {
             return {...prevState, price: inputPrice}
@@ -133,15 +132,14 @@ const PostUpload = () => {
             console.log(err)
             alert("업로드 실패")
         }
-
-
     }
 
     const imageUpload = async () => {
         try {
+
             const res = await Api.post("/auth/image/postImage", photoData);
-            console.log(res)
-            alert("이미지 업로드 성공")
+            return res.data.imageUrls;
+
         } catch (err) {
             console.log(err)
             alert("이미지 업로드 실패")
@@ -150,7 +148,7 @@ const PostUpload = () => {
 
     }
 
-    const onClickUploadButton = () => {
+    const onClickUploadButton = async() => {
         console.log(uploadData);
 
         if(uploadData.productCategory === uploadData.wishCategory)
@@ -165,23 +163,33 @@ const PostUpload = () => {
             console.log("false")
         }
 
-        const jsonObj = {
-            "title": uploadData.title,
-            "content":uploadData.content,
-            "price":uploadData.price,
-            "tradeEachOther": tradeEachOther,
-            "authorId": store.userInfoReducer.id,
-            "productCategory" : uploadData.productCategory,
-            "wishCategory" : uploadData.wishCategory,
-            "tagNames" : [...uploadData.tag]
-        };
 
 
-        // //사진 업로드
-        imageUpload();
-        uploadPost(jsonObj);
+        //사진 업로드
+        const photoUrlList = await imageUpload();
 
-
+        if(!photoUrlList)
+        {
+            console.log("image 저장중")
+            return null;
+        }
+        else{
+        console.log(photoUrlList);
+            const jsonObj = {
+                "title": uploadData.title,
+                "content":uploadData.content,
+                "price":uploadData.price,
+                "tradeEachOther": tradeEachOther,
+                "authorId": store.userInfoReducer.id,
+                "productCategory" : uploadData.productCategory,
+                "wishCategory" : uploadData.wishCategory,
+                "tagNames" : [...uploadData.tag],
+                "images" : [...photoUrlList],
+                "thumbnail" : photoUrlList[0]
+            };
+            uploadPost(jsonObj);
+            console.log("업로드 성공")
+        }
     }
 
     const onChangeImg = async(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -217,11 +225,7 @@ const PostUpload = () => {
             setPhotoData(formData);
 
             console.log(photoData);
-            // console.log(uploadFile)
-            // const formData = new FormData()
-            // formData.append('imageFiles',uploadFile);
-            // console.log(res);
-            // setPhotoData(prevState => [...res.data.imageUrls])
+
         }
     }
     interface ArrayObjectSelectState {

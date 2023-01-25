@@ -7,6 +7,7 @@ import Api from "../../utils/api";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import {changeRefreshState} from "../../store/refreshReducer";
+import {useNavigate} from "react-router-dom";
 
 /**
  * Props 부모 : PostDetail.tsx
@@ -32,11 +33,11 @@ interface CommentProps {
     className?: CommentTypes;
     userID: String;
     postId? : number;
-
     //userProfileImg : string; (url, string형식?)
     content: String;
     time: String;
     id?: number;
+    imageUrl? : string;
 }
 
 //글 작성
@@ -55,9 +56,10 @@ const PrimaryComment = (commentInfo: CommentProps) => {
     const [enableReComment,setEnableReComment] = useState<boolean>(false);
     const [writeComment,setWriteComment] = useState<WriteCommentType>(null)
     const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
-
+    const navigate = useNavigate();
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
+    const [reCommentText, setReCommentText] = useState("");
     const onClickReComment = (comment) => {
         setEnableReComment(prevState => !prevState);
     }
@@ -67,6 +69,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
             const res = await Api.post(`/post/${commentInfo.postId}/comments`, writeComment);
             dispatch(changeRefreshState());
             console.log(writeComment);
+            setReCommentText("");
             alert("대댓글 작성 성공")
         }
         catch (err)
@@ -78,6 +81,8 @@ const PrimaryComment = (commentInfo: CommentProps) => {
 
     const onChangeComment = (e) => {
         const inputComment = e.target.value;
+        setReCommentText(inputComment);
+
 
         setWriteComment((prevState) => {
             return {...prevState,
@@ -95,13 +100,14 @@ const PrimaryComment = (commentInfo: CommentProps) => {
     return(
        <>
         <div className={cx('Profile')}>
-            <img className={cx('ProfileImg')} src={profileImg}></img>
+            <img className={cx('ProfileImg')} src={commentInfo.imageUrl} onClick={()=>navigate('/mypage')} ></img>
             <div className={styles.ProfileInfo}>
                 {commentInfo.userID}
             </div>
             <ul className={styles.ProfileActionList}>
                 <li onClick={()=> onClickReComment(commentInfo)}>대댓글</li>
                 <li>신고</li>
+
             </ul>
         </div>
         <div className={styles.comments}>
@@ -114,7 +120,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
                enableReComment ?
                    (
                <div className = {styles.writeComments}>
-               <input type={"text"} className={styles.writeCommentsInput} placeholder={"대댓글을 입력하세요"} onBlurCapture={onChangeComment}/>
+               <input type={"text"} className={styles.writeCommentsInput} placeholder={"대댓글을 입력하세요"} onChange={onChangeComment} value={reCommentText}/>
                <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
                </div>
                    )
@@ -124,10 +130,12 @@ const PrimaryComment = (commentInfo: CommentProps) => {
 }
 
 const SecondaryComment = (commentInfo: CommentProps) => {
+    const navigate = useNavigate();
+
     return(
         <>
             <div className={cx('Profile')}>
-                <img className={cx('ProfileImg')} src={profileImg}></img>
+                <img className={cx('ProfileImg')} src={commentInfo.imageUrl} onClick={()=>navigate('/mypage')}></img>
                 <div className={styles.ProfileInfo}>
                     {commentInfo.userID}
                 </div>
@@ -152,13 +160,13 @@ const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps
         <>
             {commentInfo.className === "primary" &&
                 <div className={cx(commentInfo.className)}>
-                    <PrimaryComment postId = {commentInfo.postId} id= {commentInfo.id} userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}/>
+                    <PrimaryComment postId = {commentInfo.postId} id= {commentInfo.id} userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time} imageUrl={commentInfo.imageUrl} />
                 </div>
             }
 
             {commentInfo.className === "secondary" &&
                 <div className={cx(commentInfo.className)}>
-                    <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}/>
+                    <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time} imageUrl={commentInfo.imageUrl}/>
                 </div>
             }
         </>

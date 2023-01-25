@@ -22,7 +22,8 @@ import {changeRefreshState} from "../../store/refreshReducer";
 import comments from "../../component/comments/Comments";
 import timeConvert from "../../utils/timeConvert";
 import {LocalDateTime} from "js-joda";
-
+import CustomSwiper from "../../component/common/CustomSwiper";
+import tradeEx from "../../img/tradeEx.jpeg";
 
 
 const PostDetail = () => {
@@ -46,6 +47,15 @@ const PostDetail = () => {
         messageRoomCount? : number;
         createdTime? : string;
         userInfo? : UserInfo;
+        userInfoWithAddress : {
+            userDetail : UserInfo
+            address? : [
+                {
+                    postalAddress?: string
+                }
+                ]
+        }
+        images : string[];
     }
 
     type CommentTypes = "primary" | "secondary";
@@ -93,8 +103,13 @@ const PostDetail = () => {
     const [commentList,setCommentList] = useState<CommentType[]>(null)
     const [writeComment,setWriteComment] = useState<WriteCommentType>(null)
     const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
+
     const dispatch = useDispatch();
     const store = useSelector((state:Rootstate) => state);
+    //댓글 작성 후 input text 초기화를 위한 state
+    //<input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
+    //에서 value를 사용하기 위해선 onBlur가 아닌 onChange를 사용해야만 한다
+    const [commentText, setCommentText] = useState("");
 
     async function getPost() {
 
@@ -103,7 +118,6 @@ const PostDetail = () => {
             console.log("getPost 요청")
             const res = await Api.get(`/post/${postId}`);
 
-            console.log(res)
             setPost(prevState => {
                 return {...prevState, ...res.data};
             })
@@ -137,13 +151,14 @@ const PostDetail = () => {
     //TODO:함민혁) 코끼리톡 구현할때 이걸 누르면 메시지룸이 생성되게 구현하고, navigate에서 매개변수를 전달해주면 될거야
     //예시 : navigate('/signup/emailcheck', {state : userInfo})
     const talkButton = () => {
-        navigate('/kokiritalk' )
+        navigate('/kokiritalk'  )
     }
 
     useEffect(()=>{
         getPost();
         getComments();
         console.log(post)
+        console.log(commentList);
     },[store.refreshReducer.commentChange])
 
 
@@ -168,6 +183,7 @@ const PostDetail = () => {
 
     const onChangeComment = (e) => {
         const inputComment = e.target.value;
+        setCommentText(inputComment);
         setWriteComment((prevState) => {
             return {...prevState, authorId: store.userInfoReducer.id,
                 postId : post.id,
@@ -177,7 +193,6 @@ const PostDetail = () => {
             }
         })
 
-        console.log(writeComment);
     }
 
     const UploadComment = async () => {
@@ -190,6 +205,7 @@ const PostDetail = () => {
                 return {...prevState,commentChange : true
                 }
             })
+            setCommentText("");
             alert("댓글 작성 성공")
         }
         catch (err)
@@ -207,14 +223,14 @@ const PostDetail = () => {
     {
         return null;
     }
+    console.log(post.images)
 
     if (!commentList) {
         return null
     }
 
-    const timeDiffer = timeConvert(post.createdTime);
-    console.log(timeDiffer);
-
+    // console.log(post)
+    // console.log(commentList);
 
     const primaryComment = commentList.filter((comment) => {
         return comment.depth === 0
@@ -241,16 +257,28 @@ const PostDetail = () => {
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
-                        <img className={styles.postTopProfileImg} src={post.userInfo.imageUrl}></img>
+                        <img className={styles.postTopProfileImg} src={post.userInfoWithAddress.userDetail.imageUrl} onClick={()=>navigate('/mypage')}></img>
                         <div className={styles.postTopProfileInfo}>
-                            <div className={styles.postTopNickname}>{post.userInfo.nickname}</div>
-                            <div className={styles.postTopAddress}>상도 1동 33길</div>
+
+                            <div className={styles.postTopNickname}>{post.userInfoWithAddress.userDetail.nickname}</div>
+                            {
+                                ((post.userInfoWithAddress.address.length <1 )?
+                                        null :
+                                        <div className={styles.postTopAddress}>{post.userInfoWithAddress.address[0].postalAddress}</div>
+                                )
+                            }
                         </div>
                     </div>
                 </section>
                 <section className={styles.postBody}>
                     <div className={styles.postImg}>
-                        <img className={styles.postBodyImg} src={coatImg}></img>
+                        {
+                            ((post.images.length < 1) ?
+                                    <img className={styles.postBodyImg} src={coatImg}></img> :
+                                    <CustomSwiper imageList = {post.images}/>
+                            )
+                        }
+                        {/*<CustomSwiper imageList = {post.images}/>*/}
                     </div>
                     <div className={styles.postDetailInfo}>
                         <h2 className={styles.postDetailTitle}>{post.title}</h2>
@@ -284,7 +312,7 @@ const PostDetail = () => {
                         </div>
                         <div className={styles.timeBox}>
                             <img className={styles.timeImg} src={clock}/>
-                            <p className={styles.timeNum}>4분전</p>
+                            <p className={styles.timeNum}>{timeConvert(post.createdTime)}</p>
                         </div>
                     </div>
                     <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
@@ -293,18 +321,21 @@ const PostDetail = () => {
             <section className={styles.comments}>
                 {
                     result.map((comment)=>(
-                        <>
-                            {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
-                            {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={"12/21 12:00"}  />}
-                        </>
+                        <div key={comment.id}>
+                            {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl} />}
+                            {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl}   />}
+                        </div>
                     ))
                 }
             </section>
             <div className = {styles.writeComments}>
-                <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onBlurCapture={onChangeComment}/>
+                <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
                  <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
             </div>
+            <CustomSwiper/>
         </div>
+
+
     );
 }
 
