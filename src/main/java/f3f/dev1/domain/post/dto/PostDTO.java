@@ -195,6 +195,7 @@ public class PostDTO {
         private LocalDateTime createdTime;
         private Long messageRoomCount;
         private String wishCategory;
+        private boolean isScrap;
         private Long scrapCount;
         private Long price;
     }
@@ -264,12 +265,16 @@ public class PostDTO {
 
         private List<String> tagNames;
 
-        private List<PostImageInfoDto> images;
+        private List<String> images;
 
         private Long scrapCount;
 
         private Long messageRoomCount;
 
         private LocalDateTime createdTime;
+
+        private boolean isScrap;
     }
+
+
 }

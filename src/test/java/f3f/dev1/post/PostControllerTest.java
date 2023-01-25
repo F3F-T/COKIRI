@@ -273,7 +273,7 @@ public class PostControllerTest {
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
         SinglePostInfoDto postInfoDto = SinglePostInfoDto.builder().title(postSaveRequest.getTitle()).build();
         postService.savePost(postSaveRequest, member.getId());
-        doReturn(postInfoDto).when(postService).findPostById(any());
+        doReturn(postInfoDto).when(postService).findPostById(any(), any());
 
         //when & then
         mockMvc.perform(get("/post/{postId}", 1L)

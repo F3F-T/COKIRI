@@ -15,6 +15,7 @@ import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotContainAuthorInfoException;
 import f3f.dev1.domain.postImage.dao.PostImageCustomRepositoryImpl;
+import f3f.dev1.domain.postImage.model.PostImage;
 import f3f.dev1.domain.scrap.dao.ScrapPostRepository;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
@@ -90,17 +91,25 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findAll(Pageable pageable) {
+    public Page<PostSearchResponseDto> findAll(Long currentMemberId, Pageable pageable) {
         Page<Post> all = postRepository.findAll(pageable);
         List<PostSearchResponseDto> resultList = new ArrayList<>();
-        for (Post post : all) {
-            resultList.add(post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size()));
+        if(currentMemberId != null) {
+            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+            for (Post post : all) {
+                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                resultList.add(post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(),isScrap));
+            }
+        } else {
+            for (Post post : all) {
+                resultList.add(post.toSearchResponseDto((long) post.getMessageRooms().size(), (long) post.getScrapPosts().size(), false));
+            }
         }
+
         return new PageImpl<>(resultList);
     }
 
 
-    // TODO 페이징 적용하기
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     // controller에서 사용되지 않는 로직. 현재 테스트에서만 사용되고 있다.
     @Transactional(readOnly = true)
@@ -128,24 +137,46 @@ public class PostService {
 
 
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Pageable pageable) {
+    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Long currentMemberId, Pageable pageable) {
         List<PostSearchResponseDto> list = new ArrayList<>();
         Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
-        for (Post post : dtoPages) {
-            PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size());
-            list.add(build);
+        // 조회하는 사용자가 로그인된 회원인 경우
+        if(currentMemberId != null) {
+            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+            for (Post post : dtoPages) {
+                // 캐싱 적용하기 전에는 이게 최선이다..
+                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
+                list.add(build);
+            }
+        }
+        // 조회하는 사용자가 비회원일 경우
+        else {
+            for (Post post : dtoPages) {
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
+                list.add(build);
+            }
         }
         return new PageImpl<>(list);
     }
 
 
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Pageable pageable) {
+    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, Pageable pageable) {
         Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
         List<PostSearchResponseDto> resultList = new ArrayList<>();
-        for (Post post : dtoList) {
-            PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size());
-            resultList.add(build);
+        if(currentMemberId != null) {
+            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+            for (Post post : dtoList) {
+                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
+                resultList.add(build);
+            }
+        } else {
+            for (Post post : dtoList) {
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
+                resultList.add(build);
+            }
         }
         return new PageImpl<>(resultList);
     }
@@ -153,7 +184,7 @@ public class PostService {
     // TODO 거래 가능한 게시글만 검색하기
 
     @Transactional(readOnly = true)
-    public SinglePostInfoDto findPostById(Long id) {
+    public SinglePostInfoDto findPostById(Long id, Long currentMemberId) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
         // TODO 거래 가능 상태인지 확인하기
         List<String> tagNames = new ArrayList<>();
@@ -161,17 +192,23 @@ public class PostService {
         for (PostTag postTag : postTags) {
             tagNames.add(postTag.getTag().getName());
         }
-        Scrap scrap = scrapRepository.findScrapByMemberId(post.getAuthor().getId()).orElseThrow(UserScrapNotFoundException::new);
+
         List<Comment> comments = commentRepository.findByPostId(post.getId());
         List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
         for (Comment comment : comments) {
             commentInfoDtoList.add(comment.toInfoDto());
         }
-        List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-        List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+
         UserInfoWithAddress userInfo = memberCustomRepository.getUserInfo(post.getAuthor().getId());
-        List<PostImageInfoDto> postImages = postImageCustomRepository.findByPostIdWithQueryDSL(post.getId());
-        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) scrapPosts.size(), (long) messageRooms.size(), userInfo, commentInfoDtoList, postImages);
+        List<String> postImages = new ArrayList<>();
+        for (PostImage postImage : post.getPostImages()) {
+            postImages.add(postImage.getImgPath());
+        }
+
+        // 어쩔 수 없이 세션에서 받아온 현재 유저의 엔티티를 찾는 쿼리를 한번 날려야겠다.
+        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+        boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), id);
+        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, isScrap);
         return response;
     }
 
@@ -180,6 +217,7 @@ public class PostService {
      */
 
     @Transactional
+    // 현재는 컨트롤러에서 사용하지 않는 로직. 테스트에서만 사용하고 있다.
     public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long postId,Long currentMemberId) {
 
         /*
@@ -204,7 +242,6 @@ public class PostService {
         if(tags.isEmpty()) {
             post.updatePostInfos(updatePostRequest, productCategory, wishCategory, new ArrayList<>());
         } else {
-            // TODO 기존 태그랑 비교를 먼저 해주는게 좋을거같은데??
             // PostTag가 없으면 여기서 새로 만들어서 추가까지 해줘야 한다.
             for (Tag tag : tags) {
                 if(!postTagRepository.existsByPostAndTag(post,tag)) {
@@ -230,49 +267,53 @@ public class PostService {
         for (PostTag postTag : postTagsOfPost) {
             tagNames.add(postTag.getTag().getName());
         }
-        List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-        List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
+        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size());
         return response;
     }
 
-//    @Transactional
-//    public PostInfoDtoWithTag updatePostWithPatch(UpdatePostRequest updatePostRequest, Long postId) {
-//        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
-//        // 이 포스트에서 변경요청이 들어온 값들만 바꿔주겠다.
-////        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
-////        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
-//
-//        if(updatePostRequest.getAuthorId() == null) {
-//            throw new NotContainAuthorInfoException();
-//        }
-//
-//        if(!post.getAuthor().getId().equals(updatePostRequest.getAuthorId())) {
-//            throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
-//        }
-//
-//        if(updatePostRequest.getTitle() != null) {
-//            post.updateTitle(updatePostRequest.getTitle());
-//        }
-//
-//        if(updatePostRequest.getProductCategory() != null) {
-//            Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundByIdException::new);
-//            post.updateProductCategory(productCategory);
-//        }
-//
-//        if(updatePostRequest.getWishCategory() != null) {
-//            Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundByIdException::new);
-//            post.updateWishCategory(wishCategory);
-//        }
-//
-//        if(updatePostRequest.getThumbnail() != null) {
-//            String thumbnail = updatePostRequest.getThumbnail();
-//            post.updateThumbnail(thumbnail);
-//        }
-//
-//
-//
-//    }
+    @Transactional
+    public void updatePostWithPatch(UpdatePostRequest updatePostRequest, Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
+
+        if(updatePostRequest.getAuthorId() == null) {
+            throw new NotContainAuthorInfoException();
+        }
+
+        if(!post.getAuthor().getId().equals(updatePostRequest.getAuthorId())) {
+            throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
+        }
+
+        /*
+            프론트와 의견 상충 과정에서 아래와 같은 코드 구조가 탄생함.
+            프론트는 특정 필드의 변경사항을 인지하고 바디에 추가하는게 소요가 크다고 했고,
+            나는 불필요한 쿼리의 수를 최대한 줄이고싶었다.
+            그래서 결과적으로 PUT도 PATCH도 아닌 업데이트 메서드가 구현됨 :
+            수정된 필드 뿐만 아니라 수정되지 않은 필드로 함께 바디로 넘어온다.
+            하지만 그 중에서 변동사항이 있는 값만 수정된다.
+
+            이렇게 여러번 쿼리를 별도로 날리는 것 보다 한번에 일괄로 처리하는게 나으려나?
+         */
+
+        if(updatePostRequest.getTitle() != null && !post.getTitle().equals(updatePostRequest.getTitle())) {
+            post.updateTitle(updatePostRequest.getTitle());
+        }
+
+        if(updatePostRequest.getProductCategory() != null && !post.getProductCategory().getName().equals(updatePostRequest.getProductCategory())) {
+            Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundByIdException::new);
+            post.updateProductCategory(productCategory);
+        }
+
+        if(updatePostRequest.getWishCategory() != null && !post.getWishCategory().getName().equals(updatePostRequest.getWishCategory())) {
+            Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundByIdException::new);
+            post.updateWishCategory(wishCategory);
+        }
+
+        if(updatePostRequest.getThumbnail() != null && !post.getThumbnailImgPath().equals(updatePostRequest.getThumbnail())) {
+            String thumbnail = updatePostRequest.getThumbnail();
+            post.updateThumbnail(thumbnail);
+        }
+
+    }
 
     @Transactional
     public String deletePost(DeletePostRequest deletePostRequest, Long currentMemberId) {

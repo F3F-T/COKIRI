@@ -127,7 +127,7 @@ public class Post extends BaseTimeEntity {
         this.id = id;
     }
 
-    public PostSearchResponseDto toSearchResponseDto(Long messageRoomCount, Long scrapCount) {
+    public PostSearchResponseDto toSearchResponseDto(Long messageRoomCount, Long scrapCount, boolean isScrap) {
         return PostSearchResponseDto.builder()
                 .productCategory(this.productCategory.getName())
                 .authorNickname(this.author.getNickname())
@@ -139,6 +139,7 @@ public class Post extends BaseTimeEntity {
                 .content(this.content)
                 .title(this.title)
                 .price(this.price)
+                .isScrap(isScrap)
                 .id(this.id)
                 .build();
     }
@@ -198,18 +199,19 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
-    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList, List<PostImageInfoDto> images) {
+    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList, List<String> images, boolean scrapExists) {
         return SinglePostInfoDto.builder()
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
+                .tradeStatus(this.trade.getTradeStatus())
                 .commentInfoDtoList(commentInfoDtoList)
                 .tradeEachOther(this.tradeEachOther)
-                .createdTime(super.getCreateDate())
                 .messageRoomCount(messageRoomCount)
-                .tradeStatus(this.trade.getTradeStatus())
+                .createdTime(super.getCreateDate())
+                .userInfoWithAddress(userInfo)
                 .scrapCount(scrapCount)
                 .content(this.content)
-                .userInfoWithAddress(userInfo)
+                .isScrap(scrapExists)
                 .tagNames(tagNames)
                 .title(this.title)
                 .price(this.price)
