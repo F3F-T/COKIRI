@@ -19,6 +19,7 @@ import axios from "axios/index";
 import {NumericFormat} from 'react-number-format';
 import Select from "react-select";
 import {SwiperSlide} from "swiper/swiper-react";
+import {chain} from "list";
 
 const PostEdit = () => {
     interface PostType {
@@ -78,12 +79,26 @@ const PostEdit = () => {
     const [photoData, setPhotoData] = useState(null)
     const [photoUrl, setPhotoUrl] = useState<string[]>(null);
     const params = useParams();
+    let changingOnlyOnce = 0;
+    let photoUrlList;
     // console.log(params)
 
 
     //수정 로직
     const [post, setPost] = useState<PostType>(null)
     const [showImages, setShowImages] = useState<string[]>([]);
+
+    interface ArrayObjectSelectState {
+        selectedCategory: Category | null | string;
+    }
+
+    const [productState, setProductState] = React.useState<ArrayObjectSelectState>({
+        selectedCategory: null,
+    });
+
+    const [wishState, setWishState] = React.useState<ArrayObjectSelectState>({
+        selectedCategory: null,
+    });
 
     const postId = params.id;
     console.log(postId);
@@ -100,6 +115,15 @@ const PostEdit = () => {
                     return {...prevState, ...res.data};
                 })
 
+
+                /**
+                 * 원래 post의 state를 uploadData에 복사해주는 방식으로 시도했지만 useState의 비동기적 처리때문에 uploadData에 post의 데이터를 넣어주지 못했다.
+                 * if(!post) return null 후에 setUploadData를 넣어주게 되면 state가 무한으로 변화하기 때문에 무한 렌더링 이슈가 생기고,
+                 * 무한 랜더링을 방지하기 위해 useEffect에 post 변경시에 한번만 추가하려고 했지만, 이는 또 post가 null이 뜨게 되어 그냥 res data를 직접 넣어주는 식으로 구현함
+                 *
+                 * useState, async, await, promise의 반환 등의 비동기식 처리, state 변경시 무한 렌더링, useEffect deps에 함수 추가, useEffect의 얕은 복사 -> useCallback으로 처리 등의 개념을 익힘
+                 */
+
                 setUploadData({
                     title: res.data.title,
                     price: res.data.price,
@@ -108,12 +132,22 @@ const PostEdit = () => {
                     wishCategory: res.data.wishCategory,
                     tag: res.data.tagNames
                 })
-                res.data.images.map((image) => (
-                    // setShowImages([image.imgPath])
-                    setShowImages(prevState => {
-                        return [...prevState, image.imgPath];
-                    })
-                ))
+                console.log(changingOnlyOnce);
+
+                //무조건 한번 실행되어야 하는 getPost가 원인모르는 리렌더링이 되어 한번 더 실행되는 경우가 있다. 이를 방지하기 위한 if문
+                if(changingOnlyOnce === 0) {
+                    //이미지 데이터가 imgPath와 id로 들어가 있어서 imgPath만 따로 저장
+                    res.data.images.map((image) => (
+                        // setShowImages([image.imgPath])
+                        setShowImages(prevState => {
+                            return [...prevState, image.imgPath];
+                        })
+                    ))
+                }
+                changingOnlyOnce++;
+
+                setProductState({selectedCategory : res.data.productCategory});
+                setWishState({selectedCategory : res.data.wishCategory})
 
             } catch
                 (err) {
@@ -121,28 +155,6 @@ const PostEdit = () => {
                 alert("get 실패");
             }
         }, [])
-    //원래 작성된 post 받아오기
-    // async function getPost=()=> {
-    //
-    //     //interceptor를 사용한 방식 (header에 token값 전달)
-    //     try {
-    //         console.log("getPost 요청")
-    //         const res = await Api.get(`/post/${postId}`);
-    //
-    //         setPost(prevState => {
-    //             return {...prevState, ...res.data};
-    //         })
-    //         //
-    //         // return res.data;
-    //
-    //
-    //         fixed = true;
-    //     } catch (err) {
-    //         console.log(err)
-    //         alert("get 실패");
-    //     }
-    // }
-
 
     interface Category {
         name: string;
@@ -265,7 +277,10 @@ const PostEdit = () => {
 
 
         //사진 업로드
-        const photoUrlList = await imageUpload();
+        if(photoData)
+        {
+            photoUrlList = await imageUpload();
+        }
 
         if (!photoUrlList) {
             console.log("image 저장중")
@@ -296,6 +311,7 @@ const PostEdit = () => {
             const imageLists = e.target.files;
             let imageUrlLists = [...showImages];
             const formData = new FormData()
+            console.log(imageLists);
 
             for (let i = 0; i < imageLists.length; i++) {
                 //미리보기 파일 imgeUrlLists에 추가
@@ -319,22 +335,11 @@ const PostEdit = () => {
             //api 통신
             setPhotoData(formData);
 
-            console.log(photoData);
 
         }
     }
 
-    interface ArrayObjectSelectState {
-        selectedCategory: Category | null;
-    }
 
-    const [productState, setProductState] = React.useState<ArrayObjectSelectState>({
-        selectedCategory: null,
-    });
-
-    const [wishState, setWishState] = React.useState<ArrayObjectSelectState>({
-        selectedCategory: null,
-    });
 
 
     const onChangePriceSecond = (value) => {
@@ -356,17 +361,10 @@ const PostEdit = () => {
     }, [store.jwtTokenReducer.authenticated])
 
 
+    //사진 복사 이슈때문에 무조건 렌더링 첫번째에만 실행이 되어야함
     useEffect(() => {
         getPost();
-
-        if (!post) {
-            return undefined;
-        }
-
-
-        console.log(uploadData);
-
-    }, [getPost])
+    }, [])
     // console.log(showImages)
     console.log(post);
 
@@ -379,10 +377,14 @@ const PostEdit = () => {
         return null;
     }
 
+
     // setShowImages([...post.images])
     console.log(post);
     console.log(uploadData);
     console.log(showImages)
+    console.log(productState);
+    console.log(wishState);
+    console.log(photoData);
 
 
     return (
@@ -410,11 +412,12 @@ const PostEdit = () => {
                     </div>
                     <div className={styles.item2}>
                         <p className={styles.star}>*</p><input type="text" className={styles.item2_2}
-                                                               placeholder="글 제목을 적어주세요." onBlur={onChangeTitle}/>
+                                                               placeholder={"글 제목을 적어주세요."} onChange={onChangeTitle} value={uploadData.title}/>
                     </div>
                     <div className={styles.item2}>
                         <p className={styles.star}>*</p> <NumericFormat className={styles.item2_2}
                                                                         placeholder="생각하는 물건의 가격대를 숫자로 적어주세요."
+                                                                        value={uploadData.price}
                                                                         prefix={"₩"} allowLeadingZeros
                                                                         thousandSeparator=","
                                                                         onValueChange={(values) => {
@@ -424,7 +427,7 @@ const PostEdit = () => {
                     <div className={styles.contentAreaBox}>
                         <p className={styles.star}>*</p>
                         <textarea className={styles.contentArea} placeholder="상도1동에 올릴 게시글을 적어주세요."
-                                  onBlur={onChangeContent} spellCheck={"false"}/>
+                                  onChange={onChangeContent} value={uploadData.content} spellCheck={"false"}/>
                     </div>
                     <div className={styles.categoryBox}>
                         <p className={styles.star}>*</p>
@@ -448,7 +451,7 @@ const PostEdit = () => {
                             options={categories}
                             isClearable={true}
                             backspaceRemovesValue={true}
-                            placeholder={"전체"}
+                            placeholder={uploadData.productCategory}
                         />
 
                     </div>
@@ -474,7 +477,7 @@ const PostEdit = () => {
                             options={categories}
                             isClearable={true}
                             backspaceRemovesValue={true}
-                            placeholder={"전체"}
+                            placeholder={uploadData.wishCategory}
                         />
 
                     </div>
@@ -486,6 +489,7 @@ const PostEdit = () => {
                         whitelist={["스팸", "식품", "과일존맛", "신상품", "스팸클래식", "이게자동완성이라는건데요"]}
                         // defaultValue="a,b,c"
                         onChange={onChange}
+                        value={uploadData.tag}
                     />
 
 
