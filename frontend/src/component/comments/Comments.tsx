@@ -39,6 +39,7 @@ interface CommentProps {
     id?: number;
     imageUrl?: string;
     isAuthor?: boolean
+    memberId? : number;
 }
 
 //글 작성
@@ -60,10 +61,20 @@ const PrimaryComment = (commentInfo: CommentProps) => {
     const store = useSelector((state: Rootstate) => state);
     const dispatch = useDispatch();
     const [reCommentText, setReCommentText] = useState("");
+    let isCommentAuthor:boolean;
     const onClickReComment = (comment) => {
         setEnableReComment(prevState => !prevState);
     }
     console.log(commentInfo);
+
+    if (commentInfo.memberId === store.userInfoReducer.id) {
+        isCommentAuthor = true;
+    } else {
+        isCommentAuthor = false;
+    }
+
+
+
     const UploadComment = async () => {
         try {
             const res = await Api.post(`/post/${commentInfo.postId}/comments`, writeComment);
@@ -93,6 +104,10 @@ const PrimaryComment = (commentInfo: CommentProps) => {
             }
         })
     }
+
+    const onClickReport = (comment) => {
+        alert("신고기능은 아직 없어용");
+    }
     console.log(commentInfo.isAuthor);
 
 
@@ -105,7 +120,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
                 </div>
                 <ul className={styles.ProfileActionList}>
                     {
-                        commentInfo.isAuthor ?
+                        commentInfo.isAuthor || isCommentAuthor ?
                             (<>
                                 <li onClick={() => onClickReComment(commentInfo)}>대댓글</li>
                                 <li>삭제</li>
@@ -114,7 +129,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
                             (
                                 <>
                                     <li onClick={() => onClickReComment(commentInfo)}>대댓글</li>
-                                    <li>신고</li>
+                                    <li onClick={() => onClickReport(commentInfo)}>신고</li>
                                 </>)
                     }
 
@@ -142,6 +157,20 @@ const PrimaryComment = (commentInfo: CommentProps) => {
 
 const SecondaryComment = (commentInfo: CommentProps) => {
     const navigate = useNavigate();
+    const store = useSelector((state: Rootstate) => state);
+
+    let isCommentAuthor:boolean;
+
+    if (commentInfo.memberId === store.userInfoReducer.id) {
+        isCommentAuthor = true;
+    } else {
+        isCommentAuthor = false;
+    }
+
+
+    const onClickReport = (comment) => {
+        alert("신고기능은 아직 없어용");
+    }
 
     return (
         <>
@@ -152,12 +181,12 @@ const SecondaryComment = (commentInfo: CommentProps) => {
                 </div>
                 <ul className={styles.ProfileActionList}>
                     {
-                        commentInfo.isAuthor ?
+                        commentInfo.isAuthor || isCommentAuthor ?
                             (<>
                                 <li>삭제</li>
                             </>)
                             :
-                            (<li>신고</li>)
+                            (<li onClick={() => onClickReport(commentInfo)}>신고</li>)
                     }
                 </ul>
             </div>
@@ -180,14 +209,14 @@ const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps
                 <div className={cx(commentInfo.className)}>
                     <PrimaryComment postId={commentInfo.postId} id={commentInfo.id} userID={commentInfo.userID}
                                     content={commentInfo.content} time={commentInfo.time}
-                                    imageUrl={commentInfo.imageUrl} isAuthor={commentInfo.isAuthor}/>
+                                    imageUrl={commentInfo.imageUrl} isAuthor={commentInfo.isAuthor} memberId={commentInfo.memberId}/>
                 </div>
             }
 
             {commentInfo.className === "secondary" &&
                 <div className={cx(commentInfo.className)}>
                     <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}
-                                      imageUrl={commentInfo.imageUrl} isAuthor={commentInfo.isAuthor}/>
+                                      imageUrl={commentInfo.imageUrl} isAuthor={commentInfo.isAuthor} memberId={commentInfo.memberId}/>
                 </div>
             }
         </>
