@@ -21,6 +21,7 @@ const CustomSwiper = (imageProps) => {
     if (!imageProps.imageList) {
         return null;
     }
+    console.log(imageProps.imageList)
 
     SwiperCore.use([Navigation, Pagination, Autoplay]);
 
@@ -38,16 +39,16 @@ const CustomSwiper = (imageProps) => {
             >
                 {imageProps.imageList.map((image, index) => (
 
-                    ((image.imgPath != null && image.imgPath.includes("https://s3.ap-northeast-2.amazonaws.com")) ?
+                    // ((image.imgPath != null && image.imgPath.includes("https://s3.ap-northeast-2.amazonaws.com")) ?
                             <SwiperSlide key={image.id}>
-                                <img alt={"d"} key={image.imgPath} className="image" src={image.imgPath}></img>
+                                <img alt={"d"} key={image} className="image" src={image}></img>
                             </SwiperSlide>
-                            :
-                            <SwiperSlide key={image.id}>
-                                <h6 key={index}>imgurl이 서버의 이미지가 아닙니다 <br/>(postman으로 업로드해서 발생하는 화면)<br/>"https://s3.ap-northeast-2.amazonaws.com"의
-                                    경로여야함 </h6>
-                            </SwiperSlide>
-                    )
+                            // :
+                            // <SwiperSlide key={image.id}>
+                            //     <h6 key={index}>imgurl이 서버의 이미지가 아닙니다 <br/>(postman으로 업로드해서 발생하는 화면)<br/>"https://s3.ap-northeast-2.amazonaws.com"의
+                            //         경로여야함 </h6>
+                            // </SwiperSlide>
+
 
                 ))}
 

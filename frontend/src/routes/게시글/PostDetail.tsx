@@ -244,12 +244,18 @@ const PostDetail = () => {
         return null;
     }
 
+    if (!post.images) {
+        return null;
+    }
 
     if (!commentList) {
         return null
     }
 
+
+
     console.log(post)
+    console.log(post.images);
 
     // console.log(commentList);
 

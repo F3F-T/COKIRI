@@ -86,7 +86,7 @@ const PostEdit = () => {
 
     //수정 로직
     const [post, setPost] = useState<PostType>(null)
-    const [showImages, setShowImages] = useState<string[]>([]);
+    const [showImages, setShowImages] = useState([]);
 
     interface ArrayObjectSelectState {
         selectedCategory: Category | null | string;
@@ -296,7 +296,7 @@ const PostEdit = () => {
                 "productCategory": uploadData.productCategory,
                 "wishCategory": uploadData.wishCategory,
                 "tagNames": [...uploadData.tag],
-                "images": [...photoUrlList],
+                "images": [...post.images,...photoUrlList],
                 "thumbnail": photoUrlList[0]
             };
             uploadPost(jsonObj);
