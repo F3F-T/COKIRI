@@ -24,6 +24,17 @@ import Modal from "../로그인 & 회원가입/NeighborModal";
 import {CiSquareRemove} from "react-icons/ci";
 import {TiDelete} from "react-icons/ti";
 
+
+/**
+ * 수정 로직
+ * 기존에 있었던 정보들(title, content, price, category, tag 등등)을 불러와서 input form에 넣어준다
+ * 사용자가 수정을 하게 되면 state를 변화시킨다
+ *
+ * 이미지 수정)
+ * 기존에 있던 이미지를 불러와서 showImage state에 저장시킨 후 미리보기에 띄워준다
+ * 이미지 추가를 한 파일만을 다른 배열에 저장시켜 post/image 서버 통신 후 url을 받아와서 저장시킨다
+ */
+
 const PostEdit = () => {
     interface PostType {
         id?: number;
@@ -253,10 +264,10 @@ const PostEdit = () => {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
             console.log(jsonObj)
-            const res = await Api.post('/post', jsonObj);
+            const res = await Api.patch(`/post/${postId}`, jsonObj);
             console.log(res)
 
-            alert("업로드 성공")
+            alert("수정 성공")
             navigate(`/`)
         } catch (err) {
             console.log(err)
@@ -278,6 +289,7 @@ const PostEdit = () => {
 
     }
 
+
     const onClickUploadButton = async () => {
         console.log(uploadData);
 
@@ -293,32 +305,42 @@ const PostEdit = () => {
         }
 
 
-        //사진 업로드
+        //사진 업로드(새로 추가된 image가 있으면 post/image 로 서버에 이미지를 등록한다.)
         if (photoData) {
             photoUrlList = await imageUpload();
         }
+        //추가된 이미지가 존재하여 서버에서 url 정보를 받아왔다면 기존의 서버 url image와 추가된 이미지를 finalImage에 담는다
         if (photoUrlList) {
             finalImage = [...post.images, ...photoUrlList]
-        } else {
+        }
+        //새로 추가된 이미지가 존재하지 않는다면 기존의 서버 url image만 담는다
+        else {
             finalImage = [...post.images];
         }
 
 
-        console.log(finalImage);
-        const jsonObj = {
-            "title": uploadData.title,
-            "content": uploadData.content,
-            "price": uploadData.price,
-            "tradeEachOther": tradeEachOther,
-            "authorId": store.userInfoReducer.id,
-            "productCategory": uploadData.productCategory,
-            "wishCategory": uploadData.wishCategory,
-            "tagNames": [...uploadData.tag],
-            "images": finalImage,
-            "thumbnail": finalImage[0]
-        };
-        uploadPost(jsonObj);
-        console.log("업로드 성공")
+        if(finalImage.length < 1)
+        {
+            alert("사진을 한장 이상 업로드해주세요.")
+        }
+        else{
+            console.log(finalImage);
+            const jsonObj = {
+                "title": uploadData.title,
+                "content": uploadData.content,
+                "price": uploadData.price,
+                "tradeEachOther": tradeEachOther,
+                "authorId": store.userInfoReducer.id,
+                "productCategory": uploadData.productCategory,
+                "wishCategory": uploadData.wishCategory,
+                "tagNames": [...uploadData.tag],
+                "images": finalImage,
+                "thumbnail": finalImage[0]
+            };
+            uploadPost(jsonObj);
+            console.log("업로드 성공")
+        }
+
 
     }
 
@@ -364,6 +386,21 @@ const PostEdit = () => {
         })
     }
 
+    const deleteImg = (index) => {
+        console.log(index);
+        setShowImages((prevState) => {
+            prevState.splice(index,1)
+            return [...prevState]
+        })
+
+        setPost((prevState) => {
+            prevState.images.splice(index,1)
+            return {...prevState}
+        })
+        console.log(showImages);
+        console.log(post.images)
+    }
+
     /**
      * 로그인 상태를 확인하고 비로그인일때 이전화면으로 돌아가기
      */
@@ -398,6 +435,7 @@ const PostEdit = () => {
     console.log(post);
     console.log(uploadData);
     console.log(showImages)
+    console.log(post.images)
     console.log(productState);
     console.log(wishState);
     console.log(photoData);
@@ -422,9 +460,9 @@ const PostEdit = () => {
                         }}/>
                         {
                             showImages.map((image, id) => (
-                                <div className={styles.imgClass}><img className={styles.photos} alt={`${image}-${id}`} key={id} src={image}
+                                <div className={styles.imgClass}><img className={styles.photos} alt={`${image}-${id}`} key={image.id} src={image}
                                           onClick={() => onClickToggleModal()}/>
-                                    <TiDelete className={styles.imgRemoveButton}/>
+                                    <TiDelete key={id} className={styles.imgRemoveButton} onClick={(e)=>{deleteImg(id)}}/>
                                 </div>
                             ))
                         }
