@@ -111,14 +111,14 @@ const PrimaryComment = (commentInfo: CommentProps) => {
             const config = {
                 data: {
                     id: commentInfo.id,
-                    authorId: commentInfo.memberId,
+                    authorId: store.userInfoReducer.id,
                     postId: commentInfo.postId
                 }
             }
             //삭제는 일반적인 axios 방식과 달리 message body를 config로 넘겨주어야한다.
             const res = await Api.delete(`/post/${commentInfo.postId}/comments/ ${commentInfo.id}`, config);
             if (window.confirm("정말 게시글을 삭제하시겠어요?")) {
-                alert("게시글 삭제 성공")
+                alert("댓글 삭제 성공")
                 dispatch(changeRefreshState());
             }
         }
@@ -150,9 +150,10 @@ const PrimaryComment = (commentInfo: CommentProps) => {
                             :
                             (
                                 <>
-                                    <li onClick={onClickDelete}>삭제</li>
+                                    <li onClick={() => onClickReComment(commentInfo)}>대댓글</li>
                                     <li onClick={onClickReport}>신고</li>
-                                </>)
+                                </>
+                            )
                     }
 
                 </ul>
@@ -197,7 +198,7 @@ const SecondaryComment = (commentInfo: CommentProps) => {
             const config = {
                 data: {
                     id: commentInfo.id,
-                    authorId: commentInfo.memberId,
+                    authorId: store.userInfoReducer.id,
                     postId: commentInfo.postId
                 }
             }
