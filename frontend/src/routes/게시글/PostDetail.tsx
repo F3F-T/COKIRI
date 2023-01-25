@@ -25,6 +25,7 @@ import timeConvert from "../../utils/timeConvert";
 import {LocalDateTime} from "js-joda";
 import CustomSwiper from "../../component/common/CustomSwiper";
 import tradeEx from "../../img/tradeEx.jpeg";
+import {prepend} from "list";
 
 
 const PostDetail = () => {
@@ -56,6 +57,7 @@ const PostDetail = () => {
                 }
             ]
         }
+        scrap : boolean;
         images: string[];
     }
 
@@ -117,6 +119,7 @@ const PostDetail = () => {
     const [commentText, setCommentText] = useState("");
     const isAuthorTrue = ["수정", "|", "삭제"];
     const isAuthorFalse = ["신고"]
+    const [scrapCountInReact, setScrapCountInReact] = useState<number>();
 
     async function getPost() {
 
@@ -128,6 +131,8 @@ const PostDetail = () => {
             setPost(prevState => {
                 return {...prevState, ...res.data};
             })
+            setScrapSaved(prevState => res.data.scrap)
+            setScrapCountInReact(prevState => res.data.scrapCount);
 
         } catch (err) {
             console.log(err)
@@ -166,21 +171,23 @@ const PostDetail = () => {
     }, [store.refreshReducer.commentChange])
 
 
-    const [scrapSaved, setScrapSaved] = useState<boolean>(true);
+    const [scrapSaved, setScrapSaved] = useState<boolean>();
     const onClickScrap = async () => {
-        setScrapSaved(prevState => !prevState);
 
         const userId: Number = store.userInfoReducer.id;
 
         const jsonObj = {userId: userId, postId: post.id}
         console.log(jsonObj);
-        if (scrapSaved) {
+        if (!scrapSaved) {
             await Api.post(`/user/scrap`, jsonObj);
+            setScrapCountInReact(prevState => prevState+1);
         } else {
             await Api.delete(`/user/scrap`, {
                 data: jsonObj
             })
+            setScrapCountInReact(prevState => prevState-1);
         }
+        setScrapSaved(prevState => !prevState);
     }
 
     const onChangeComment = (e) => {
@@ -227,7 +234,11 @@ const PostDetail = () => {
             }
             //삭제는 일반적인 axios 방식과 달리 message body를 config로 넘겨주어야한다.
             const res = await Api.delete(`/post/${postId}`, config);
-            alert("게시글 삭제 성공")
+            if(window.confirm("정말 게시글을 삭제하시겠어요?"))
+            {
+                alert("게시글 삭제 성공")
+            }
+            navigate(`/mulmultrade`);
         } catch (err) {
             console.log(err)
             alert("게시글 삭제 실패")
@@ -251,25 +262,22 @@ const PostDetail = () => {
     if (!commentList) {
         return null
     }
-
-
-
-    console.log(post)
-    console.log(post.images);
+    // console.log(post)
+    // console.log(post.images);
 
     // console.log(commentList);
 
     //게시글 작성자 판단
 
     if (post.userInfoWithAddress.userDetail.id === store.userInfoReducer.id) {
-        console.log("게시글 작성자임")
+        // console.log("게시글 작성자임")
         isAuthor = true;
     } else {
-        console.log("게시글 작성자가 아님")
+        // console.log("게시글 작성자가 아님")
         isAuthor = false;
     }
 
-    console.log(isAuthor);
+    // console.log(isAuthor);
     const primaryComment = commentList.filter((comment) => {
         return comment.depth === 0
     })
@@ -289,7 +297,8 @@ const PostDetail = () => {
         return prev;
     }, []);
 
-    console.log(commentSort);
+    // console.log(commentSort);
+    console.log(scrapSaved);
 
     return (
         <div className={styles.postDetail}>
@@ -366,13 +375,14 @@ const PostDetail = () => {
                     <div className={styles.metaBox}>
                         <div className={styles.imgBox}>
                             {(scrapSaved ?
-                                <AiOutlineHeart className={styles.likeImg} onClick={onClickScrap}/>
+                                <AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={onClickScrap}/>
                                 :
-                                <AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={onClickScrap}/>)}
+                                <AiOutlineHeart className={styles.likeImg} onClick={onClickScrap}/>)
+                            }
 
                             {/*<AiOutlineHeart className={styles.likeImg}  onClick={onClickScrap}/>*/}
                             {/*<AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={()=>{}}/>*/}
-                            <p className={styles.likeNum}>{post.scrapCount}</p>
+                            <p className={styles.likeNum}>{scrapCountInReact}</p>
                         </div>
                         <div className={styles.commentBox}>
                             <img className={styles.commentImg} src={talk}/>

@@ -251,7 +251,6 @@ const PostEdit = () => {
             return prev;
         }, []);
 
-        console.log(tagList);
 
         setUploadData((prevState) => {
             return {...prevState, tag: tagList}
@@ -263,9 +262,7 @@ const PostEdit = () => {
 
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
-            console.log(jsonObj)
             const res = await Api.patch(`/post/${postId}`, jsonObj);
-            console.log(res)
 
             alert("수정 성공")
             navigate(`/`)
@@ -291,16 +288,13 @@ const PostEdit = () => {
 
 
     const onClickUploadButton = async () => {
-        console.log(uploadData);
 
         if (uploadData.productCategory === uploadData.wishCategory) {
             tradeEachOther = true;
 
-            console.log(tradeEachOther);
             console.log("true")
         } else {
             tradeEachOther = false;
-            console.log(tradeEachOther);
             console.log("false")
         }
 
@@ -324,7 +318,6 @@ const PostEdit = () => {
             alert("사진을 한장 이상 업로드해주세요.")
         }
         else{
-            console.log(finalImage);
             const jsonObj = {
                 "title": uploadData.title,
                 "content": uploadData.content,
@@ -351,7 +344,6 @@ const PostEdit = () => {
             const imageLists = e.target.files;
             let imageUrlLists = [...showImages];
             const formData = new FormData()
-            console.log(imageLists);
 
             for (let i = 0; i < imageLists.length; i++) {
                 //미리보기 파일 imgeUrlLists에 추가
@@ -370,7 +362,6 @@ const PostEdit = () => {
 
             //미리보기 데이터
             setShowImages(imageUrlLists);
-            console.log(showImages);
 
             //api 통신
             setPhotoData(formData);
@@ -387,7 +378,6 @@ const PostEdit = () => {
     }
 
     const deleteImg = (index) => {
-        console.log(index);
         setShowImages((prevState) => {
             prevState.splice(index,1)
             return [...prevState]
@@ -397,8 +387,7 @@ const PostEdit = () => {
             prevState.images.splice(index,1)
             return {...prevState}
         })
-        console.log(showImages);
-        console.log(post.images)
+
     }
 
     /**
@@ -431,14 +420,6 @@ const PostEdit = () => {
     }
 
 
-    // setShowImages([...post.images])
-    console.log(post);
-    console.log(uploadData);
-    console.log(showImages)
-    console.log(post.images)
-    console.log(productState);
-    console.log(wishState);
-    console.log(photoData);
 
 
     return (
