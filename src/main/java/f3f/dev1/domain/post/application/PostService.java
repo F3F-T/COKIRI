@@ -161,7 +161,7 @@ public class PostService {
         for (PostTag postTag : postTags) {
             tagNames.add(postTag.getTag().getName());
         }
-        Scrap scrap = scrapRepository.findScrapByMemberId(post.getAuthor().getId()).orElseThrow(UserScrapNotFoundException::new);
+
         List<Comment> comments = commentRepository.findByPostId(post.getId());
         List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
         for (Comment comment : comments) {
@@ -173,7 +173,10 @@ public class PostService {
         for (PostImage postImage : post.getPostImages()) {
             postImages.add(postImage.getImgPath());
         }
-        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages);
+
+        boolean scrapExists = scrapPostRepository.existsByScrapIdAndPostId(userInfo.getUserDetail().getScrapId(), post.getId());
+
+        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, scrapExists);
         return response;
     }
 

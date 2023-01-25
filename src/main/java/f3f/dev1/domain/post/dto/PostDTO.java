@@ -271,6 +271,8 @@ public class PostDTO {
         private Long messageRoomCount;
 
         private LocalDateTime createdTime;
+
+        private boolean isScrap;
     }
 
 

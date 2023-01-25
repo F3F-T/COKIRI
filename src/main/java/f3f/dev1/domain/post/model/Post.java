@@ -198,18 +198,19 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
-    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList, List<String> images) {
+    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList, List<String> images, boolean scrapExists) {
         return SinglePostInfoDto.builder()
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
+                .tradeStatus(this.trade.getTradeStatus())
                 .commentInfoDtoList(commentInfoDtoList)
                 .tradeEachOther(this.tradeEachOther)
-                .createdTime(super.getCreateDate())
                 .messageRoomCount(messageRoomCount)
-                .tradeStatus(this.trade.getTradeStatus())
+                .createdTime(super.getCreateDate())
+                .userInfoWithAddress(userInfo)
                 .scrapCount(scrapCount)
                 .content(this.content)
-                .userInfoWithAddress(userInfo)
+                .isScrap(scrapExists)
                 .tagNames(tagNames)
                 .title(this.title)
                 .price(this.price)

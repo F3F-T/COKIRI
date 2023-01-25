@@ -83,6 +83,7 @@ public class PostController {
     // scrapPost랑 scrap postId로 조인 걸고 userId로 존재하는 scrapPost 있는지 찾아보기 - 네이티브 쿼리로 짜야하나
     @GetMapping(value = "/post/{postId}")
     public ResponseEntity<SinglePostInfoDto> getPostInfo(@PathVariable(name = "postId") Long postId) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
         SinglePostInfoDto postInfoDto = postService.findPostById(postId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
