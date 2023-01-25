@@ -109,7 +109,8 @@ const PostDetail = () => {
     const [writeComment, setWriteComment] = useState<WriteCommentType>(null)
     const [refreshFetch, setRefreshFetch] = useState({commentChange: false})
     // const [isAuthor, setIsAuthor] = useState<boolean>();
-    let isAuthor: boolean = undefined;
+    let isAuthor;
+    const [isAuthorProps, setIsAuthorProps] = useState();
 
     const dispatch = useDispatch();
     const store = useSelector((state: Rootstate) => state);
@@ -164,10 +165,12 @@ const PostDetail = () => {
 
     useEffect(() => {
         getPost();
-        getComments();
-        console.log(post)
-        console.log(commentList);
+    }, [])
 
+
+    //만약 여기에 post를 dep에 넣고 getPost를 부른다면 comment가 변화할때마다 비효율적인 함수 호출이 일어난다.
+    useEffect(() => {
+        getComments();
     }, [store.refreshReducer.commentChange])
 
 
@@ -298,7 +301,7 @@ const PostDetail = () => {
     }, []);
 
     // console.log(commentSort);
-    console.log(scrapSaved);
+    // console.log(scrapSaved);
 
     return (
         <div className={styles.postDetail}>
@@ -318,21 +321,6 @@ const PostDetail = () => {
                                 )
                             }
                         </div>
-                        {
-                            commentSort.map((comment) => (
-                                <div key={comment.id}>
-                                    {comment.depth === 0 &&
-                                        <Comments key={comment.id} postId={comment.postId} id={comment.id}
-                                                  className={"primary"} userID={comment.memberNickname}
-                                                  content={comment.content} time={timeConvert(comment.createdTime)}
-                                                  imageUrl={comment.imageUrl}/>}
-                                    {comment.depth === 1 &&
-                                        <Comments key={comment.id + 1} id={comment.id} className={"secondary"}
-                                                  userID={comment.memberNickname} content={comment.content}
-                                                  time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl}/>}
-                                </div>
-                            ))
-                        }
                         <ul className={styles.ProfileActionList}>
                             {
                                 isAuthor ?
@@ -403,11 +391,11 @@ const PostDetail = () => {
                             {comment.depth === 0 &&
                                 <Comments key={comment.id} postId={comment.postId} id={comment.id} className={"primary"}
                                           userID={comment.memberNickname} content={comment.content}
-                                          time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl}/>}
+                                          time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl} isAuthor={isAuthor}/>}
                             {comment.depth === 1 &&
                                 <Comments key={comment.id + 1} id={comment.id} className={"secondary"}
                                           userID={comment.memberNickname} content={comment.content}
-                                          time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl}/>}
+                                          time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl} isAuthor={isAuthor}/>}
                         </div>
                     ))
                 }

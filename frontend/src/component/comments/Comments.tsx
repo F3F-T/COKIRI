@@ -19,7 +19,7 @@ import {useNavigate} from "react-router-dom";
  *  typescript 공부
  *  sass 적용해보기
  *
-**/
+ **/
 
 //classNames로 styles를 bind해서 styles에 쉽게 접근하고 css 조건문을 쉽게 달수있게 돕는 API
 const cx = classNames.bind(styles)
@@ -32,48 +32,46 @@ interface CommentProps {
     //className은 PrimaryComment, SecondaryComment에도 넘겨줄 것이기 때문에 className을 optional로 설정
     className?: CommentTypes;
     userID: String;
-    postId? : number;
+    postId?: number;
     //userProfileImg : string; (url, string형식?)
     content: String;
     time: String;
     id?: number;
-    imageUrl? : string;
+    imageUrl?: string;
+    isAuthor?: boolean
 }
 
 //글 작성
 interface WriteCommentType {
-    authorId : Number;
-    postId? : number;
-    depth : number;
-    content : string;
-    parendCommentId : number | null;
+    authorId: Number;
+    postId?: number;
+    depth: number;
+    content: string;
+    parendCommentId: number | null;
 }
-
 
 
 const PrimaryComment = (commentInfo: CommentProps) => {
 
-    const [enableReComment,setEnableReComment] = useState<boolean>(false);
-    const [writeComment,setWriteComment] = useState<WriteCommentType>(null)
-    const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
+    const [enableReComment, setEnableReComment] = useState<boolean>(false);
+    const [writeComment, setWriteComment] = useState<WriteCommentType>(null)
+    const [refreshFetch, setRefreshFetch] = useState({commentChange: false})
     const navigate = useNavigate();
-    const store = useSelector((state:Rootstate) => state);
+    const store = useSelector((state: Rootstate) => state);
     const dispatch = useDispatch();
     const [reCommentText, setReCommentText] = useState("");
     const onClickReComment = (comment) => {
         setEnableReComment(prevState => !prevState);
     }
-
+    console.log(commentInfo);
     const UploadComment = async () => {
-        try{
+        try {
             const res = await Api.post(`/post/${commentInfo.postId}/comments`, writeComment);
             dispatch(changeRefreshState());
             console.log(writeComment);
             setReCommentText("");
             alert("대댓글 작성 성공")
-        }
-        catch (err)
-        {
+        } catch (err) {
             console.log(err)
             alert("대댓글 작성 실패")
         }
@@ -85,62 +83,82 @@ const PrimaryComment = (commentInfo: CommentProps) => {
 
 
         setWriteComment((prevState) => {
-            return {...prevState,
+            return {
+                ...prevState,
                 authorId: store.userInfoReducer.id,
-                postId : commentInfo.postId,
-                depth : 1,
-                content : inputComment,
-                parentCommentId : commentInfo.id,
+                postId: commentInfo.postId,
+                depth: 1,
+                content: inputComment,
+                parentCommentId: commentInfo.id,
             }
         })
     }
+    console.log(commentInfo.isAuthor);
 
 
+    return (
+        <>
+            <div className={cx('Profile')}>
+                <img className={cx('ProfileImg')} src={commentInfo.imageUrl} onClick={() => navigate('/mypage')}></img>
+                <div className={styles.ProfileInfo}>
+                    {commentInfo.userID}
+                </div>
+                <ul className={styles.ProfileActionList}>
+                    {
+                        commentInfo.isAuthor ?
+                            (<>
+                                <li onClick={() => onClickReComment(commentInfo)}>대댓글</li>
+                                <li>삭제</li>
+                            </>)
+                            :
+                            (
+                                <>
+                                    <li onClick={() => onClickReComment(commentInfo)}>대댓글</li>
+                                    <li>신고</li>
+                                </>)
+                    }
 
-    return(
-       <>
-        <div className={cx('Profile')}>
-            <img className={cx('ProfileImg')} src={commentInfo.imageUrl} onClick={()=>navigate('/mypage')} ></img>
-            <div className={styles.ProfileInfo}>
-                {commentInfo.userID}
+                </ul>
             </div>
-            <ul className={styles.ProfileActionList}>
-                <li onClick={()=> onClickReComment(commentInfo)}>대댓글</li>
-                <li>신고</li>
-
-            </ul>
-        </div>
-        <div className={styles.comments}>
-            {commentInfo.content}
-        </div>
-        <div className={styles.time}>
-            {commentInfo.time}
-        </div>
-           {
-               enableReComment ?
-                   (
-               <div className = {styles.writeComments}>
-               <input type={"text"} className={styles.writeCommentsInput} placeholder={"대댓글을 입력하세요"} onChange={onChangeComment} value={reCommentText}/>
-               <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
-               </div>
-                   )
-           : ""}
-       </>
-);
+            <div className={styles.comments}>
+                {commentInfo.content}
+            </div>
+            <div className={styles.time}>
+                {commentInfo.time}
+            </div>
+            {
+                enableReComment ?
+                    (
+                        <div className={styles.writeComments}>
+                            <input type={"text"} className={styles.writeCommentsInput} placeholder={"대댓글을 입력하세요"}
+                                   onChange={onChangeComment} value={reCommentText}/>
+                            <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
+                        </div>
+                    )
+                    : ""}
+        </>
+    );
 }
 
 const SecondaryComment = (commentInfo: CommentProps) => {
     const navigate = useNavigate();
 
-    return(
+    return (
         <>
             <div className={cx('Profile')}>
-                <img className={cx('ProfileImg')} src={commentInfo.imageUrl} onClick={()=>navigate('/mypage')}></img>
+                <img className={cx('ProfileImg')} src={commentInfo.imageUrl} onClick={() => navigate('/mypage')}></img>
                 <div className={styles.ProfileInfo}>
                     {commentInfo.userID}
                 </div>
                 <ul className={styles.ProfileActionList}>
-                    <li>신고</li>
+                    {
+                        commentInfo.isAuthor ?
+                            (<>
+                                <li>삭제</li>
+                            </>)
+                            :
+                            (<li>신고</li>)
+                    }
                 </ul>
             </div>
             <div className={styles.comments}>
@@ -160,13 +178,16 @@ const Comments = (commentInfo: CommentProps) => { //받는 props가 CommentProps
         <>
             {commentInfo.className === "primary" &&
                 <div className={cx(commentInfo.className)}>
-                    <PrimaryComment postId = {commentInfo.postId} id= {commentInfo.id} userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time} imageUrl={commentInfo.imageUrl} />
+                    <PrimaryComment postId={commentInfo.postId} id={commentInfo.id} userID={commentInfo.userID}
+                                    content={commentInfo.content} time={commentInfo.time}
+                                    imageUrl={commentInfo.imageUrl} isAuthor={commentInfo.isAuthor}/>
                 </div>
             }
 
             {commentInfo.className === "secondary" &&
                 <div className={cx(commentInfo.className)}>
-                    <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time} imageUrl={commentInfo.imageUrl}/>
+                    <SecondaryComment userID={commentInfo.userID} content={commentInfo.content} time={commentInfo.time}
+                                      imageUrl={commentInfo.imageUrl} isAuthor={commentInfo.isAuthor}/>
                 </div>
             }
         </>
