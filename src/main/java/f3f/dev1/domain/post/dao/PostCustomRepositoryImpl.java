@@ -2,12 +2,11 @@ package f3f.dev1.domain.post.dao;
 
 import com.querydsl.core.QueryFactory;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.ConstantImpl;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.CaseBuilder;
-import com.querydsl.core.types.dsl.PathBuilder;
+import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import f3f.dev1.domain.message.model.QMessageRoom;
 import f3f.dev1.domain.post.model.Post;
@@ -54,6 +53,11 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 
         위 예제 코드처럼 조건절에 사용된 값을 select에서는 제외할 수 있다.
         위 코드 참고해서 리팩토링 하기
+
+        ->  안된다!!!!
+        잘못 이해한듯 하다. Expressions.ConstantsAs는 위에서 말한 기능이 아니라, 이미 알고있는 값에 해당하는 필드를
+        제외하고 나머지만 불러오는 기능이다.
+        다른 방법을 찾던가 포기해야할 것 같다....
      */
 
     @Override
@@ -97,43 +101,47 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         return new PageImpl<>(responseList, pageable, total);
     }
 
-    @Override
-    public Page<PostSearchResponseDto> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Long currentMemberId, Pageable pageable) {
-        QueryResults<PostSearchResponseDto> results = jpaQueryFactory.
-                select(Projections.constructor(PostSearchResponseDto.class,
-                        post.id,
-                        post.title,
-                        post.content,
-                        post.thumbnailImgPath,
-                        post.author.nickname,
-                        post.productCategory,
-                        post._super.createDate,
-                        post.messageRooms.size(),
-                        post.wishCategory,
-                        new CaseBuilder().when(memberFilter(currentMemberId))
-                            .then(true)
-                            .otherwise(false),
-                        post.scrapPosts.size(),
-                        post.price
-                        ))
-                .from(post)
-                .leftJoin(post.scrapPosts, scrapPost)
-                .leftJoin(scrapPost.scrap, scrap).fetchJoin()
-                .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
-                        wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
-                        priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
-                .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetchResults();
+//    @Override
+//    public Page<PostSearchResponseDto> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Long currentMemberId, Pageable pageable) {
+//
+//        StringTemplate stringDate = Expressions.stringTemplate(
+//                "DATE_FORMAT({0},{1})", post._super.createDate, ConstantImpl.create("%Y-%m-%d"));
+//        QueryResults<PostSearchResponseDto> results = jpaQueryFactory.
+//                select(Projections.constructor(PostSearchResponseDto.class,
+//                        post.id,
+//                        post.title,
+//                        post.content,
+//                        post.thumbnailImgPath,
+//                        post.author.nickname,
+//                        post.productCategory.name,
+////                        post._super.createDate,
+//                        stringDate,
+//                        post.messageRooms.size().count(),
+//                        post.wishCategory.name,
+//                        new CaseBuilder().when(memberFilter(currentMemberId))
+//                            .then(true)
+//                            .otherwise(false),
+//                        post.scrapPosts.size().count(),
+//                        post.price
+//                        ))
+//                .from(post)
+//                .leftJoin(post.scrapPosts, scrapPost)
+//                .leftJoin(scrapPost.scrap, scrap).fetchJoin()
+//                .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
+//                        wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
+//                        priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
+//                .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetchResults();
+//
+//        List<PostSearchResponseDto> responseList = results.getResults();
+//        long total = results.getTotal();
+//        return new PageImpl<>(responseList, pageable, total);
+//    }
 
-        List<PostSearchResponseDto> responseList = results.getResults();
-        long total = results.getTotal();
-        return new PageImpl<>(responseList, pageable, total);
-    }
-
-    @Override
-    public Page<PostSearchResponseDto> findPostsByTags(List<String> tagNames, Long currentMemberId, Pageable pageable) {
+//    @Override
+//    public Page<PostSearchResponseDto> findPostsByTags(List<String> tagNames, Long currentMemberId, Pageable pageable) {
 //        QueryResults<PostSearchResponseDto> results = jpaQueryFactory
 //                .select(Projections.constructor(PostSearchResponseDto.class,
 //                        post.id,
@@ -149,7 +157,8 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 //                        post.price,
 //                        new CaseBuilder().when(scrap.member.id.eq(currentMemberId))
 //                            .then(true)
-//                            .otherwise(false)
+//                            .otherwise(false),
+//                        Expressions.
 //                        ))
 //                .from(post)
 //                // Join 때문에 잠시 보류.
@@ -162,11 +171,10 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 //                .limit(pageable.getPageSize())
 //                .fetchResults();
 //
-//        List<Post> responseList = results.getResults();
+//        List<PostSearchResponseDto> responseList = results.getResults();
 //        long total = results.getTotal();
 //        return new PageImpl<>(responseList, pageable, total);
-        return null;
-    }
+//    }
 
     private BooleanExpression productCategoryNameFilter(String productCategoryName) {
         return StringUtils.hasText(productCategoryName) ? post.productCategory.name.eq(productCategoryName) : null;

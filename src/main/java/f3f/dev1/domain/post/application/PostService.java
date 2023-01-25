@@ -161,6 +161,16 @@ public class PostService {
     }
 
 
+    // 쿼리 DSL 테스트용 기능, 테스트 실패로 잠시 주석처리 해두겠다.
+//    @Transactional(readOnly = true)
+//    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Long currentMemberId, Pageable pageable) {
+//        List<PostSearchResponseDto> list = new ArrayList<>();
+//        Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
+//        Page<PostSearchResponseDto> postDTOByConditions = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, currentMemberId, pageable);
+//        return postDTOByConditions;
+//    }
+
+
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, Pageable pageable) {
         Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
