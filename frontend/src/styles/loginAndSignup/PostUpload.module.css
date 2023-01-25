@@ -132,10 +132,27 @@ input[type=number] {
     height: 3rem;
 }
 
+.imgClass{
+    display: inline-block;
+    position: relative;
+}
+
 .photos{
     width: 12rem;
     height: 12rem;
     padding: 1rem;
+}
+
+.imgRemoveButton{
+    /*width: 2rem;*/
+    /*height: 2rem;*/
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    font-size: 2rem;
+    padding: 0;
+    margin : 0;
+
 }
 
 .photoText{
