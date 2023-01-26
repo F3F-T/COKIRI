@@ -158,7 +158,7 @@ const PostDetail = () => {
     }
 
     //TODO:함민혁) 코끼리톡 구현할때 이걸 누르면 메시지룸이 생성되게 구현하고, navigate에서 매개변수를 전달해주면 될거야
-    //예시 : navigate('/signup/emailcheck', {state : userInfo})
+    //예시 : navigate('/signup/emailcheck', {state : userInfo}
     const talkButton = () => {
         navigate('/kokiritalk')
     }
