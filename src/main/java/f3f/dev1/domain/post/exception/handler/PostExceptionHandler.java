@@ -2,6 +2,7 @@ package f3f.dev1.domain.post.exception.handler;
 
 import f3f.dev1.domain.category.exception.NotFoundProductCategoryNameException;
 import f3f.dev1.domain.category.exception.NotFoundWishCategoryNameException;
+import f3f.dev1.domain.post.exception.NotContainAuthorInfoException;
 import f3f.dev1.domain.post.exception.NotFoundPostListByAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.global.error.ErrorResponse;
@@ -52,6 +53,13 @@ public class PostExceptionHandler {
             NotFoundPostListByAuthorException ex, WebRequest webRequest) {
         log.debug("해당 유저가 작성한 게시글이 없음", webRequest.getDescription(false));
         return NOT_FOUND_POST_LIST_BY_AUTHOR;
+    }
+
+    @ExceptionHandler(NotContainAuthorInfoException.class)
+    protected final ResponseEntity<ErrorResponse> handleNotContainAuthorInfoException(
+            NotContainAuthorInfoException ex, WebRequest webRequest) {
+        log.debug("게시글 수정에 사용자 정보가 존재하지 않음", webRequest.getDescription(false));
+        return NOT_CONTAIN_AUTHOR_INFO;
     }
 
 
