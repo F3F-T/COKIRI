@@ -39,6 +39,9 @@ public class MessageRoom extends BaseTimeEntity {
     @OneToMany(mappedBy = "messageRoom", fetch = FetchType.LAZY)
     private List<Message> messages = new ArrayList<>();
 
+    private boolean delStatus;
+
+    public void setDelStatus(boolean delStatus){ this.delStatus = delStatus; }
     @Builder
     public MessageRoom(Long id, Post post, Member seller, Member buyer) {
         this.id = id;
@@ -54,14 +57,15 @@ public class MessageRoom extends BaseTimeEntity {
                 .postId(this.post.getId())
                 .sellerId(this.seller.getId())
                 .buyerId(this.buyer.getId())
+                .delStatus(this.isDelStatus())
                 .build();
     }
-
     public MessageRoomDTO.BuyingRoomInfoDto toBuyingRoomInfo(){
         return MessageRoomDTO.BuyingRoomInfoDto.builder()
                 .id(this.getId())
                 .PostTitle(this.post.getTitle())
                 .sellerNickname(this.seller.getNickname())
+                .delStatus(this.isDelStatus())
                 .build();
     }
 
@@ -70,6 +74,7 @@ public class MessageRoom extends BaseTimeEntity {
                 .id(this.getId())
                 .PostTitle(this.post.getTitle())
                 .buyerNickname(this.buyer.getNickname())
+                .delStatus(this.isDelStatus())
                 .build();
     }
 }
