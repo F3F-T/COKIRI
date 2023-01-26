@@ -26,6 +26,7 @@ import {LocalDateTime} from "js-joda";
 import CustomSwiper from "../../component/common/CustomSwiper";
 import tradeEx from "../../img/tradeEx.jpeg";
 import {prepend} from "list";
+import Select from "react-select";
 
 
 const PostDetail = () => {
@@ -121,6 +122,33 @@ const PostDetail = () => {
     const isAuthorTrue = ["수정", "|", "삭제"];
     const isAuthorFalse = ["신고"]
     const [scrapCountInReact, setScrapCountInReact] = useState<number>();
+
+
+    //select
+    interface Category {
+        name: string;
+    }
+
+    const categories: Category[] =
+        [
+            {name: '판매중'},
+            {name: '예약중'},
+            {name: '판매완료'},
+        ]
+
+
+    interface ArrayObjectSelectState {
+        selectedCategory: Category | null;
+    }
+
+    const [productState, setProductState] = React.useState<ArrayObjectSelectState>({
+        selectedCategory: null,
+    });
+
+    const [wishState, setWishState] = React.useState<ArrayObjectSelectState>({
+        selectedCategory: null,
+    });
+
 
     async function getPost() {
 
@@ -367,9 +395,6 @@ const PostDetail = () => {
                                 :
                                 <AiOutlineHeart className={styles.likeImg} onClick={onClickScrap}/>)
                             }
-
-                            {/*<AiOutlineHeart className={styles.likeImg}  onClick={onClickScrap}/>*/}
-                            {/*<AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={()=>{}}/>*/}
                             <p className={styles.likeNum}>{scrapCountInReact}</p>
                         </div>
                         <div className={styles.commentBox}>
@@ -379,10 +404,29 @@ const PostDetail = () => {
                         <div className={styles.timeBox}>
                             <img className={styles.timeImg} src={clock}/>
                             <p className={styles.timeNum}>{timeConvert(post.createdTime)}</p>
-                            <button className={styles.exchangeBtn} onClick={talkButton}>거래상태</button>
                         </div>
+                        {/*<button className={styles.tradeStatus} onClick={talkButton}>거래상태</button>*/}
                     </div>
+                    <div className={styles.tradeAndTalk}>
+                    <Select
+                        className={styles.tradeStatus}
+                        styles={{ // zIndex
+                            menu: provided => ({...provided, zIndex: 999})
+                        }}
+                        // If you don't need a state you can remove the two following lines value & onChange
+                        value={productState.selectedCategory}
+                        onChange={(option: Category | null) => {
+                            setProductState({selectedCategory: option});
+                        }}
+                        getOptionLabel={(category: Category) => category.name}
+                        getOptionValue={(category: Category) => category.name}
+                        options={categories}
+                        // isClearable={true}
+                        // backspaceRemovesValue={true}
+                        placeholder={"판매중"}
+                    />
                     <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
+                    </div>
                 </section>
             </article>
             <section className={styles.comments}>
