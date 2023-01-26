@@ -35,7 +35,7 @@ public class MessageRoomCustomRepositoryImpl implements MessageRoomCustomReposit
                                 messageRoom.id,
                                 author.id,
                                 message.content,
-                                messageRoom.createDate,
+                                message.createDate,
                                 buyer.nickname,
                                 seller.nickname,
                                 buyer.imageUrl,
