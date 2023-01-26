@@ -123,6 +123,17 @@ const KokiriTalk = () => {
     //     setRoomId(res.data.id)
     //     return roomId
     // }
+    console.log("talkCard??",talkCard.id)
+
+    useEffect(()=>{
+        if(talkCard.id!=undefined){
+            console.log("실행된거니??",talkCard.id)
+            setKey(talkCard.id)
+            getMessageContent(talkCard.id);
+        }
+    },[talkCard.id])
+
+
     const onChangeMessage = (e) => {
         const inputMessage = e.target.value;
         setInput(inputMessage)
@@ -132,31 +143,32 @@ const KokiriTalk = () => {
         console.log("이방이 이미 있는거니???", state)
         //얘는 게시글통해서 들어왔을때만 그 톡방이 있는지 확인하면됨
         if(state===false){
-            try{
-                const post_buyerId1 = {
-                    postId: talkCard.postId,
-                    buyerId: info.id
-                }
-                const res = await Api.post(`/post/${talkCard.postId}/messageRooms`,post_buyerId1);
-                dispatch(setOpponetNick(res.data.sellerNickName))
-                await dispatch(setMessageRoomId(res.data.id))
-                await dispatch(setSellerId(res.data.sellerId))
-                dispatch(setPostId(res.data.postId))
-
-                setRoomId(res.data.id)
-                console.log("메세지룸 추가", res.data)
-                // if(talkCard.id != undefined){
-                //     sendMessage()
-                // }
-                alert("메세지룸 추가 성공")
-                await sendMessage(res.data.id)
-            }
-            catch (err)
-            {
-                console.log(err)
-                alert("메세지룸 추가 실패")
-            }
-
+            // try{
+            //     const post_buyerId1 = {
+            //         postId: talkCard.postId,
+            //         buyerId: info.id
+            //     }
+            //     const res = await Api.post(`/post/${talkCard.postId}/messageRooms`,post_buyerId1);
+            //     dispatch(setOpponetNick(res.data.sellerNickName))
+            //     await dispatch(setMessageRoomId(res.data.id))
+            //     await dispatch(setSellerId(res.data.sellerId))
+            //     dispatch(setPostId(res.data.postId))
+            //
+            //     setRoomId(res.data.id)
+            //     console.log("메세지룸 추가", res.data)
+            //     // if(talkCard.id != undefined){
+            //     //     sendMessage()
+            //     // }
+            //     alert("메세지룸 추가 성공")
+            //     await sendMessage(res.data.id)
+            // }
+            // catch (err)
+            // {
+            //     console.log(err)
+            //     alert("메세지룸 추가 실패")
+            // }
+            console.log("제발좀ㅋㅋ아님",talkCard.id)
+            await sendMessage(talkCard.id)
         }
         else{
             console.log("제발좀ㅋㅋ",talkCard.id)
@@ -179,22 +191,33 @@ const KokiriTalk = () => {
             // dispatch(setTradeStatus(post.tradeStatus))
             // dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
 
-
-            // dispatch(setPostId(res2.data[0].postId))
-            // dispatch(setMessageRoomId(res2.data[0].id))
-            // dispatch(setBuyerId(res2.data[0].buyerId))
-            // if(info.id === res2.data[0].buyerId){
-            //     dispatch(setOpponetNick(res2.data[0].sellerNickName))
-            // }
-            // else{
-            //     dispatch(setOpponetNick(res2.data[0].buyerNickName))
-            // }
+            if(talkCard.id === undefined){
+                console.log("네비게이션바에서 바로 접근")
+                const res3 = await Api.get(`/post/${res2.data[0].postId}`)
+                console.log("네브바 접근 이미지 체크",res3.data.images[0])
+                //title,wishCategory,productCategory,tradeStatus
+                dispatch(setTradeStatus(res3.data.tradeStatus))
+                dispatch(setTradeCategory(res3.data.tradeCategory))
+                dispatch(setWishCategory(res3.data.wishCategory))
+                dispatch(setProductImg(res3.data.images[0].imgPath))
+                dispatch(setTitle(res3.data.title))
+                dispatch(setPostId(res2.data[0].postId))
+                dispatch(setMessageRoomId(res2.data[0].id))
+                dispatch(setBuyerId(res2.data[0].buyerId))
+                if(info.id === res2.data[0].buyerId){
+                    dispatch(setOpponetNick(res2.data[0].sellerNickName))
+                }
+                else{
+                    dispatch(setOpponetNick(res2.data[0].buyerNickName))
+                }
+                getMessageContent(res2.data[0].id);
+            }
 
             setRoomList(()=>{
                 return [...res.data.content]
             })
 
-            getMessageContent(res2.data[0].id);
+
 
             alert("메세지룸 조회 성공in kokiritalk")
 
@@ -203,7 +226,7 @@ const KokiriTalk = () => {
         catch (err)
         {
             console.log(err)
-            alert("메세지룸 조회 실패")
+            alert("메세지룸 조회 실패33333")
         }
     }
     async function sendMessage(loading) {
@@ -217,6 +240,9 @@ const KokiriTalk = () => {
         try{
             if(info.id===talkCard.sellerId){
                 console.log("메세지보내는사람이 파는 사람이야")
+                console.log("현재접속자",info.id)
+                console.log("현재 파는사람",talkCard.sellerId)
+                console.log("현재 사는사람",talkCard.buyerId)
                 messageInfo1={
                     content:input,
                     senderId:info.id,
@@ -228,6 +254,9 @@ const KokiriTalk = () => {
             }
             else{
                 console.log("메세지보내는사람이 사는 사람이야")
+                console.log("현재접속자",info.id)
+                console.log("현재 파는사람",talkCard.sellerId)
+                console.log("현재 사는사람",talkCard.buyerId)
                 messageInfo1={
                     content:input,
                     senderId:info.id,
@@ -331,8 +360,13 @@ const KokiriTalk = () => {
                  {/*                 onClick = {onClickTotalTalkList(SingleObject["keys"])} />*/}
                  {/*   ))}*/}
                     {roomList.map((SingleObject:object) => (
-                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerId"]} lastContent={SingleObject["lastMsg"]} date={SingleObject["createdDated"]}
+                        SingleObject["buyerNickname"] === info.nickname ?
+                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={SingleObject["createdDate"]}
                                   onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} />
+                            :
+                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={SingleObject["createdDate"]}
+                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} />
+
                     ))}
                 </div>
                 </div>
@@ -342,7 +376,7 @@ const KokiriTalk = () => {
                 <div className={styles.right_headerBox}>
                     <div className={styles.right_header}>
                         <div className={styles.right_header1}>
-                            <div className={styles.right_header1_1}> <TalkCard/> </div>
+                            <div className={styles.right_header1_1}> <TalkCard keys={key}/> </div>
                         </div>
                         <div className={styles.right_header2}>
                             <p className={styles.delete}>삭제</p>

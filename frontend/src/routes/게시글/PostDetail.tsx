@@ -33,7 +33,7 @@ import {
     setWishCategory,
     setTradeCategory,
     resetTalkCard,
-    setSellerId, setPostId, setBuyerId
+    setSellerId, setPostId, setBuyerId, setMessageRoomId
 } from "../../store/talkCardReducer";
 import {FALSE} from "sass";
 
@@ -196,7 +196,12 @@ const PostDetail = () => {
             alert("메세지룸 조회 성공1")
             console.log("d",res.data)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
-            console.log("ddd",res2.data)
+            // console.log("ddd",res2.data[8].buyerId)
+            // console.log("ddd222",info.id)
+            // console.log("rrrrrr",res2.data[8].postId)
+            // console.log("rrrrrr2222",post.id)
+            console.log("마지막",res2.data)
+
             // res.data.content.map((a:String)=>(
             //     a['buyerNickname'] === info.nickname ?
             //         setExist((prevState) => {
@@ -209,29 +214,54 @@ const PostDetail = () => {
             //             }
             //         })
             // ))
-            for(let i =0 ; i<res.data.content.length;i++){
-                if(res.data.content[i].buyerNickname === info.nickname)
+            // for(let i =0 ; i<res.data.content.length;i++){
+            //     if(res.data.content[i].buyerNickname === info.nickname)
+            //     {
+            //         if(res.data.content[i].sellerNickname === post.userInfoWithAddress.userDetail.nickname){
+            //             console.log("이미방있어요요df요요")
+            //             existOrNot = true
+            //         }
+            //         else {
+            //             existOrNot = false
+            //         }
+            //     }
+            // }
+            console.log("콘탠츠길이",res2.data.length)
+            for(let i =0 ; i<res2.data.length;i++){
+                if(res2.data[i].buyerId === info.id)
                 {
-                    if(res.data.content[i].sellerNickname === post.userInfoWithAddress.userDetail.nickname){
-                        console.log("이미방있어요요df요요")
+                    if(res2.data[i].postId === post.id){
+                        console.log("이미방있어요요요요")
+                        dispatch(setMessageRoomId(res2.data[i].id))
                         existOrNot = true
+                        break;
                     }
                     else {
                         existOrNot = false
                     }
                 }
-            }
-            console.log("콘탠츠길이",res.data.content.length)
-            for(let i =0 ; i<res2.data.content.length;i++){
-                if(res2.data[i].buyerNickname === info.nickname)
-                {
-                    if(res.data[i].postId === post.id){
-                        console.log("이미방있어요요요요")
-                        // dispatch(setBuyerId(res2.data[i].buyerId))
-                        existOrNot = true
+                else{
+                    try{
+                        const post_buyerId1 = {
+                            postId: post.id,
+                            buyerId: info.id
+                        }
+                        const res4 = await Api.post(`/post/${post.id}/messageRooms`,post_buyerId1);
+                        dispatch(setOpponetNick(res4.data.sellerNickName))
+                        await dispatch(setMessageRoomId(res4.data.id))
+                        await dispatch(setSellerId(res4.data.sellerId))
+                        dispatch(setPostId(res4.data.postId))
+                        // setRoomId(res.data.id)
+                        console.log("메세지룸 추가 in postdetail", res.data)
+                        // if(talkCard.id != undefined){
+                        //     sendMessage()
+                        // }
+                        alert("메세지룸 추가 성공 in postdetail")
                     }
-                    else {
-                        existOrNot = false
+                    catch (err)
+                    {
+                        console.log(err)
+                        alert("메세지룸 추가 실패 in postdetail")
                     }
                 }
             }

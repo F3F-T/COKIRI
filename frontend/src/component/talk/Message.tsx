@@ -5,7 +5,7 @@ import {HiPencil} from "react-icons/hi";
 import Api from "../../utils/api";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
-import {setBuyerId, setMessageRoomId, setOpponetNick, setPostId} from "../../store/talkCardReducer";
+import {setBuyerId, setMessageRoomId, setOpponetNick, setPostId, setSellerId} from "../../store/talkCardReducer";
 
 
 interface keyProps {
@@ -79,6 +79,7 @@ const Message = (key: keyProps) => {
                     dispatch(setPostId(res2.data[i].postId))
                     dispatch(setMessageRoomId(res2.data[i].id))
                     dispatch(setBuyerId(res2.data[i].buyerId))
+                    dispatch(setSellerId(res2.data[i].sellerId))
                     if(info.id === res2.data[i].buyerId){
                         dispatch(setOpponetNick(res2.data[i].sellerNickName))
                     }
