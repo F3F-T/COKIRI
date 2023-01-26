@@ -66,7 +66,7 @@ const TalkCard= (key: keyProps) => {
                     dispatch(setTradeStatus(res3.data.tradeStatus))
                     dispatch(setTradeCategory(res3.data.tradeCategory))
                     dispatch(setWishCategory(res3.data.wishCategory))
-                    dispatch(setProductImg(res3.data.images[0].imgPath))
+                    dispatch(setProductImg(res3.data.images[0]))
                     dispatch(setTitle(res3.data.title))
 
                     dispatch(setPostId(res2.data[i].postId))

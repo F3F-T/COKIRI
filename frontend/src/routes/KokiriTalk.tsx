@@ -22,6 +22,7 @@ import {
 } from "../store/talkCardReducer";
 import {use} from "js-joda";
 import {log} from "util";
+import timeConvert from "../utils/timeConvert";
 
 interface contentInfo {
         id: number,
@@ -43,6 +44,7 @@ interface contentInfo2 {
 }
 const KokiriTalk = () => {
     const navigate = useNavigate();
+    const [count,setCount] = useState(0)
     const [key,setKey] = useState<number>(null)
     const {state} = useLocation();
     const dispatch = useDispatch();
@@ -120,16 +122,17 @@ const KokiriTalk = () => {
     async function getMessageRoom() {
         try{
             const res = await Api.get('/user/messageRooms');
-            // console.log("메세지룸 조회", res.data.content)
+            console.log("메세지룸 조회", res.data.content)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
             // console.log("메세지룸 조회2",res2.data)
             if(talkCard.id === undefined){
                 const res3 = await Api.get(`/post/${res2.data[0].postId}`)
+
                 //title,wishCategory,productCategory,tradeStatus
                 dispatch(setTradeStatus(res3.data.tradeStatus))
                 dispatch(setTradeCategory(res3.data.tradeCategory))
                 dispatch(setWishCategory(res3.data.wishCategory))
-                dispatch(setProductImg(res3.data.images[0].imgPath))
+                dispatch(setProductImg(res3.data.images[0]))
                 dispatch(setTitle(res3.data.title))
                 dispatch(setPostId(res2.data[0].postId))
                 dispatch(setMessageRoomId(res2.data[0].id))
@@ -146,6 +149,7 @@ const KokiriTalk = () => {
             setRoomList(()=>{
                 return [...res.data.content]
             })
+
 
             return res2.data[0].id
         }
@@ -217,6 +221,7 @@ const KokiriTalk = () => {
         return null
     }
 
+
     return (
         <div className={styles.kokiritalk}>
             <div className={styles.left}>
@@ -225,10 +230,10 @@ const KokiriTalk = () => {
                 <div className={styles.talkContainer}>
                     {roomList.map((SingleObject:object) => (
                         SingleObject["buyerNickname"] === info.nickname ?
-                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={SingleObject["createdDate"]}
+                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
                                   onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} />
                             :
-                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={SingleObject["createdDate"]}
+                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
                                   onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} />
 
                     ))}
@@ -243,11 +248,11 @@ const KokiriTalk = () => {
                             <div className={styles.right_header1_1}> <TalkCard keys={key}/> </div>
                         </div>
                         <div className={styles.right_header2}>
-                            <p className={styles.delete}>삭제</p>
+                            <button className={styles.sideBtn}>삭제</button>
                             <p> | </p>
-                            <p className={styles.block}>차단</p>
+                            <button className={styles.sideBtn}>차단</button>
                             <p> | </p>
-                            <p className={styles.inform}>신고</p>
+                            <button className={styles.sideBtn}>신고</button>
                         </div>
                     </div>
                     <div className={styles.right_header1_2}>{talkCard.opponentNickname}님과의 쪽지방입니다.</div>
@@ -259,7 +264,7 @@ const KokiriTalk = () => {
                 </div>
                 <div className = {styles.writeComments}>
                     <input type={"text"} className={styles.writeInput} placeholder={"쪽지를 보내세요"} onChange={onChangeMessage}/>
-                    <HiPencil className={styles.pencilIcon} onClick={()=>{createMessageRoom();}} />
+                    <HiPencil className={styles.pencilIcon} onClick={()=>{createMessageRoom();setCount(prevState => prevState+1)}} />
                 </div>
             </div>
         </div>
