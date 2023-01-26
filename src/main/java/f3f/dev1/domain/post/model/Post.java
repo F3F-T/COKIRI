@@ -1,15 +1,12 @@
 package f3f.dev1.domain.post.model;
 
 import f3f.dev1.domain.category.model.Category;
-import f3f.dev1.domain.comment.dto.CommentDTO;
 import f3f.dev1.domain.comment.model.Comment;
-import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.BaseTimeEntity;
 import f3f.dev1.domain.model.TradeStatus;
-import f3f.dev1.domain.post.dto.PostDTO;
-import f3f.dev1.domain.postImage.dto.PostImageDTO;
+import f3f.dev1.domain.postImage.model.PostImage;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.trade.model.Trade;
 import lombok.Builder;
@@ -17,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,6 +70,41 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private List<PostImage> postImages = new ArrayList<>();
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateTradeEachOther(Boolean tradeEachOther) {
+        this.tradeEachOther = tradeEachOther;
+    }
+
+    public void updatePrice(Long price) {
+        this.price = price;
+    }
+
+    public void updateProductCategory(Category productCategory) {
+        this.productCategory = productCategory;
+    }
+
+    public void updateWishCategory(Category wishCategory) {
+        this.wishCategory = wishCategory;
+    }
+
+    // TODO 태그는 어떻게 하지?
+
+    // TODO 이미지는 어떻게 하지??
+
+    public void updateThumbnail(String thumbnailImgPath) {
+        this.thumbnailImgPath = thumbnailImgPath;
+    }
+
     public void updatePostInfos(UpdatePostRequest updatePostRequest, Category productCategory, Category wishCategory, List<PostTag> postTags) {
         this.title = updatePostRequest.getTitle();
         this.content = updatePostRequest.getContent();
@@ -95,18 +128,20 @@ public class Post extends BaseTimeEntity {
         this.id = id;
     }
 
-    public PostSearchResponseDto toSearchResponseDto(Long messageRoomCount, Long scrapCount) {
+    public PostSearchResponseDto toSearchResponseDto(Long messageRoomCount, Long scrapCount, boolean isScrap) {
         return PostSearchResponseDto.builder()
+                // 쿼리DSL에서 localDateTime을 다루기가 생각보다 까다로워 아래와 같은 String 형식으로 다루겠다.
+                .createdTime(super.getCreateDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")))
                 .productCategory(this.productCategory.getName())
                 .authorNickname(this.author.getNickname())
                 .wishCategory(this.wishCategory.getName())
                 .messageRoomCount(messageRoomCount)
-                .createdTime(super.getCreateDate())
                 .thumbnail(this.thumbnailImgPath)
                 .scrapCount(scrapCount)
                 .content(this.content)
                 .title(this.title)
                 .price(this.price)
+                .isScrap(isScrap)
                 .id(this.id)
                 .build();
     }
@@ -166,18 +201,19 @@ public class Post extends BaseTimeEntity {
                 .build();
     }
 
-    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList, List<postImageInfoDto> images) {
+    public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList, List<String> images, boolean scrapExists) {
         return SinglePostInfoDto.builder()
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
+                .tradeStatus(this.trade.getTradeStatus())
                 .commentInfoDtoList(commentInfoDtoList)
                 .tradeEachOther(this.tradeEachOther)
-                .createdTime(super.getCreateDate())
                 .messageRoomCount(messageRoomCount)
-                .tradeStatus(this.trade.getTradeStatus())
+                .createdTime(super.getCreateDate())
+                .userInfoWithAddress(userInfo)
                 .scrapCount(scrapCount)
                 .content(this.content)
-                .userInfoWithAddress(userInfo)
+                .isScrap(scrapExists)
                 .tagNames(tagNames)
                 .title(this.title)
                 .price(this.price)

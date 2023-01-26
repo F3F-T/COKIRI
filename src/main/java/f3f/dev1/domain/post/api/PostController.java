@@ -1,5 +1,6 @@
 package f3f.dev1.domain.post.api;
 
+import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.postImage.application.PostImageService;
 import f3f.dev1.domain.tag.application.PostTagService;
@@ -42,13 +43,14 @@ public class PostController {
             @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
             @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
             Pageable pageable) {
+        Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
             SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
                     .productCategory(productCategoryName)
                     .wishCategory(wishCategoryName)
                     .minPrice(minPrice)
                     .maxPrice(maxPrice)
                     .build();
-            Page<PostSearchResponseDto> pageDto = postService.findPostsByCategoryAndPriceRange(request, pageable);
+            Page<PostSearchResponseDto> pageDto = postService.findPostsByCategoryAndPriceRange(request, currentMemberId, pageable);
             return new ResponseEntity<>(pageDto, HttpStatus.OK);
     }
 
@@ -57,11 +59,11 @@ public class PostController {
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
             Pageable pageable) {
         Page<PostSearchResponseDto> resultList;
-
+        Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
         if(!tagNames.isEmpty()) {
-            resultList = postService.findPostsWithTagNameList(tagNames, pageable);
+            resultList = postService.findPostsWithTagNameList(tagNames, currentMemberId, pageable);
         } else {
-            resultList = postService.findAll(pageable);
+            resultList = postService.findAll(currentMemberId, pageable);
         }
         return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
@@ -78,21 +80,47 @@ public class PostController {
     }
 
     // 게시글 정보 조회
+    // TODO 해당 게시글이 본인이 스크랩한 게시글인지 판단해줘야 함
+    // scrapPost랑 scrap을 postId로 조인 걸고 userId로 존재하는 scrapPost 있는지 찾아보기 - 네이티브 쿼리로 짜야하나
     @GetMapping(value = "/post/{postId}")
     public ResponseEntity<SinglePostInfoDto> getPostInfo(@PathVariable(name = "postId") Long postId) {
-        SinglePostInfoDto postInfoDto = postService.findPostById(postId);
+        Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
+        SinglePostInfoDto postInfoDto = postService.findPostById(postId, currentMemberId);
         return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
     }
 
+//    // 게시글 정보 수정
+//    // 기존 PathVariable 에서 RequestBody로 변경
+//    // TODO 태그가 업데이트DTO로 들어오면 생성때랑 마찬가지로 추가를 해줘야 한다. 그리고 원래 있던 PostTag는 지워줘야 한다...
+//    @PatchMapping(value = "/post/{postId}")
+//    public ResponseEntity<PostInfoDtoWithTag> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
+//        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+//        postTagService.deletePostTagFromPost(postId);
+//        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, postId, currentMemberId);
+//        return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
+//    }
+
     // 게시글 정보 수정
-    // 기존 PathVariable 에서 RequestBody로 변경
-    // TODO 태그가 업데이트DTO로 들어오면 생성때랑 마찬가지로 추가를 해줘야 한다. 그리고 원래 있던 PostTag는 지워줘야 한다...
     @PatchMapping(value = "/post/{postId}")
-    public ResponseEntity<PostInfoDtoWithTag> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
+    public ResponseEntity<String> updatePostInfo(@PathVariable(name = "postId") Long postId, @RequestBody @Valid UpdatePostRequest updatePostRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        postTagService.deletePostTagFromPost(postId);
-        PostInfoDtoWithTag postInfoDto = postService.updatePost(updatePostRequest, currentMemberId);
-        return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
+
+        // currentMemberId 관련 예외는 여기서 일괄 처리하겠다.
+        if(!updatePostRequest.getAuthorId().equals(currentMemberId)) {
+            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
+        }
+
+        // 아래 두 항목은 각각 코드가 길기도 하고 담당하는 서비스가 나눠지기 때문에 별도로 처리해준다.
+        // 두개를 제외한 나머지 로직은 postService에서 기존처럼 update한다.
+        if(updatePostRequest.getTagNames() != null) {
+            postTagService.updatePostTagWithPatch(postId, updatePostRequest);
+        }
+        if(updatePostRequest.getImages() != null) {
+            postImageService.updatePostImagesWithPatch(postId, updatePostRequest.getImages());
+        }
+        postService.updatePostWithPatch(updatePostRequest, postId);
+//        return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
+        return new ResponseEntity<>("UPDATED", HttpStatus.OK);
     }
 
     // 게시글 삭제

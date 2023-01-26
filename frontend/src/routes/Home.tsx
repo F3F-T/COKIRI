@@ -27,8 +27,6 @@ const HomeStart = () => {
     const onClickUpload = () => {
         navigate(`/upload`)
     }
-    console.log("담긴거확인",store.jwtTokenReducer)
-    console.log("담긴거확인",store.userInfoReducer.nickname)
 
     return (
         <section className={styles.start}>

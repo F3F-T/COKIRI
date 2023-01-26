@@ -13,9 +13,18 @@ public class PostImageDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class postImageInfoDto {
+    public static class PostImageInfoDto {
         private Long id;
         private String imgPath;
 //        private Boolean isThumbnail;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ImagePathWithPostId {
+        private Long postId;
+        private String imgPath;
     }
 }

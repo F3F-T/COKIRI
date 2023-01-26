@@ -3,6 +3,7 @@ package f3f.dev1.domain.comment.application;
 import f3f.dev1.domain.comment.dao.CommentCustomRepositoryImpl;
 import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.comment.exception.DeletedCommentException;
+import f3f.dev1.domain.comment.exception.NotMatchingCommentAuthorException;
 import f3f.dev1.domain.comment.model.Comment;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
@@ -127,18 +128,25 @@ public class CommentService {
     @Transactional
     public String deleteComment(DeleteCommentRequest deleteCommentRequest, Long currentMemberId) {
         Post post = postRepository.findById(deleteCommentRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
-        Member user = memberRepository.findById(deleteCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
         Comment comment = commentRepository.findById(deleteCommentRequest.getId()).orElseThrow(NotFoundByIdException::new);
         Comment commentInPost = commentRepository.findByPostIdAndId(post.getId(), comment.getId()).orElseThrow(NotFoundByIdException::new);
         if(!commentInPost.getId().equals(comment.getId())) {
             throw new NotMatchingCommentException("요청한 게시글에 삭제하려는 댓글이 없습니다.");
         }
-        if(!commentInPost.getAuthor().getId().equals(deleteCommentRequest.getAuthorId())) {
-            throw new NotMatchingAuthorException("댓글 작성자가 아닙니다");
+        if(!commentInPost.getAuthor().getId().equals(deleteCommentRequest.getAuthorId()) &&
+            !currentMemberId.equals(post.getAuthor().getId())) {
+            // 게시글 작성자는 예외적으로 모든 댓글을 삭제할 수 있다.
+            // TODO 에러 핸들링 좀 해야겠다.
+            throw new NotMatchingCommentAuthorException("댓글 작성자가 아닙니다");
         }
-        if(!currentMemberId.equals(user.getId())) {
+        if(!currentMemberId.equals(deleteCommentRequest.getAuthorId())) {
             throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
+
+        // 지금 접속한 사람 : 홍의성
+        // 삭제 요청 보낸 사람 : 최철웅
+
+
         // 하위 댓글들 다 삭제
         if(commentInPost.getParent() != null) {
             commentRepository.delete(commentInPost);
