@@ -84,9 +84,8 @@ Api.interceptors.response.use(
                             if (jwtToken) {
                                 store.dispatch(setToken(data.data));
                                 config.headers.Authorization = `Bearer ${jwtToken}`;
-                                alert("accessToken의 만료기간이 지나서 백엔드 accessToken의 검증실패, reissue로 refresh 토큰의 만료기간이 지나지 않아 refresh token을 활용하여 accessToken 재발급 성공")
+                                // alert("accessToken의 만료기간이 지나서 백엔드 accessToken의 검증실패, reissue로 refresh 토큰의 만료기간이 지나지 않아 refresh token을 활용하여 accessToken 재발급 성공")
                                 //성공했으니 err를 반환하지 않고 config 자체를 반환
-                                console.log("axios config")
                                 console.log(axios(config));
                                 return axios(config);
                                 // return await Api.request(err.config);

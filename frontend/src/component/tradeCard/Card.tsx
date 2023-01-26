@@ -27,6 +27,7 @@ interface props {
     wishCategory?: string; //나중에 enum사용해서 다시 해보던가 할듯 없는 카테고리 못들어오게 막아야지
     onClick?: any;
     messageRoomCount?: number;
+    thumbnail?: string;
 }
 
 
@@ -34,7 +35,14 @@ const TradeCard = (props1: props) => {
     return (
         <>
             <div className={styles.postItem}>
-                <img className={styles.postImage} src={tradeEx}/>
+                {
+                    ((props1.thumbnail != null && props1.thumbnail.includes("https://s3.ap-northeast-2.amazonaws.com"))?
+                            <img className={styles.postImage} src={props1.thumbnail}/> :
+                            <img className={styles.postImage} src={tradeEx}/>
+                    )
+                }
+                {/*<img className={styles.postImage} src={props1.thumbnail}/>*/}
+                {/*<img className={styles.postImage} src={tradeEx}/>*/}
                 <p className={styles.postTitle}>{props1.postTitle}</p>
                 <p className={styles.postContent}>{props1.postContent}</p>
                 <div className={styles.detail}>
@@ -80,7 +88,7 @@ const Card = (props1: props) => {
             {props1.className === "forTrade" &&
                 <div className={ck(props1.className)} onClick={props1.onClick}>
                     <TradeCard postTitle={props1.postTitle} postContent={props1.postContent} like={props1.like} messageRoomCount={props1.messageRoomCount}
-                               comment={props1.comment} wishCategory={props1.wishCategory}/>
+                               comment={props1.comment} wishCategory={props1.wishCategory} thumbnail={props1.thumbnail}/>
                 </div>}
             {props1.className === "forMypage" &&
                 <div className={ck(props1.className)} onClick={props1.onClick}>

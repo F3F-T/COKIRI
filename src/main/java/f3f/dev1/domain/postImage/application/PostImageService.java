@@ -1,6 +1,7 @@
 package f3f.dev1.domain.postImage.application;
 
 import f3f.dev1.domain.post.dao.PostRepository;
+import f3f.dev1.domain.post.dto.PostDTO;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.postImage.dao.PostImageRepository;
 import f3f.dev1.domain.postImage.dto.PostImageDTO;
@@ -36,5 +37,42 @@ public class PostImageService {
         }
     }
 
+    @Transactional
+    public String updatePostImagesWithPatch(Long postId, List<String> updateRequestImages) {
+        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
+        List<PostImage> postImages = postImageRepository.findByPostId(postId);
+        // 패치 요청이기 때문에 변화가 생긴 부분만 수정을 해준다.
+        // 태그와 마찬가지로 배열을 만들어 처리하겠다.
+        boolean originalFlagList[] = new boolean[postImages.size()];
+        boolean changedFlagLIst[] = new boolean[updateRequestImages.size()];
+//        List<ProjectionImagePath> imagePathsByPostId = postImageRepository.findImagePathsByPostId(postId);
+        for(int i=0; i<postImages.size(); i++) {
+            for(int k=0; k<updateRequestImages.size(); k++) {
+                if(postImages.get(i).getImgPath().equals(updateRequestImages.get(k))) {
+                    originalFlagList[i] = true;
+                    changedFlagLIst[k] = true;
+                }
+            }
+        }
+
+        for(int i=0; i<originalFlagList.length; i++) {
+            if(!originalFlagList[i]) {
+                postImageRepository.delete(postImages.get(i));
+            }
+        }
+
+        for(int k=0; k<changedFlagLIst.length; k++) {
+            if(!changedFlagLIst[k]){
+                PostImage postImage = PostImage.builder()
+                        .imgPath(updateRequestImages.get(k))
+                        .isThumbnail(k == 0)
+                        .post(post)
+                        .build();
+                postImageRepository.save(postImage);
+            }
+        }
+
+        return "UPDATED";
+    }
 
 }

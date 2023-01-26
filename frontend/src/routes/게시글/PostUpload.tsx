@@ -20,7 +20,6 @@ import { NumericFormat } from 'react-number-format';
 import Select from "react-select";
 
 const PostUpload = () => {
-
     interface UploadData {
         title: string;
         price: string;
@@ -54,17 +53,17 @@ const PostUpload = () => {
             {name : '유아도서'}, 
             {name : '유아동'}, 
             {name : '여성의류'}, 
-            {name : '남성의류'}, 
-            {name : '스포츠/레저'}, 
-            {name : '티켓/교환권'}, 
+            {name : '남성의류'},
+            {name : '스포츠/레저'},
+            {name : '티켓/교환권'},
             {name : '식물'}, 
             {name : '가구'}, 
             {name : '반려동물용품'}, 
             {name : '가공용품'}, 
             {name : '취미/게임'}, 
             {name : '인테리어'}, 
-            {name : '생활/주방'}]
-    
+            {name : '생활/주방'}
+        ]
 
     const navigate = useNavigate();
     const [showImages,setShowImages] = useState([]);
@@ -78,8 +77,6 @@ const PostUpload = () => {
 
     const onChangePrice = (e,value) => {
         const inputPrice = e.target.value;
-        console.log(inputPrice);
-
 
         setUploadData((prevState) => {
             return {...prevState, price: inputPrice}
@@ -135,12 +132,11 @@ const PostUpload = () => {
             console.log(err)
             alert("업로드 실패")
         }
-
-
     }
 
     const imageUpload = async () => {
         try {
+
             const res = await Api.post("/auth/image/postImage", photoData);
             return res.data.imageUrls;
 
@@ -169,6 +165,7 @@ const PostUpload = () => {
 
         //사진 업로드
         const photoUrlList = await imageUpload();
+
         if(!photoUrlList)
         {
             console.log("image 저장중")
@@ -191,9 +188,6 @@ const PostUpload = () => {
             uploadPost(jsonObj);
             console.log("업로드 성공")
         }
-
-
-
     }
 
     const onChangeImg = async(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -229,11 +223,7 @@ const PostUpload = () => {
             setPhotoData(formData);
 
             console.log(photoData);
-            // console.log(uploadFile)
-            // const formData = new FormData()
-            // formData.append('imageFiles',uploadFile);
-            // console.log(res);
-            // setPhotoData(prevState => [...res.data.imageUrls])
+
         }
     }
     interface ArrayObjectSelectState {
