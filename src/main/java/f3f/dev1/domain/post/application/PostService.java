@@ -230,11 +230,6 @@ public class PostService {
     // 현재는 컨트롤러에서 사용하지 않는 로직. 테스트에서만 사용하고 있다.
     public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long postId,Long currentMemberId) {
 
-        /*
-            TODO
-             이미지 변경 부분이 없어서 찾아보다가 사고가 났다.
-             지금 구현한건 PUT이고 PATCH로 구현해야하는데, 그럼 로직이 달라진다.
-         */
         Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
         Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
         Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);

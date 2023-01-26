@@ -126,7 +126,8 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 //                        ))
 //                .from(post)
 //                .leftJoin(post.scrapPosts, scrapPost)
-//                .leftJoin(scrapPost.scrap, scrap).fetchJoin()
+//                .where(scrapPost.post.id.eq(post.id))
+//                .leftJoin(scrapPost.scrap, scrap)
 //                .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
 //                        wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
 //                        priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
