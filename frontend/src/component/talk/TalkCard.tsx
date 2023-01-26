@@ -48,50 +48,6 @@ const TalkCard= (key: keyProps) => {
     const dispatch = useDispatch();
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
     const realKey = key.keys;
-    // const objectMessage = [{
-    //     keys: 1,
-    //     title: "21fw 쿠어 MTR 발마칸 코트M (멜란지토프)",
-    //     category: "의류",
-    //     tradeCategry: "가구",
-    //     url: "https://via.placeholder.com/600/771796",
-    //     message: ["보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //         "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //         "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //         "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //         "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //         "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //         "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //         "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //         "보낸 사람 : 이거 얼마", "보낸 사람 : 삼천원"
-    //     ]
-    // },
-    //     {
-    //         keys: 2,
-    //         title: "운동화",
-    //         category: "의류",
-    //         tradeCategry: "의류",
-    //         url: "https://via.placeholder.com/600/92c952",
-    //         message: ["보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //             "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //             "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //             "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원"
-    //         ]
-    //     },
-    //     {
-    //         keys: 3,
-    //         title: "맥북",
-    //         category: "전자 제품",
-    //         tradeCategry: "의류",
-    //         url: "https://via.placeholder.com/600/771796",
-    //         message: ["보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //             "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //             "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //             "보낸 사람 : 이거 얼마", "받은 사람 : 삼천원",
-    //
-    //         ]
-    //     },
-    // ]
-    // const realKey = key.id;
     useEffect(()=>{
         getMessageRoom()
     },[realKey])
@@ -99,9 +55,9 @@ const TalkCard= (key: keyProps) => {
     async function getMessageRoom() {
         try{
             const res = await Api.get('/user/messageRooms');
-            console.log("메세지룸 조회", res.data.content)
+            // console.log("메세지룸 조회", res.data.content)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
-            console.log("메세지룸 조회2",res2.data)
+            // console.log("메세지룸 조회2",res2.data)
             // dispatch(setMessageRoomId(res.data.content.messageRoomId))
 
             for(let i=0;i<res2.data.length;i++){
@@ -133,8 +89,6 @@ const TalkCard= (key: keyProps) => {
             alert("메세지룸 조회 실패 in message")
         }
     }
-    console.log("잘잘잘ㅈ왔니 ",talkCard)
-
     return (
         <>
                     <img className={styles.cardImage} src={talkCard.productImg}/>

@@ -173,6 +173,7 @@ const PostDetail = () => {
 
     //TODO:함민혁) 코끼리톡 구현할때 이걸 누르면 메시지룸이 생성되게 구현하고, navigate에서 매개변수를 전달해주면 될거야
     //예시 : navigate('/signup/emailcheck', {state : userInfo})
+    //여기서부터 함민혁이 추가한 코드
     const talkButton = async () => {
         ////해당 포스트를 들어올때마다 talklistreducer에 값을 다 넣어버리자
         dispatch(setProductImg(post.images[0].imgPath))
@@ -187,51 +188,19 @@ const PostDetail = () => {
         }
         // await dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
         await getMessageRoom()
-        console.log("existexist",existOrNot)
         navigate(`/kokiriTalk/${info.id}`, {state: {existOrNot}})
     }
     async function getMessageRoom() {
         try{
             const res = await Api.get('/user/messageRooms');
-            alert("메세지룸 조회 성공1")
-            console.log("d",res.data)
+            // console.log("김동준전체조회",res.data)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
-            // console.log("ddd",res2.data[8].buyerId)
-            // console.log("ddd222",info.id)
-            // console.log("rrrrrr",res2.data[8].postId)
-            // console.log("rrrrrr2222",post.id)
-            console.log("마지막",res2.data)
-
-            // res.data.content.map((a:String)=>(
-            //     a['buyerNickname'] === info.nickname ?
-            //         setExist((prevState) => {
-            //             return {...prevState,existOrNot : false
-            //             }
-            //         })
-            //         :
-            //         setExist((prevState) => {
-            //             return {...prevState,existOrNot : true
-            //             }
-            //         })
-            // ))
-            // for(let i =0 ; i<res.data.content.length;i++){
-            //     if(res.data.content[i].buyerNickname === info.nickname)
-            //     {
-            //         if(res.data.content[i].sellerNickname === post.userInfoWithAddress.userDetail.nickname){
-            //             console.log("이미방있어요요df요요")
-            //             existOrNot = true
-            //         }
-            //         else {
-            //             existOrNot = false
-            //         }
-            //     }
-            // }
-            console.log("콘탠츠길이",res2.data.length)
+            // console.log("김윤정전체조회",res2.data)
             for(let i =0 ; i<res2.data.length;i++){
                 if(res2.data[i].buyerId === info.id)
                 {
                     if(res2.data[i].postId === post.id){
-                        console.log("이미방있어요요요요")
+                        console.log("이미 방이 존재합니다.")
                         dispatch(setMessageRoomId(res2.data[i].id))
                         existOrNot = true
                         break;
@@ -251,12 +220,6 @@ const PostDetail = () => {
                         await dispatch(setMessageRoomId(res4.data.id))
                         await dispatch(setSellerId(res4.data.sellerId))
                         dispatch(setPostId(res4.data.postId))
-                        // setRoomId(res.data.id)
-                        console.log("메세지룸 추가 in postdetail", res.data)
-                        // if(talkCard.id != undefined){
-                        //     sendMessage()
-                        // }
-                        alert("메세지룸 추가 성공 in postdetail")
                     }
                     catch (err)
                     {
@@ -269,9 +232,12 @@ const PostDetail = () => {
         catch (err)
         {
             console.log(err)
-            alert("메세지룸 조회 실패1")
+            alert("메세지룸 조회 실패 in postdetail")
         }
     }
+    //여기까지 함민혁코드
+
+
     // const onClickPost = (post) => {
     //     console.log(post)
     //     console.log(post.id)
@@ -374,7 +340,6 @@ const PostDetail = () => {
         return prev;
     },[]);
 
-    console.log("유저 아이디", info.id)
 
 
     const hihihihi = () => {

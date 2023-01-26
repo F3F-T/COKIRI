@@ -38,8 +38,7 @@ const TalkListLeft = (props2:props)=>{
     const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
     // props2.click =click
-    console.log("이건가",props2);
-    console.log("이건가2",props2.keys);
+    // console.log("TalkList props",props2);
 
 
 
