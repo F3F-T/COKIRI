@@ -6,11 +6,13 @@ import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import f3f.dev1.domain.message.model.QMessageRoom;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.QScrapPost;
+import f3f.dev1.domain.scrap.model.QScrap;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,6 +28,7 @@ import static f3f.dev1.domain.message.model.QMessageRoom.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static f3f.dev1.domain.post.model.QPost.*;
 import static f3f.dev1.domain.post.model.QScrapPost.*;
+import static f3f.dev1.domain.scrap.model.QScrap.*;
 import static f3f.dev1.domain.tag.model.QPostTag.*;
 import static f3f.dev1.domain.tag.model.QTag.*;
 
@@ -53,26 +56,9 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         위 코드 참고해서 리팩토링 하기
      */
 
-
-    // DTO로 처리하기에는 내부적으로 2차 처리되는 필드가 너무 많다. 그냥 객체로 바로 받아오겠다.
-    @Override
-    public Page<Post> findPostsByCondition(SearchPostRequestExcludeTag request, Pageable pageable) {
-            QueryResults<Post> results = jpaQueryFactory
-                .selectFrom(post)
-                .where(productCategoryNameFilter(request.getProductCategory()),
-                        wishCategoryNameFilter(request.getWishCategory()),
-                        priceFilter(request.getMinPrice(), request.getMaxPrice()))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetchResults();
-
-            List<Post> responseList = results.getResults();
-            long total = results.getTotal();
-            return new PageImpl<>(responseList, pageable, total);
-    }
-
     @Override
     // scrapCount, messageCount 때문에 DTO로 바로 뱉을 수 없음
+    // 위 2개와 scrap 여부를 확인해야함.
     public Page<Post> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Pageable pageable) {
         QueryResults<Post> results = jpaQueryFactory.
                 selectFrom(post)
@@ -111,6 +97,77 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         return new PageImpl<>(responseList, pageable, total);
     }
 
+    @Override
+    public Page<PostSearchResponseDto> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Long currentMemberId, Pageable pageable) {
+        QueryResults<PostSearchResponseDto> results = jpaQueryFactory.
+                select(Projections.constructor(PostSearchResponseDto.class,
+                        post.id,
+                        post.title,
+                        post.content,
+                        post.thumbnailImgPath,
+                        post.author.nickname,
+                        post.productCategory,
+                        post._super.createDate,
+                        post.messageRooms.size(),
+                        post.wishCategory,
+                        new CaseBuilder().when(memberFilter(currentMemberId))
+                            .then(true)
+                            .otherwise(false),
+                        post.scrapPosts.size(),
+                        post.price
+                        ))
+                .from(post)
+                .leftJoin(post.scrapPosts, scrapPost)
+                .leftJoin(scrapPost.scrap, scrap).fetchJoin()
+                .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
+                        wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
+                        priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
+                .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<PostSearchResponseDto> responseList = results.getResults();
+        long total = results.getTotal();
+        return new PageImpl<>(responseList, pageable, total);
+    }
+
+    @Override
+    public Page<PostSearchResponseDto> findPostsByTags(List<String> tagNames, Long currentMemberId, Pageable pageable) {
+//        QueryResults<PostSearchResponseDto> results = jpaQueryFactory
+//                .select(Projections.constructor(PostSearchResponseDto.class,
+//                        post.id,
+//                        post.title,
+//                        post.content,
+//                        post.thumbnailImgPath,
+//                        post.author.nickname,
+//                        post.productCategory,
+//                        post._super.createDate,
+//                        post.messageRooms.size(),
+//                        post.wishCategory,
+//                        post.scrapPosts.size(),
+//                        post.price,
+//                        new CaseBuilder().when(scrap.member.id.eq(currentMemberId))
+//                            .then(true)
+//                            .otherwise(false)
+//                        ))
+//                .from(post)
+//                // Join 때문에 잠시 보류.
+//                .leftJoin(post.postTags, postTag).fetchJoin()
+//                .where(postTag.tag.name.in(tagNames))
+//                .groupBy(post.id)
+//                .having(post.id.count().eq((long) tagNames.size()))
+//                .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
+//                .offset(pageable.getOffset())
+//                .limit(pageable.getPageSize())
+//                .fetchResults();
+//
+//        List<Post> responseList = results.getResults();
+//        long total = results.getTotal();
+//        return new PageImpl<>(responseList, pageable, total);
+        return null;
+    }
+
     private BooleanExpression productCategoryNameFilter(String productCategoryName) {
         return StringUtils.hasText(productCategoryName) ? post.productCategory.name.eq(productCategoryName) : null;
     }
@@ -131,6 +188,13 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         }
         // 어느 조건문에도 걸리지 않으면 둘 다 존재하는 경우. between으로 처리함.
         return post.price.between(Long.parseLong(minPrice), Long.parseLong(maxPrice));
+    }
+
+    private BooleanExpression memberFilter(Long currentMemberId) {
+        if(currentMemberId == null) {
+            return null;
+        }
+        return scrap.member.id.eq(currentMemberId);
     }
 
     /*

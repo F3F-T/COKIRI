@@ -20,6 +20,20 @@ import {NumericFormat} from 'react-number-format';
 import Select from "react-select";
 import {SwiperSlide} from "swiper/swiper-react";
 import {chain} from "list";
+import Modal from "../로그인 & 회원가입/NeighborModal";
+import {CiSquareRemove} from "react-icons/ci";
+import {TiDelete} from "react-icons/ti";
+
+
+/**
+ * 수정 로직
+ * 기존에 있었던 정보들(title, content, price, category, tag 등등)을 불러와서 input form에 넣어준다
+ * 사용자가 수정을 하게 되면 state를 변화시킨다
+ *
+ * 이미지 수정)
+ * 기존에 있던 이미지를 불러와서 showImage state에 저장시킨 후 미리보기에 띄워준다
+ * 이미지 추가를 한 파일만을 다른 배열에 저장시켜 post/image 서버 통신 후 url을 받아와서 저장시킨다
+ */
 
 const PostEdit = () => {
     interface PostType {
@@ -71,6 +85,10 @@ const PostEdit = () => {
         tag: string[];
     }
 
+    interface ModalDefaultType {
+        onClickToggleModal: () => void;
+    }
+
 
     const [uploadData, setUploadData] = useState<UploadData>()
     let tradeEachOther: boolean = undefined;
@@ -81,12 +99,18 @@ const PostEdit = () => {
     const params = useParams();
     let changingOnlyOnce = 0;
     let photoUrlList;
+    let finalImage;
     // console.log(params)
 
 
     //수정 로직
     const [post, setPost] = useState<PostType>(null)
     const [showImages, setShowImages] = useState([]);
+    const [isOpenModal, setOpenModal] = useState<boolean>(false);
+
+    const onClickToggleModal = useCallback(() => {
+        setOpenModal(!isOpenModal);
+    }, [isOpenModal]);
 
     interface ArrayObjectSelectState {
         selectedCategory: Category | null | string;
@@ -107,54 +131,58 @@ const PostEdit = () => {
     let fixed;
 
     const getPost = useCallback(async () => {
-            try {
-                console.log("getPost 요청")
-                const res = await Api.get(`/post/${postId}`);
+        //반복적으로 렌더링 되어 이미지 누적되는 것을 방지하는 초기화 로직
+        setShowImages(prevState => {
+            return [];
+        })
+        try {
+            console.log("getPost 요청")
+            const res = await Api.get(`/post/${postId}`);
 
-                setPost(prevState => {
-                    return {...prevState, ...res.data};
-                })
+            setPost(prevState => {
+                return {...prevState, ...res.data};
+            })
 
 
-                /**
-                 * 원래 post의 state를 uploadData에 복사해주는 방식으로 시도했지만 useState의 비동기적 처리때문에 uploadData에 post의 데이터를 넣어주지 못했다.
-                 * if(!post) return null 후에 setUploadData를 넣어주게 되면 state가 무한으로 변화하기 때문에 무한 렌더링 이슈가 생기고,
-                 * 무한 랜더링을 방지하기 위해 useEffect에 post 변경시에 한번만 추가하려고 했지만, 이는 또 post가 null이 뜨게 되어 그냥 res data를 직접 넣어주는 식으로 구현함
-                 *
-                 * useState, async, await, promise의 반환 등의 비동기식 처리, state 변경시 무한 렌더링, useEffect deps에 함수 추가, useEffect의 얕은 복사 -> useCallback으로 처리 등의 개념을 익힘
-                 */
+            /**
+             * 원래 post의 state를 uploadData에 복사해주는 방식으로 시도했지만 useState의 비동기적 처리때문에 uploadData에 post의 데이터를 넣어주지 못했다.
+             * if(!post) return null 후에 setUploadData를 넣어주게 되면 state가 무한으로 변화하기 때문에 무한 렌더링 이슈가 생기고,
+             * 무한 랜더링을 방지하기 위해 useEffect에 post 변경시에 한번만 추가하려고 했지만, 이는 또 post가 null이 뜨게 되어 그냥 res data를 직접 넣어주는 식으로 구현함
+             *
+             * useState, async, await, promise의 반환 등의 비동기식 처리, state 변경시 무한 렌더링, useEffect deps에 함수 추가, useEffect의 얕은 복사 -> useCallback으로 처리 등의 개념을 익힘
+             */
 
-                setUploadData({
-                    title: res.data.title,
-                    price: res.data.price,
-                    content: res.data.content,
-                    productCategory: res.data.productCategory,
-                    wishCategory: res.data.wishCategory,
-                    tag: res.data.tagNames
-                })
-                console.log(changingOnlyOnce);
+            setUploadData({
+                title: res.data.title,
+                price: res.data.price,
+                content: res.data.content,
+                productCategory: res.data.productCategory,
+                wishCategory: res.data.wishCategory,
+                tag: res.data.tagNames
+            })
+            console.log(changingOnlyOnce);
 
-                //무조건 한번 실행되어야 하는 getPost가 원인모르는 리렌더링이 되어 한번 더 실행되는 경우가 있다. 이를 방지하기 위한 if문
-                if(changingOnlyOnce === 0) {
-                    //이미지 데이터가 imgPath와 id로 들어가 있어서 imgPath만 따로 저장
-                    res.data.images.map((image) => (
-                        // setShowImages([image.imgPath])
-                        setShowImages(prevState => {
-                            return [...prevState, image];
-                        })
-                    ))
-                }
-                changingOnlyOnce++;
-
-                setProductState({selectedCategory : res.data.productCategory});
-                setWishState({selectedCategory : res.data.wishCategory})
-
-            } catch
-                (err) {
-                console.log(err)
-                alert("get 실패");
+            //무조건 한번 실행되어야 하는 getPost가 원인모르는 리렌더링이 되어 한번 더 실행되는 경우가 있다. 이를 방지하기 위한 if문
+            if (changingOnlyOnce === 0) {
+                //이미지 데이터가 imgPath와 id로 들어가 있어서 imgPath만 따로 저장
+                res.data.images.map((image) => (
+                    // setShowImages([image.imgPath])
+                    setShowImages(prevState => {
+                        return [...prevState, image];
+                    })
+                ))
             }
-        }, [])
+            changingOnlyOnce++;
+
+            setProductState({selectedCategory: res.data.productCategory});
+            setWishState({selectedCategory: res.data.wishCategory})
+
+        } catch
+            (err) {
+            console.log(err)
+            alert("get 실패");
+        }
+    }, [])
 
     interface Category {
         name: string;
@@ -223,7 +251,6 @@ const PostEdit = () => {
             return prev;
         }, []);
 
-        console.log(tagList);
 
         setUploadData((prevState) => {
             return {...prevState, tag: tagList}
@@ -235,12 +262,10 @@ const PostEdit = () => {
 
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
-            console.log(jsonObj)
-            const res = await Api.post('/post', jsonObj);
-            console.log(res)
+            const res = await Api.patch(`/post/${postId}`, jsonObj);
 
-            alert("업로드 성공")
-            navigate(`/`)
+            alert("수정 성공")
+            navigate(`/post/${postId}`);
         } catch (err) {
             console.log(err)
             alert("업로드 실패")
@@ -261,28 +286,38 @@ const PostEdit = () => {
 
     }
 
+
     const onClickUploadButton = async () => {
-        console.log(uploadData);
 
         if (uploadData.productCategory === uploadData.wishCategory) {
             tradeEachOther = true;
 
-            console.log(tradeEachOther);
             console.log("true")
         } else {
             tradeEachOther = false;
-            console.log(tradeEachOther);
             console.log("false")
         }
 
 
-        //사진 업로드
-        if(photoData)
-        {
+        //사진 업로드(새로 추가된 image가 있으면 post/image 로 서버에 이미지를 등록한다.)
+        if (photoData) {
             photoUrlList = await imageUpload();
         }
+        //추가된 이미지가 존재하여 서버에서 url 정보를 받아왔다면 기존의 서버 url image와 추가된 이미지를 finalImage에 담는다
+        if (photoUrlList) {
+            finalImage = [...post.images, ...photoUrlList]
+        }
+        //새로 추가된 이미지가 존재하지 않는다면 기존의 서버 url image만 담는다
+        else {
+            finalImage = [...post.images];
+        }
 
-            console.log(photoUrlList);
+
+        if(finalImage.length < 1)
+        {
+            alert("사진을 한장 이상 업로드해주세요.")
+        }
+        else{
             const jsonObj = {
                 "title": uploadData.title,
                 "content": uploadData.content,
@@ -292,11 +327,13 @@ const PostEdit = () => {
                 "productCategory": uploadData.productCategory,
                 "wishCategory": uploadData.wishCategory,
                 "tagNames": [...uploadData.tag],
-                "images": [...post.images,...photoUrlList],
-                "thumbnail": photoUrlList[0]
+                "images": finalImage,
+                "thumbnail": finalImage[0]
             };
             uploadPost(jsonObj);
             console.log("업로드 성공")
+        }
+
 
     }
 
@@ -307,7 +344,6 @@ const PostEdit = () => {
             const imageLists = e.target.files;
             let imageUrlLists = [...showImages];
             const formData = new FormData()
-            console.log(imageLists);
 
             for (let i = 0; i < imageLists.length; i++) {
                 //미리보기 파일 imgeUrlLists에 추가
@@ -326,7 +362,6 @@ const PostEdit = () => {
 
             //미리보기 데이터
             setShowImages(imageUrlLists);
-            console.log(showImages);
 
             //api 통신
             setPhotoData(formData);
@@ -336,12 +371,23 @@ const PostEdit = () => {
     }
 
 
-
-
     const onChangePriceSecond = (value) => {
         setUploadData((prevState) => {
             return {...prevState, price: value}
         })
+    }
+
+    const deleteImg = (index) => {
+        setShowImages((prevState) => {
+            prevState.splice(index,1)
+            return [...prevState]
+        })
+
+        setPost((prevState) => {
+            prevState.images.splice(index,1)
+            return {...prevState}
+        })
+
     }
 
     /**
@@ -374,17 +420,15 @@ const PostEdit = () => {
     }
 
 
-    // setShowImages([...post.images])
-    console.log(post);
-    console.log(uploadData);
-    console.log(showImages)
-    console.log(productState);
-    console.log(wishState);
-    console.log(photoData);
 
 
     return (
         <div className={styles.postBox}>
+            {isOpenModal && (
+                <Modal onClickToggleModal={onClickToggleModal}>
+                    <embed type="text/html" width="800" height="608"/>
+                </Modal>
+            )}
             <div className={styles.postUpload}>
                 <div className={styles.header}>
                     <p className={styles.header_1}>기본 정보</p>
@@ -397,7 +441,10 @@ const PostEdit = () => {
                         }}/>
                         {
                             showImages.map((image, id) => (
-                                <img className={styles.photos} alt={`${image}-${id}`} key={id} src={image}/>
+                                <div className={styles.imgClass}><img className={styles.photos} alt={`${image}-${id}`} key={image.id} src={image}
+                                          onClick={() => onClickToggleModal()}/>
+                                    <TiDelete key={id} className={styles.imgRemoveButton} onClick={(e)=>{deleteImg(id)}}/>
+                                </div>
                             ))
                         }
                         <form>
@@ -408,7 +455,8 @@ const PostEdit = () => {
                     </div>
                     <div className={styles.item2}>
                         <p className={styles.star}>*</p><input type="text" className={styles.item2_2}
-                                                               placeholder={"글 제목을 적어주세요."} onChange={onChangeTitle} value={uploadData.title}/>
+                                                               placeholder={"글 제목을 적어주세요."} onChange={onChangeTitle}
+                                                               value={uploadData.title}/>
                     </div>
                     <div className={styles.item2}>
                         <p className={styles.star}>*</p> <NumericFormat className={styles.item2_2}

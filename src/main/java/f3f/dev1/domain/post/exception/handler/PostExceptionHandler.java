@@ -17,6 +17,11 @@ import static f3f.dev1.domain.post.exception.response.PostErrorResponse.*;
 @RestControllerAdvice
 public class PostExceptionHandler {
     // 게시글 수정과 삭제에서 발생하는 오류
+    /*
+        TODO
+         댓글도 여기에 영향을 받는다. 수정해야 할듯.
+         그리고 잘못된 예외임. return 값 바꿔줘야 할듯.
+     */
     @ExceptionHandler(NotMatchingAuthorException.class)
     protected final ResponseEntity<ErrorResponse> handleNotMatchingAuthorException(
             NotMatchingAuthorException notMatchingAuthorException, WebRequest request) {

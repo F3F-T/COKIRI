@@ -37,6 +37,10 @@ import {
 } from "../../store/talkCardReducer";
 import {FALSE} from "sass";
 
+import CustomSwiper from "../../component/common/CustomSwiper";
+import tradeEx from "../../img/tradeEx.jpeg";
+import {prepend} from "list";
+import Select from "react-select";
 
 
 const PostDetail = () => {
@@ -44,80 +48,84 @@ const PostDetail = () => {
     // const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
     // console.log("asdfasdfa",detail)
     const navigate = useNavigate();
+
     interface PostType {
-        id? : number;
-        title? : string;
-        content? : string;
-        price?: string;
-        tradeEachOther? : boolean;
-        authorNickname? : string;
-        wishCategory? : string;
-        productCategory? : string;
-        tradeStatus? : string;
-        tagNames? : string[];
-        scrapCount? : number;
-        messageRoomCount? : number;
-        createdTime? : string;
-        userInfo? : UserInfo;
-        userInfoWithAddress : {
-            userDetail : UserInfo
+        id?: number;
+        title?: string;
+        content?: string;
+        price: string;
+        tradeEachOther?: boolean;
+        authorNickname?: string;
+        wishCategory?: string;
+        productCategory?: string;
+        tradeStatus?: string;
+        tagNames?: string[];
+        scrapCount?: number;
+        messageRoomCount?: number;
+        createdTime?: string;
+        userInfo?: UserInfo;
+        userInfoWithAddress: {
+            userDetail: UserInfo
+            address?: [
+                {
+                    postalAddress?: string
+                }
+            ]
         }
-        images?:[
-            {id:number, imgPath: string}
-        ]
+        scrap : boolean;
+        images: string[];
     }
 
     type CommentTypes = "primary" | "secondary";
+
     interface UserInfo {
-        id : number;
-        email : string;
-        birthDate : string;
-        description : string;
-        imageUrl : string;
-        loginType : string;
-        phoneNumber : string;
-        scrapId : number;
-        userName : string;
-        nickname :string;
+        id: number;
+        email: string;
+        birthDate: string;
+        description: string;
+        imageUrl: string;
+        loginType: string;
+        phoneNumber: string;
+        scrapId: number;
+        userName: string;
+        nickname: string;
 
     }
+
     interface CommentType {
-        id : number;
-        postId? : number;
-        memberId : Number;
-        memberNickname : String;
-        imageUrl : String;
-        content : String;
-        depth : Number;
-        parentCommentId : number | null;
-        userInfo : UserInfo;
+        id: number;
+        postId?: number;
+        memberId: Number;
+        memberNickname: String;
+        imageUrl: String;
+        content: String;
+        depth: Number;
+        parentCommentId: number | null;
+        userInfo: UserInfo;
         //댓글인지 대댓글인지 확인
     }
 
 
     //글 작성
     interface WriteCommentType {
-        authorId : Number;
-        postId : number;
-        depth : number;
-        content : string;
-        parendCommentId : number | null;
+        authorId: Number;
+        postId: number;
+        depth: number;
+        content: string;
+        parendCommentId: number | null;
     }
-
-    //
-    // interface ExistType{
-    //     existOrNot : boolean
-    // }
-    //
 
     const params = useParams();
     // console.log(params)
     const postId = params.id;
 
-    const [post,setPost] = useState<PostType>(null)
-    const [commentList,setCommentList] = useState<CommentType[]>(null)
-    const [writeComment,setWriteComment] = useState<WriteCommentType>(null)
-    const [refreshFetch,setRefreshFetch] = useState({commentChange : false})
+    const [post, setPost] = useState<PostType>(null)
+    const [commentList, setCommentList] = useState<CommentType[]>(null)
+    const [writeComment, setWriteComment] = useState<WriteCommentType>(null)
+    const [refreshFetch, setRefreshFetch] = useState({commentChange: false})
+    // const [isAuthor, setIsAuthor] = useState<boolean>();
+    let isAuthor;
+    const [isAuthorProps, setIsAuthorProps] = useState();
 
     const dispatch = useDispatch();
     const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
@@ -130,42 +138,67 @@ const PostDetail = () => {
     const [commentText, setCommentText] = useState("");
     const [exist,setExist] = useState<boolean>(false);
     // dispatch(resetTalkCard())
+    const isAuthorTrue = ["수정", "|", "삭제"];
+    const isAuthorFalse = ["신고"]
+    const [scrapCountInReact, setScrapCountInReact] = useState<number>();
+
+
+    //select
+    interface Category {
+        name: string;
+    }
+
+    const categories: Category[] =
+        [
+            {name: '판매중'},
+            {name: '예약중'},
+            {name: '판매완료'},
+        ]
+
+
+    interface ArrayObjectSelectState {
+        selectedCategory: Category | null;
+    }
+
+    const [productState, setProductState] = React.useState<ArrayObjectSelectState>({
+        selectedCategory: null,
+    });
+
+    const [wishState, setWishState] = React.useState<ArrayObjectSelectState>({
+        selectedCategory: null,
+    });
+
 
     async function getPost() {
 
         //interceptor를 사용한 방식 (header에 token값 전달)
-        try{
+        try {
             console.log("getPost 요청")
             const res = await Api.get(`/post/${postId}`);
 
-            console.log(res)
             setPost(prevState => {
                 return {...prevState, ...res.data};
             })
+            setScrapSaved(prevState => res.data.scrap)
+            setScrapCountInReact(prevState => res.data.scrapCount);
 
-
-        }
-        catch (err)
-        {
+        } catch (err) {
             console.log(err)
             alert("get 실패");
         }
-
     }
 
     async function getComments() {
 
         //interceptor를 사용한 방식 (header에 token값 전달)
-        try{
+        try {
             const res = await Api.get(`/post/${postId}/comments`);
 
             console.log(res)
             setCommentList(prevState => {
                 return [...res.data];
             })
-        }
-        catch (err)
-        {
+        } catch (err) {
             console.log(err)
             alert("get 실패");
         }
@@ -176,7 +209,7 @@ const PostDetail = () => {
     //여기서부터 함민혁이 추가한 코드
     const talkButton = async () => {
         ////해당 포스트를 들어올때마다 talklistreducer에 값을 다 넣어버리자
-        dispatch(setProductImg(post.images[0].imgPath))
+        dispatch(setProductImg(post.images[0]))
         dispatch(setTitle(post.title))
         dispatch(setWishCategory(post.wishCategory))
         dispatch(setTradeCategory(post.productCategory))
@@ -244,82 +277,125 @@ const PostDetail = () => {
     //     navigate(`/post/${post.id}`)
     // }
 
-    useEffect(()=>{
+    useEffect(() => {
         getPost();
+    }, [])
+
+
+    //만약 여기에 post를 dep에 넣고 getPost를 부른다면 comment가 변화할때마다 비효율적인 함수 호출이 일어난다.
+    useEffect(() => {
         getComments();
-        console.log(post)
-        console.log(commentList);
-    },[store.refreshReducer.commentChange])
+    }, [store.refreshReducer.commentChange])
 
 
-
-    const [scrapSaved,setScrapSaved] = useState<boolean>(true);
+    const [scrapSaved, setScrapSaved] = useState<boolean>();
     const onClickScrap = async () => {
         setScrapSaved(prevState => !prevState);
 
-        const userId:Number = store.userInfoReducer.id;
+        const userId: Number = store.userInfoReducer.id;
 
-        const jsonObj = {userId : userId, postId : post.id}
+        const jsonObj = {userId: userId, postId: post.id}
         console.log(jsonObj);
-        if (scrapSaved) {
+        if (!scrapSaved) {
             await Api.post(`/user/scrap`, jsonObj);
-        }else
-        {
+            setScrapCountInReact(prevState => prevState+1);
+        } else {
             await Api.delete(`/user/scrap`, {
                 data: jsonObj
             })
+            setScrapCountInReact(prevState => prevState-1);
         }
+        setScrapSaved(prevState => !prevState);
     }
 
     const onChangeComment = (e) => {
         const inputComment = e.target.value;
         setCommentText(inputComment);
         setWriteComment((prevState) => {
-            return {...prevState, authorId: store.userInfoReducer.id,
-                postId : post.id,
-                depth : 0,
-                content : inputComment,
-                parendCommentId : null,
+            return {
+                ...prevState, authorId: store.userInfoReducer.id,
+                postId: post.id,
+                depth: 0,
+                content: inputComment,
+                parendCommentId: null,
             }
         })
+
     }
 
     const UploadComment = async () => {
-        try{
+        try {
             const res = await Api.post(`/post/${postId}/comments`, writeComment);
             console.log(writeComment);
             console.log(res);
             dispatch(changeRefreshState());
             setRefreshFetch((prevState) => {
-                return {...prevState,commentChange : true
+                return {
+                    ...prevState, commentChange: true
                 }
             })
             setCommentText("");
             alert("댓글 작성 성공")
-        }
-        catch (err)
-        {
+        } catch (err) {
             console.log(err)
             alert("댓글 작성 실패")
         }
     }
 
+    const deletePost = async () => {
+        try {
+            const config = {
+                data: {
+                    id : post.id,
+                    authorId : post.userInfoWithAddress.userDetail.id
+                }
+            }
+            //삭제는 일반적인 axios 방식과 달리 message body를 config로 넘겨주어야한다.
+            const res = await Api.delete(`/post/${postId}`, config);
+            if(window.confirm("정말 게시글을 삭제하시겠어요?"))
+            {
+                alert("게시글 삭제 성공")
+            }
+            navigate(`/mulmultrade`);
+        } catch (err) {
+            console.log(err)
+            alert("게시글 삭제 실패")
+        }
+    }
+
+    const updatePost = async () => {
+        navigate(`/post/${post.id}/edit`)
+    }
 
 
 
+    if (!post) {
+        return null;
+    }
 
-    if(!post)
-    {
+    if (!post.images) {
         return null;
     }
 
     if (!commentList) {
         return null
     }
-
     // console.log(post)
+    // console.log(post.images);
+
     // console.log(commentList);
 
+    //게시글 작성자 판단
+
+    if (post.userInfoWithAddress.userDetail.id === store.userInfoReducer.id) {
+        // console.log("게시글 작성자임")
+        isAuthor = true;
+    } else {
+        // console.log("게시글 작성자가 아님")
+        isAuthor = false;
+    }
+
+    // console.log(isAuthor);
     const primaryComment = commentList.filter((comment) => {
         return comment.depth === 0
     })
@@ -329,37 +405,60 @@ const PostDetail = () => {
     })
 
     //댓글, 대댓글을 순서대로 배열에 담는 로직, 댓글 대댓글을 연결
-    let result = primaryComment.reduce((prev,cur)=>{
+    let commentSort = primaryComment.reduce((prev, cur) => {
         prev.push(cur);
         secondaryComment.forEach(secondary => {
-            if(secondary.parentCommentId === cur.id)
-            {
+            if (secondary.parentCommentId === cur.id) {
                 prev.push(secondary);
             }
         })
         return prev;
-    },[]);
+    }, []);
 
+    // console.log(commentSort);
+    // console.log(scrapSaved);
 
-
-    const hihihihi = () => {
-        console.log("존재유무",existOrNot)
-    }
     return (
         <div className={styles.postDetail}>
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
-                        <img className={styles.postTopProfileImg} src={post.userInfoWithAddress.userDetail.imageUrl} onClick={()=>navigate('/mypage')}></img>
+                        <img className={styles.postTopProfileImg} src={post.userInfoWithAddress.userDetail.imageUrl}
+                             onClick={() => navigate('/mypage')}></img>
                         <div className={styles.postTopProfileInfo}>
+
                             <div className={styles.postTopNickname}>{post.userInfoWithAddress.userDetail.nickname}</div>
-                            <div className={styles.postTopAddress}>상도 1동 33길</div>
+                            {
+                                ((post.userInfoWithAddress.address.length < 1) ?
+                                        null :
+                                        <div
+                                            className={styles.postTopAddress}>{post.userInfoWithAddress.address[0].postalAddress}</div>
+                                )
+                            }
                         </div>
+                        <ul className={styles.ProfileActionList}>
+                            {
+                                isAuthor ?
+                                    (<>
+                                        <li onClick={updatePost}>수정</li>
+                                        <li>|</li>
+                                        <li onClick={deletePost}>삭제</li>
+                                    </>)
+                                    :
+                                    (<li>신고하기</li>)
+                            }
+                        </ul>
                     </div>
                 </section>
                 <section className={styles.postBody}>
                     <div className={styles.postImg}>
-                        <img className={styles.postBodyImg} src={coatImg}></img>
+                        {
+                            ((post.images.length < 1) ?
+                                    <img className={styles.postBodyImg} src={coatImg}></img> :
+                                    <CustomSwiper key={post.id} imageList={post.images}/>
+                            )
+                        }
+                        {/*<CustomSwiper imageList = {post.images}/>*/}
                     </div>
                     <div className={styles.postDetailInfo}>
                         <h2 className={styles.postDetailTitle}>{post.title}</h2>
@@ -379,13 +478,11 @@ const PostDetail = () => {
                     <div className={styles.metaBox}>
                         <div className={styles.imgBox}>
                             {(scrapSaved ?
-                            <AiOutlineHeart className={styles.likeImg}  onClick={onClickScrap}/>
-                            :
-                            <AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={onClickScrap}/>)}
-
-                            {/*<AiOutlineHeart className={styles.likeImg}  onClick={onClickScrap}/>*/}
-                            {/*<AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={()=>{}}/>*/}
-                            <p className={styles.likeNum}>{post.scrapCount}</p>
+                                <AiTwotoneHeart color={"red"} className={styles.likeImg} onClick={onClickScrap}/>
+                                :
+                                <AiOutlineHeart className={styles.likeImg} onClick={onClickScrap}/>)
+                            }
+                            <p className={styles.likeNum}>{scrapCountInReact}</p>
                         </div>
                         <div className={styles.commentBox}>
                             <img className={styles.commentImg} src={talk}/>
@@ -395,26 +492,54 @@ const PostDetail = () => {
                             <img className={styles.timeImg} src={clock}/>
                             <p className={styles.timeNum}>{timeConvert(post.createdTime)}</p>
                         </div>
+                        {/*<button className={styles.tradeStatus} onClick={talkButton}>거래상태</button>*/}
                     </div>
-                    <button className={styles.exchangeBtn} onClick={()=>{talkButton();}}>코끼리톡으로 교환하기</button>
+                    <div className={styles.tradeAndTalk}>
+                    <Select
+                        className={styles.tradeStatus}
+                        styles={{ // zIndex
+                            menu: provided => ({...provided, zIndex: 999})
+                        }}
+                        // If you don't need a state you can remove the two following lines value & onChange
+                        value={productState.selectedCategory}
+                        onChange={(option: Category | null) => {
+                            setProductState({selectedCategory: option});
+                        }}
+                        getOptionLabel={(category: Category) => category.name}
+                        getOptionValue={(category: Category) => category.name}
+                        options={categories}
+                        // isClearable={true}
+                        // backspaceRemovesValue={true}
+                        placeholder={"판매중"}
+                    />
+                    <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
+                    </div>
                 </section>
             </article>
             <section className={styles.comments}>
                 {
-                    result.map((comment)=>(
+                    commentSort.map((comment) => (
                         <div key={comment.id}>
-                            {comment.depth ===0 && <Comments postId = {comment.postId} id = {comment.id} className={"primary"}  userID={comment.memberNickname} content={comment.content} time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl} />}
-                            {comment.depth ===1 && <Comments id = {comment.id} className={"secondary"}  userID={comment.memberNickname} content={comment.content} time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl}   />}
+                            {comment.depth === 0 &&
+                                <Comments key={comment.id} postId={comment.postId} id={comment.id} className={"primary"}
+                                          userID={comment.memberNickname} content={comment.content}
+                                          time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl} isAuthor={isAuthor} memberId={comment.memberId}/>}
+                            {comment.depth === 1 &&
+                                <Comments key={comment.id + 1} postId={comment.postId} id={comment.id} className={"secondary"}
+                                          userID={comment.memberNickname} content={comment.content}
+                                          time={timeConvert(comment.createdTime)} imageUrl={comment.imageUrl} isAuthor={isAuthor} memberId={comment.memberId}/>}
                         </div>
                     ))
                 }
             </section>
-            <div className = {styles.writeComments}>
-                <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
-                 <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
+            <div className={styles.writeComments}>
+                <input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"}
+                       onChange={onChangeComment} value={commentText}/>
+                <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
             </div>
-            <button onClick={hihihihi}>버튼버튼</button>
         </div>
+
+
     );
 }
 
