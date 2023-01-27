@@ -67,5 +67,6 @@ public class MessageDTO {
         private Long senderId;
         private Long receiverId;
         private Long messageRoomId;
+
     }
 }
