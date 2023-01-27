@@ -58,6 +58,7 @@ public class MessageRoomCustomRepositoryImpl implements MessageRoomCustomReposit
                                         .groupBy(newMsg.messageRoom.id)
                         )))
                 .groupBy(messageRoom.id, message.id)
+                .orderBy(message.createDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
