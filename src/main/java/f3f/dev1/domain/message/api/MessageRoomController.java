@@ -72,4 +72,11 @@ public class MessageRoomController {
         String deleteMessageRoom = messageRoomService.deleteMessageRoom(deleteMessageRoomRequest, currentMemberId);
         return new ResponseEntity<>(deleteMessageRoom, HttpStatus.OK);
     }
+
+    @DeleteMapping(value = "/messageRooms")
+    public ResponseEntity<String> deleteEmptyMessageRoom(@RequestBody MessageRoomDTO.MessageRoomIdDto messageRoomIdDto){
+        String deleteEmptyMsgRoom = messageRoomService.deleteEmptyMessageRoom(messageRoomIdDto);
+        return new ResponseEntity<>(deleteEmptyMsgRoom, HttpStatus.OK);
+    }
+
 }

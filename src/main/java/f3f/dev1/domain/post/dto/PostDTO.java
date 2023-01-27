@@ -192,7 +192,7 @@ public class PostDTO {
         private String thumbnail;
         private String authorNickname;
         private String productCategory;
-        private LocalDateTime createdTime;
+        private String createdTime;
         private Long messageRoomCount;
         private String wishCategory;
         private boolean isScrap;

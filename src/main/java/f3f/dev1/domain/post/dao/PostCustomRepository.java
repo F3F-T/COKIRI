@@ -15,6 +15,6 @@ public interface PostCustomRepository {
 //    Page<PostInfoDtoForGET_PreProcessor> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Pageable pageable);
     Page<Post> findPostsByTags(List<String> tagNames, Pageable pageable);
 
-    Page<PostSearchResponseDto> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Long currentMemberId, Pageable pageable);
-    Page<PostSearchResponseDto> findPostsByTags(List<String> tagNames, Long currentMemberId, Pageable pageable);
+//    Page<PostSearchResponseDto> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Long currentMemberId, Pageable pageable);
+//    Page<PostSearchResponseDto> findPostsByTags(List<String> tagNames, Long currentMemberId, Pageable pageable);
 }
