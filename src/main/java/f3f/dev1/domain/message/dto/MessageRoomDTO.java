@@ -5,6 +5,7 @@ import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.model.Member;
 import lombok.*;
+import org.apache.tomcat.jni.Local;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -12,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import java.beans.Visibility;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class MessageRoomDTO {
@@ -80,6 +82,7 @@ public class MessageRoomDTO {
         private Long sellerId;
         private Long buyerId;
         private boolean delStatus;
+        private LocalDateTime createTime;
         //private List<Message> messages;
 
     }
@@ -93,6 +96,7 @@ public class MessageRoomDTO {
         private String PostTitle;
         private String buyerNickname;
         private boolean delStatus;
+        private LocalDateTime createTime;
     }
 
     @Getter
@@ -104,6 +108,7 @@ public class MessageRoomDTO {
         private String PostTitle;
         private String sellerNickname;
         private boolean delStatus;
+        private LocalDateTime createTime;
     }
 
 

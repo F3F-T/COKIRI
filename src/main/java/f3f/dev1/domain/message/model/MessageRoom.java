@@ -58,6 +58,7 @@ public class MessageRoom extends BaseTimeEntity {
                 .sellerId(this.seller.getId())
                 .buyerId(this.buyer.getId())
                 .delStatus(this.isDelStatus())
+                .createTime(super.getCreateDate())
                 .build();
     }
     public MessageRoomDTO.BuyingRoomInfoDto toBuyingRoomInfo(){
@@ -66,6 +67,7 @@ public class MessageRoom extends BaseTimeEntity {
                 .PostTitle(this.post.getTitle())
                 .sellerNickname(this.seller.getNickname())
                 .delStatus(this.isDelStatus())
+                .createTime(super.getCreateDate())
                 .build();
     }
 
@@ -75,6 +77,7 @@ public class MessageRoom extends BaseTimeEntity {
                 .PostTitle(this.post.getTitle())
                 .buyerNickname(this.buyer.getNickname())
                 .delStatus(this.isDelStatus())
+                .createTime(super.getCreateDate())
                 .build();
     }
 }
