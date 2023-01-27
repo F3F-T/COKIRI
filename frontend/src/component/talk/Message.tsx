@@ -6,6 +6,7 @@ import Api from "../../utils/api";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import {setBuyerId, setMessageRoomId, setOpponetNick, setPostId, setSellerId} from "../../store/talkCardReducer";
+import timeConvert from "../../utils/timeConvert";
 
 
 interface keyProps {
@@ -77,7 +78,7 @@ const Message = (key:keyProps) => {
     async function getMessageContent(loading) {
         try{
             const res = await Api.get(`/messageRooms/${loading}`);
-            // console.log("메세지룸 내용조회 in message", res.data)
+            console.log("메세지룸 내용조회 in message", res.data)
             setContentInfo(()=>{
                 return [...res.data]
             })
@@ -108,12 +109,19 @@ const Message = (key:keyProps) => {
                contentInfo[i].senderId === info.id?
                     <div className={styles.receive}>
                         <div className={styles.receiveTitle}>보낸 쪽지</div>
+                        <div className={styles.timeBox}>
                         <p className={styles.receiveContent}>{contentInfo[i].content}</p>
+                        <p className={styles.timeX}>{timeConvert(contentInfo[i].createTime)}</p>
+                        </div>
                     </div>
                     :
                     <div className={styles.send}>
                         <div className={styles.sendTitle}>받은 쪽지</div>
+                        <div className={styles.timeBox}>
                         <p className={styles.sendContent}>{contentInfo[i].content}</p>
+                        <p className={styles.timeX}>{timeConvert(contentInfo[i].createTime)}</p>
+
+                        </div>
                     </div>
             ))
             }

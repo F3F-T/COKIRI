@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo, useCallback} from 'react';
+import React, {useState, useEffect, useMemo, useCallback,useRef} from 'react';
 import styles from "../styles/talk/kokiriTalk.module.scss"
 import profileImg from "../img/profileImg.png"
 import spamImg from "../img/spam.png"
@@ -44,9 +44,10 @@ interface contentInfo2 {
 }
 const KokiriTalk = () => {
     const navigate = useNavigate();
-    const [reCommentText, setReCommentText] = useState("");
+    const scrollRef = useRef();
     const store = useSelector((state:Rootstate) => state);
     const [count,setCount] = useState(0)
+    const [del,setDel] = useState(0)
     const [key,setKey] = useState<number>(null)
     const {state} = useLocation();
     const dispatch = useDispatch();
@@ -80,8 +81,15 @@ const KokiriTalk = () => {
     },[talkCard.id])
     useEffect(() => {
         getMessageRoom()
+        // @ts-ignore
+        // scrollRef.current.scrollIntoView({behavior:'smooth',block:'end',inline:'nearest'})
         // getMessageContent(talkCard.id)
     }, [count])
+
+    useEffect(() => {
+        getMessageRoom()
+    }, [del])
+
 
     const onChangeMessage = (e) => {
         const inputMessage = e.target.value;
@@ -89,6 +97,7 @@ const KokiriTalk = () => {
         return setInput
     }
     const createMessageRoom = async () => {
+
         //얘는 게시글통해서 들어왔을때만 그 톡방이 있는지 확인하면됨
         if(state===false){
             // try{
@@ -131,24 +140,32 @@ const KokiriTalk = () => {
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
             // console.log("메세지룸 조회2",res2.data)
             if(talkCard.id === undefined){
-                const res3 = await Api.get(`/post/${res2.data[0].postId}`)
+                // const res3 = await Api.get(`/post/${res2.data[0].postId}`)
+                for(let i=0;i<res2.data.length;i++){
+                    if(res2.data[i].delStatus ==false){
+                        if(res.data.content[0].messageRoomId == res2.data[i].id){
+                            const res3 = await Api.get(`/post/${res2.data[i].postId}`)
+                            dispatch(setTradeStatus(res3.data.tradeStatus))
+                            dispatch(setTradeCategory(res3.data.tradeCategory))
+                            dispatch(setWishCategory(res3.data.wishCategory))
+                            dispatch(setProductImg(res3.data.images[0]))
+                            dispatch(setTitle(res3.data.title))
+                            dispatch(setPostId(res2.data[i].postId))
+                            dispatch(setMessageRoomId(res2.data[i].id))
+                            dispatch(setBuyerId(res2.data[i].buyerId))
+                            if(info.id === res2.data[i].buyerId){
+                                dispatch(setOpponetNick(res2.data[i].sellerNickName))
+                            }
+                            else{
+                                dispatch(setOpponetNick(res2.data[i].buyerNickName))
+                            }
+                            getMessageContent(res2.data[0].id);
 
-                //title,wishCategory,productCategory,tradeStatus
-                dispatch(setTradeStatus(res3.data.tradeStatus))
-                dispatch(setTradeCategory(res3.data.tradeCategory))
-                dispatch(setWishCategory(res3.data.wishCategory))
-                dispatch(setProductImg(res3.data.images[0]))
-                dispatch(setTitle(res3.data.title))
-                dispatch(setPostId(res2.data[0].postId))
-                dispatch(setMessageRoomId(res2.data[0].id))
-                dispatch(setBuyerId(res2.data[0].buyerId))
-                if(info.id === res2.data[0].buyerId){
-                    dispatch(setOpponetNick(res2.data[0].sellerNickName))
+                        }
+                    }
+
                 }
-                else{
-                    dispatch(setOpponetNick(res2.data[0].buyerNickName))
-                }
-                getMessageContent(res2.data[0].id);
+                //title,wishCategory,productCategory,tradeStatu
             }
 
             setRoomList(()=>{
@@ -190,8 +207,8 @@ const KokiriTalk = () => {
                     messageRoomId:loading
                 }
             }
+            // setInput("")
             const res = await Api.post(`/messageRooms/${loading}`,messageInfo1);
-            setReCommentText("");
             console.log("메세지 전송", res.data)
         }
         catch (err)
@@ -213,6 +230,27 @@ const KokiriTalk = () => {
         {
             console.log(err)
             alert("메세지룸 내용 조회 실패 in kokiritalk")
+        }
+    }
+
+    async function deleteRoom() {
+        try{
+            const deleteInfo={
+                data: {
+                    id: talkCard.id,
+                    memberId: info.id
+                }
+            }
+            const res = await Api.delete(`/messageRooms/${talkCard.id}`,deleteInfo);
+
+            // console.log("메세지룸 내용조회", res.data)
+            alert("메세지룸 내용 삭제  in kokiritalk")
+
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("메세지룸 내용 삭제 실패 in kokiritalk")
         }
     }
 
@@ -251,7 +289,7 @@ const KokiriTalk = () => {
                             <div className={styles.right_header1_1}> <TalkCard keys={key}/> </div>
                         </div>
                         <div className={styles.right_header2}>
-                            <button className={styles.sideBtn}>삭제</button>
+                            <button className={styles.sideBtn} onClick={()=>{deleteRoom();setDel(prevState => prevState+1);}} >삭제</button>
                             <p> | </p>
                             <button className={styles.sideBtn}>차단</button>
                             <p> | </p>
@@ -265,9 +303,9 @@ const KokiriTalk = () => {
                         <></>:<Message keys={key} counts={count}/>
                     }
                 </div>
-                <div className = {styles.writeComments}>
-                    <input type={"text"} className={styles.writeInput} placeholder={"쪽지를 보내세요"} onChange={onChangeMessage}/>
-                    <HiPencil className={styles.pencilIcon} onClick={()=>{createMessageRoom();setCount(prevState => prevState+1)}} />
+                <div ref={scrollRef} className = {styles.writeComments}>
+                    <input type={"text"} className={styles.writeInput} placeholder={"쪽지를 보내세요"} value={input} onChange={onChangeMessage} />
+                    <HiPencil className={styles.pencilIcon}  onClick={()=>{createMessageRoom(); setCount(prevState => prevState+1); setInput("") }}  />
                 </div>
             </div>
         </div>

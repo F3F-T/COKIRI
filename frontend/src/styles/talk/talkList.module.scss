@@ -125,3 +125,13 @@
   gap: 0;
   margin: auto;
 }
+.timeBox{
+  display: flex;
+  justify-content: space-between;
+}
+.timeX{
+  margin-right: 1rem;
+  font-size: 0.7rem;
+  color: gray;
+
+}
