@@ -10,23 +10,33 @@ import {setBuyerId, setMessageRoomId, setOpponetNick, setPostId, setSellerId} fr
 
 interface keyProps {
     keys: number;
+    counts: number;
+
 }
 
 
-const Message = (key: keyProps) => {
+
+// props: {key: keyProps,count:countProps}
+const Message = (key:keyProps) => {
     const [contentInfo,setContentInfo]=useState(null)
     const dispatch = useDispatch();
     const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
     const [roomList,setRoomList]=useState(null)
     const realKey = key.keys;
+    const realCount = key.counts
 
     //
-
+    console.log("realCount",key.counts)
     useEffect(()=>{
         getMessageRoom()
     },[realKey])
 
+    useEffect(() => {
+        getMessageRoom()
+    }, [realCount])
+
+    //키값에 해당하는거 띄우려고 호출
     async function getMessageRoom() {
         try{
             const res = await Api.get('/user/messageRooms');

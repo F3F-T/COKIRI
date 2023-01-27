@@ -44,6 +44,8 @@ interface contentInfo2 {
 }
 const KokiriTalk = () => {
     const navigate = useNavigate();
+    const [reCommentText, setReCommentText] = useState("");
+    const store = useSelector((state:Rootstate) => state);
     const [count,setCount] = useState(0)
     const [key,setKey] = useState<number>(null)
     const {state} = useLocation();
@@ -54,7 +56,7 @@ const KokiriTalk = () => {
     const [contentInfo,setContentInfo]=useState(null)
     const [roomList,setRoomList]=useState(null)
     // const [count,setCount]=useState(0)
-
+    console.log("count",count)
     const [input,setInput] = useState('');
     useEffect(()=>{
         getMessageRoom()
@@ -71,12 +73,15 @@ const KokiriTalk = () => {
 
     useEffect(()=>{
         if(talkCard.id!=undefined){
-            // console.log("실행된거니??",talkCard.id)
+            console.log("실행된거니??",talkCard.id)
             setKey(talkCard.id)
             getMessageContent(talkCard.id);
         }
     },[talkCard.id])
-
+    useEffect(() => {
+        getMessageRoom()
+        // getMessageContent(talkCard.id)
+    }, [count])
 
     const onChangeMessage = (e) => {
         const inputMessage = e.target.value;
@@ -149,9 +154,6 @@ const KokiriTalk = () => {
             setRoomList(()=>{
                 return [...res.data.content]
             })
-
-
-            return res2.data[0].id
         }
         catch (err)
         {
@@ -189,6 +191,7 @@ const KokiriTalk = () => {
                 }
             }
             const res = await Api.post(`/messageRooms/${loading}`,messageInfo1);
+            setReCommentText("");
             console.log("메세지 전송", res.data)
         }
         catch (err)
@@ -231,10 +234,10 @@ const KokiriTalk = () => {
                     {roomList.map((SingleObject:object) => (
                         SingleObject["buyerNickname"] === info.nickname ?
                         <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
-                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} />
+                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
                             :
                         <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
-                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} />
+                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
 
                     ))}
                 </div>
@@ -259,7 +262,7 @@ const KokiriTalk = () => {
                 </div>
                 <div className={styles.talkContainer2}>
                     {key===null?
-                        <></>:<Message keys={key}/>
+                        <></>:<Message keys={key} counts={count}/>
                     }
                 </div>
                 <div className = {styles.writeComments}>

@@ -328,7 +328,6 @@ const PostDetail = () => {
             const res = await Api.post(`/post/${postId}/comments`, writeComment);
             console.log(writeComment);
             console.log(res);
-            dispatch(changeRefreshState());
             setRefreshFetch((prevState) => {
                 return {
                     ...prevState, commentChange: true

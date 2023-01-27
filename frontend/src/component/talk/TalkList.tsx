@@ -9,8 +9,17 @@ import {storeCategory} from "../../store/categoryReducer";
 import {useDispatch, useSelector} from "react-redux";
 import Message from "./Message";
 import Api from "../../utils/api";
-import {setMessageRoomId, setOpponetNick, setPostId} from "../../store/talkCardReducer";
+import {
+    setBuyerId,
+    setMessageRoomId,
+    setOpponetNick,
+    setPostId, setProductImg, setSellerId, setTitle,
+    setTradeCategory,
+    setTradeStatus, setWishCategory
+} from "../../store/talkCardReducer";
 import {Rootstate} from "../../index";
+import {changeRefreshState} from "../../store/refreshReducer";
+import timeConvert from "../../utils/timeConvert";
 
 
 
@@ -23,7 +32,16 @@ interface props{
     lastContent : string;
     date : string;
     keys? : number;
+    counts? : number;
 }
+interface talkInfoType{
+    partner : string;
+    lastContent : string;
+    date : string;
+    keys? : number;
+    counts? : number;
+}
+
 // const object ={
 //     a: 1,
 //     b: 2,
@@ -37,11 +55,9 @@ const TalkListLeft = (props2:props)=>{
     const dispatch = useDispatch();
     const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
-    // props2.click =click
+
+
     // console.log("TalkList props",props2);
-
-
-
     return(
         <>
                 <div className={styles.talkContent}>
@@ -65,10 +81,29 @@ const TalkListLeft = (props2:props)=>{
 
 
 const TalkList = (props2: props) => {
+    const realCount = props2.counts
+    // props2.click =click
 
+
+    //last message 한번더 호출
+    useEffect(() => {
+        getMessageRoom()
+    }, [realCount])
+    async function getMessageRoom() {
+        try{
+            const res = await Api.get('/user/messageRooms');
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("메세지룸 조회 실패 in Talklisg")
+        }
+    }
     return (
         <>
-            <TalkListLeft keys={props2.keys} onClick={props2.onClick} partner={props2.partner} lastContent={props2.lastContent} date={props2.date}/>
+            {/*<TalkListLeft keys={key} onClick={props2.onClick} partner={partner} lastContent={msg} date={timeConvert(date)} counts={realCount}/>*/}
+            <TalkListLeft keys={props2.keys} onClick={props2.onClick} partner={props2.partner} lastContent={props2.lastContent} date={props2.date} counts={realCount}/>
+
         </>
 
     );
