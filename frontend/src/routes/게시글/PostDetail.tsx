@@ -465,10 +465,31 @@ const PostDetail = () => {
                         <div className={styles.postDetailPrice}></div>
                         <div className={styles.postDetailContent}>{post.content}</div>
                         <div className={styles.postDetailTag}>#{post.tagNames}</div>
-                        <div className={styles.postDetailSwapCategoryBox}>
-                            <img className={styles.transfer} src={transfer}/>
-                            <div className={styles.postDetailSwapCategory}> {post.wishCategory}</div>
-                        </div>
+                    </div>
+                    <div className={styles.categoryandStatus}>
+                    <div className={styles.postDetailSwapCategoryBox}>
+                        <img className={styles.transfer} src={transfer}/>
+                        <div className={styles.postDetailSwapCategory}> {post.wishCategory}</div>
+                    </div>
+                    <div className = {styles.tradeStatusDiv}>
+                    <Select
+                        className={styles.tradeStatus}
+                        styles={{ // zIndex
+                            menu: provided => ({...provided, zIndex: 999})
+                        }}
+                        // If you don't need a state you can remove the two following lines value & onChange
+                        value={productState.selectedCategory}
+                        onChange={(option: Category | null) => {
+                            setProductState({selectedCategory: option});
+                        }}
+                        getOptionLabel={(category: Category) => category.name}
+                        getOptionValue={(category: Category) => category.name}
+                        options={categories}
+                        // isClearable={true}
+                        // backspaceRemovesValue={true}
+                        placeholder={"판매중"}
+                    />
+                    </div>
                     </div>
 
 
@@ -494,23 +515,6 @@ const PostDetail = () => {
                         {/*<button className={styles.tradeStatus} onClick={talkButton}>거래상태</button>*/}
                     </div>
                     <div className={styles.tradeAndTalk}>
-                    <Select
-                        className={styles.tradeStatus}
-                        styles={{ // zIndex
-                            menu: provided => ({...provided, zIndex: 999})
-                        }}
-                        // If you don't need a state you can remove the two following lines value & onChange
-                        value={productState.selectedCategory}
-                        onChange={(option: Category | null) => {
-                            setProductState({selectedCategory: option});
-                        }}
-                        getOptionLabel={(category: Category) => category.name}
-                        getOptionValue={(category: Category) => category.name}
-                        options={categories}
-                        // isClearable={true}
-                        // backspaceRemovesValue={true}
-                        placeholder={"판매중"}
-                    />
                     <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
                     </div>
                 </section>
