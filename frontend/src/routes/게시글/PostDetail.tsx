@@ -142,30 +142,25 @@ const PostDetail = () => {
     const isAuthorFalse = ["신고"]
     const [scrapCountInReact, setScrapCountInReact] = useState<number>();
 
-
     //select
-    interface Category {
+    interface TradeStatus {
         name: string;
     }
 
-    const categories: Category[] =
+    const tradeStatus: TradeStatus[] =
         [
-            {name: '판매중'},
+            {name: '교환가능'},
             {name: '예약중'},
-            {name: '판매완료'},
+            {name: '교환완료'},
         ]
 
 
     interface ArrayObjectSelectState {
-        selectedCategory: Category | null;
+        selectedTradeStatus: TradeStatus | null;
     }
 
-    const [productState, setProductState] = React.useState<ArrayObjectSelectState>({
-        selectedCategory: null,
-    });
-
-    const [wishState, setWishState] = React.useState<ArrayObjectSelectState>({
-        selectedCategory: null,
+    const [tradeState, setTradeState] = React.useState<ArrayObjectSelectState>({
+        selectedTradeStatus: null,
     });
 
 
@@ -181,6 +176,20 @@ const PostDetail = () => {
             })
             setScrapSaved(prevState => res.data.scrap)
             setScrapCountInReact(prevState => res.data.scrapCount);
+
+            if(res.data.tradeStatus === "TRADABLE")
+            {
+                console.log("교환가능");
+                setTradeState({selectedTradeStatus: {name : "거래가능"}});
+            }
+            else if(res.data.tradeStatus === "TRADING")
+            {
+                setTradeState({selectedTradeStatus: {name : "예약중"}});
+            }
+            else if(res.data.tradeStatus === "TRADED")
+            {
+                setTradeState({selectedTradeStatus: {name : "교환완료"}});
+            }
 
         } catch (err) {
             console.log(err)
@@ -198,6 +207,33 @@ const PostDetail = () => {
             setCommentList(prevState => {
                 return [...res.data];
             })
+        } catch (err) {
+            console.log(err)
+            alert("get 실패");
+        }
+    }
+
+    async function changeTradeStatus(option) {
+        let tradeStatusToBackend
+        if(option.name === "교환가능")
+        {
+            tradeStatusToBackend = "TRADABLE"
+        }
+        else if(option.name === "예약중")
+        {
+            tradeStatusToBackend = "TRADING"
+        }
+        else if(option.name ==="교환완료")
+        {
+            tradeStatusToBackend = "TRADED"
+        }
+        try {
+            const jsonObj = {userId : store.userInfoReducer.id, postId : post.id, tradeStatus : tradeStatusToBackend}
+            const res = await Api.patch(`/trade`,jsonObj);
+
+            console.log(res)
+            alert("교환상태 변경")
+
         } catch (err) {
             console.log(err)
             alert("get 실패");
@@ -382,7 +418,6 @@ const PostDetail = () => {
     // console.log(post)
     // console.log(post.images);
 
-    // console.log(commentList);
 
     //게시글 작성자 판단
 
@@ -478,16 +513,19 @@ const PostDetail = () => {
                             menu: provided => ({...provided, zIndex: 999})
                         }}
                         // If you don't need a state you can remove the two following lines value & onChange
-                        value={productState.selectedCategory}
-                        onChange={(option: Category | null) => {
-                            setProductState({selectedCategory: option});
+                        value={tradeState.selectedTradeStatus}
+                        onChange={(option: TradeStatus | null) => {
+
+                            setTradeState({selectedTradeStatus: option});
+                            changeTradeStatus(option);
+
                         }}
-                        getOptionLabel={(category: Category) => category.name}
-                        getOptionValue={(category: Category) => category.name}
-                        options={categories}
+                        getOptionLabel={(category: TradeStatus) => category.name}
+                        getOptionValue={(category: TradeStatus) => category.name}
+                        options={tradeStatus}
                         // isClearable={true}
                         // backspaceRemovesValue={true}
-                        placeholder={"판매중"}
+                        placeholder={"교환가능"}
                     />
                     </div>
                     </div>
