@@ -42,6 +42,8 @@ interface postProps {
     searchOption? : string;
 }
 const PostContainer = (postProps : postProps) => {
+    const store = useSelector((state:Rootstate) => state);
+
     console.log(postProps.filterType);
 
     console.log(postProps.categoryOption);
@@ -51,6 +53,7 @@ const PostContainer = (postProps : postProps) => {
     console.log(params);
     //tagsearch에서 사용한 query string을 받아오기 위함
     const queryString = window.location.search
+    console.log(store.refreshReducer.postChange);
 
     let wishCategory = "";
     let productCategory = "";
@@ -60,7 +63,6 @@ const PostContainer = (postProps : postProps) => {
 
     const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
 
-    const store = useSelector((state:Rootstate) => state);
 
     const [postList,setPostList] = useState<PostType[]>(null)
     const [loading,setLoading] = useState(false);
@@ -125,7 +127,7 @@ const PostContainer = (postProps : postProps) => {
             }
             else if (queryString.length > 1)
             {
-                const res = await Api.get(`/post/tagSearch/${queryString}`);
+                const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
                 console.log(res)
                 setPostList(prevState => {
                     return [...res.data.content];
@@ -142,7 +144,7 @@ const PostContainer = (postProps : postProps) => {
     // getPostList();
     useEffect(()=>{
         getPostList();
-    },[wishCategory,productCategory,minPrice,maxPrice,postProps.filterType])
+    },[wishCategory,productCategory,minPrice,maxPrice,postProps.filterType,store.refreshReducer.postChange])
 
     /**
      * 중요) postList를 async로 받긴 하지만 받아오는 시간 전까지는 postList가 null이기 때문에 밑에있는 render 에서 postList.map 이 null을 접근하게 돼서 오류가 발생하고, 켜지지 않는다

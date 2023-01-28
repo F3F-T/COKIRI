@@ -11,6 +11,7 @@ import {Rootstate} from "../index";
 import {useDispatch, useSelector} from "react-redux";
 import Tags from "@yaireo/tagify/dist/react.tagify";
 import Api from "../utils/api";
+import {changePostRefreshState} from "../store/refreshReducer";
 const Nav1 = () => {
 
     const store = useSelector((state:Rootstate) => state);
@@ -40,6 +41,9 @@ const Nav1 = () => {
 
     const onClickSearch = () => {
         const tagString = tagSearch.join();
+        //태그 검색 post container refresh
+        dispatch(changePostRefreshState());
+        // console.log(store.refreshReducer.postChange);
         navigate(`/tagsearch?tags=${tagString}`);
 
     }

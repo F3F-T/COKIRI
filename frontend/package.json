@@ -24,6 +24,7 @@
     "jwt-decode": "^3.1.2",
     "list": "^2.0.19",
     "node-sass": "^7.0.3",
+    "query-string": "^8.1.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.7.0",
     "react-cookie": "^4.1.1",

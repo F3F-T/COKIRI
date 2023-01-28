@@ -18,7 +18,7 @@ import Card from "../../component/tradeCard/Card";
 import Message from "../../component/로그인 & 회원가입/Message";
 import {HiPencil} from "react-icons/hi";
 import {resetCategory} from "../../store/categoryReducer";
-import {changeRefreshState} from "../../store/refreshReducer";
+import {changeCommentRefreshState} from "../../store/refreshReducer";
 import comments from "../../component/comments/Comments";
 import timeConvert from "../../utils/timeConvert";
 import {LocalDateTime} from "js-joda";
@@ -362,7 +362,7 @@ const PostDetail = () => {
             const res = await Api.post(`/post/${postId}/comments`, writeComment);
             console.log(writeComment);
             console.log(res);
-            dispatch(changeRefreshState());
+            dispatch(changeCommentRefreshState());
             setCommentText("");
             alert("댓글 작성 성공")
         } catch (err) {
