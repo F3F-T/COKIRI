@@ -81,8 +81,8 @@ public class MessageRoomDTO {
         private Long postId;
         private Long sellerId;
         private Long buyerId;
-        private boolean senderDelStatus;
-        private boolean receiverDelStatus;
+        private boolean buyerDelStatus;
+        private boolean sellerDelStatus;
         private LocalDateTime createTime;
         //private List<Message> messages;
 
@@ -110,7 +110,7 @@ public class MessageRoomDTO {
         private Long id;
         private String PostTitle;
         private String buyerNickname;
-        private boolean receiverDelStatus;
+        private boolean sellerDelStatus;
         private LocalDateTime createTime;
 
     }
@@ -124,7 +124,7 @@ public class MessageRoomDTO {
         private Long id;
         private String PostTitle;
         private String sellerNickname;
-        private boolean senderDelStatus;
+        private boolean buyerDelStatus;
         private LocalDateTime createTime;
     }
 
