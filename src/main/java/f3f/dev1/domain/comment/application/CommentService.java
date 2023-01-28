@@ -142,6 +142,11 @@ public class CommentService {
         if(!currentMemberId.equals(deleteCommentRequest.getAuthorId())) {
             throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
+
+        // 지금 접속한 사람 : 홍의성
+        // 삭제 요청 보낸 사람 : 최철웅
+
+
         // 하위 댓글들 다 삭제
         if(commentInPost.getParent() != null) {
             commentRepository.delete(commentInPost);

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo, useCallback} from 'react';
+import React, {useState, useEffect, useMemo, useCallback,useRef} from 'react';
 import styles from "../styles/talk/kokiriTalk.module.scss"
 import profileImg from "../img/profileImg.png"
 import spamImg from "../img/spam.png"
@@ -12,9 +12,17 @@ import {HiPencil} from "react-icons/hi";
 import Api from "../utils/api";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
-import {setMessageRoomId, setOpponetNick, setPostId, setSellerId} from "../store/talkListReducer";
+import {
+    setMessageRoomId,
+    setOpponetNick,
+    setPostId,
+    setSellerId,
+    setBuyerId,
+    setProductImg, setTitle, setWishCategory, setTradeCategory, setTradeStatus
+} from "../store/talkCardReducer";
 import {use} from "js-joda";
 import {log} from "util";
+import timeConvert from "../utils/timeConvert";
 
 interface contentInfo {
         id: number,
@@ -36,36 +44,24 @@ interface contentInfo2 {
 }
 const KokiriTalk = () => {
     const navigate = useNavigate();
-    const [key,setKey] = useState<number>(1)
+    const scrollRef = useRef();
+    const store = useSelector((state:Rootstate) => state);
+    const [count,setCount] = useState(0)
+    const [del,setDel] = useState(0)
+    const [key,setKey] = useState<number>(null)
     const {state} = useLocation();
     const dispatch = useDispatch();
-    const talkCard = useSelector((state : Rootstate)=>{return state.talkListReducer})
+    const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
     const [roomId,setRoomId] = useState();
     const [contentInfo,setContentInfo]=useState(null)
+    const [roomList,setRoomList]=useState(null)
     // const [count,setCount]=useState(0)
-
+    console.log("count",count)
     const [input,setInput] = useState('');
     useEffect(()=>{
         getMessageRoom()
     },[])
-    // console.log("제대로 가져왔나 확인",state.images[0].imgPath)
-
-
-    // const onClickTalkList = () => {
-    //     setKey(1);
-    // }
-    //
-    // const onClickTalkList2 = () => {
-    //     console.log("2번 클릭 이벤트");
-    //     setKey(2);
-    //
-    // }
-    //
-    // const onClickTalkList3 = () => {
-    //     console.log("3번 클릭 이벤트")
-    //     setKey(3);
-    // }
 
     const onClickTotalTalkList = (key) => {
         return (event: React.MouseEvent) => {
@@ -73,84 +69,66 @@ const KokiriTalk = () => {
             event.preventDefault();
         }
     }
-    console.log("이방이 이미 있는거니???", state)
 
+    // console.log("talkCard??",talkCard.id)
 
-    const objectMessage = [{
-        keys: 1,
-        partner : "함민혁",
-        lastContent : "얼마에 팔건가요????",
-        date : "2020.1.2",
-        message: ["111111보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
-            "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
-            "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
-            "보낸사람 : 이거 얼마", "받은 사람 : 삼천원"
-        ]
-    },
-        {
-            keys: 2,
-            partner : "홍의성",
-            lastContent : "주무시나요2",
-            date :  "2020.1.2",
-            message: ["22222보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
-                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
-                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
-                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원"
-            ]
-        },
-        {
-            keys: 3,
-            partner : "김희찬",
-            lastContent : "주무시나요3",
-            date :  "2020.1.2",
-            message: ["3333333보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
-                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
-                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원",
-                "보낸사람 : 이거 얼마", "받은 사람 : 삼천원"
-            ]
+    useEffect(()=>{
+        if(talkCard.id!=undefined){
+            console.log("실행된거니??",talkCard.id)
+            setKey(talkCard.id)
+            getMessageContent(talkCard.id);
         }
-    ]
-    console.log("아ㅏㅏㅏㅏㅏㅏㅏ이ㅣㅣㅣㅣㅣㅣㅣ디ㅣㅣㅣㅣㅣ",state)
-    // const setMessageRoomId = async () => {
-    //     setRoomId(res.data.id)
-    //     return roomId
-    // }
+    },[talkCard.id])
+    useEffect(() => {
+        getMessageRoom()
+        // @ts-ignore
+        // scrollRef.current.scrollIntoView({behavior:'smooth',block:'end',inline:'nearest'})
+        // getMessageContent(talkCard.id)
+    }, [count])
+
+    useEffect(() => {
+        getMessageRoom()
+    }, [del])
+
+
     const onChangeMessage = (e) => {
         const inputMessage = e.target.value;
         setInput(inputMessage)
         return setInput
     }
-
     const createMessageRoom = async () => {
-        console.log("이방이 이미 있는거니???", state)
-        if(state===false || state===null){
-            try{
-                const post_buyerId1 = {
-                    postId: talkCard.postId,
-                    buyerId: info.id
-                }
-                const res = await Api.post(`/post/${talkCard.postId}/messageRooms`,post_buyerId1);
-                dispatch(setOpponetNick(res.data.sellerNickName))
-                await dispatch(setMessageRoomId(res.data.id))
-                await dispatch(setSellerId(res.data.sellerId))
-                dispatch(setPostId(res.data.postId))
-                setRoomId(res.data.id)
-                console.log("메세지룸 추가", res.data)
-                // if(talkCard.id != undefined){
-                //     sendMessage()
-                // }
-                alert("메세지룸 추가 성공")
-                await sendMessage(res.data.id)
-            }
-            catch (err)
-            {
-                console.log(err)
-                alert("메세지룸 추가 실패")
-            }
 
+        //얘는 게시글통해서 들어왔을때만 그 톡방이 있는지 확인하면됨
+        if(state===false){
+            // try{
+            //     const post_buyerId1 = {
+            //         postId: talkCard.postId,
+            //         buyerId: info.id
+            //     }
+            //     const res = await Api.post(`/post/${talkCard.postId}/messageRooms`,post_buyerId1);
+            //     dispatch(setOpponetNick(res.data.sellerNickName))
+            //     await dispatch(setMessageRoomId(res.data.id))
+            //     await dispatch(setSellerId(res.data.sellerId))
+            //     dispatch(setPostId(res.data.postId))
+            //
+            //     setRoomId(res.data.id)
+            //     console.log("메세지룸 추가", res.data)
+            //     // if(talkCard.id != undefined){
+            //     //     sendMessage()
+            //     // }
+            //     alert("메세지룸 추가 성공")
+            //     await sendMessage(res.data.id)
+            // }
+            // catch (err)
+            // {
+            //     console.log(err)
+            //     alert("메세지룸 추가 실패")
+            // }
+            // console.log("제발좀ㅋㅋ아님",talkCard.id)
+            await sendMessage(talkCard.id)
         }
         else{
-            console.log("제발좀ㅋㅋ",talkCard.id)
+            // console.log("제발좀ㅋㅋ",talkCard.id)
             await sendMessage(talkCard.id)
         }
 
@@ -158,26 +136,59 @@ const KokiriTalk = () => {
     async function getMessageRoom() {
         try{
             const res = await Api.get('/user/messageRooms');
-            console.log("메세지룸 조회", res.data)
-            alert("메세지룸 조회 성공")
+            console.log("메세지룸 조회", res.data.content)
+            const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
+            // console.log("메세지룸 조회2",res2.data)
+            if(talkCard.id === undefined){
+                // const res3 = await Api.get(`/post/${res2.data[0].postId}`)
+                for(let i=0;i<res2.data.length;i++){
+                    if(res2.data[i].delStatus ==false){
+                        if(res.data.content[0].messageRoomId == res2.data[i].id){
+                            const res3 = await Api.get(`/post/${res2.data[i].postId}`)
+                            dispatch(setTradeStatus(res3.data.tradeStatus))
+                            dispatch(setTradeCategory(res3.data.tradeCategory))
+                            dispatch(setWishCategory(res3.data.wishCategory))
+                            dispatch(setProductImg(res3.data.images[0]))
+                            dispatch(setTitle(res3.data.title))
+                            dispatch(setPostId(res2.data[i].postId))
+                            dispatch(setMessageRoomId(res2.data[i].id))
+                            dispatch(setBuyerId(res2.data[i].buyerId))
+                            if(info.id === res2.data[i].buyerId){
+                                dispatch(setOpponetNick(res2.data[i].sellerNickName))
+                            }
+                            else{
+                                dispatch(setOpponetNick(res2.data[i].buyerNickName))
+                            }
+                            getMessageContent(res2.data[0].id);
+
+                        }
+                    }
+
+                }
+                //title,wishCategory,productCategory,tradeStatu
+            }
+
+            setRoomList(()=>{
+                return [...res.data.content]
+            })
         }
         catch (err)
         {
             console.log(err)
-            alert("메세지룸 조회 실패")
+            alert("메세지룸 조회 실패 in kokiritalk")
         }
     }
     async function sendMessage(loading) {
         let messageInfo1={
             content:input,
-            senderId:info.id,
-            receiverId:0,
-            postId:talkCard.postId,
-            messageRoomId:loading
+            senderId:undefined,
+            receiverId:undefined,
+            postId:undefined,
+            messageRoomId:undefined
         }
         try{
             if(info.id===talkCard.sellerId){
-                console.log("메세지보내는사람이 파는 사람이야")
+                console.log("메세지보내는사람이 파는 사람")
                 messageInfo1={
                     content:input,
                     senderId:info.id,
@@ -187,7 +198,7 @@ const KokiriTalk = () => {
                 }
             }
             else{
-                console.log("메세지보내는사람이 사는 사람이야")
+                console.log("메세지보내는사람이 사는 사람")
                 messageInfo1={
                     content:input,
                     senderId:info.id,
@@ -196,10 +207,9 @@ const KokiriTalk = () => {
                     messageRoomId:loading
                 }
             }
+            // setInput("")
             const res = await Api.post(`/messageRooms/${loading}`,messageInfo1);
             console.log("메세지 전송", res.data)
-            alert("메세지 전송  성공")
-
         }
         catch (err)
         {
@@ -207,73 +217,66 @@ const KokiriTalk = () => {
             alert("메세지전송  실패")
         }
     }
-    // let contentInfo1 :{
-    //     id: number,
-    //     senderNickname: string,
-    //     receiverNickname: string,
-    //     content: string,
-    //     senderId: string,
-    //     receiverId: string,
-    //     messageRoomId: number
-    // }
-    let contentInfo1=[]
     async function getMessageContent(loading) {
         try{
             const res = await Api.get(`/messageRooms/${loading}`);
-            console.log("메세지룸 내용조회", res.data)
+            // console.log("메세지룸 내용조회", res.data)
             setContentInfo(()=>{
                 return [...res.data]
             })
-            // for(let i=0;i<res.data.length;i++){
-            //     contentInfo1[i]=res.data[i]
-            // }
-            // console.log("바로들어간다니까",contentInfo1)
             return res.data
         }
         catch (err)
         {
             console.log(err)
-            alert("메세지룸 내용 조회 실패")
+            alert("메세지룸 내용 조회 실패 in kokiritalk")
         }
     }
-    // const loading = await createMessageRoom();
-    useEffect(()=>{
-        getMessageContent(talkCard.id);
-    },[])
-    console.log(contentInfo)
-    const hi = () => {
-        console.log("contentInfo",contentInfo)
-        // console.log("contentInfo1",contentInfo1[0].content)
-        // contentInfo1.map((a,i)=>(
-        //     console.log("contentInfo222",contentInfo1[i].senderId)
-        // ))
+
+    async function deleteRoom() {
+        try{
+            const deleteInfo={
+                data: {
+                    id: talkCard.id,
+                    memberId: info.id
+                }
+            }
+            const res = await Api.delete(`/messageRooms/${talkCard.id}`,deleteInfo);
+
+            // console.log("메세지룸 내용조회", res.data)
+            alert("메세지룸 내용 삭제  in kokiritalk")
+
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("메세지룸 내용 삭제 실패 in kokiritalk")
+        }
     }
 
-    // if(!contentInfo1){
-    //     return null
-    // }
-    console.log("asdfa",contentInfo)
 
     if(!contentInfo){
         return null
     }
-    console.log("렌더링",contentInfo)
+    if(!roomList){
+        return null
+    }
 
 
-
-//
     return (
         <div className={styles.kokiritalk}>
             <div className={styles.left}>
                 <div className={styles.leftHeader}>코끼리톡</div>
                 <div className={styles.left2}>
                 <div className={styles.talkContainer}>
-                 {/*<TalkList keys={1} partner={"함민혁"} lastContent={"주무시나요"} date={"몰라"} onClick = {onClickTalkList} />*/}
-                 {/*<TalkList keys={2} partner={"홍의성"} lastContent={"주무시나요2"} date={"몰라"} onClick = {onClickTalkList2} />*/}
-                 {/*<TalkList keys={3} partner={"함민혁"} lastContent={"주무시나요3"} date={"몰라"} onClick = {onClickTalkList3} />*/}
-                    {objectMessage.map((SingleObject:object) => (
-                        <TalkList keys={SingleObject["keys"]} partner={SingleObject["partner"]} lastContent={SingleObject["lastContent"]} date={SingleObject["date"]}
-                                  onClick = {onClickTotalTalkList(SingleObject["keys"])} />
+                    {roomList.map((SingleObject:object) => (
+                        SingleObject["buyerNickname"] === info.nickname ?
+                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
+                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+                            :
+                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
+                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+
                     ))}
                 </div>
                 </div>
@@ -283,43 +286,27 @@ const KokiriTalk = () => {
                 <div className={styles.right_headerBox}>
                     <div className={styles.right_header}>
                         <div className={styles.right_header1}>
-                            <div className={styles.right_header1_1}> <TalkCard/> </div>
+                            <div className={styles.right_header1_1}> <TalkCard keys={key}/> </div>
                         </div>
                         <div className={styles.right_header2}>
-                            <p className={styles.delete}>삭제</p>
+                            <button className={styles.sideBtn} onClick={()=>{deleteRoom();setDel(prevState => prevState+1);}} >삭제</button>
                             <p> | </p>
-                            <p className={styles.block}>차단</p>
+                            <button className={styles.sideBtn}>차단</button>
                             <p> | </p>
-                            <p className={styles.inform}>신고</p>
+                            <button className={styles.sideBtn}>신고</button>
                         </div>
                     </div>
                     <div className={styles.right_header1_2}>{talkCard.opponentNickname}님과의 쪽지방입니다.</div>
                 </div>
                 <div className={styles.talkContainer2}>
-                    {contentInfo.map((a,i)=>(
-                       contentInfo[i].senderId === info.id?
-                            <div className={styles.receive}>
-                                <div className={styles.receiveTitle}>보낸 쪽지</div>
-                                <p className={styles.receiveContent}>{contentInfo[i].content}</p>
-                            </div>
-                            :
-                            <div className={styles.send}>
-                                <div className={styles.sendTitle}>받은 쪽지</div>
-                                <p className={styles.sendContent}>{contentInfo[i].content}</p>
-                            </div>
-                    ))
+                    {key===null?
+                        <></>:<Message keys={key} counts={count}/>
                     }
-                    {/*<div className={styles.send}>*/}
-                    {/*    <div className={styles.sendTitle}>받은 쪽지</div>*/}
-                    {/*    <p className={styles.sendContent}>{contentInfo[0].content}</p>*/}
-                    {/*</div>*/}
-                     {/*<Message keys={key}/>*/}
                 </div>
-                <div className = {styles.writeComments}>
-                    <input type={"text"} className={styles.writeInput} placeholder={"쪽지를 보내세요"} onChange={onChangeMessage}/>
-                    <HiPencil className={styles.pencilIcon} onClick={()=>{createMessageRoom();}} />
+                <div ref={scrollRef} className = {styles.writeComments}>
+                    <input type={"text"} className={styles.writeInput} placeholder={"쪽지를 보내세요"} value={input} onChange={onChangeMessage} />
+                    <HiPencil className={styles.pencilIcon}  onClick={()=>{createMessageRoom(); setCount(prevState => prevState+1); setInput("") }}  />
                 </div>
-                <button onClick={hi}>버튼</button>
             </div>
         </div>
     );

@@ -14,6 +14,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,11 +130,12 @@ public class Post extends BaseTimeEntity {
 
     public PostSearchResponseDto toSearchResponseDto(Long messageRoomCount, Long scrapCount, boolean isScrap) {
         return PostSearchResponseDto.builder()
+                // 쿼리DSL에서 localDateTime을 다루기가 생각보다 까다로워 아래와 같은 String 형식으로 다루겠다.
+                .createdTime(super.getCreateDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS")))
                 .productCategory(this.productCategory.getName())
                 .authorNickname(this.author.getNickname())
                 .wishCategory(this.wishCategory.getName())
                 .messageRoomCount(messageRoomCount)
-                .createdTime(super.getCreateDate())
                 .thumbnail(this.thumbnailImgPath)
                 .scrapCount(scrapCount)
                 .content(this.content)

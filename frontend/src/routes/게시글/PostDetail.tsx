@@ -16,13 +16,27 @@ import {useNavigate, useParams} from "react-router-dom";
 import {AiOutlineHeart, AiTwotoneHeart} from "react-icons/ai";
 import Card from "../../component/tradeCard/Card";
 import Message from "../../component/로그인 & 회원가입/Message";
-import {HiOutlineDotsVertical, HiPencil} from "react-icons/hi";
-import {CgMore, CgMoreO, CgMoreVertical, CgMoreVerticalAlt} from "react-icons/cg"
+import {HiPencil} from "react-icons/hi";
 import {resetCategory} from "../../store/categoryReducer";
 import {changeRefreshState} from "../../store/refreshReducer";
 import comments from "../../component/comments/Comments";
 import timeConvert from "../../utils/timeConvert";
 import {LocalDateTime} from "js-joda";
+import {userInfo} from "os";
+import internal from "stream";
+import useGeoLocation from "../../hooks/useGeolocation";
+import {
+    setProductImg,
+    setOpponetNick,
+    setTradeStatus,
+    setTitle,
+    setWishCategory,
+    setTradeCategory,
+    resetTalkCard,
+    setSellerId, setPostId, setBuyerId, setMessageRoomId
+} from "../../store/talkCardReducer";
+import {FALSE} from "sass";
+
 import CustomSwiper from "../../component/common/CustomSwiper";
 import tradeEx from "../../img/tradeEx.jpeg";
 import {prepend} from "list";
@@ -30,7 +44,7 @@ import Select from "react-select";
 
 
 const PostDetail = () => {
-
+    let existOrNot : boolean = false
     // const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
     // console.log("asdfasdfa",detail)
     const navigate = useNavigate();
@@ -114,11 +128,16 @@ const PostDetail = () => {
     const [isAuthorProps, setIsAuthorProps] = useState();
 
     const dispatch = useDispatch();
-    const store = useSelector((state: Rootstate) => state);
+    const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
+    const store = useSelector((state:Rootstate) => state);
+    const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
+
     //댓글 작성 후 input text 초기화를 위한 state
     //<input type={"text"} className={styles.writeCommentsInput} placeholder={"댓글을 작성하세요"} onChange={onChangeComment} value={commentText}/>
     //에서 value를 사용하기 위해선 onBlur가 아닌 onChange를 사용해야만 한다
     const [commentText, setCommentText] = useState("");
+    const [exist,setExist] = useState<boolean>(false);
+    // dispatch(resetTalkCard())
     const isAuthorTrue = ["수정", "|", "삭제"];
     const isAuthorFalse = ["신고"]
     const [scrapCountInReact, setScrapCountInReact] = useState<number>();
@@ -186,10 +205,77 @@ const PostDetail = () => {
     }
 
     //TODO:함민혁) 코끼리톡 구현할때 이걸 누르면 메시지룸이 생성되게 구현하고, navigate에서 매개변수를 전달해주면 될거야
-    //예시 : navigate('/signup/emailcheck', {state : userInfo}
-    const talkButton = () => {
-        navigate('/kokiritalk')
+    //예시 : navigate('/signup/emailcheck', {state : userInfo})
+    //여기서부터 함민혁이 추가한 코드
+    const talkButton = async () => {
+        ////해당 포스트를 들어올때마다 talklistreducer에 값을 다 넣어버리자
+        dispatch(setProductImg(post.images[0]))
+        dispatch(setTitle(post.title))
+        dispatch(setWishCategory(post.wishCategory))
+        dispatch(setTradeCategory(post.productCategory))
+        dispatch(setTradeStatus(post.tradeStatus))
+        dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
+        dispatch(setPostId(post.id))
+        if(info.id != post.userInfoWithAddress.userDetail.id){
+            dispatch(setOpponetNick(post.userInfoWithAddress.userDetail.nickname))
+        }
+        // await dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
+        await getMessageRoom()
+        navigate(`/kokiriTalk/${info.id}`, {state: {existOrNot}})
     }
+    async function getMessageRoom() {
+        try{
+            const res = await Api.get('/user/messageRooms');
+            // console.log("김동준전체조회",res.data)
+            const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
+            // console.log("김윤정전체조회",res2.data)
+            for(let i =0 ; i<res2.data.length;i++){
+                if(res2.data[i].buyerId === info.id)
+                {
+                    if(res2.data[i].postId === post.id){
+                        console.log("이미 방이 존재합니다.")
+                        dispatch(setMessageRoomId(res2.data[i].id))
+                        existOrNot = true
+                        break;
+                    }
+                    else {
+                        existOrNot = false
+                    }
+                }
+                else{
+                    try{
+                        const post_buyerId1 = {
+                            postId: post.id,
+                            buyerId: info.id
+                        }
+                        const res4 = await Api.post(`/post/${post.id}/messageRooms`,post_buyerId1);
+                        dispatch(setOpponetNick(res4.data.sellerNickName))
+                        await dispatch(setMessageRoomId(res4.data.id))
+                        await dispatch(setSellerId(res4.data.sellerId))
+                        dispatch(setPostId(res4.data.postId))
+                    }
+                    catch (err)
+                    {
+                        console.log(err)
+                        alert("메세지룸 추가 실패 in postdetail")
+                    }
+                }
+            }
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("메세지룸 조회 실패 in postdetail")
+        }
+    }
+    //여기까지 함민혁코드
+
+
+    // const onClickPost = (post) => {
+    //     console.log(post)
+    //     console.log(post.id)
+    //     navigate(`/post/${post.id}`)
+    // }
 
     useEffect(() => {
         getPost();
@@ -204,6 +290,7 @@ const PostDetail = () => {
 
     const [scrapSaved, setScrapSaved] = useState<boolean>();
     const onClickScrap = async () => {
+        setScrapSaved(prevState => !prevState);
 
         const userId: Number = store.userInfoReducer.id;
 
@@ -241,7 +328,6 @@ const PostDetail = () => {
             const res = await Api.post(`/post/${postId}/comments`, writeComment);
             console.log(writeComment);
             console.log(res);
-            dispatch(changeRefreshState());
             setRefreshFetch((prevState) => {
                 return {
                     ...prevState, commentChange: true

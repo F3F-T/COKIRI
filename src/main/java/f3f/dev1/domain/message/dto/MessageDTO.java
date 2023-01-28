@@ -7,6 +7,8 @@ import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.domain.member.model.Member;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 public class MessageDTO {
     @Builder
     @AllArgsConstructor
@@ -67,5 +69,7 @@ public class MessageDTO {
         private Long senderId;
         private Long receiverId;
         private Long messageRoomId;
+        private LocalDateTime createTime;
+
     }
 }

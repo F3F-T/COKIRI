@@ -44,6 +44,7 @@ import org.springframework.util.Assert;
 import java.util.ArrayList;
 import java.util.List;
 
+import static f3f.dev1.domain.message.dto.MessageDTO.*;
 import static f3f.dev1.domain.message.dto.MessageRoomDTO.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -94,13 +95,13 @@ public class MessageRoomServiceTest {
 
     @BeforeEach
     public void deleteAll() {
-        memberRepository.deleteAll();
-        postRepository.deleteAll();
         messageRepository.deleteAll();
-        categoryRepository.deleteAll();
+        messageRoomRepository.deleteAll();
         tradeRepository.deleteAll();
         scrapRepository.deleteAll();
-        tradeRepository.deleteAll();
+        postRepository.deleteAll();
+        categoryRepository.deleteAll();
+        memberRepository.deleteAll();
     }
 
     // 주소 오브젝트 생성
@@ -199,13 +200,18 @@ public class MessageRoomServiceTest {
         MessageRoomSaveRequest saveRequest = new MessageRoomSaveRequest(postId, buyerId);
         return saveRequest;
     }
-    private MessageDTO.MessageSaveRequest messageSaveRequest(String content, Long senderId, Long receiverId, Long postId, Long messageRoomId){
-        MessageDTO.MessageSaveRequest saveRequest = new MessageDTO.MessageSaveRequest(content, senderId, receiverId, postId, messageRoomId);
+    private MessageSaveRequest messageSaveRequest(String content, Long senderId, Long receiverId, Long postId, Long messageRoomId){
+        MessageSaveRequest saveRequest = new MessageSaveRequest(content, senderId, receiverId, postId, messageRoomId);
         return saveRequest;
     }
-    private MessageDTO.DeleteMessageRequest deleteMessageRequest(Long id, Long memberId, Long messageRoomId){
-        MessageDTO.DeleteMessageRequest deleteRequest = new MessageDTO.DeleteMessageRequest(id,memberId, messageRoomId);
+    private DeleteMessageRequest deleteMessageRequest(Long id, Long memberId, Long messageRoomId){
+        DeleteMessageRequest deleteRequest = new DeleteMessageRequest(id,memberId, messageRoomId);
         return deleteRequest;
+    }
+
+    private DeleteMessageRoomRequest deleteMessageRoomRequest(Long Id, Long memberId, Long postId){
+        DeleteMessageRoomRequest deleteMessageRoomRequest = new DeleteMessageRoomRequest(Id, memberId, postId);
+        return deleteMessageRoomRequest;
     }
 //---------------------------------------------messageRoom 생성 -----------------------------------------------------------------
     @Test
@@ -338,11 +344,11 @@ public class MessageRoomServiceTest {
         MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
         Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1, user2.getId()).getId();
 
-        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
+        MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
         Long messageId1 = messageService.createMessage(messageDTO1,user2.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
+        MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
         Long messageId2 = messageService.createMessage(messageDTO2, user2.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user2.getId(), post.getId(), msgRoomId);
+        MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user2.getId(), post.getId(), msgRoomId);
         Long messageId3 = messageService.createMessage(messageDTO3, admin.getId()).getId();
 
         assertThat(messageRoomRepository.findById(msgRoomId).get().getMessages().size()).isEqualTo(3);
@@ -385,21 +391,21 @@ public class MessageRoomServiceTest {
         MessageRoomSaveRequest messageRoomDTO3 = messageRoomSaveRequest(post2.getId(), admin.getId());
         Long msgRoomId3 = messageRoomService.createMessageRoom(messageRoomDTO3, admin.getId()).getId();
 
-        MessageDTO.MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
+        MessageSaveRequest messageDTO1 = messageSaveRequest("저기요 물건 교환 하고 싶어요", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
         Long messageId1 = messageService.createMessage(messageDTO1, user2.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
+        MessageSaveRequest messageDTO2 = messageSaveRequest("어떠세요?", user2.getId(), post.getAuthor().getId(), post.getId(), msgRoomId);
         Long messageId2 = messageService.createMessage(messageDTO2, user2.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user2.getId(), post.getId(), msgRoomId);
+        MessageSaveRequest messageDTO3 = messageSaveRequest("잠시만요", admin.getId(), user2.getId(), post.getId(), msgRoomId);
         Long messageId3 = messageService.createMessage(messageDTO3, admin.getId()).getId();
 
-        MessageDTO.MessageSaveRequest messageDTO4 = messageSaveRequest("그 양말 냄새 안나나요?", user.getId(), post.getAuthor().getId(), post.getId(), msgRoomId2);
+        MessageSaveRequest messageDTO4 = messageSaveRequest("그 양말 냄새 안나나요?", user.getId(), post.getAuthor().getId(), post.getId(), msgRoomId2);
         Long messageId4 = messageService.createMessage(messageDTO4, user.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO5 = messageSaveRequest("빨면 안나는데 솔직히 이제 다섯번만 더 빨면 없어질것같아요.", admin.getId(), user.getId(), post.getId(), msgRoomId2);
+        MessageSaveRequest messageDTO5 = messageSaveRequest("빨면 안나는데 솔직히 이제 다섯번만 더 빨면 없어질것같아요.", admin.getId(), user.getId(), post.getId(), msgRoomId2);
         Long messageId5 = messageService.createMessage(messageDTO5, admin.getId()).getId();
 
-        MessageDTO.MessageSaveRequest messageDTO6 = messageSaveRequest("그 책 그림 많고 안뚜거운가요?", admin.getId(), post2.getAuthor().getId(), post2.getId(), msgRoomId3);
+        MessageSaveRequest messageDTO6 = messageSaveRequest("그 책 그림 많고 안뚜거운가요?", admin.getId(), post2.getAuthor().getId(), post2.getId(), msgRoomId3);
         Long messageId6 = messageService.createMessage(messageDTO6, admin.getId()).getId();
-        MessageDTO.MessageSaveRequest messageDTO7 = messageSaveRequest("그림은 별로 없고 두께는 보통인데 묘사가 걍 미쳤어요. 그림 필요없음.ㅎ", user.getId(), admin.getId(), post2.getId(), msgRoomId3);
+        MessageSaveRequest messageDTO7 = messageSaveRequest("그림은 별로 없고 두께는 보통인데 묘사가 걍 미쳤어요. 그림 필요없음.ㅎ", user.getId(), admin.getId(), post2.getId(), msgRoomId3);
         Long messageId7 = messageService.createMessage(messageDTO7, user.getId()).getId();
 
         //given
@@ -455,5 +461,47 @@ public class MessageRoomServiceTest {
         //then
         assertThat(messageRoomService.ReadMessageRoomsByPostId(postId)).isEqualTo(3);
     }
+    //----------------------------------메시지룸 삭제---------------------------------------------
+//    @Test
+//    @DisplayName("메시지룸 삭제")
+//    public void deleteMessageRoomTest() throws Exception {
+//        //given
+//        MemberDTO.SignUpRequest signUpRequest1 = createSignUpRequest1();
+//        authService.signUp(signUpRequest1);
+//        Member admin = memberRepository.findByEmail(signUpRequest1.getEmail()).get();
+//
+//        MemberDTO.SignUpRequest signUpRequest2 = createSignUpRequest2();
+//        authService.signUp(signUpRequest2);
+//        Member user = memberRepository.findByEmail(signUpRequest2.getEmail()).get();
+//        MemberDTO.SignUpRequest signUpRequest3 = createSignUpRequest3();
+//        authService.signUp(signUpRequest3);
+//        Member user2 = memberRepository.findByEmail(signUpRequest3.getEmail()).get();
+//
+//
+//        CategoryDTO.CategorySaveRequest categoryDTO1 = createCategoryDto("도서", admin.getId(), 1L, null);
+//        Long cid1 = categoryService.createCategory(categoryDTO1);
+//        Category category1 = categoryRepository.findById(cid1).get();
+//        Category root = categoryRepository.findCategoryByName("root").get();
+//        CategoryDTO.CategorySaveRequest categoryDTO2 = createCategoryDto("주방", admin.getId(), 1L, root.getId());
+//        Long cid2 = categoryService.createCategory(categoryDTO2);
+//        Category category2 = categoryRepository.findById(cid2).get();
+//        PostDTO.PostSaveRequest postSaveRequest = createPostSaveRequest(admin, true, "도서", "도서");
+//        Long postId = postService.savePost(postSaveRequest, admin.getId());
+//        Post post = postRepository.findById(postId).get();
+//
+//        MessageRoomSaveRequest messageRoomDTO1 = messageRoomSaveRequest(post.getId(), user2.getId());
+//        Long msgRoomId = messageRoomService.createMessageRoom(messageRoomDTO1, user2.getId()).getId();
+//        MessageRoomSaveRequest messageRoomDTO2 = messageRoomSaveRequest(post.getId(), user.getId());
+//        Long msgRoomId2 = messageRoomService.createMessageRoom(messageRoomDTO2,user.getId()).getId();
+//        MessageRoomSaveRequest messageRoomDTO3 = messageRoomSaveRequest(post.getId(), user.getId());
+//        Long msgRoomId3 = messageRoomService.createMessageRoom(messageRoomDTO3, user.getId()).getId();
+//
+//        //given
+//        DeleteMessageRoomRequest delMsgRoomDto = deleteMessageRoomRequest(msgRoomId, user2.getId(), post.getId());
+//        String delMsg = messageRoomService.deleteMessageRoom(delMsgRoomDto, user2.getId());
+//
+//        //then
+//        assertThat(user2.getBuyingRooms().size()).isEqualTo(0);
+//    }
 
 }
