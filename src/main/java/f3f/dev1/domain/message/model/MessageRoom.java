@@ -39,11 +39,13 @@ public class MessageRoom extends BaseTimeEntity {
     @OneToMany(mappedBy = "messageRoom", fetch = FetchType.LAZY)
     private List<Message> messages = new ArrayList<>();
 
-    private boolean senderDelStatus;
-    private boolean receiverDelStatus;
+    //sender == 보내는 사람 == buyer
+    private boolean buyerDelStatus;
+    //receiver == 받는 사람 == seller
+    private boolean sellerDelStatus;
 
-    public void setSenderDelStatus(boolean senderDelStatus){ this.senderDelStatus = senderDelStatus; }
-    public void setReceiverDelStatus(boolean receiverDelStatus){this.receiverDelStatus = receiverDelStatus;}
+    public void setSenderDelStatus(boolean buyerDelStatus){ this.buyerDelStatus = buyerDelStatus; }
+    public void setReceiverDelStatus(boolean sellerDelStatus){this.sellerDelStatus = sellerDelStatus;}
     //생성할때!
     @Builder
     public MessageRoom(Long id, Post post, Member seller, Member buyer) {
@@ -51,8 +53,8 @@ public class MessageRoom extends BaseTimeEntity {
         this.post = post;
         this.seller = seller;
         this.buyer = buyer;
-        this.senderDelStatus = false;
-        this.receiverDelStatus = false;
+        this.buyerDelStatus = false;
+        this.sellerDelStatus = false;
     }
     public MessageRoomDTO.MessageRoomInfoDto toMessageRoomInfo(){
         return MessageRoomDTO.MessageRoomInfoDto.builder()
@@ -62,8 +64,8 @@ public class MessageRoom extends BaseTimeEntity {
                 .postId(this.post.getId())
                 .sellerId(this.seller.getId())
                 .buyerId(this.buyer.getId())
-                .senderDelStatus(this.senderDelStatus)
-                .receiverDelStatus(this.receiverDelStatus)
+                .buyerDelStatus(this.buyerDelStatus)
+                .sellerDelStatus(this.sellerDelStatus)
                 .createTime(super.getCreateDate())
                 .build();
     }
@@ -92,7 +94,7 @@ public class MessageRoom extends BaseTimeEntity {
                 .id(this.getId())
                 .PostTitle(this.post.getTitle())
                 .sellerNickname(this.seller.getNickname())
-                .senderDelStatus(this.isSenderDelStatus())
+                .buyerDelStatus(this.buyerDelStatus)
                 .createTime(super.getCreateDate())
                 .build();
     }
@@ -102,7 +104,7 @@ public class MessageRoom extends BaseTimeEntity {
                 .id(this.getId())
                 .PostTitle(this.post.getTitle())
                 .buyerNickname(this.buyer.getNickname())
-                .receiverDelStatus(this.isReceiverDelStatus())
+                .sellerDelStatus(this.sellerDelStatus)
                 .createTime(super.getCreateDate())
                 .build();
     }
