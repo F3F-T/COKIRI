@@ -1,4 +1,5 @@
 .forTrade{
+  height : 18.375rem;
   .postItem{
     //height: 17rem;
     border: 1px solid rgba(200, 200, 200);
@@ -16,14 +17,21 @@
     font-weight: bold;
     font-size: 1rem;
     overflow:hidden;
+    display: inline-block;
+
     text-overflow:ellipsis;
     white-space:nowrap;
     margin:0.3rem;
   }
   .postContent{
+    width : 15rem;
     text-align: left;
     font-weight: bold;
     color : gray;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display: inline-block;
+    white-space:nowrap;
     margin:0.3rem;
   }
   .detail{

@@ -141,6 +141,7 @@ const PostDetail = () => {
     const isAuthorTrue = ["수정", "|", "삭제"];
     const isAuthorFalse = ["신고"]
     const [scrapCountInReact, setScrapCountInReact] = useState<number>();
+    const [scrapSaved, setScrapSaved] = useState<boolean>();
 
     //select
     interface TradeStatus {
@@ -232,11 +233,11 @@ const PostDetail = () => {
             const res = await Api.patch(`/trade`,jsonObj);
 
             console.log(res)
-            alert("교환상태 변경")
+            // alert("교환상태 변경")
 
         } catch (err) {
             console.log(err)
-            alert("get 실패");
+            alert("교환상태 변경 실패");
         }
     }
 
@@ -324,9 +325,7 @@ const PostDetail = () => {
     }, [store.refreshReducer.commentChange])
 
 
-    const [scrapSaved, setScrapSaved] = useState<boolean>();
     const onClickScrap = async () => {
-        setScrapSaved(prevState => !prevState);
 
         const userId: Number = store.userInfoReducer.id;
 
@@ -507,26 +506,55 @@ const PostDetail = () => {
                         <div className={styles.postDetailSwapCategory}> {post.wishCategory}</div>
                     </div>
                     <div className = {styles.tradeStatusDiv}>
-                    <Select
-                        className={styles.tradeStatus}
-                        styles={{ // zIndex
-                            menu: provided => ({...provided, zIndex: 999})
-                        }}
-                        // If you don't need a state you can remove the two following lines value & onChange
-                        value={tradeState.selectedTradeStatus}
-                        onChange={(option: TradeStatus | null) => {
+                        {
+                            isAuthor ?
+                                (<>
+                                    <Select
+                                        className={styles.tradeStatus}
+                                        styles={{ // zIndex
+                                            menu: provided => ({...provided, zIndex: 999})
+                                        }}
+                                        // If you don't need a state you can remove the two following lines value & onChange
+                                        value={tradeState.selectedTradeStatus}
+                                        onChange={(option: TradeStatus | null) => {
 
-                            setTradeState({selectedTradeStatus: option});
-                            changeTradeStatus(option);
+                                            setTradeState({selectedTradeStatus: option});
+                                            changeTradeStatus(option);
 
-                        }}
-                        getOptionLabel={(category: TradeStatus) => category.name}
-                        getOptionValue={(category: TradeStatus) => category.name}
-                        options={tradeStatus}
-                        // isClearable={true}
-                        // backspaceRemovesValue={true}
-                        placeholder={"교환가능"}
-                    />
+                                        }}
+                                        getOptionLabel={(category: TradeStatus) => category.name}
+                                        getOptionValue={(category: TradeStatus) => category.name}
+                                        options={tradeStatus}
+                                        isSearchable={false}
+                                        isClearable={false}
+                                        backspaceRemovesValue={false}
+                                        placeholder={"교환가능"}
+                                    />
+                                </>)
+                                :
+                                <Select
+                                    className={styles.tradeStatus}
+                                    styles={{ // zIndex
+                                        menu: provided => ({...provided, zIndex: 999})
+                                    }}
+                                    // If you don't need a state you can remove the two following lines value & onChange
+                                    value={tradeState.selectedTradeStatus}
+                                    onChange={(option: TradeStatus | null) => {
+
+                                        setTradeState({selectedTradeStatus: option});
+                                        changeTradeStatus(option);
+
+                                    }}
+                                    isDisabled={true}
+                                    getOptionLabel={(category: TradeStatus) => category.name}
+                                    getOptionValue={(category: TradeStatus) => category.name}
+                                    options={tradeStatus}
+                                    isClearable={false}
+                                    isSearchable={false}
+                                    // backspaceRemovesValue={true}
+                                    placeholder={"교환가능"}
+                                />
+                        }
                     </div>
                     </div>
 

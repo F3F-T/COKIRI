@@ -3,6 +3,7 @@
     margin-top: 2rem;
     display: flex; /*내용물 가로 정렬*/
     flex-direction: row;
+    position: relative;
     /*border: 0.5px solid red;*/
 }
 .priceList {
@@ -15,7 +16,9 @@
     margin: 15px 6px 6px 6px;
 }
 .priceSet {
-    margin-left: 7.3rem;
+    position : absolute;
+    right : 0;
+    /*margin-left: 7.3rem;*/
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
