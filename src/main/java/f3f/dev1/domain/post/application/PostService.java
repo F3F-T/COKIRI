@@ -43,6 +43,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
@@ -112,29 +113,33 @@ public class PostService {
 
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     // controller에서 사용되지 않는 로직. 현재 테스트에서만 사용되고 있다.
+//    @Transactional(readOnly = true)
+//    public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
+//        // TODO 없애도 될 예외같음. 게시글이 없으면 빈 리스트를 반환해주면 된다.
+//        if(!postRepository.existsByAuthorId(authorId)) {
+//            throw new NotFoundPostListByAuthorException("해당 작성자의 게시글이 없습니다.");
+//        }
+//        List<PostInfoDtoWithTag> response = new ArrayList<>();
+//        List<Post> byAuthor = postRepository.findByAuthorId(authorId);
+//        for (Post post : byAuthor) {
+//            List<PostTag> postTags = postTagRepository.findByPost(post);
+//            List<String> tagNames = new ArrayList<>();
+//            for (PostTag postTag : postTags) {
+//                tagNames.add(postTag.getTag().getName());
+//            }
+//            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+//            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+//            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
+//            response.add(responseEach);
+//        }
+//        return response;
+//    }
+
     @Transactional(readOnly = true)
-    public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
-        // TODO 없애도 될 예외같음. 게시글이 없으면 빈 리스트를 반환해주면 된다.
-        if(!postRepository.existsByAuthorId(authorId)) {
-            throw new NotFoundPostListByAuthorException("해당 작성자의 게시글이 없습니다.");
-        }
-        List<PostInfoDtoWithTag> response = new ArrayList<>();
-        List<Post> byAuthor = postRepository.findByAuthorId(authorId);
-        for (Post post : byAuthor) {
-            List<PostTag> postTags = postTagRepository.findByPost(post);
-            List<String> tagNames = new ArrayList<>();
-            for (PostTag postTag : postTags) {
-                tagNames.add(postTag.getTag().getName());
-            }
-            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
-            response.add(responseEach);
-        }
-        return response;
+    public Page<GetUserPost> findPostByAuthorId(Long authorId, Pageable pageable) {
+        List<GetUserPost> collect = postRepository.getUserPostById(authorId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
+        return new PageImpl<>(collect);
     }
-
-
 
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Long currentMemberId, Pageable pageable) {

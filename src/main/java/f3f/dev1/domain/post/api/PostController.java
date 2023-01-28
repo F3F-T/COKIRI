@@ -1,5 +1,6 @@
 package f3f.dev1.domain.post.api;
 
+import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.postImage.application.PostImageService;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 
 @RestController
@@ -66,6 +68,11 @@ public class PostController {
             resultList = postService.findAll(currentMemberId, pageable);
         }
         return new ResponseEntity<>(resultList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/post/user/{memberId}")
+    public ResponseEntity<Page<GetUserPost>> getUserPostById(@PathVariable(name = "memberId") Long memberId, Pageable pageable) {
+        return ResponseEntity.ok(postService.findPostByAuthorId(memberId, pageable));
     }
 
     // 게시글 작성
