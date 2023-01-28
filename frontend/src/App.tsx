@@ -74,7 +74,7 @@ function App() {
 
                 {/*<Route path="/mypage/zzim" element={<Zzim/>} />*/}
 
-                <Route path="/kokiritalk" element={<KokiriTalk/>} />
+                <Route path="/kokiritalk/:id" element={<KokiriTalk/>} />
 
                 <Route path="/post/:id" element={<PostDetail/>}/>
                 <Route path="/upload" element={<PostUpload/>}/>

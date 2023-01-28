@@ -34,7 +34,6 @@
     margin-top: 1rem;
     font-size: 1rem;
     font-weight: bold;
-
 }
 
 .postTopAddress{
@@ -73,8 +72,12 @@
 }
 
 .postDetailInfo{
+    width: 25rem;
+    height: 23rem;
+    /*height : 22rem;*/
     margin-left: 2rem;
-    margin-right: 1rem;
+    /*margin-right: 1rem;*/
+    position: relative;
 
 }
 
@@ -95,18 +98,26 @@
 
 .postDetailInfo .postDetailContent{
     margin-top: 0.7rem;
-    font-size: 1rem;
-    margin-right: 3rem;
-    font-weight: bold;
+    font-size: 0.85rem;
+    /*margin-right: 1.8rem;*/
+    /*font-weight: bold;*/
+    white-space: pre-wrap;
 }
 
 .postDetailInfo .postDetailTag{
     color: blue;
+    position: absolute;
+    bottom: 0.5rem;
     margin-top: 0.7rem;
+    font-size: 1rem;
+    right : 0;
 }
 .postDetailSwapCategoryBox{
-    margin-top: 1.5rem;
+    /*margin-top: 1.5rem;*/
     display: flex;
+    position: absolute;
+    bottom: 0.5rem;
+    /*right:0;*/
 }
 .transfer{
     width: 2rem;
@@ -118,9 +129,14 @@
     font-size: 1.2rem;
 }
 
+.tradeAndTalk{
+
+}
+
 .postBottom{
     display: flex;
     justify-content: space-between;
+    position : relative;
 }
 .metaBox{
     margin-top:0.5rem;
@@ -163,6 +179,13 @@
     border: none;
     border-radius: 10px;
     height:2rem;
+}
+.tradeStatus{
+    border: none;
+    border-radius: 10px;
+    height:2rem;
+    position : absolute;
+    right : 0
 }
 .comments{
     border: 1px #e5e8eb solid ;

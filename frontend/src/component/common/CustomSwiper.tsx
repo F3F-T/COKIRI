@@ -21,7 +21,6 @@ const CustomSwiper = (imageProps) => {
     if (!imageProps.imageList) {
         return null;
     }
-    console.log(imageProps.imageList)
 
     SwiperCore.use([Navigation, Pagination, Autoplay]);
 

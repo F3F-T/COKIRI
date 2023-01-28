@@ -33,8 +33,6 @@ const initialUserAddressInfoState : UserAddressInfo = {
     longitude1:'',
     latitude2:'',
     longitude2:''
-
-
 }
 
 //state는 이 상태의 현재 상태 값을 의미한다
