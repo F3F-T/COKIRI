@@ -1,6 +1,7 @@
 import styles from "../../styles/talk/talkList.module.scss";
 import React from "react";
 import MyPage from "../MyPageSet";
+import {HiPencil} from "react-icons/hi";
 
 
 interface keyProps {
@@ -72,7 +73,9 @@ const Message = (key: keyProps) => {
                         <div className={styles.receiveTitle}>보낸 쪽지</div>
                         <p className={styles.receiveContent}>{singleMessage.slice(7,20)}</p>
                     </div>
+
             ))}
+
 
         </>
     )

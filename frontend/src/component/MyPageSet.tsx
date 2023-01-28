@@ -134,6 +134,7 @@ const MyPage = () =>  {
                 userId: userInfo.userId,
                 newNickname: userInfo.newNickname
             }
+
             const res = await Api.patch("/user/nickname", userInfo1);
             setNewNick(res.data.newNickname)
             dispatch(setUserNick(res.data.newNickname))
@@ -234,8 +235,8 @@ const MyPage = () =>  {
             const res = await Api.get('/logout');
             console.log(res);
             alert("로그아웃");
-            // dispatch(logoutToken());
-            // dispatch(logoutUserInfo());
+            dispatch(logoutToken());
+            dispatch(logoutUserInfo());
             dispatch(resetaddress1());
             dispatch(resetaddress2());
             navigate(`/`)
@@ -246,8 +247,6 @@ const MyPage = () =>  {
             alert("로그아웃 실패");
         }
     }
-
-
 
     // logOut()
     return (

@@ -33,6 +33,7 @@ import userAddressInfoReducer from "./store/userAddressInfoReducer";
 import RefreshReducer from "./store/refreshReducer";
 import PostQueryStringReducer from "./store/priceReducer";
 import PriceReducer from "./store/priceReducer";
+import talkListReducer from "./store/talkListReducer";
 
 /**
  * configureStore을 import해온다.
@@ -62,6 +63,7 @@ const rootReducer = combineReducers({
     userAddressInfoReducer: userAddressInfoReducer,
     refreshReducer : RefreshReducer,
     priceReducer : PriceReducer,
+    talkListReducer : talkListReducer
 });
 
 const persistedReducer = persistReducer(persistConfig,rootReducer);
