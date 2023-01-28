@@ -45,8 +45,16 @@ interface contentInfo2 {
 const KokiriTalk = () => {
     const navigate = useNavigate();
     const scrollRef = useRef();
+    const [tab1, setTab] = useState<string>('curr');
+    function setDealTab(tab) {
+        setTab(tab)
+        console.log(tab1)
+        // return tab
+    }
     const store = useSelector((state:Rootstate) => state);
     const [count,setCount] = useState(0)
+    const [click,setClick] = useState(0)
+
     const [del,setDel] = useState(0)
     const [key,setKey] = useState<number>(null)
     const {state} = useLocation();
@@ -262,7 +270,7 @@ const KokiriTalk = () => {
         return null
     }
 
-
+    console.log("tbbbbbb",tab1)
     return (
         <div className={styles.kokiritalk}>
             <div className={styles.left}>
@@ -270,12 +278,29 @@ const KokiriTalk = () => {
                 <div className={styles.left2}>
                 <div className={styles.talkContainer}>
                     {roomList.map((SingleObject:object) => (
-                        SingleObject["buyerNickname"] === info.nickname ?
-                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
-                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+
+                        SingleObject['messageRoomId'] === talkCard.id ?//눌렸냐
+                            SingleObject["buyerNickname"] === info.nickname ?
+                                // <>눌렸는데 구매자</>
+                                <div className={styles.wrapper} onClick={()=>{setDealTab('curr')}}>
+                                    <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
+                                              onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+                                </div>
+                                :
+                                // <>눌렸는데 판매자</>
+                                <div className={styles.wrapper}  onClick={()=>{setDealTab('curr')}}>
+                                    <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
+                                              onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+                                </div>
                             :
-                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
-                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+                            // <>안눌림</>
+                            SingleObject["buyerNickname"] === info.nickname ?
+                                    <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
+                                              onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+                                :
+                                // <>눌렸는데 판매자</>
+                                    <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
+                                              onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
 
                     ))}
                 </div>
