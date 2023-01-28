@@ -96,7 +96,7 @@ const TalkList = (props2: props) => {
         catch (err)
         {
             console.log(err)
-            alert("메세지룸 조회 실패 in Talklisg")
+            alert("메세지룸 조회 실패 in Talklist")
         }
     }
     return (

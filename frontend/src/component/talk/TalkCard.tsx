@@ -15,6 +15,7 @@ import {
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import Api from "../../utils/api";
+import {useNavigate} from "react-router-dom";
 
 
 
@@ -44,6 +45,7 @@ interface keyProps {
     keys: number;
 }
 const TalkCard= (key: keyProps) => {
+    const navigate = useNavigate();
     const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
     const dispatch = useDispatch();
     const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
@@ -89,9 +91,12 @@ const TalkCard= (key: keyProps) => {
             alert("메세지룸 조회 실패 in message")
         }
     }
+    const onClickPost = () => {
+        navigate(`/post/${talkCard.postId}`)
+    }
     return (
         <>
-                    <img className={styles.cardImage} src={talkCard.productImg}/>
+                    <img className={styles.cardImage} onClick={onClickPost} src={talkCard.productImg}/>
                     <div className={styles.productInfo}>
                      <p className={styles.tradeState}>{talkCard.tradeStatus}</p>
                      <p className={styles.cardTitle}> {talkCard.title} </p>

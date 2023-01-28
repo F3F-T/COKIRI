@@ -286,7 +286,7 @@ const KokiriTalk = () => {
                 <div className={styles.right_headerBox}>
                     <div className={styles.right_header}>
                         <div className={styles.right_header1}>
-                            <div className={styles.right_header1_1}> <TalkCard keys={key}/> </div>
+                            <div className={styles.right_header1_1}> <TalkCard keys={key} /> </div>
                         </div>
                         <div className={styles.right_header2}>
                             <button className={styles.sideBtn} onClick={()=>{deleteRoom();setDel(prevState => prevState+1);}} >삭제</button>
