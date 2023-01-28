@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo, useCallback} from 'react';
 import styles from "../../styles/trade/PostContainer.module.css"
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import myImage from "../../img/cokkiriLogo.png"
@@ -39,6 +39,7 @@ type filtertype = "recent" | "popular"
 interface postProps {
     categoryOption? : categoryOption,
     filterType? : filtertype,
+    searchOption? : string;
 }
 const PostContainer = (postProps : postProps) => {
     console.log(postProps.filterType);
@@ -46,6 +47,11 @@ const PostContainer = (postProps : postProps) => {
     console.log(postProps.categoryOption);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const params = useParams();
+    console.log(params);
+    //tagsearch에서 사용한 query string을 받아오기 위함
+    const queryString = window.location.search
+
     let wishCategory = "";
     let productCategory = "";
     let minPrice = "";
@@ -108,12 +114,23 @@ const PostContainer = (postProps : postProps) => {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try{
             //query string 날리기
-            const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=20&page=0`);
-            console.log(res);
-            console.log(res.data)
-            setPostList(prevState => {
-                return [...res.data.content];
-            })
+            if(queryString.length <1)
+            {
+                const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=20&page=0`);
+                console.log(res);
+                console.log(res.data)
+                setPostList(prevState => {
+                    return [...res.data.content];
+                })
+            }
+            else if (queryString.length > 1)
+            {
+                const res = await Api.get(`/post/tagSearch/${queryString}`);
+                console.log(res)
+                setPostList(prevState => {
+                    return [...res.data.content];
+                })
+            }
         }
         catch (err)
         {

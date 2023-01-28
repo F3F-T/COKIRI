@@ -122,7 +122,6 @@ const PostDetail = () => {
     const [post, setPost] = useState<PostType>(null)
     const [commentList, setCommentList] = useState<CommentType[]>(null)
     const [writeComment, setWriteComment] = useState<WriteCommentType>(null)
-    const [refreshFetch, setRefreshFetch] = useState({commentChange: false})
     // const [isAuthor, setIsAuthor] = useState<boolean>();
     let isAuthor;
     const [isAuthorProps, setIsAuthorProps] = useState();
@@ -363,11 +362,7 @@ const PostDetail = () => {
             const res = await Api.post(`/post/${postId}/comments`, writeComment);
             console.log(writeComment);
             console.log(res);
-            setRefreshFetch((prevState) => {
-                return {
-                    ...prevState, commentChange: true
-                }
-            })
+            dispatch(changeRefreshState());
             setCommentText("");
             alert("댓글 작성 성공")
         } catch (err) {
@@ -416,6 +411,8 @@ const PostDetail = () => {
     }
     // console.log(post)
     // console.log(post.images);
+    console.log("이거이거..")
+    console.log(store.refreshReducer.commentChange);
 
 
     //게시글 작성자 판단

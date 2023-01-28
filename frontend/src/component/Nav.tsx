@@ -38,27 +38,10 @@ const Nav1 = () => {
     }, [])
 
 
-    async function searchByTags(tag) {
-
-        //interceptor를 사용한 방식 (header에 token값 전달)
-        try{
-            const res = await Api.get(`/post/tagSearch?tags=${tag}`);
-            console.log(res)
-            navigate('/tagsearch');
-
-        }
-        catch (err)
-        {
-            console.log(err)
-            alert("실패") //
-        }
-
-
-    }
-
     const onClickSearch = () => {
         const tagString = tagSearch.join();
-        searchByTags(tagString);
+        navigate(`/tagsearch?tags=${tagString}`);
+
     }
 
     console.log(tagSearch)

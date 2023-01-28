@@ -53,7 +53,7 @@ const TagSearch = () => {
                                   }}>인기도순</button>
                     }
                 </div>
-                <PostContainer categoryOption = {"productCategory"} filterType={filterType}/>
+                <PostContainer searchOption={"tag"} filterType={filterType}/>
             </div>
         </div>
     );
