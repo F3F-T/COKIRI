@@ -64,6 +64,15 @@ public class MessageRoomService {
         if(trade.getTradeStatus() != TradeStatus.TRADABLE){
             throw new CanNotSendMessageByTradeStatus();
         }
+        //메시지룸 중복 생성 로직 추가
+        //메시지 룸은 buyer만 만들 수 있다.
+        //즉, post에서 senderId만 비교하면 될듯?
+        for(MessageRoom msgRoom : post.getMessageRooms()){
+            if (msgRoom.getBuyer().getId()==buyer.getId()){
+                MessageRoomDTO.MessageRoomInfoDto msgRoomInfo = msgRoom.toMessageRoomInfo();
+                return msgRoomInfo;
+            }
+        }
 
         MessageRoom messageRoom = saveRequest.toEntity(post, buyer);
         messageRoomRepository.save(messageRoom);
