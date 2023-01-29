@@ -102,6 +102,7 @@ const TalkList = (props2: props) => {
             const res = await Api.get('/user/messageRooms');
         }
         catch (err)
+
         {
             console.log(err)
             alert("메세지룸 조회 실패 in Talklist")
