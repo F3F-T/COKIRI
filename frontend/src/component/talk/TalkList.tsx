@@ -95,6 +95,7 @@ const TalkList = (props2: props) => {
         }
     }, [realCount])
 
+
     async function getMessageRoom() {
         try{
 
