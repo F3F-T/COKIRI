@@ -89,8 +89,6 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(postTag.tag.name.in(tagNames))
                 .groupBy(post.id)
                 .having(post.id.count().eq((long) tagNames.size()))
-//                .orderBy(post.id.desc())
-                // 동적 sorting, 테스트 미실시
                 .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -102,7 +100,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
     }
 
 //    @Override
-//    public Page<PostSearchResponseDto> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Long currentMemberId, Pageable pageable) {
+//    public Page<PostSearchResponseDto> findPostDTOByConditionsWIthQ(SearchPostRequestExcludeTag requestExcludeTag, Long currentMemberId, Pageable pageable) {
 //
 //        StringTemplate stringDate = Expressions.stringTemplate(
 //                "DATE_FORMAT({0},{1})", post._super.createDate, ConstantImpl.create("%Y-%m-%d"));
@@ -116,18 +114,25 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 //                        post.productCategory.name,
 ////                        post._super.createDate,
 //                        stringDate,
-//                        post.messageRooms.size().count(),
+//                        messageRoom.id.count(),
 //                        post.wishCategory.name,
+//                        // 아래와 같은 형태에서 caseBuilder에는 동적 쿼리를 적용할 수 없다.
 //                        new CaseBuilder().when(memberFilter(currentMemberId))
 //                            .then(true)
 //                            .otherwise(false),
-//                        post.scrapPosts.size().count(),
+//                        scrap.id.count(),
 //                        post.price
 //                        ))
 //                .from(post)
 //                .leftJoin(post.scrapPosts, scrapPost)
-//                .where(scrapPost.post.id.eq(post.id))
+////                .where(scrapPost.post.id.eq(post.id))
+////                .on(scrapPost.post.id.eq(post.id))
 //                .leftJoin(scrapPost.scrap, scrap)
+//                .where(scrapPost.scrap.id.eq(scrap.id))
+////                .on(scrapPost.scrap.id.eq(scrap.id))
+//                .leftJoin(post.messageRooms, messageRoom)
+//                .where(messageRoom.post.id.eq(post.id))
+////                .on(messageRoom.post.id.eq(post.id))
 //                .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
 //                        wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
 //                        priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
