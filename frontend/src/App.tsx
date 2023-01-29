@@ -66,7 +66,7 @@ function App() {
                 <Route path="/tagsearch" element={<TagSearch/>} />
 
 
-                <Route path="/mypage" element={<MyPageSet/>} >
+                <Route path="/mypage/:id" element={<MyPageSet/>} >
                     <Route path="" element={<MyPage/>}/>
                     <Route path="zzim" element={<Zzim/>}/>
                 </Route>
