@@ -150,7 +150,7 @@ const PostContainer = (postProps : postProps) => {
      * 중요) postList를 async로 받긴 하지만 받아오는 시간 전까지는 postList가 null이기 때문에 밑에있는 render 에서 postList.map 이 null을 접근하게 돼서 오류가 발생하고, 켜지지 않는다
      * 이렇게 예외처리를 꼭 해야한다.
      */
-
+// 
     if (!postList) {
         return null
     }
