@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-@EnableCaching
+//@EnableCaching
 @EnableJpaAuditing
 @SpringBootApplication
 public class Application {

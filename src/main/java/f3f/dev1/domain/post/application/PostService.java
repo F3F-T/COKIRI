@@ -138,15 +138,16 @@ public class PostService {
 //        return response;
 //    }
 
-    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
+//    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
     @Transactional(readOnly = true)
     public Page<GetUserPost> findPostByAuthorId(Long authorId, Pageable pageable) {
         List<GetUserPost> collect = postRepository.getUserPostById(authorId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
         return new PageImpl<>(collect);
     }
 
-    // TODO key값에 null이 들어가도 되나??
-    @Cacheable(value = POST_LIST_WITHOUT_TAG, key = "#currentMemberId + '_' + #request.productCategory + '_' + #request.wishCategory + '_' + #request.minPrice + '_' + #request.maxPrice")
+    // TODO 고려해야할 것 : 캐싱 동기화(sync), 비회면 조건부 캐싱
+    // + 캐시 만료, 삭제 시점
+//    @Cacheable(value = POST_LIST_WITHOUT_TAG, key = "#request.productCategory + '_' + #request.wishCategory + '_' + #request.minPrice + '_' + #request.maxPrice")
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag request, Long currentMemberId, Pageable pageable) {
         List<PostSearchResponseDto> list = new ArrayList<>();
@@ -181,7 +182,7 @@ public class PostService {
 //        return postDTOByConditions;
 //    }
 
-
+//    @Cacheable(value = POST_LIST_WITH_TAG, key = "")
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, Pageable pageable) {
         Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
@@ -360,5 +361,7 @@ public class PostService {
         postRepository.delete(post);
         return "DELETE";
     }
+
+//    public String removePostWithoutTagCache()
 
 }
