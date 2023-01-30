@@ -32,8 +32,10 @@ import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.model.Trade;
+import f3f.dev1.global.common.constants.RedisCacheConstants;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +52,7 @@ import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static f3f.dev1.domain.postImage.dto.PostImageDTO.*;
 import static f3f.dev1.domain.trade.dto.TradeDTO.*;
+import static f3f.dev1.global.common.constants.RedisCacheConstants.*;
 
 @Service
 @Validated
@@ -135,16 +138,19 @@ public class PostService {
 //        return response;
 //    }
 
+    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
     @Transactional(readOnly = true)
     public Page<GetUserPost> findPostByAuthorId(Long authorId, Pageable pageable) {
         List<GetUserPost> collect = postRepository.getUserPostById(authorId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
         return new PageImpl<>(collect);
     }
 
+    // TODO key값에 null이 들어가도 되나??
+    @Cacheable(value = POST_LIST_WITHOUT_TAG, key = "#currentMemberId + '_' + #request.productCategory + '_' + #request.wishCategory + '_' + #request.minPrice + '_' + #request.maxPrice")
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Long currentMemberId, Pageable pageable) {
+    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag request, Long currentMemberId, Pageable pageable) {
         List<PostSearchResponseDto> list = new ArrayList<>();
-        Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
+        Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(request, pageable);
         // 조회하는 사용자가 로그인된 회원인 경우
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
