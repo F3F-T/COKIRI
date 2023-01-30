@@ -84,7 +84,22 @@ public class MessageRoomDTO {
         private boolean buyerDelStatus;
         private boolean sellerDelStatus;
         private LocalDateTime createTime;
-        //private List<Message> messages;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UpdateMessageRoomInfoDto{
+        private Long id;
+        private String sellerNickName;
+        private String buyerNickName;
+        private Long postId;
+        private Long sellerId;
+        private Long buyerId;
+        private boolean buyerDelStatus;
+        private boolean sellerDelStatus;
+        private LocalDateTime updateTime;
 
     }
     //삭제가 해당 멤버에 맞게 하나만 나옴 -> 프론트가 편할듯

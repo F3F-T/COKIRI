@@ -67,10 +67,16 @@ public class MessageRoomService {
         //메시지룸 중복 생성 로직 추가
         //메시지 룸은 buyer만 만들 수 있다.
         //즉, post에서 senderId만 비교하면 될듯?
-        for(MessageRoom msgRoom : post.getMessageRooms()){
-            if (msgRoom.getBuyer().getId()==buyer.getId()){
-                MessageRoomDTO.MessageRoomInfoDto msgRoomInfo = msgRoom.toMessageRoomInfo();
-                return msgRoomInfo;
+        //TODO query로 보내는 거랑 시간 비교해보기 -> 근데 이건 메시지룸 수가 많아졌을 때라서 고도화때?ㅎ
+        if(!post.getMessageRooms().isEmpty()) {
+            for (MessageRoom msgRoom : post.getMessageRooms()) {
+                if (msgRoom.getBuyer().getId().equals(buyer.getId()) && msgRoom.isBuyerDelStatus()==false) {
+                    MessageRoomDTO.MessageRoomInfoDto msgRoomInfo = msgRoom.toMessageRoomInfo();
+                    return msgRoomInfo;
+                }
+//                  else if (msgRoom.getBuyer().getId().equals(buyer.getId()) && msgRoom.isBuyerDelStatus()==true) {
+//                   reCreateMessageRoom(msgRoom);
+//                }
             }
         }
 
@@ -86,6 +92,12 @@ public class MessageRoomService {
 
         return messageRoomInfoDto;
     }
+
+//    @Transactional
+//    public MessageRoomDTO.UpdateMessageRoomInfoDto reCreateMessageRoom(MessageRoom messageRoom){
+//        MessageRoomDTO.UpdateMessageRoomInfoDto updateMessageRoomInfoDto = messageRoom.toUpdateMessageRoomInfo();
+//        return updateMessageRoomInfoDto;
+//    }
 
     //채팅방 클릭할 때, 조회 (채팅창은 멤버에서 관리, 포스트에서 열어볼 수 없음)
     //아이디만 가져와야되나?0 이거 메시지에 들어가야되나? 싹 다 갈아
@@ -136,7 +148,7 @@ public class MessageRoomService {
     }
 
 
-//    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)--------------------------------------------------
 //    public List<MessageRoomInfoWithOneDelStatus> ReadMessageRoomsByUserId(Long memberId, Long currentMemberId){
 //        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
 //        if(!memberId.equals(currentMemberId)){
@@ -157,7 +169,7 @@ public class MessageRoomService {
 ////        totalMsgRoom.addAll(member.getSellingRooms());
 //
 //        return totalMsgRoomDtoList;
-//    }
+//    }--------------------------------------------
 
 
     @Transactional(readOnly = true)

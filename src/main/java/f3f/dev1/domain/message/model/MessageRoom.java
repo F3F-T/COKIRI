@@ -69,7 +69,22 @@ public class MessageRoom extends BaseTimeEntity {
                 .createTime(super.getCreateDate())
                 .build();
     }
-    // 철웅 추가
+
+    public MessageRoomDTO.UpdateMessageRoomInfoDto toUpdateMessageRoomInfo(){
+        return MessageRoomDTO.UpdateMessageRoomInfoDto.builder()
+                .id(this.getId())
+                .sellerNickName(this.seller.getNickname())
+                .buyerNickName(this.buyer.getNickname())
+                .postId(this.post.getId())
+                .sellerId(this.seller.getId())
+                .buyerId(this.buyer.getId())
+                .buyerDelStatus(this.buyerDelStatus)
+                .sellerDelStatus(this.sellerDelStatus)
+                .updateTime(super.getModifiedDate())
+                .build();
+    }
+
+    // 철웅 추가-------------------------------------------------------
     public MessageRoomDTO.MessageRoomInfoWithOneDelStatus toMessageRoomInfoWithOneDelStatus(Member member, boolean delStatus) {
         return MessageRoomDTO.MessageRoomInfoWithOneDelStatus.builder()
                 .id(this.id)
@@ -78,6 +93,7 @@ public class MessageRoom extends BaseTimeEntity {
                 .delStatus(delStatus)
                 .build();
     }
+    //--------------------------------------------------------
 
 //    public MessageRoomDTO.MessageRoomInfoWithOneDelStatus toMessageRoomInfoWithOneDelStatus(){
 //        return MessageRoomDTO.MessageRoomInfoWithOneDelStatus.builder()
