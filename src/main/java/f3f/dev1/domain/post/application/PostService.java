@@ -35,10 +35,12 @@ import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.common.constants.RedisCacheConstants;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -138,7 +140,7 @@ public class PostService {
 //        return response;
 //    }
 
-//    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
+    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
     @Transactional(readOnly = true)
     public Page<GetUserPost> findPostByAuthorId(Long authorId, Pageable pageable) {
         List<GetUserPost> collect = postRepository.getUserPostById(authorId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
@@ -147,7 +149,8 @@ public class PostService {
 
     // TODO 고려해야할 것 : 캐싱 동기화(sync), 비회면 조건부 캐싱
     // + 캐시 만료, 삭제 시점
-//    @Cacheable(value = POST_LIST_WITHOUT_TAG, key = "#request.productCategory + '_' + #request.wishCategory + '_' + #request.minPrice + '_' + #request.maxPrice")
+    // pageable 관련 key값은 현재 페이지 수만 추가해뒀다. 각 페이지마다 보여주는 데이터의 수가 같아야만 한다.
+    @Cacheable(value = POST_LIST_WITHOUT_TAG, key = "#request.productCategory + '_' + #request.wishCategory + '_' + #request.minPrice + '_' + #request.maxPrice + '_' + 'p' + #pageable.getPageNumber()")
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag request, Long currentMemberId, Pageable pageable) {
         List<PostSearchResponseDto> list = new ArrayList<>();
@@ -182,7 +185,8 @@ public class PostService {
 //        return postDTOByConditions;
 //    }
 
-//    @Cacheable(value = POST_LIST_WITH_TAG, key = "")
+    // tagNames 리스트는 어떻게 key로 바꿔서 캐싱하지??
+//    @Cacheable(value = POST_LIST_WITH_TAG, key = "#tagNames + '_' + 'p' + #pageable.getPageNumber()")
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, Pageable pageable) {
         Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
@@ -362,6 +366,22 @@ public class PostService {
         return "DELETE";
     }
 
-//    public String removePostWithoutTagCache()
+    // 캐시 삭제 스케쥴러 등록
+
+    // 고민이 된다. tag 없이 조회한 모든 게시글 캐시가 3초 단위로 다 지워지는데, 더 나은 방법이 있을 것만 같은 느낌이다.
+    @CacheEvict(value = POST_LIST_WITHOUT_TAG, allEntries = true)
+    @Scheduled(fixedDelay = 5 * 1000)   // 3초마다 호출
+    public void removePostWithoutTagCache() {
+    }
+
+    @CacheEvict(value = POST_LIST_WITH_TAG, allEntries = true)
+    @Scheduled(fixedDelay = 5 * 1000)   // 3초마다 호출
+    public void removePostWithTagCache() {
+    }
+
+    @CacheEvict(value = AUTHOR_POST_LIST, allEntries = true)
+    @Scheduled(fixedDelay = 5 * 1000)   // 3초마다 호출
+    public void removeAuthorPostListCache() {
+    }
 
 }
