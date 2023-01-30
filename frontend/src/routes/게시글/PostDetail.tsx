@@ -41,6 +41,7 @@ import CustomSwiper from "../../component/common/CustomSwiper";
 import tradeEx from "../../img/tradeEx.jpeg";
 import {prepend} from "list";
 import Select from "react-select";
+import {ClipLoader} from "react-spinners";
 
 
 const PostDetail = () => {
@@ -604,6 +605,7 @@ const PostDetail = () => {
                 <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
             </div>
         </div>
+
 
 
     );

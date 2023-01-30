@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo, useCallback} from 'react';
+import React, {useState, useEffect, useMemo, useCallback, useRef} from 'react';
 import styles from "../../styles/trade/PostContainer.module.css"
 import {useNavigate, useParams} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
@@ -18,31 +18,36 @@ import Api from "../../utils/api";
 import {setToken} from "../../store/jwtTokenReducer";
 import {setUserInfo} from "../../store/userInfoReducer";
 import nav from "../Nav";
+import {ClipLoader, PacmanLoader, RingLoader} from "react-spinners";
+import Loading from "../common/Loading";
+import {current} from "@reduxjs/toolkit";
 
 interface PostType {
-    id? : number;
-    title? : string;
-    content? : string;
-    tradeEachOther? : boolean;
-    authorNickname? : string;
-    wishCategory? : string;
-    productCategory? : string;
-    tradeStatus? : string;
-    tagNames? : string[];
-    scrapCount? : number;
-    messageRoomCount? : number;
+    id?: number;
+    title?: string;
+    content?: string;
+    tradeEachOther?: boolean;
+    authorNickname?: string;
+    wishCategory?: string;
+    productCategory?: string;
+    tradeStatus?: string;
+    tagNames?: string[];
+    scrapCount?: number;
+    messageRoomCount?: number;
     thumbnail?: string;
 }
 
 type categoryOption = "wishCategory" | "productCategory" | "both"
 type filtertype = "recent" | "popular"
+
 interface postProps {
-    categoryOption? : categoryOption,
-    filterType? : filtertype,
-    searchOption? : string;
+    categoryOption?: categoryOption,
+    filterType?: filtertype,
+    searchOption?: string;
 }
-const PostContainer = (postProps : postProps) => {
-    const store = useSelector((state:Rootstate) => state);
+
+const PostContainer = (postProps: postProps) => {
+    const store = useSelector((state: Rootstate) => state);
 
     console.log(postProps.filterType);
 
@@ -61,90 +66,94 @@ const PostContainer = (postProps : postProps) => {
     let maxPrice = "";
     let sortType;
 
-    const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
+    const detail = useSelector((state: Rootstate) => {
+        return state.postDetailReducer
+    })
 
 
-    const [postList,setPostList] = useState<PostType[]>(null)
-    const [loading,setLoading] = useState(false);
+    const [postList, setPostList] = useState<PostType[]>(null)
+    const [loading, setLoading] = useState(false);
 
-    if(postProps.categoryOption === "wishCategory")
-    {
+    if (postProps.categoryOption === "wishCategory") {
         wishCategory = store.categoryReducer.category;
-    }
-    else if(postProps.categoryOption === "productCategory")
-    {
+    } else if (postProps.categoryOption === "productCategory") {
         productCategory = store.categoryReducer.category;
-    }
-    else if(postProps.categoryOption === "both")
-    {
+    } else if (postProps.categoryOption === "both") {
         wishCategory = store.categoryReducer.category;
         productCategory = store.categoryReducer.category;
     }
 
-    if(wishCategory === "전체")
-    {
+    if (wishCategory === "전체") {
         wishCategory = "";
     }
 
-    if(productCategory === "전체")
-    {
+    if (productCategory === "전체") {
         productCategory = "";
         console.log(store.priceReducer.maxPrice);
         console.log(store.priceReducer.minPrice);
     }
 
-    if(store.priceReducer.minPrice !=null)
-    {
+    if (store.priceReducer.minPrice != null) {
         minPrice = store.priceReducer.minPrice;
     }
 
-    if(store.priceReducer.maxPrice !=null)
-    {
+    if (store.priceReducer.maxPrice != null) {
         maxPrice = store.priceReducer.maxPrice;
     }
     //최신순 필터링
-    if(postProps.filterType === "recent")
-    {
+    if (postProps.filterType === "recent") {
         sortType = `createDate,DESC`;
     }
     //인기순 필터링 : scrap 순 -> messageRoom 순 -> post ID 역순(최신순)
-    else if(postProps.filterType === "popular")
-    {
+    else if (postProps.filterType === "popular") {
         sortType = `scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC`;
     }
+
     async function getPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
-        try{
+        try {
             //query string 날리기
-            if(queryString.length <1)
-            {
+            if (queryString.length < 1) {
                 const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=20&page=0`);
                 console.log(res);
                 console.log(res.data)
                 setPostList(prevState => {
                     return [...res.data.content];
                 })
-            }
-            else if (queryString.length > 1)
-            {
+            } else if (queryString.length > 1) {
                 const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
                 console.log(res)
                 setPostList(prevState => {
                     return [...res.data.content];
                 })
             }
-        }
-        catch (err)
-        {
+        } catch (err) {
             console.log(err)
             alert("get 실패");
         }
     }
+    // const target = useRef(null);
+    //
+    // useEffect(() => {
+    //     observer.observe(target.current);
+    // }, []);
+    //
+    // const options = {
+    //     threshold: 1.0,
+    // };
+    //
+    // const callback = () => {
+    //     target.current.innerText += "관측되었습니다";
+    // };
+    //
+    // const observer = new IntersectionObserver(callback, options);
+    //
+
 
     // getPostList();
-    useEffect(()=>{
+    useEffect(() => {
         getPostList();
-    },[wishCategory,productCategory,minPrice,maxPrice,postProps.filterType,store.refreshReducer.postChange])
+    }, [wishCategory, productCategory, minPrice, maxPrice, postProps.filterType, store.refreshReducer.postChange])
 
     /**
      * 중요) postList를 async로 받긴 하지만 받아오는 시간 전까지는 postList가 null이기 때문에 밑에있는 render 에서 postList.map 이 null을 접근하게 돼서 오류가 발생하고, 켜지지 않는다
@@ -152,8 +161,11 @@ const PostContainer = (postProps : postProps) => {
      */
 //
     if (!postList) {
-        return null
+        return <Loading/>
     }
+
+
+
 
     const onClickPost = (post) => {
         console.log(post)
@@ -161,14 +173,21 @@ const PostContainer = (postProps : postProps) => {
         navigate(`/post/${post.id}`)
     }
 
-        return (
-        <div className={styles.postContainer}>
-            {
-                postList.map((post)=>(
-                    <Card key = {post.id} className={"forTrade"} like={post.scrapCount} postTitle={post.title} postContent={post.content} wishCategory={post.wishCategory} messageRoomCount={post.messageRoomCount}
-                          onClick={() => {onClickPost(post)}} thumbnail={post.thumbnail}/>
-                ))
-            }
+    return (
+        <div>
+            <div className={styles.postContainer}>
+                {
+                    postList.map((post) => (
+                        <Card key={post.id} className={"forTrade"} like={post.scrapCount} postTitle={post.title}
+                              postContent={post.content} wishCategory={post.wishCategory}
+                              messageRoomCount={post.messageRoomCount}
+                              onClick={() => {
+                                  onClickPost(post)
+                              }} thumbnail={post.thumbnail}/>
+                    ))
+                }
+
+            </div>
         </div>
     );
 }
