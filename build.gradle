@@ -90,7 +90,7 @@ bootJar { // SpringBoot 1.5 이하일 경우 jar
 // querydsl에서 사용할 경로 설정
 def querydslDir = "$buildDir/generated/querydsl"
 // JPA 사용 여부와 사용할 경로를 설정
-querydsl {
+4querydsl {
     jpa = true
     querydslSourcesDir = querydslDir
 }
