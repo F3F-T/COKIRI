@@ -185,8 +185,7 @@ public class PostService {
 //        return postDTOByConditions;
 //    }
 
-    // tagNames 리스트는 어떻게 key로 바꿔서 캐싱하지??
-//    @Cacheable(value = POST_LIST_WITH_TAG, key = "#tagNames + '_' + 'p' + #pageable.getPageNumber()")
+    @Cacheable(value = POST_LIST_WITH_TAG, keyGenerator = "customKeyGenerator")
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, Pageable pageable) {
         Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
@@ -232,6 +231,7 @@ public class PostService {
         }
 
         // 어쩔 수 없이 세션에서 받아온 현재 유저의 엔티티를 찾는 쿼리를 한번 날려야겠다.
+        // 비회원 defensive 한번 걸어주자. 오류뜸
         Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), id);
         SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, isScrap);
@@ -370,17 +370,17 @@ public class PostService {
 
     // 고민이 된다. tag 없이 조회한 모든 게시글 캐시가 3초 단위로 다 지워지는데, 더 나은 방법이 있을 것만 같은 느낌이다.
     @CacheEvict(value = POST_LIST_WITHOUT_TAG, allEntries = true)
-    @Scheduled(fixedDelay = 5 * 1000)   // 3초마다 호출
+    @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
     public void removePostWithoutTagCache() {
     }
 
     @CacheEvict(value = POST_LIST_WITH_TAG, allEntries = true)
-    @Scheduled(fixedDelay = 5 * 1000)   // 3초마다 호출
+    @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
     public void removePostWithTagCache() {
     }
 
     @CacheEvict(value = AUTHOR_POST_LIST, allEntries = true)
-    @Scheduled(fixedDelay = 5 * 1000)   // 3초마다 호출
+    @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
     public void removeAuthorPostListCache() {
     }
 
