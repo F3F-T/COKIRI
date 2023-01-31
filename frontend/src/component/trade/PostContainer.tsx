@@ -106,7 +106,7 @@ const PostContainer = (postProps: postProps) => {
                     return [...prevState,...res.data.content];
                 })
             } else if (queryString.length > 1) {
-                const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page={page}`);
+                const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
                 console.log(res)
                 setPostList(prevState => {
                     return [...prevState,...res.data.content];

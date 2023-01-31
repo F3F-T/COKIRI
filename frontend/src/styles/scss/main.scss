@@ -3,6 +3,9 @@ $tag-bg                  : #E67A9A;
 $tag-text-color          : #FFF;
 $placeholder-color : gray;
 
+.tagify__tag-text, .tagify__input {
+  white-space: nowrap !important;
+}
 //$tags-border-color       : #DDD !default;
 //$tags-hover-border-color : #CCC !default;
 //$tags-focus-border-color : #3595f6 !default;

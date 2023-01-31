@@ -138,3 +138,21 @@
     height: 36px;
     margin-right: 0.5rem;
 }
+
+.customLook{
+    width : 30rem;
+    height: 2.7rem;
+
+    overflow: auto !important;
+    flex-wrap: unset !important;
+
+    font-size: 1rem;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    text-overflow: ellipsis;
+}
+
+
+.customLook::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+}

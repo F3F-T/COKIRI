@@ -48,6 +48,12 @@ const Nav1 = () => {
 
     }
 
+    const settings = {
+        // maxTags : 3,
+        delimiters: ",|\n|\r"
+        // pattern : /^.{0,9}$/,
+    }
+
     console.log(tagSearch)
 
     return (
@@ -62,6 +68,8 @@ const Nav1 = () => {
                     <Tags
                         className={styles.customLook}
                         placeholder="해시태그를 적고 엔터를 눌러주세요."
+                        settings={settings}
+
                         //여기서 자동완성을 설정할수있음, 추후에 서버에서 tag 리스트를 가져와서 넣으면 될듯
                         whitelist={["스팸","식품","과일존맛","신상품","스팸클래식","이게자동완성이라는건데요"]}
                         // defaultValue="a,b,c"
