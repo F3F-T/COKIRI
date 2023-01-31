@@ -21,6 +21,8 @@ import nav from "../Nav";
 import {ClipLoader, PacmanLoader, RingLoader} from "react-spinners";
 import Loading from "../common/Loading";
 import {current} from "@reduxjs/toolkit";
+import { useInView } from 'react-intersection-observer';
+
 
 interface PostType {
     id?: number;
@@ -37,6 +39,17 @@ interface PostType {
     thumbnail?: string;
 }
 
+interface Page{
+    empty : boolean;
+    first : boolean;
+    last : boolean;
+    number : number;
+    numberOfElements: number;
+    size : number;
+    totalElements : number;
+    totalPages : number;
+}
+
 type categoryOption = "wishCategory" | "productCategory" | "both"
 type filtertype = "recent" | "popular"
 
@@ -49,16 +62,11 @@ interface postProps {
 const PostContainer = (postProps: postProps) => {
     const store = useSelector((state: Rootstate) => state);
 
-    console.log(postProps.filterType);
-
-    console.log(postProps.categoryOption);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const params = useParams();
-    console.log(params);
     //tagsearch에서 사용한 query string을 받아오기 위함
     const queryString = window.location.search
-    console.log(store.refreshReducer.postChange);
 
     let wishCategory = "";
     let productCategory = "";
@@ -72,7 +80,60 @@ const PostContainer = (postProps: postProps) => {
 
 
     const [postList, setPostList] = useState<PostType[]>(null)
+    const [pageInfo,setPageInfo] = useState<Page>(null)
     const [loading, setLoading] = useState(false);
+    let page;
+
+    //무한 스크롤 구현
+    // const loadingRef = useRef();
+    const { ref, inView, entry } = useInView({
+        /* Optional options */
+        threshold: 0,
+    });
+
+
+    async function getMorePostList(pages) {
+        //interceptor를 사용한 방식 (header에 token값 전달)
+        try {
+            //query string 날리기
+            if (queryString.length < 1) {
+                const currentPage = pageInfo.number;
+
+                const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=8&page=${currentPage +1}`);
+                console.log(res);
+                console.log(res.data)
+                setPostList(prevState => {
+                    return [...prevState,...res.data.content];
+                })
+            } else if (queryString.length > 1) {
+                const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page={page}`);
+                console.log(res)
+                setPostList(prevState => {
+                    return [...prevState,...res.data.content];
+                })
+            }
+        } catch (err) {
+            console.log(err)
+            alert("get 실패");
+        }
+    }
+
+    useEffect(()=>{
+        if(inView)
+        {
+            page = page + 1;
+            console.log(page);
+            console.log("스크롤의 끝입니다")
+            getMorePostList(page);
+        }
+        else{
+            console.log("스크롤의 끝이 아니다")
+        }
+    },[inView]);
+
+
+    console.log(page);
+
 
     if (postProps.categoryOption === "wishCategory") {
         wishCategory = store.categoryReducer.category;
@@ -114,14 +175,24 @@ const PostContainer = (postProps: postProps) => {
         try {
             //query string 날리기
             if (queryString.length < 1) {
-                const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=20&page=0`);
+                const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=8&page=0`);
                 console.log(res);
+                setPageInfo(prevState => {
+                    return {empty : res.data.empty,
+                    first : res.data.first,
+                    last : res.data.last,
+                    number : res.data.number,
+                    numberOfElements : res.data.numberOfElements,
+                    size : res.data.size,
+                    totalElements : res.data.totalElements,
+                    totalPages : res.data.totalPages};
+                })
                 console.log(res.data)
                 setPostList(prevState => {
                     return [...res.data.content];
                 })
             } else if (queryString.length > 1) {
-                const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
+                const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=10&page=0`);
                 console.log(res)
                 setPostList(prevState => {
                     return [...res.data.content];
@@ -153,6 +224,7 @@ const PostContainer = (postProps: postProps) => {
     // getPostList();
     useEffect(() => {
         getPostList();
+        console.log(page)
     }, [wishCategory, productCategory, minPrice, maxPrice, postProps.filterType, store.refreshReducer.postChange])
 
     /**
@@ -163,6 +235,13 @@ const PostContainer = (postProps: postProps) => {
     if (!postList) {
         return <Loading/>
     }
+
+    // if(!pageInfo)
+    // {
+    //     return null;
+    // }
+
+
 
 
 
@@ -177,8 +256,8 @@ const PostContainer = (postProps: postProps) => {
         <div>
             <div className={styles.postContainer}>
                 {
-                    postList.map((post) => (
-                        <Card key={post.id} className={"forTrade"} like={post.scrapCount} postTitle={post.title}
+                    postList.map((post,index) => (
+                        <Card key={index} className={"forTrade"} like={post.scrapCount} postTitle={post.title}
                               postContent={post.content} wishCategory={post.wishCategory}
                               messageRoomCount={post.messageRoomCount}
                               onClick={() => {
@@ -186,7 +265,9 @@ const PostContainer = (postProps: postProps) => {
                               }} thumbnail={post.thumbnail}/>
                     ))
                 }
-
+            </div>
+            <div ref={ref}>
+            <Loading/>
             </div>
         </div>
     );
