@@ -14,7 +14,7 @@ import {Rootstate} from "../../index";
 import {resetCategory} from "../../store/categoryReducer";
 import Button from "../../component/common/Button";
 import classNames from "classnames/bind";
-import CustomSwiper from "../../component/common/CustomSwiper";
+import ImageSwiper from "../../component/common/ImageSwiper";
 
 
 const MulmulTrade = () => {

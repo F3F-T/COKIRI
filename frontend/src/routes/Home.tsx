@@ -14,6 +14,10 @@ import Button from "../component/common/Button";
 import {log} from "util";
 import {useSelector} from "react-redux";
 import {Rootstate} from "../index";
+import coatImg from "../img/coat.png";
+import Api from "../utils/api";
+import HomePostCardSwiper from "../component/common/HomePostCardSwiper";
+
 
 //모르는 태그가 너무 많아 하다가 멈춤
 //허락 맡고 다시 진행 예정
@@ -57,18 +61,64 @@ const directionButtons = (direction) => {
     );
 };
 
+interface PostType {
+    id?: number;
+    title?: string;
+    content?: string;
+    tradeEachOther?: boolean;
+    authorNickname?: string;
+    wishCategory?: string;
+    productCategory?: string;
+    tradeStatus?: string;
+    tagNames?: string[];
+    scrapCount?: number;
+    messageRoomCount?: number;
+    thumbnail?: string;
+}
+
 const HomeMulmulTrade = () => {
+    const [postList, setPostList] = useState<PostType[]>(null)
+
+    async function getPostList() {
+        //interceptor를 사용한 방식 (header에 token값 전달)
+        try {
+            //query string 날리기
+            const res = await Api.get(`/post?&sort=scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC&size=8&page=0`);
+            console.log(res);
+
+            console.log(res.data)
+            setPostList(prevState => {
+                return [...res.data.content];
+            })
+
+        } catch (err) {
+            console.log(err)
+            alert("get 실패");
+        }
+    }
+
+    useEffect(() => {
+        getPostList();
+    }, [])
+
+    console.log(postList)
+
+
     return (
         <section className={styles.mulmulTrade}>
             <h2>우리 동네 인기 물물교환</h2>
 
                     <div className={styles.mulmulCardView}>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                        <div>
-                        </div>
+
+
+                                        <HomePostCardSwiper postList={postList}/>
+
+                        {/*<MulMulCardView/>*/}
+                        {/*<MulMulCardView/>*/}
+                        {/*<MulMulCardView/>*/}
+                        {/*<MulMulCardView/>*/}
+                        {/*<div>*/}
+                        {/*</div>*/}
                     </div>
 
                     {/*<div className={styles.mulmulCardView}>*/}

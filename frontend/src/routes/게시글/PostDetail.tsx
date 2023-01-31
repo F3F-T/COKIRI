@@ -37,7 +37,7 @@ import {
 } from "../../store/talkCardReducer";
 import {FALSE} from "sass";
 
-import CustomSwiper from "../../component/common/CustomSwiper";
+import ImageSwiper from "../../component/common/ImageSwiper";
 import tradeEx from "../../img/tradeEx.jpeg";
 import {prepend} from "list";
 import Select from "react-select";
@@ -486,10 +486,10 @@ const PostDetail = () => {
                         {
                             ((post.images.length < 1) ?
                                     <img className={styles.postBodyImg} src={coatImg}></img> :
-                                    <CustomSwiper key={post.id} imageList={post.images}/>
+                                    <ImageSwiper key={post.id} imageList={post.images}/>
                             )
                         }
-                        {/*<CustomSwiper imageList = {post.images}/>*/}
+                        {/*<ImageSwiper imageList = {post.images}/>*/}
                     </div>
                     <div className={styles.postDetailInfo}>
                         <h2 className={styles.postDetailTitle}>{post.title}</h2>

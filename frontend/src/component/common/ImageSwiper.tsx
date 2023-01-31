@@ -15,7 +15,7 @@ interface imageProps {
     }]
 }
 
-const CustomSwiper = (imageProps) => {
+const ImageSwiper = (imageProps) => {
 
     // console.log(imageProps.imageList["id"])
     if (!imageProps.imageList) {
@@ -53,4 +53,4 @@ const CustomSwiper = (imageProps) => {
         </>
     );
 };
-export default CustomSwiper;
+export default ImageSwiper;
