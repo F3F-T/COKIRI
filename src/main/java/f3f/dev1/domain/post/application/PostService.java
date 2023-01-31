@@ -140,7 +140,7 @@ public class PostService {
 //        return response;
 //    }
 
-    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
+//    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
     @Transactional(readOnly = true)
     public Page<GetUserPost> findPostByAuthorId(Long authorId, Pageable pageable) {
         List<GetUserPost> collect = postRepository.getUserPostById(authorId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
@@ -172,7 +172,7 @@ public class PostService {
                 list.add(build);
             }
         }
-        return new PageImpl<>(list);
+        return new PageImpl<>(list, pageable, dtoPages.getTotalElements());
     }
 
 
@@ -367,8 +367,7 @@ public class PostService {
     }
 
     // 캐시 삭제 스케쥴러 등록
-
-    // 고민이 된다. tag 없이 조회한 모든 게시글 캐시가 3초 단위로 다 지워지는데, 더 나은 방법이 있을 것만 같은 느낌이다.
+    // 고민이 된다. tag 없이 조회한 모든 게시글 캐시가 5초 단위로 다 지워지는데, 더 나은 방법이 있을 것만 같은 느낌이다.
     @CacheEvict(value = POST_LIST_WITHOUT_TAG, allEntries = true)
     @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
     public void removePostWithoutTagCache() {
@@ -379,9 +378,9 @@ public class PostService {
     public void removePostWithTagCache() {
     }
 
-    @CacheEvict(value = AUTHOR_POST_LIST, allEntries = true)
-    @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
-    public void removeAuthorPostListCache() {
-    }
+//    @CacheEvict(value = AUTHOR_POST_LIST, allEntries = true)
+//    @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
+//    public void removeAuthorPostListCache() {
+//    }
 
 }
