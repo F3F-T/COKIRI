@@ -232,12 +232,16 @@ public class PostService {
             postImages.add(postImage.getImgPath());
         }
 
-        // 어쩔 수 없이 세션에서 받아온 현재 유저의 엔티티를 찾는 쿼리를 한번 날려야겠다.
-        // 비회원 defensive 한번 걸어주자. 오류뜸
-        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-        boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), id);
-        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, isScrap);
-        return response;
+        // 비회원일 경우 member를 조회하면 오류가 발생한다. 따라서 null 여부를 체크하고, 이에 따라 로직이 분기해야 한다.
+        if(currentMemberId != null) {
+            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+            boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), id);
+            SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, isScrap);
+            return response;
+        } else {
+            SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, false);
+            return response;
+        }
     }
 
     /* TODO
