@@ -112,7 +112,7 @@ public class PostService {
             }
         }
 
-        return new PageImpl<>(resultList);
+        return new PageImpl<>(resultList, pageable, all.getTotalElements());
     }
 
 
@@ -143,8 +143,10 @@ public class PostService {
 //    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
     @Transactional(readOnly = true)
     public Page<GetUserPost> findPostByAuthorId(Long authorId, Pageable pageable) {
-        List<GetUserPost> collect = postRepository.getUserPostById(authorId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
-        return new PageImpl<>(collect);
+//        List<GetUserPost> collect = postRepository.getUserPostById(authorId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
+        Page<PostRepository.GetUserPostInterface> userPostById = postRepository.getUserPostById(authorId, pageable);
+        List<GetUserPost> collect = userPostById.stream().map(GetUserPost::new).collect(Collectors.toList());
+        return new PageImpl<>(collect, pageable, userPostById.getTotalElements());
     }
 
     // TODO 고려해야할 것 : 캐싱 동기화(sync), 비회면 조건부 캐싱
@@ -203,7 +205,7 @@ public class PostService {
                 resultList.add(build);
             }
         }
-        return new PageImpl<>(resultList);
+        return new PageImpl<>(resultList, pageable, dtoList.getTotalElements());
     }
 
     // TODO 거래 가능한 게시글만 검색하기
