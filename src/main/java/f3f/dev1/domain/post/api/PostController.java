@@ -56,6 +56,28 @@ public class PostController {
             return new ResponseEntity<>(pageDto, HttpStatus.OK);
     }
 
+    /*
+        쿼리 dsl을 활용한 한방 쿼리를 시험해보기 위한 테스트용 컨트롤러.
+        총 조회 결과 성능을 기존의 쿼리랑 비교하기 위해 사용될 예정이다.
+     */
+//    @GetMapping(value = "/post/customQ")
+//    public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithConditionExcludeTagsByCustomQuery(
+//            @RequestParam(value= "productCategory", required = false, defaultValue = "") String productCategoryName,
+//            @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
+//            @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
+//            @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
+//            Pageable pageable) {
+//        Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
+//        SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
+//                .productCategory(productCategoryName)
+//                .wishCategory(wishCategoryName)
+//                .minPrice(minPrice)
+//                .maxPrice(maxPrice)
+//                .build();
+//        Page<PostSearchResponseDto> pageDto = postService.findPostsByCategoryAndPriceRangeWithCustomQuery(request, currentMemberId, pageable);
+//        return new ResponseEntity<>(pageDto, HttpStatus.OK);
+//    }
+
     @GetMapping(value = "/post/tagSearch")
     public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithTagNames(
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,

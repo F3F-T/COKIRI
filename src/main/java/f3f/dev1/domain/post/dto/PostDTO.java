@@ -9,6 +9,7 @@ import f3f.dev1.domain.tag.model.PostTag;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -185,7 +186,7 @@ public class PostDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class PostSearchResponseDto {
+    public static class PostSearchResponseDto implements Serializable {
         private Long id;
         private String title;
         private String content;
