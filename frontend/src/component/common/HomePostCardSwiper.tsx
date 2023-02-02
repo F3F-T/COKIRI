@@ -57,6 +57,7 @@ const HomePostCardSwiper = (postProps) => {
                 spaceBetween={50}
                 slidesPerView={4}
                 onSlideChange={() => console.log('slide change')}
+                className={"homeSwiper"}
                 navigation
                 pagination={{clickable: true}}
                 // loop={true}

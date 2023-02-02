@@ -6,37 +6,40 @@
 
 }
 
-.swiper-slide{
-  font-size: 2rem;
+.homeSwiper {
+
+  .swiper-slide {
+    font-size: 2rem;
+  }
+
+  .swiper-container {
+    height: 23.5rem;
+    width: 100rem;
+  }
+
+  .image {
+    height: 23.5rem;
+    width: 100rem
+  }
+
+  .swiper-button-next {
+    color: #5DC8CD !important;
+
+  }
+
+  .swiper-button-prev {
+    color: #5DC8CD !important;
+
+  }
+
+  .swiper-pagination-bullet {
+    background: #5DC8CD !important;
+  }
+
+  //.swiper-pagination-bullet-active {
+  //  background: yellow !important;
+  //}
 }
-
-.swiper-container
-{
-  height: 23.5rem;
-  width : 100rem;
-}
-
-.image{
-  height: 23.5rem;
-  width : 100rem
-}
-
-.swiper-button-next{
-  color: #5DC8CD !important;
-
-}
-
-.swiper-button-prev{
-  color: #5DC8CD !important;
-
-}
-
-.swiper-pagination-bullet {
-  background: #5DC8CD !important;
-}
-//.swiper-pagination-bullet-active {
-//  background: yellow !important;
-//}
 
 @import 'node_modules/swiper/swiper';
 @import 'node_modules/swiper/components/navigation/navigation';

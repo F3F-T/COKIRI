@@ -92,19 +92,33 @@ const PostContainer = (postProps: postProps) => {
     });
 
 
-    async function getMorePostList(pages) {
+    async function getMorePostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
             //query string 날리기
             if (queryString.length < 1) {
                 const currentPage = pageInfo.number;
+                if(!pageInfo.last) {
+                    const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=8&page=${currentPage + 1}`);
 
-                const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=8&page=${currentPage +1}`);
-                console.log(res);
-                console.log(res.data)
-                setPostList(prevState => {
-                    return [...prevState,...res.data.content];
-                })
+                    setPageInfo(prevState => {
+                        return {
+                            empty: res.data.empty,
+                            first: res.data.first,
+                            last: res.data.last,
+                            number: res.data.number,
+                            numberOfElements: res.data.numberOfElements,
+                            size: res.data.size,
+                            totalElements: res.data.totalElements,
+                            totalPages: res.data.totalPages
+                        };
+                    })
+                    console.log(res);
+                    console.log(res.data)
+                    setPostList(prevState => {
+                        return [...prevState, ...res.data.content];
+                    })
+                }
             } else if (queryString.length > 1) {
                 const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
                 console.log(res)
@@ -121,10 +135,8 @@ const PostContainer = (postProps: postProps) => {
     useEffect(()=>{
         if(inView)
         {
-            page = page + 1;
-            console.log(page);
             console.log("스크롤의 끝입니다")
-            getMorePostList(page);
+            getMorePostList();
         }
         else{
             console.log("스크롤의 끝이 아니다")
@@ -266,8 +278,10 @@ const PostContainer = (postProps: postProps) => {
                     ))
                 }
             </div>
-            <div ref={ref}>
-            <Loading/>
+            <div className={styles.loadingDiv}   ref={ref}>
+                {
+                    pageInfo.last ?  " " : <Loading/>
+                }
             </div>
         </div>
     );

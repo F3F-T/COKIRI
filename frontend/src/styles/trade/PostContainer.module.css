@@ -7,3 +7,7 @@
     grid-template-columns: repeat(4,1fr);
     gap: 4rem;
 }
+
+.loadingDiv{
+    margin-top: 2rem;
+}
