@@ -33,7 +33,7 @@ import TagSearch from "./routes/물물교환, 끼리끼리 화면/TagSearch";
 import PostEdit from "./routes/게시글/PostEdit";
 
 function App() {
-//
+////
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
 
