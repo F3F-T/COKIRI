@@ -11,9 +11,12 @@ import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import {resetCategory} from "../../store/categoryReducer";
 import Button from "../../component/common/Button";
+import classNames from "classnames/bind";
+import {resetPrice} from "../../store/priceReducer";
 
 
 const KiriKiriTrade = () => {
+    const cx = classNames.bind(styles)
     const [tab1, setTab] = useState('next');
 
     type filtertype = "recent" | "popular"
@@ -33,6 +36,7 @@ const KiriKiriTrade = () => {
     useEffect(()=>{
         return() =>{
             dispatch(resetCategory());
+            dispatch(resetPrice());
         };
     },[]);
 
@@ -41,7 +45,8 @@ const KiriKiriTrade = () => {
             <div className={styles.mulmulTradeContent}>
                 <div className={styles.categoryBox}>
                     <div className={styles.forWho}>
-                        <Button className={"lightblue"} content={"끼리끼리 교환해요"} hover={true} size={"small"}/>
+                        <button className={cx('mulmulBtn', `colored`)}>끼리끼리 교환해요</button>
+                        {/*<Button className={"lightblue"} content={"끼리끼리 교환해요"} hover={true} size={"small"}/>*/}
                     </div>
                     <TradeCategory/>
                     <PriceBox/>

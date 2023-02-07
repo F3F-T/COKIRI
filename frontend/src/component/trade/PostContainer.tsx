@@ -23,6 +23,7 @@ import Loading from "../common/Loading";
 import {current} from "@reduxjs/toolkit";
 import { useInView } from 'react-intersection-observer';
 import queryString from "query-string";
+import {setPostId} from "../../store/talkCardReducer";
 
 
 interface PostType {
@@ -205,6 +206,8 @@ const PostContainer = (postProps: postProps) => {
     async function getPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
+            setPostList(prevState => {return null})
+            console.log(sortType);
             //query string 날리기
             if (queryString.length < 1 || !queryString.includes("?tags=")) {
                 const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=8&page=0`);
@@ -263,6 +266,7 @@ const PostContainer = (postProps: postProps) => {
     // const observer = new IntersectionObserver(callback, options);
     //
 
+    console.log(postProps.filterType)
 
     // getPostList();
     useEffect(() => {
@@ -275,9 +279,12 @@ const PostContainer = (postProps: postProps) => {
      * 이렇게 예외처리를 꼭 해야한다.
      */
 //
+
+    console.log(store.refreshReducer.postChange)
     if (!postList) {
         return <Loading/>
     }
+
 
     // if(!pageInfo)
     // {

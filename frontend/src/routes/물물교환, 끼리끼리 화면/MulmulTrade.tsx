@@ -15,6 +15,7 @@ import {resetCategory} from "../../store/categoryReducer";
 import Button from "../../component/common/Button";
 import classNames from "classnames/bind";
 import ImageSwiper from "../../component/common/ImageSwiper";
+import {resetPrice} from "../../store/priceReducer";
 
 
 const MulmulTrade = () => {
@@ -34,6 +35,7 @@ const MulmulTrade = () => {
     useEffect(() => {
         return () => {
             dispatch(resetCategory());
+            dispatch(resetPrice());
         };
     }, []);
 
