@@ -1,6 +1,6 @@
 
 .postContainer{
-    width: 1200px;
+    /*width: 1200px;*/
     border-radius: 10px;
     /*border: 0.5px solid red;*/
     display: grid;
@@ -11,3 +11,18 @@
 .loadingDiv{
     margin-top: 2rem;
 }
+.imageDiv{
+    margin-top : 4rem;
+    display: flex;
+    font-size: 3rem;
+    /*width : 1100px;*/
+    height : 200px;
+    justify-content: center;
+}
+
+.img{
+    display: inline-block;
+    text-align: center;
+}
+
+

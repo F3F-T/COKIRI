@@ -22,6 +22,7 @@ import {ClipLoader, PacmanLoader, RingLoader} from "react-spinners";
 import Loading from "../common/Loading";
 import {current} from "@reduxjs/toolkit";
 import { useInView } from 'react-intersection-observer';
+import queryString from "query-string";
 
 
 interface PostType {
@@ -74,6 +75,9 @@ const PostContainer = (postProps: postProps) => {
     let maxPrice = "";
     let sortType;
 
+    console.log(queryString);
+    console.log(typeof queryString)
+
     const detail = useSelector((state: Rootstate) => {
         return state.postDetailReducer
     })
@@ -96,7 +100,7 @@ const PostContainer = (postProps: postProps) => {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
             //query string 날리기
-            if (queryString.length < 1) {
+            if (queryString.length < 1 || !queryString.includes("?tags=")) {
                 const currentPage = pageInfo.number;
                 if(!pageInfo.last) {
                     const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=8&page=${currentPage + 1}`);
@@ -119,7 +123,7 @@ const PostContainer = (postProps: postProps) => {
                         return [...prevState, ...res.data.content];
                     })
                 }
-            } else if (queryString.length > 1) {
+            } else if (queryString.includes("?tags=")) {
                 const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
                 console.log(res)
                 setPostList(prevState => {
@@ -182,11 +186,16 @@ const PostContainer = (postProps: postProps) => {
         sortType = `scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC`;
     }
 
+    //홈 화면에서 인기매물로 들어갔을때
+    if(queryString == "?sort=popular"){
+        sortType = `scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC`;
+    }
+
     async function getPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
             //query string 날리기
-            if (queryString.length < 1) {
+            if (queryString.length < 1 || !queryString.includes("?tags=")) {
                 const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=8&page=0`);
                 console.log(res);
                 setPageInfo(prevState => {
@@ -203,7 +212,7 @@ const PostContainer = (postProps: postProps) => {
                 setPostList(prevState => {
                     return [...res.data.content];
                 })
-            } else if (queryString.length > 1) {
+            } else if (queryString.includes("?tags=")) {
                 const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=10&page=0`);
                 console.log(res)
                 setPostList(prevState => {

@@ -70,16 +70,33 @@
 }
 /*물물교환 h2(우리 동네 인기 물물교환)*/
 .mulmulTrade h2{
+    font-size : 2.5rem;
     text-align: center;
 }
 
+.tradeTop{
+    position: relative;
+}
+
+.tradeTop li{
+    list-style: none;
+    position : absolute;
+    right : 0;
+    margin-right : 4rem;
+    font-size : 1rem;
+    top : 3.5rem;
+    color: gray;
+
+
+}
 
 /*물물교환 Carousel 안에 있는 cardView 전체*/
 /*TODO: 물물교환 MulMulcardView안에 있는 css, 현재는 home module에 있지만
 추후엔 MulMulcardView module을 따로 빼서 넣어야 함*/
 
 .mulmulCardView{
-    margin-top: 4rem;
+    position : absolute;
+    margin-top: 2rem;
     width:1200px;
     display: flex;
     flex-direction: row;
@@ -99,7 +116,7 @@
 
 
 }
-.carouselInner{
+.carousenner{
     width: 150%;
     background-color: red;
 }
@@ -141,13 +158,15 @@
 
 }
 
+
 /************************************************************************
  끼리끼리 Component
  ************************************************************************/
 
 /*끼리끼리 전체*/
 .kirikiriTrade{
-    width : 75%;
+    padding-top : 5rem;
+    //width : 75%;
     margin: auto; /* content를 중앙으로 보낸다*/
     height: var( --mulmul-height);
     max-height: var( --mulmul-height);
@@ -178,4 +197,19 @@
     display: grid;
     grid-template-columns: repeat(4,1fr);
     gap: 1rem;
+}
+
+.kirikiriMore{
+    text-align : right;
+    position : relative;
+}
+
+.kiriLi{
+    position: absolute;
+    right: 0;
+    top : 0.75rem;
+    list-style: none;
+    margin-right : 4rem;
+    font-size : 1rem;
+    color: gray;
 }

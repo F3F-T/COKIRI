@@ -12,6 +12,8 @@ import {useDispatch, useSelector} from "react-redux";
 import Tags from "@yaireo/tagify/dist/react.tagify";
 import Api from "../utils/api";
 import {changePostRefreshState} from "../store/refreshReducer";
+import {GrSearch} from "react-icons/gr";
+import {BsSearch} from "react-icons/bs";
 const Nav1 = () => {
 
     const store = useSelector((state:Rootstate) => state);
@@ -65,6 +67,7 @@ const Nav1 = () => {
                 <Nav.Link className={styles.kiriBtn}  onClick={()=>navigate('/kirikiritrade')}>끼리끼리</Nav.Link>
                 {/*<form className={styles.searchBox}>*/}
                     {/*<input className={styles.search} type="search" placeholder=" #해시태그를 검색하세요!" aria-disabled="true"/>*/}
+                <div className={styles.tagDiv}>
                     <Tags
                         className={styles.customLook}
                         placeholder="해시태그를 적고 엔터를 눌러주세요."
@@ -75,7 +78,9 @@ const Nav1 = () => {
                         // defaultValue="a,b,c"
                         onChange={onChange}
                     />
-                <button className={styles.signBtn} onClick={onClickSearch}>검색</button>
+                <button className={styles.search}  onClick={onClickSearch}><BsSearch className = {styles.searchIcon}/></button>
+                </div>
+                    {/*<span className={styles.signBtn} onClick={onClickSearch}>검색</span>*/}
                 {/*</form>*/}
                 {/*{(store.jwtTokenReducer.authenticated  ?*/}
                 {/*    <button className={styles.signBtn} onClick={()=>navigate('/mypage')}>{store.userInfoReducer.nickname}님</button>*/}
@@ -83,16 +88,18 @@ const Nav1 = () => {
                 {/*    <button className={styles.signBtn} onClick={()=>navigate('/login')}>로그인/회원가입</button>)*/}
                 {/*}*/}
                 <div>
+                    <div className={styles.loginAndImage}>
                 <img className={styles.mypageI} onClick={()=>navigate('/')} src = {store.jwtTokenReducer.authenticated  ? mypage:mypage}/>
                 {(store.jwtTokenReducer.authenticated  ?
-                   <button className={styles.signBtn2} onClick={()=>navigate('/mypage')}>{store.userInfoReducer.nickname}님 상점</button>
+                    <Nav.Link className={styles.signBtn2}  onClick={()=>navigate('/mypage')}>{store.userInfoReducer.nickname}님 상점</Nav.Link>
                    :
-                   <button className={styles.signBtn} onClick={()=>navigate('/login')}>로그인/회원가입</button>)
+                    <Nav.Link className={styles.signBtn}  onClick={()=>navigate('/login')}>로그인/회원가입</Nav.Link>)
                 }
+                    </div>
                 </div>
-                <div>
+                <div className={styles.talkDiv}>
                     <img className={styles.mypageI} onClick={()=>navigate('/')}  src = {talk}/>
-                    <button className={styles.signBtn3} onClick={()=>navigate(`/kokiriTalk/${info.id}`)}>코끼리 톡</button>
+                    <Nav.Link  className={styles.signBtn} onClick={()=>navigate(`/kokiriTalk/${info.id}`)}>코끼리 톡</Nav.Link >
                 </div>
             </Nav>
 
