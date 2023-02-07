@@ -10,16 +10,13 @@
     gap: 0px;
 }
 .itemC {
-    /*border: 0.5px solid rgba(255,0,0,5);*/
-    /*height: 30%;*/
-    /*width: 100px;*/
-    /*margin-left: 10px;*/
+    font-family: OhouseSans,Noto Sans KR,Apple SD Gothic Neo,맑은 고딕,Malgun Gothic,sans-serif;
     border: none;
     /*background-color: transparent;*/
     background-color: #EAEDEF;
     text-align: left;
     margin-left: 0.6rem;
-    font-weight: bolder;
+    font-weight: 700;
     font-size: 1rem;
 }
 

@@ -126,6 +126,17 @@ const PostContainer = (postProps: postProps) => {
             } else if (queryString.includes("?tags=")) {
                 const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
                 console.log(res)
+                setPageInfo(prevState => {
+                    return {empty : res.data.empty,
+                        first : res.data.first,
+                        last : res.data.last,
+                        number : res.data.number,
+                        numberOfElements : res.data.numberOfElements,
+                        size : res.data.size,
+                        totalElements : res.data.totalElements,
+                        totalPages : res.data.totalPages};
+                })
+
                 setPostList(prevState => {
                     return [...prevState,...res.data.content];
                 })
@@ -215,6 +226,17 @@ const PostContainer = (postProps: postProps) => {
             } else if (queryString.includes("?tags=")) {
                 const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=10&page=0`);
                 console.log(res)
+                setPageInfo(prevState => {
+                    return {empty : res.data.empty,
+                        first : res.data.first,
+                        last : res.data.last,
+                        number : res.data.number,
+                        numberOfElements : res.data.numberOfElements,
+                        size : res.data.size,
+                        totalElements : res.data.totalElements,
+                        totalPages : res.data.totalPages};
+                })
+
                 setPostList(prevState => {
                     return [...res.data.content];
                 })

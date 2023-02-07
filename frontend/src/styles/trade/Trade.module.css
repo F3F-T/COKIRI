@@ -116,3 +116,29 @@ postOrWant_2{
 .blue{
     background-color: blue;
 }
+
+/*깔끔한 btn */
+.mulmulBtn{
+    font-family: OhouseSans,Noto Sans KR,Apple SD Gothic Neo,맑은 고딕,Malgun Gothic,sans-serif;
+    background-color: #EAEDEF;
+    border :none;
+    margin-right :0.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    height: 2.8rem;
+    border-radius: 10px;
+    color: black;
+    padding: 0rem 0.75rem 0rem 0.75rem;
+
+}
+
+.red{
+    background-color: red;
+}
+.blue{
+    background-color: blue;
+}
+.colored{
+    background-color: #5DC8CD;
+    color : white;
+}
