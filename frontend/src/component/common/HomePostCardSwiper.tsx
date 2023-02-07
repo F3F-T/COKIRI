@@ -54,12 +54,15 @@ const HomePostCardSwiper = (postProps) => {
         <>
             <Swiper
                 // style={}
-                spaceBetween={50}
+                spaceBetween={30}
+                slidesPerGroup={4}
+                loopFillGroupWithBlank={true}
                 slidesPerView={4}
                 onSlideChange={() => console.log('slide change')}
                 className={"homeSwiper"}
                 navigation
                 pagination={{clickable: true}}
+                autoplay={true}
                 // loop={true}
                 // autoplay={true}
             >

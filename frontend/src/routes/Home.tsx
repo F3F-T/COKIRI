@@ -109,24 +109,10 @@ const HomeMulmulTrade = () => {
             <h2>우리 동네 인기 물물교환</h2>
 
                     <div className={styles.mulmulCardView}>
-
-
-                                        <HomePostCardSwiper postList={postList}/>
-
-                        {/*<MulMulCardView/>*/}
-                        {/*<MulMulCardView/>*/}
-                        {/*<MulMulCardView/>*/}
-                        {/*<MulMulCardView/>*/}
-                        {/*<div>*/}
-                        {/*</div>*/}
-                    </div>
-
-                    {/*<div className={styles.mulmulCardView}>*/}
-                    {/*    <MulMulCardView/>*/}
-                    {/*    <MulMulCardView/>*/}
-                    {/*    <MulMulCardView/>*/}
-                    {/*    <MulMulCardView/>*/}
-                    {/*</div>*/}
+                        <div className={"homeSwiper"}>
+                         <HomePostCardSwiper postList={postList}/>
+                        </div>
+                        </div>
 
         </section>
     );

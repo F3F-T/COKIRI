@@ -8,27 +8,35 @@
 
 .homeSwiper {
 
+
+  position : relative;
   .swiper-slide {
-    font-size: 2rem;
+
   }
 
   .swiper-container {
-    height: 23.5rem;
-    width: 100rem;
+    //margin : auto;
+    height: 22rem;
+    width: 1100px;
+    //padding-left : 50px;
+    //paeding-right: 50px;
   }
 
-  .image {
-    height: 23.5rem;
-    width: 100rem
-  }
+  //.image {
+  //  height: 23.5rem;
+  //  width: 1100px
+  //}
 
   .swiper-button-next {
     color: #5DC8CD !important;
-
+    --swiper-navigation-size: 3rem;
+    position : absolute;
   }
 
   .swiper-button-prev {
     color: #5DC8CD !important;
+    --swiper-navigation-size: 3rem;
+    position: absolute;
 
   }
 
