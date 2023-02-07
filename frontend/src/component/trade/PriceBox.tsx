@@ -139,17 +139,17 @@ const PriceBox = () => {
         <div className={styles.priceBox}>
             <div className={styles.priceList}>
                 {prices.map((price: string, index) => (
-                    <button value={index} className={cx(`priceBtn`, index != isClicked ? `` : `red`)}
+                    <button value={index} className={cx(`priceBtn`, index != isClicked ? `` : `colored`)}
                             onClick={(event) => onClickPriceButton(event, price)}>{price}</button>
                 ))}
             </div>
-            <div className={styles.priceSet}>
-                <input type="text" className={styles.setBox1}></input>
-                <div className={styles.won}>원~</div>
-                <input type="text" className={styles.setBox2}></input>
-                <div className={styles.won}>원</div>
+            {/*<div className={styles.priceSet}>*/}
+            {/*    <input type="text" className={styles.setBox1}></input>*/}
+            {/*    <div className={styles.won}>원~</div>*/}
+            {/*    <input type="text" className={styles.setBox2}></input>*/}
+            {/*    <div className={styles.won}>원</div>*/}
 
-            </div>
+            {/*</div>*/}
         </div>
     );
 }
