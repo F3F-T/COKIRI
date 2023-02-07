@@ -264,18 +264,6 @@ const PostUpload = () => {
             prevState.delete("imageFiles");
         })
 
-        // for (let i = 0; i < tempPhotoData.length; i++) {
-        //     setPhotoData((prevState)=>{
-        //         return prevState.append("imageFiles",tempPhotoData[i]);
-        //     })
-        // }
-        //
-        // console.log(tempPhotoData);
-        // console.log(photoData.getAll("imageFiles"));
-
-
-        // tempPhotoData.filter(tempPhotoData => tempPhotoData)
-
 
     }
 

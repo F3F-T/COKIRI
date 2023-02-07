@@ -14,6 +14,10 @@ import Button from "../component/common/Button";
 import {log} from "util";
 import {useSelector} from "react-redux";
 import {Rootstate} from "../index";
+import coatImg from "../img/coat.png";
+import Api from "../utils/api";
+import HomePostCardSwiper from "../component/common/HomePostCardSwiper";
+import RoundImageSwiper from "../component/common/RoundImageSwiper";
 
 //모르는 태그가 너무 많아 하다가 멈춤
 //허락 맡고 다시 진행 예정
@@ -57,83 +61,132 @@ const directionButtons = (direction) => {
     );
 };
 
+interface PostType {
+    id?: number;
+    title?: string;
+    content?: string;
+    tradeEachOther?: boolean;
+    authorNickname?: string;
+    wishCategory?: string;
+    productCategory?: string;
+    tradeStatus?: string;
+    tagNames?: string[];
+    scrapCount?: number;
+    messageRoomCount?: number;
+    thumbnail?: string;
+}
+
 const HomeMulmulTrade = () => {
+    const [postList, setPostList] = useState<PostType[]>(null)
+    const navigate = useNavigate();
+
+    async function getPostList() {
+        //interceptor를 사용한 방식 (header에 token값 전달)
+        try {
+            //query string 날리기
+            const res = await Api.get(`/post?&sort=scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC&size=8&page=0`);
+            console.log(res);
+
+            console.log(res.data)
+            setPostList(prevState => {
+                return [...res.data.content];
+            })
+
+        } catch (err) {
+            console.log(err)
+            alert("get 실패");
+        }
+    }
+
+    const onClickMore = () => {
+        navigate(`/mulmultrade?sort=popular`);
+    }
+
+    useEffect(() => {
+        getPostList();
+    }, [])
+
+    console.log(postList)
+
+
     return (
         <section className={styles.mulmulTrade}>
+            <hr/>
+            <div className ={styles.tradeTop}>
             <h2>우리 동네 인기 물물교환</h2>
-
-                    <div className={styles.mulmulCardView}>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                        <div>
+            <li onClick={onClickMore}>더보기</li>
+            </div>
+            <div className={styles.mulmulCardView}>
+                <div className={"homeSwiper"}>
+                         <HomePostCardSwiper postList={postList}/>
                         </div>
                     </div>
-
-                    {/*<div className={styles.mulmulCardView}>*/}
-                    {/*    <MulMulCardView/>*/}
-                    {/*    <MulMulCardView/>*/}
-                    {/*    <MulMulCardView/>*/}
-                    {/*    <MulMulCardView/>*/}
-                    {/*</div>*/}
 
         </section>
     );
 }
 
 const HomeKirikiriTrade = () => {
+
+    const [postList, setPostList] = useState<PostType[]>(null)
+
+    async function getPostList() {
+        //interceptor를 사용한 방식 (header에 token값 전달)
+        try {
+            //query string 날리기
+            const res = await Api.get(`/post?&sort=scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC&size=8&page=0`);
+            console.log(res);
+
+            console.log(res.data)
+            setPostList(prevState => {
+                return [...res.data.content];
+            })
+
+        } catch (err) {
+            console.log(err)
+            alert("get 실패");
+        }
+    }
+
+    useEffect(() => {
+        getPostList();
+    }, [])
+
+    console.log(postList)
+
     return (
         <section className={styles.kirikiriTrade}>
+            <hr/>
             <h2>다른 카테고리 뿐만 아니라 같은 카테고리 끼리도 교환할 수 있어요</h2>
 
             <div className={styles.kirikiriCatagoryCardView}>
-                <Row>
-                    <Col xs={3}>
-                        <KiriKiriCategoryRoundImage props={book}/>
-                    </Col>
-                    <Col xs={3}>
-                        <KiriKiriCategoryRoundImage props={fashion}/>
-                    </Col>
-                    <Col xs={3}>
-                        <KiriKiriCategoryRoundImage props={ticket}/>
-                    </Col>
-                    <Col xs={3}>
-                        <KiriKiriCategoryRoundImage props={young}/>
-                    </Col>
-                </Row>
-            </div>;
-
-
-            <div className ={styles.carou}>
-
-            <Carousel nextLabel={"Next"}
-                      prevLabel={"Previous"}
-                      nextIcon={directionButtons("Next")}
-                      prevIcon={directionButtons("Previous")}
-                      variant={"dark"}
-            >
-                <Carousel.Item interval={5000}>
-                    <div className={styles.mulmulCardView}>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                        <div>
-                        </div>
-                    </div>
-                </Carousel.Item>
-
-                <Carousel.Item interval={5000}>
-                    <div className={styles.mulmulCardView}>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                        <MulMulCardView/>
-                    </div>
-                </Carousel.Item>
-            </Carousel>
+                <div className={"roundImageSwiper"}>
+                <RoundImageSwiper imageList = {[book,fashion,ticket,young,book,fashion,ticket,young]}/>
+                </div>
+                {/*<Row>*/}
+                {/*    <Col xs={3}>*/}
+                {/*        <KiriKiriCategoryRoundImage props={book}/>*/}
+                {/*    </Col>*/}
+                {/*    <Col xs={3}>*/}
+                {/*        <KiriKiriCategoryRoundImage props={fashion}/>*/}
+                {/*    </Col>*/}
+                {/*    <Col xs={3}>*/}
+                {/*        <KiriKiriCategoryRoundImage props={ticket}/>*/}
+                {/*    </Col>*/}
+                {/*    <Col xs={3}>*/}
+                {/*        <KiriKiriCategoryRoundImage props={young}/>*/}
+                {/*    </Col>*/}
+                {/*</Row>*/}
             </div>
+                <ul className={styles.kirikiriMore}>
+                <li className={styles.kiriLi}>더보기</li>
+                </ul>
+            <div className={styles.mulmulCardView}>
+                <div className={"homeSwiper"}>
+                    <HomePostCardSwiper postList={postList}/>
+                </div>
+            </div>
+
         </section>
     );
 }

@@ -12,12 +12,12 @@
 
 .swiper-container
 {
-  height: 22rem;
+  height: 23.5rem;
   width : 22rem
 }
 
 .image{
-  height: 22rem;
+  height: 23.5rem;
   width : 22rem
 }
 
@@ -38,6 +38,6 @@
 //  background: yellow !important;
 //}
 
-@import 'swiper/swiper.scss';
-@import 'swiper/components/navigation/navigation.scss';
-@import 'swiper/components/pagination/pagination.scss';
+@import 'node_modules/swiper/swiper';
+@import 'node_modules/swiper/components/navigation/navigation';
+@import 'node_modules/swiper/components/pagination/pagination';

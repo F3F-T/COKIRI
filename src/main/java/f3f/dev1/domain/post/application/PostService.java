@@ -32,23 +32,29 @@ import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.model.Trade;
+import f3f.dev1.global.common.constants.RedisCacheConstants;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static f3f.dev1.domain.postImage.dto.PostImageDTO.*;
 import static f3f.dev1.domain.trade.dto.TradeDTO.*;
+import static f3f.dev1.global.common.constants.RedisCacheConstants.*;
 
 @Service
 @Validated
@@ -106,40 +112,51 @@ public class PostService {
             }
         }
 
-        return new PageImpl<>(resultList);
+        return new PageImpl<>(resultList, pageable, all.getTotalElements());
     }
 
 
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     // controller에서 사용되지 않는 로직. 현재 테스트에서만 사용되고 있다.
+//    @Transactional(readOnly = true)
+//    public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
+//        // TODO 없애도 될 예외같음. 게시글이 없으면 빈 리스트를 반환해주면 된다.
+//        if(!postRepository.existsByAuthorId(authorId)) {
+//            throw new NotFoundPostListByAuthorException("해당 작성자의 게시글이 없습니다.");
+//        }
+//        List<PostInfoDtoWithTag> response = new ArrayList<>();
+//        List<Post> byAuthor = postRepository.findByAuthorId(authorId);
+//        for (Post post : byAuthor) {
+//            List<PostTag> postTags = postTagRepository.findByPost(post);
+//            List<String> tagNames = new ArrayList<>();
+//            for (PostTag postTag : postTags) {
+//                tagNames.add(postTag.getTag().getName());
+//            }
+//            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
+//            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
+//            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
+//            response.add(responseEach);
+//        }
+//        return response;
+//    }
+
+//    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
     @Transactional(readOnly = true)
-    public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
-        // TODO 없애도 될 예외같음. 게시글이 없으면 빈 리스트를 반환해주면 된다.
-        if(!postRepository.existsByAuthorId(authorId)) {
-            throw new NotFoundPostListByAuthorException("해당 작성자의 게시글이 없습니다.");
-        }
-        List<PostInfoDtoWithTag> response = new ArrayList<>();
-        List<Post> byAuthor = postRepository.findByAuthorId(authorId);
-        for (Post post : byAuthor) {
-            List<PostTag> postTags = postTagRepository.findByPost(post);
-            List<String> tagNames = new ArrayList<>();
-            for (PostTag postTag : postTags) {
-                tagNames.add(postTag.getTag().getName());
-            }
-            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
-            response.add(responseEach);
-        }
-        return response;
+    public Page<GetUserPost> findPostByAuthorId(Long authorId, Pageable pageable) {
+//        List<GetUserPost> collect = postRepository.getUserPostById(authorId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
+        Page<PostRepository.GetUserPostInterface> userPostById = postRepository.getUserPostById(authorId, pageable);
+        List<GetUserPost> collect = userPostById.stream().map(GetUserPost::new).collect(Collectors.toList());
+        return new PageImpl<>(collect, pageable, userPostById.getTotalElements());
     }
 
-
-
+    // TODO 고려해야할 것 : 캐싱 동기화(sync), 비회면 조건부 캐싱
+    // + 캐시 만료, 삭제 시점
+    // pageable 관련 key값은 현재 페이지 수만 추가해뒀다. 각 페이지마다 보여주는 데이터의 수가 같아야만 한다.
+    @Cacheable(value = POST_LIST_WITHOUT_TAG, key = "#request.productCategory + '_' + #request.wishCategory + '_' + #request.minPrice + '_' + #request.maxPrice + '_' + 'p' + #pageable.getPageNumber()")
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Long currentMemberId, Pageable pageable) {
+    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag request, Long currentMemberId, Pageable pageable) {
         List<PostSearchResponseDto> list = new ArrayList<>();
-        Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
+        Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(request, pageable);
         // 조회하는 사용자가 로그인된 회원인 경우
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
@@ -157,20 +174,20 @@ public class PostService {
                 list.add(build);
             }
         }
-        return new PageImpl<>(list);
+        return new PageImpl<>(list, pageable, dtoPages.getTotalElements());
     }
 
 
     // 쿼리 DSL 테스트용 기능, 테스트 실패로 잠시 주석처리 해두겠다.
 //    @Transactional(readOnly = true)
-//    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Long currentMemberId, Pageable pageable) {
+//    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRangeWithCustomQuery(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Long currentMemberId, Pageable pageable) {
 //        List<PostSearchResponseDto> list = new ArrayList<>();
 //        Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
-//        Page<PostSearchResponseDto> postDTOByConditions = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, currentMemberId, pageable);
+//        Page<PostSearchResponseDto> postDTOByConditions = postCustomRepository.findPostDTOByConditionsWIthQ(searchPostRequestExcludeTag, currentMemberId, pageable);
 //        return postDTOByConditions;
 //    }
 
-
+    @Cacheable(value = POST_LIST_WITH_TAG, keyGenerator = "customKeyGenerator")
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, Pageable pageable) {
         Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
@@ -188,7 +205,7 @@ public class PostService {
                 resultList.add(build);
             }
         }
-        return new PageImpl<>(resultList);
+        return new PageImpl<>(resultList, pageable, dtoList.getTotalElements());
     }
 
     // TODO 거래 가능한 게시글만 검색하기
@@ -215,11 +232,16 @@ public class PostService {
             postImages.add(postImage.getImgPath());
         }
 
-        // 어쩔 수 없이 세션에서 받아온 현재 유저의 엔티티를 찾는 쿼리를 한번 날려야겠다.
-        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-        boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), id);
-        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, isScrap);
-        return response;
+        // 비회원일 경우 member를 조회하면 오류가 발생한다. 따라서 null 여부를 체크하고, 이에 따라 로직이 분기해야 한다.
+        if(currentMemberId != null) {
+            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+            boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), id);
+            SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, isScrap);
+            return response;
+        } else {
+            SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, false);
+            return response;
+        }
     }
 
     /* TODO
@@ -349,5 +371,22 @@ public class PostService {
         postRepository.delete(post);
         return "DELETE";
     }
+
+    // 캐시 삭제 스케쥴러 등록
+    // 고민이 된다. tag 없이 조회한 모든 게시글 캐시가 5초 단위로 다 지워지는데, 더 나은 방법이 있을 것만 같은 느낌이다.
+    @CacheEvict(value = POST_LIST_WITHOUT_TAG, allEntries = true)
+    @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
+    public void removePostWithoutTagCache() {
+    }
+
+    @CacheEvict(value = POST_LIST_WITH_TAG, allEntries = true)
+    @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
+    public void removePostWithTagCache() {
+    }
+
+//    @CacheEvict(value = AUTHOR_POST_LIST, allEntries = true)
+//    @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
+//    public void removeAuthorPostListCache() {
+//    }
 
 }

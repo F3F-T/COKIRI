@@ -1,6 +1,7 @@
 .forTrade{
+  height : 18.375rem;
+  font-size : 1rem;
   .postItem{
-    //height: 17rem;
     border: 1px solid rgba(200, 200, 200);
     border-radius: 10px;
   }
@@ -16,14 +17,22 @@
     font-weight: bold;
     font-size: 1rem;
     overflow:hidden;
+    display: inline-block;
+
     text-overflow:ellipsis;
     white-space:nowrap;
     margin:0.3rem;
   }
   .postContent{
+    width : 15rem;
     text-align: left;
     font-weight: bold;
+    font-size: 0.75rem;
     color : gray;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display: inline-block;
+    white-space:nowrap;
     margin:0.3rem;
   }
   .detail{
@@ -39,7 +48,7 @@
   }
   .like{
     vertical-align: middle;
-
+    font-size: 0.75rem;
     //margin-left:0.3rem;
   }
   .tradeImage{
@@ -75,6 +84,7 @@
   }
   .commmentNum{
     vertical-align: middle;
+    font-size: 0.75rem;
   }
 }
 

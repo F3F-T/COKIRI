@@ -18,7 +18,7 @@ import {
     setTradeStatus, setWishCategory
 } from "../../store/talkCardReducer";
 import {Rootstate} from "../../index";
-import {changeRefreshState} from "../../store/refreshReducer";
+import {changeCommentRefreshState} from "../../store/refreshReducer";
 import timeConvert from "../../utils/timeConvert";
 
 

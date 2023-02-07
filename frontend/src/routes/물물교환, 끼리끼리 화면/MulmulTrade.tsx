@@ -14,7 +14,8 @@ import {Rootstate} from "../../index";
 import {resetCategory} from "../../store/categoryReducer";
 import Button from "../../component/common/Button";
 import classNames from "classnames/bind";
-import CustomSwiper from "../../component/common/CustomSwiper";
+import ImageSwiper from "../../component/common/ImageSwiper";
+import {resetPrice} from "../../store/priceReducer";
 
 
 const MulmulTrade = () => {
@@ -25,7 +26,7 @@ const MulmulTrade = () => {
     const store = useSelector((state: Rootstate) => state);
     //action을 사용하기 위해 dispatch를 선언한다.
     const dispatch = useDispatch();
-    const [isClicked,setIsClicked] = useState<boolean>(true);
+    const [isClicked,setIsClicked] = useState<boolean>(false);
 
     /**
      * 랜더링될때 category를 도서로 다시 초기화시킨다.
@@ -34,16 +35,17 @@ const MulmulTrade = () => {
     useEffect(() => {
         return () => {
             dispatch(resetCategory());
+            dispatch(resetPrice());
         };
     }, []);
 
     const onClickProductButton = () => {
-        setIsClicked(true);
+        setIsClicked(false);
         navigate('/mulmultrade');
     }
 
     const onClickWishButton = () => {
-        setIsClicked(false);
+        setIsClicked(true);
         navigate('/mulmultrade/mulmultrade2');
     }
 
@@ -55,11 +57,9 @@ const MulmulTrade = () => {
                 <div className={styles.categoryBox}>
                     <div className={styles.forWho}>
                         <div className={styles.buttonMargin}>
-                            <Button className={cx("lightblue")} content={"이런 물건이 올라왔어요"}
-                                    onClick={onClickProductButton} hover={true} size={"small"}/>
+                            <button className={cx('mulmulBtn', isClicked ? `` : `colored`)} onClick={onClickProductButton}>이런 물건이 올라왔어요</button>
+                            <button className={cx('mulmulBtn', isClicked ? `colored` : ``)} onClick={onClickWishButton}>이런 물건을 원해요</button>
                         </div>
-                        <Button className={cx("lightblue")} content={"이런 물건을 원해요"}
-                                onClick={onClickWishButton} hover={true} size={"small"}/>
                     </div>
                     <TradeCategory/>
                     <PriceBox/>

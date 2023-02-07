@@ -10,11 +10,13 @@ import PostContainer from "../../component/trade/PostContainer";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import {resetCategory} from "../../store/categoryReducer";
+import {changePostRefreshState} from "../../store/refreshReducer";
 
 
 const MulmulTrade1 = () => {
     const [tab1, setTab] = useState('next');
 //
+    const dispatch = useDispatch();
     type filtertype = "recent" | "popular"
     const [filterType, setFilterType]= useState<filtertype>("recent");
 
@@ -38,22 +40,26 @@ const MulmulTrade1 = () => {
                                                onClick={() => {
                                                    setDealTab('next')
                                                    setFilterType('recent')
+                                                   dispatch(changePostRefreshState());
                                                }}>✓최신순</button>
                         : <button className={`${styles["newsetBtn" + (tab1 === "next" ? "active" : "")]}`}
                                   onClick={() => {
                                       setDealTab('next')
                                       setFilterType('recent')
+                                      dispatch(changePostRefreshState());
                                   }}>최신순</button>
                     }
                     {tab1 === 'curr' ? <button className={`${styles["pupularBtn" + (tab1 === "curr" ? "active" : "")]}`}
                                                onClick={() => {
                                                    setDealTab('curr')
                                                    setFilterType('popular')
+                                                   dispatch(changePostRefreshState());
                                                }}>✓인기도순</button>
                         : <button className={`${styles["pupularBtn" + (tab1 === "curr" ? "active" : "")]}`}
                                   onClick={() => {
                                       setDealTab('curr')
                                       setFilterType('popular')
+                                      dispatch(changePostRefreshState());
                                   }}>인기도순</button>
                     }
                 </div>

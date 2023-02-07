@@ -87,7 +87,7 @@ const SignUp = () => {
     async function CheckEmailDuplicated(email: object) {
         try {
             const res = await axios.post("http://localhost:8080/auth/check-email", email);
-
+            console.log(res);
             const result = res.data;
             const duplicated = result.exists
 
@@ -131,6 +131,7 @@ const SignUp = () => {
                 setValidationCheck((prevState) => {
                     return {...prevState, nicknameCheck: "duplicated", nicknameCheckBoolean: false}
                 })
+                console.log(validationCheck);
             } else //중복이 아닌 경우 -> false 반환
             {
                 setValidationCheck((prevState) => {
