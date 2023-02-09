@@ -76,14 +76,14 @@ const MyPage = () =>  {
         <>
 
             <div className={styles.MyPage}>
-                <div className={styles.menu}>
-                    <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>
-                    <button className={styles.zzimactive} onClick={()=>{navigate('/mypage/zzim')}}>관심 상품</button>
-                </div>
+                {/*<div className={styles.menu}>*/}
+                {/*    <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>*/}
+                {/*    <button className={styles.zzimactive} onClick={()=>{navigate('/mypage/zzim')}}>관심 상품</button>*/}
+                {/*</div>*/}
               <div className={styles.container}>
                   {
                       postList.map((SingleObject:Object)=>(
-                      <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['likeCount']} wishCategory={SingleObject['wishCategory']}
+                      <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['likeCount']} wishCategory={SingleObject['wishCategory']} thumbnail={SingleObject['thumbNail']}
                       onClick={() => {onClickPost(SingleObject)}}/>
                       ))
                       // postList.map((post)=>(

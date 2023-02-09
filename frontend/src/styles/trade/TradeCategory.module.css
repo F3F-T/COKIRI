@@ -1,12 +1,14 @@
 .category {
     border-radius: 10px;
-    border: 1px solid rgba(200, 200, 200);
+    /*border: 2px solid rgba(93, 200, 205);*/
+    border: 0.5px solid rgba(0, 0, 0);
+    /*border: rgba(94,208,213,0.32);*/
     width: 1200px;
     height :10rem; /*192px*/
     display: grid;
     grid-template-columns: repeat(6,1fr);
     grid-template-rows: repeat(3,1fr);
-    background-color: lightgray;
+    /*background-color: rgba(94,208,213,0.32);*/
     gap: 0px;
 }
 .itemC {

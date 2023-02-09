@@ -4,6 +4,7 @@ import {Outlet, useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import photo from "../img/photoSelect.png"
+import setting from "../img/setting.png"
 import PriceBox from "../component/trade/PriceBox";
 import profile2 from "../img/profile.jpeg"
 import PostContainer from "../component/trade/PostContainer";
@@ -36,6 +37,13 @@ const MyPage = () =>  {
     interface ValidationCheck {
         nicknameCheck: checkNicknameTypes;
         nicknameCheckBoolean: boolean;
+    }
+    const [tab1, setTab] = useState<string>('curr');
+
+    function setDealTab(tab) {
+        setTab(tab)
+        console.log(tab1)
+        // return tab
     }
     const store = useSelector((state:Rootstate) => state);
     const dispatch = useDispatch();
@@ -266,21 +274,29 @@ const MyPage = () =>  {
                     </form>
                 </div>
                 <div className={styles.userInfo}>
-                    <div className={styles.nickName}>{newNick}</div>
-                    <TextInput placeholder={info.nickname} onChange={onChangeNickname}/>
-                    {(validationCheck.nicknameCheck === undefined &&
-                            <Message validCheck={validationCheck.nicknameCheckBoolean} content={""}/>)
-                        ||
-                        (validationCheck.nicknameCheck === "valid" &&
-                            <Message validCheck={validationCheck.nicknameCheckBoolean} content={"✔ 사용 가능한 닉네임입니다."}/>)
-                        ||
-                        (validationCheck.nicknameCheck === "invalid" &&
-                            <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 닉네임은 한글자 이상이어야합니다."}/>)
-                        ||
-                        (validationCheck.nicknameCheck === "duplicated" &&
-                            <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}
-                    <button className={styles.nickChangeBtn} onClick={nicknameChange}>변경</button>
-                    <input className={styles.intro} placeholder={info.onelineIntro} onChange={inputIntro} ></input>
+                    <div className={styles.wheelBox}>
+                        <div className={styles.nickName}>{newNick}</div>
+                        <button className={styles.wheelBox2}>
+                            <img className={styles.wheel} src={setting}/>
+                            <div className={styles.setting}>프로필 편집</div>
+
+                        </button>
+
+                    </div>
+                    {/*<TextInput placeholder={info.nickname} onChange={onChangeNickname}/>*/}
+                    {/*{(validationCheck.nicknameCheck === undefined &&*/}
+                    {/*        <Message validCheck={validationCheck.nicknameCheckBoolean} content={""}/>)*/}
+                    {/*    ||*/}
+                    {/*    (validationCheck.nicknameCheck === "valid" &&*/}
+                    {/*        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"✔ 사용 가능한 닉네임입니다."}/>)*/}
+                    {/*    ||*/}
+                    {/*    (validationCheck.nicknameCheck === "invalid" &&*/}
+                    {/*        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 닉네임은 한글자 이상이어야합니다."}/>)*/}
+                    {/*    ||*/}
+                    {/*    (validationCheck.nicknameCheck === "duplicated" &&*/}
+                    {/*        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}*/}
+                    {/*<button className={styles.nickChangeBtn} onClick={nicknameChange}>변경</button>*/}
+                    {/*<input className={styles.intro} placeholder={info.onelineIntro} onChange={inputIntro}></input>*/}
                     <button className={styles.nickChangeBtn} onClick={logOut}>로그아웃</button>
 
                     <div className={styles.intro2}>
@@ -291,11 +307,36 @@ const MyPage = () =>  {
                             <p>상품 거래</p> <p className={styles.tradeNum}>8</p>
                         </div>
                     </div>
-                    <button className={styles.gpsBox} onClick={() => onClickToggleModal()}>
-                        동네 등록을 해주세요.
-                    </button>
+                    <p className={styles.i2}> 가락 1동 주민이에요.</p>
+                    {/*<button className={styles.gpsBox} onClick={() => onClickToggleModal()}>*/}
+                    {/*    동네 등록을 해주세요.*/}
+                    {/*</button>*/}
                 </div>
+
             </div>
+                <div className={styles.menu}>
+                    {/*<button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>*/}
+                    {/*<button className={styles.zzimactive} onClick={()=>{navigate('/mypage/zzim')}}>관심 상품</button>*/}
+                    {tab1 === 'next' ? <button className={`${styles["post" + (tab1 === "next" ? "" : "active")]}`}
+                                               onClick={() => {
+                                                   setDealTab('next');navigate('/mypage')
+                                               }}>게시글</button>
+                        : <button className={`${styles["post" + (tab1 === "next" ? "" : "active")]}`}
+                                  onClick={() => {
+                                      setDealTab('next')
+                                      ;navigate('/mypage')
+                                  }}>게시글</button>
+                    }
+                    {tab1 === 'curr' ? <button className={`${styles["zzim" + (tab1 === "curr" ? "" : "active")]}`}
+                                               onClick={() => {
+                                                   setDealTab('curr')
+                                                   ;navigate('/mypage/zzim')
+                                               }}>관심 상품</button>
+                        : <button className={`${styles["zzim" + (tab1 === "curr" ? "" : "active")]}`}
+                                  onClick={()=>{setDealTab('curr');navigate('/mypage/zzim')}}>관심 상품</button>
+                    }
+                </div>
+
                 <Outlet/>
 
 

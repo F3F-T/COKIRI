@@ -61,18 +61,18 @@ const MyPageZZIM = () =>  {
     return (
         <>
             <div className={styles.MyPage}>
-                <div className={styles.menu}>
-                    {/*{tab1 === 'curr' ? <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>d게시글</button>*/}
-                    {/*    :<button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>*/}
-                    {/*}*/}
-                    {/*{tab1 === 'next' ? <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>d관심 상품</button>*/}
+                {/*<div className={styles.menu}>*/}
+                {/*    /!*{tab1 === 'curr' ? <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>d게시글</button>*!/*/}
+                {/*    /!*    :<button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>*!/*/}
+                {/*    /!*}*!/*/}
+                {/*    /!*{tab1 === 'next' ? <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>d관심 상품</button>*!/*/}
 
-                    {/*    : <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); {tab1==="next"? navigate('/mypage/zzim'):navigate('/mypage')}}}>관심 상품</button>*/}
-                    {/*}*/}
-                    <button className={styles.postactive}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>
-                    {/*<button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>관심 상품</button>*/}
-                    <button className={styles.zzim} onClick={()=>{ setDealTab('next')}}>관심 상품</button>
-                </div>
+                {/*    /!*    : <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); {tab1==="next"? navigate('/mypage/zzim'):navigate('/mypage')}}}>관심 상품</button>*!/*/}
+                {/*    /!*}*!/*/}
+                {/*    <button className={styles.postactive}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>*/}
+                {/*    /!*<button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>관심 상품</button>*!/*/}
+                {/*    <button className={styles.zzim} onClick={()=>{ setDealTab('next')}}>관심 상품</button>*/}
+                {/*</div>*/}
                 <div className={styles.container}>
                     {
                         scrapList.map((SingleObject:Object)=>(
