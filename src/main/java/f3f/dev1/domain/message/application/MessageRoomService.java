@@ -19,6 +19,7 @@ import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,7 @@ import static f3f.dev1.domain.message.dto.MessageRoomDTO.*;
 import static f3f.dev1.global.common.constants.ResponseConstants.DELETE;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MessageRoomService {
 
@@ -62,10 +64,26 @@ public class MessageRoomService {
         if(trade.getTradeStatus() != TradeStatus.TRADABLE){
             throw new CanNotSendMessageByTradeStatus();
         }
+        //메시지룸 중복 생성 로직 추가
+        //메시지 룸은 buyer만 만들 수 있다.
+        //즉, post에서 senderId만 비교하면 될듯?
+        //TODO query로 보내는 거랑 시간 비교해보기 -> 근데 이건 메시지룸 수가 많아졌을 때라서 고도화때?ㅎ
+        if(!post.getMessageRooms().isEmpty()) {
+            for (MessageRoom msgRoom : post.getMessageRooms()) {
+                if (msgRoom.getBuyer().getId().equals(buyer.getId()) && msgRoom.isBuyerDelStatus()==false) {
+                    MessageRoomDTO.MessageRoomInfoDto msgRoomInfo = msgRoom.toMessageRoomInfo();
+                    return msgRoomInfo;
+                }
+//                  else if (msgRoom.getBuyer().getId().equals(buyer.getId()) && msgRoom.isBuyerDelStatus()==true) {
+//                   reCreateMessageRoom(msgRoom);
+//                }
+            }
+        }
 
         MessageRoom messageRoom = saveRequest.toEntity(post, buyer);
         messageRoomRepository.save(messageRoom);
         MessageRoomInfoDto messageRoomInfoDto = messageRoom.toMessageRoomInfo();
+//        log.error("messageRoomInfoDto 값 : " + messageRoomInfoDto.isReceiverDelStatus());
 
         post.getMessageRooms().add(messageRoom);
         //두명의 유저 채팅 리스트에 추가.
@@ -74,6 +92,12 @@ public class MessageRoomService {
 
         return messageRoomInfoDto;
     }
+
+//    @Transactional
+//    public MessageRoomDTO.UpdateMessageRoomInfoDto reCreateMessageRoom(MessageRoom messageRoom){
+//        MessageRoomDTO.UpdateMessageRoomInfoDto updateMessageRoomInfoDto = messageRoom.toUpdateMessageRoomInfo();
+//        return updateMessageRoomInfoDto;
+//    }
 
     //채팅방 클릭할 때, 조회 (채팅창은 멤버에서 관리, 포스트에서 열어볼 수 없음)
     //아이디만 가져와야되나?0 이거 메시지에 들어가야되나? 싹 다 갈아
@@ -121,6 +145,44 @@ public class MessageRoomService {
 //        totalMsgRoom.addAll(member.getSellingRooms());
 
         return totalMsgRoomDtoList;
+    }
+
+
+//    @Transactional(readOnly = true)--------------------------------------------------
+//    public List<MessageRoomInfoWithOneDelStatus> ReadMessageRoomsByUserId(Long memberId, Long currentMemberId){
+//        Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+//        if(!memberId.equals(currentMemberId)){
+//            throw new NotAuthorizedException("로그인한 요청자가 아닙니다!");
+//        }
+//        List<MessageRoomInfoWithOneDelStatus> totalMsgRoomDtoList = new ArrayList<>();
+//        for(MessageRoom msgRoom : member.getBuyingRooms()){
+//
+//            msgRoom.toMessageRoomInfoWithOneDelStatus(member, )
+//            totalMsgRoomDtoList.add(msgRoomInfoDto);
+//        }
+//        for(MessageRoom msgRoom : member.getSellingRooms()){
+//            MessageRoomInfoWithOneDelStatus msgRoomInfoDto = msgRoom.toMessageRoomInfo();
+//            totalMsgRoomDtoList.add(msgRoomInfoDto);
+//        }
+////        List<MessageRoom> totalMsgRoom = new ArrayList<>();
+////        totalMsgRoom.addAll(member.getBuyingRooms());
+////        totalMsgRoom.addAll(member.getSellingRooms());
+//
+//        return totalMsgRoomDtoList;
+//    }--------------------------------------------
+
+
+    @Transactional(readOnly = true)
+    public String readTotalMessageRoomWithDelStatus(Long memberId, Long currentMemberId){
+//        List<MessageRoomDTO.MessageRoomInfoWithOneDelStatus> totalMessageRoomInfoDto = new ArrayList<>();
+        List<SellingRoomInfoDto> sellingRoomInfoDtos = ReadSellingMessageRoomsByUserId(memberId, currentMemberId);
+        List<BuyingRoomInfoDto> buyingRoomInfoDtos = ReadBuyingMessageRoomsByUserId(memberId, currentMemberId);
+//        for(SellingRoomInfoDto mr : sellingRoomInfoDtos){
+//
+//            totalMessageRoomInfoDto.add(mr);
+//        }
+
+        return "READ";
     }
 
     //유저에서 sellingRoom 조회
@@ -190,34 +252,37 @@ public class MessageRoomService {
         Member member = memberRepository.findById(deleteMessageRoomRequest.getMemberId()).orElseThrow(NotFoundByIdException::new);
         Post post = postRepository.findById(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         Trade trade = tradeRepository.findByPostId(deleteMessageRoomRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
-        //트레이드 상태 때문에 포스트가 필요한데 우선 둘다 지움.
+        //        //트레이드 상태 때문에 포스트가 필요한데 우선 둘다 지움.
         if(!member.getId().equals(currentMemberId)){
             throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
-        messageRoom.setDelStatus(true);
         //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정
         //유저 메시지 방에 있는지 확인해야함.
         //포스트 작성자는 seller이기 때문에 메시지를 받는 사람임. -> 우리는 내가 보낸 메시지방, 리스트로 나눠져있지만 프론트는 아니기때문에 우선 이렇게 구현
-//        if(post.getAuthor().equals(member.getId())) {
-//
+        if(post.getAuthor().equals(member.getId())) {
+
+            messageRoom.setReceiverDelStatus(true);
 //            for (MessageRoom mr : member.getSellingRooms()) {//객체 비교 보다 아이디 비교가 빠르려나?
 //                //selling 방에 지우고자 하는 채팅방이 있으면 메시지 다 지움
 //                    if(mr.getId().equals(messageRoom.getId())) {
-//                        mr.getMessages().clear();
+////                        mr.getMessages().clear();
 //                    }
 //
+//
+//
 //                }
-//            }
-//        //멤버가 포스트 작성자가 아니면 다 buyer
-//        else{
+            }
+        //멤버가 포스트 작성자가 아니면 다 buyer
+        else{
+            messageRoom.setSenderDelStatus(true);
 //            for(MessageRoom mr : member.getBuyingRooms()){
 //                if(mr.getId().equals(messageRoom.getId())){
 //                    mr.getMessages().clear();
 //                }
 //
 //            }
-//
-//        }
+
+        }
     return "DELETE";
     }
 
