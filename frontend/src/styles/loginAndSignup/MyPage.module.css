@@ -16,12 +16,15 @@
 }
 .profileImage{
     border: none;
+
 }
 .Image{
     margin-top: 2rem;
     height: 170px;
     width: 170px;
     border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+
     /*border: 2px solid rgba(0, 0, 0, 1);*/
     /*창 크기에 영향X*/
 }

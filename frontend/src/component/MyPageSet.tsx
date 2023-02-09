@@ -22,6 +22,7 @@ import Modal from "../routes/로그인 & 회원가입/NeighborModal";
 import {deleteToken,logoutToken} from "../store/jwtTokenReducer";
 import {resetaddress1,resetaddress2} from "../store/userAddressInfoReducer";
 import {resetTalkCard} from "../store/talkCardReducer";
+import SettingModal from "../routes/로그인 & 회원가입/SettingModal";
 
 // interface TextInputProps {
 //     init: string;
@@ -263,9 +264,9 @@ const MyPage = () =>  {
             <>
             <div className={styles.profile}>
                 {isOpenModal && (
-                    <Modal onClickToggleModal={onClickToggleModal}>
+                    <SettingModal onClickToggleModal={onClickToggleModal}>
                         <embed type="text/html"  width="800" height="608"/>
-                    </Modal>
+                    </SettingModal>
                 )}
                 <div className={styles.profileImage}>
                     <img className={styles.Image} src={info.imageUrl} onClick={()=>{fileInput.current.click()}}/>
@@ -276,10 +277,9 @@ const MyPage = () =>  {
                 <div className={styles.userInfo}>
                     <div className={styles.wheelBox}>
                         <div className={styles.nickName}>{newNick}</div>
-                        <button className={styles.wheelBox2}>
+                        <button className={styles.wheelBox2} onClick={() => onClickToggleModal()}>
                             <img className={styles.wheel} src={setting}/>
                             <div className={styles.setting}>프로필 편집</div>
-
                         </button>
 
                     </div>

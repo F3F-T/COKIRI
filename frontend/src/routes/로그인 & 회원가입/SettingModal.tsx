@@ -1,4 +1,4 @@
-import styles from '../../styles/loginAndSignup/NeighborModal.module.css'
+import styles from '../../styles/loginAndSignup/ProfileModal.module.css'
 import React, {PropsWithChildren, useState} from "react";
 import TextInput from "../../component/common/TextInput";
 import {useDispatch, useSelector} from "react-redux";
@@ -13,6 +13,11 @@ import {
     setUserAddressInfo1,
     setUserAddressInfo2, setClick1, setClick2, setLat2, setLng2,setLat1, setLng1
 } from "../../store/userAddressInfoReducer";
+import TalkList from "../../component/talk/TalkList";
+import timeConvert from "../../utils/timeConvert";
+import TalkCard from "../../component/talk/TalkCard";
+import Message from "../../component/talk/Message";
+import {HiPencil} from "react-icons/hi";
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -24,7 +29,7 @@ interface AddressType {
     latitude:string;
     longitude:string;
 }
-function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultType>)
+function SettingModal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultType>)
 
 
 {
@@ -206,66 +211,18 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
     return (
         <div className={styles.box1}>
             <div className={styles.box2}>
-                {/*{children}*/}
-                <div className={styles.addressBox}>
-                    <div className={styles.addressBox_1}>
-                        <p className={styles.ad1}> 동네 인증하기</p>
-                        <div className={styles.add2Box}>
-                            <p className={styles.ad2}>동네 인증은 현재 위치로만 가능해요. (최대 2개까지 등록할 수 있어요)</p>
-                        </div>
-                    </div>
-                    <div className={styles.plusBtnBox}>
-                        {/*<button className={styles.plusBtn1}>첫번째 주소를 추가해주세요</button>*/}
-                        {/*<button className={styles.plusBtn2}>두번째 주소를 추가해주세요</button>*/}
-                        {tab1 === 'curr' ? <button className={`${styles["plusBtn1"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>첫번째 주소를 추가해주세요</button>
-                            :              <button className={`${styles["plusBtn1"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>첫번째 주소를 추가해주세요</button>
-                        }
-                        {tab1 === 'next' ? <button className={`${styles["plusBtn2"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>두번째 주소를 추가해주세요</button>
-                            : <button className={`${styles["plusBtn2"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>두번째 주소를 추가해주세요</button>
-                        }
 
-                    </div>
-                    <div className={styles.registerBox}>
-                        <div className={styles.inputBox}>
-                            {tab1 === 'curr' ?
-                                    addressR.parcelName1===undefined?
-                                    <>  <p className={styles.input1}>주소 이름</p>
-                                        <input type="text" placeholder={'첫번째 주소 이름을 적어주세요.       [ 예시:  집, 회사 ]'}  className={`${styles["input2"+(tab1 ==="curr"? "active" : "")]}`} onChange={inputAddressName_1}/>
-                                        <button className={styles.registerBtn} onClick={()=>{postAddressData_1();setCount1(count1+1)}}>등록</button>
-                                    </>:
-                                    <>
-                                        <p className={styles.input1}>지번 주소</p>
-                                        <div className={styles.input2}>{addressR.parcelName1}</div>
-                                        <button className={styles.registerBtn} onClick={deleteAddress_1}>삭제</button>
-                                    </>
+                <div className={styles.left}>
+                    <button className={styles.left_1}>닉네임 변경</button>
+                    <button className={styles.left_1}>비밀번호 변경</button>
+                    <button className={styles.left_1}>주소 변경</button>
+                    <button className={styles.left_1}>로그아웃</button>
+                    <button className={styles.left_1}>회원탈퇴</button>
 
-                                :
-
-                                addressR.parcelName2===undefined?
-                                    <>  <p className={styles.input1}>주소 이름</p>
-                                        <input type="text" placeholder={'두번째 주소 이름을 적어주세요.       [ 예시:  집, 회사 ]'}  className={`${styles["input2_2"+(tab1 ==="curr"? "active" : "")]}`} onChange={inputAddressName_2} />
-                                        <button className={styles.registerBtn} onClick={()=>{postAddressData_2();setCount2(count2+1)}}>등록</button>
-                                    </>:
-                                    <>
-                                        <p className={styles.input1}>지번 주소</p>
-                                        <div className={styles.input2}>{addressR.parcelName2}</div>
-                                        <button className={styles.registerBtn} onClick={deleteAddress_2}>삭제</button>
-
-                                    </>
-                            }
-                            {/*<input type="text" placeholder={'첫번째 주소 이름을 적어주세요.       [ 예시:  집, 회사 ]'} className={styles.input2}/>*/}
-                        </div>
-                        {/*<div className={styles.outputBox}>*/}
-                        {/*    <p className={styles.input1}>지번주소</p>*/}
-                        {/*    <div className={styles.parcel}>주소자리</div>*/}
-                        {/*</div>*/}
-                    </div>
                 </div>
 
-
-
-
-
+                <div className={styles.right}>hello
+                </div>
             </div>
             <div className={styles.box3}
                 onClick={(e: React.MouseEvent) => {
@@ -278,4 +235,4 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
         </div>
     );
 }
-export default Modal
+export default SettingModal
