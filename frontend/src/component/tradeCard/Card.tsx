@@ -54,7 +54,7 @@ const TradeCard = (props1: props) => {
                     </div>
                     <div className={styles.detail2}>
                         <img className={styles.tradeImage} src={transfer}/>
-                        <span className={styles.like}>{props1.wishCategory}</span>
+                        <span className={styles.tradestring}>{props1.wishCategory}</span>
                     </div>
                 </div>
             </div>

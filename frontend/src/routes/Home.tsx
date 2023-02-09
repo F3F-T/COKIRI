@@ -18,6 +18,9 @@ import coatImg from "../img/coat.png";
 import Api from "../utils/api";
 import HomePostCardSwiper from "../component/common/HomePostCardSwiper";
 import RoundImageSwiper from "../component/common/RoundImageSwiper";
+import classNames from "classnames/bind";
+
+const cx = classNames.bind(styles)
 
 //모르는 태그가 너무 많아 하다가 멈춤
 //허락 맡고 다시 진행 예정
@@ -33,6 +36,7 @@ const HomeStart = () => {
     }
 
     return (
+        <div>
         <section className={styles.start}>
             <div className={styles.startLeft}>CO끼리</div>
             <div className={styles.startRight}>
@@ -40,13 +44,18 @@ const HomeStart = () => {
                     중고 거래부터 동네 인증까지, 코끼리와 함께해요.<br/>
                     가볍고 따뜻한 코끼리를 만들어요.</div>
                 <div className={styles.startRight2}>
+                    <button className={cx('startBtn')} onClick={onClickStart}>시작하기</button>
+                    <button className={cx('startBtn')} onClick={onClickUpload}>내 물건 올리기</button>
 
-                    <Button className={"lightblue"} content={"시작하기"} onClick={onClickStart} color={"black"} hover={true} size={"medium"}/>
-                    <Button className={"lightblue"} content={"내 물건 올리기"} onClick={onClickUpload} color={"black"} hover={true} size={"medium"}/>
+                    {/*<Button className={"lightblue"} content={"시작하기"} onClick={onClickStart} color={"black"} hover={true} size={"medium"}/>*/}
+                    {/*<Button className={"lightblue"} content={"내 물건 올리기"} onClick={onClickUpload} color={"black"} hover={true} size={"medium"}/>*/}
 
                 </div>
             </div>
+
         </section>
+            <hr className={styles.hrFull}/>
+            </div>
     );
 }
 
@@ -111,9 +120,8 @@ const HomeMulmulTrade = () => {
 
     return (
         <section className={styles.mulmulTrade}>
-            <hr/>
             <div className ={styles.tradeTop}>
-            <h2>우리 동네 인기 물물교환</h2>
+            <h2>우리 동네의 인기있는 물물교환 아이템들 👏</h2>
             <li onClick={onClickMore}>더보기</li>
             </div>
             <div className={styles.mulmulCardView}>
