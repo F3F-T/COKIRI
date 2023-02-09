@@ -1,7 +1,7 @@
 
 :root {
     --start-height: 20rem; /*변수 할당, start div의 height*/
-    --mulmul-height: 25rem;
+    --mulmul-height: 21rem;
 }
 
 .home{
@@ -144,7 +144,7 @@
 추후엔 MulMulcardView module을 따로 빼서 넣어야 함*/
 
 .mulmulCardView{
-    position : absolute;
+    position : relative;
     margin-top: 1rem;
     width:1200px;
     display: flex;
@@ -225,7 +225,8 @@
 /*끼리끼리 h2(다른 카테고리 뿐만 아니라 같은 카테고리 끼리도 교환할 수 있어요)*/
 .kirikiriTrade h2{
     margin-top: 3rem;
-    text-align: center;
+    margin-left : 50px;
+    font-size : 1.7rem;
 }
 
 
@@ -248,17 +249,18 @@
     gap: 1rem;
 }
 
-.kirikiriMore{
-    text-align : right;
-    position : relative;
+.kiriTop{
+    position: relative;
 }
-
 .kiriLi{
-    position: absolute;
-    right: 0;
-    top : 0.75rem;
+    cursor: pointer;
+    color: #5DC8CD;
     list-style: none;
+    position : absolute;
+    right : -0.4rem;
     margin-right : 4rem;
-    font-size : 1rem;
-    color: gray;
+    font-weight: bold;
+    font-size : 1.3rem;
+    line-height: 2.3rem;
+    top : -2rem;
 }
