@@ -68,6 +68,7 @@ function SettingModal({onClickToggleModal, children,}: PropsWithChildren<ModalDe
             dispatch(setLat1(JSON.stringify(location.coordinates.lat)))
             dispatch(setLng1(JSON.stringify(location.coordinates.lng)))
         }
+
         catch (err)
         {
             console.log(err)
