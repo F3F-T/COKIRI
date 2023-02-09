@@ -63,6 +63,7 @@ const TalkCard= (key: keyProps) => {
             // dispatch(setMessageRoomId(res.data.content.messageRoomId))
 
             for(let i=0;i<res2.data.length;i++){
+                if(res2.data[i].sellerDelStatus == false && res2.data[i].buyerDelStatus == false )
                 if(res2.data[i].id == realKey){
                     const res3 = await Api.get(`/post/${res2.data[i].postId}`)
                     dispatch(setTradeStatus(res3.data.tradeStatus))

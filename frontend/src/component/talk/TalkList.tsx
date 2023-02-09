@@ -20,6 +20,7 @@ import {
 import {Rootstate} from "../../index";
 import {changeRefreshState} from "../../store/refreshReducer";
 import timeConvert from "../../utils/timeConvert";
+import talkCard from "./TalkCard";
 
 
 
@@ -81,19 +82,27 @@ const TalkListLeft = (props2:props)=>{
 
 
 const TalkList = (props2: props) => {
+    const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
+
     const realCount = props2.counts
     // props2.click =click
 
-    console.log("talklist들어옴",props2.keys)
+    // console.log("talklist들어옴",props2.keys)
     //last message 한번더 호출
     useEffect(() => {
-        getMessageRoom()
+        if(talkCard.delStatus==false){
+            getMessageRoom()
+        }
     }, [realCount])
+
+
     async function getMessageRoom() {
         try{
+
             const res = await Api.get('/user/messageRooms');
         }
         catch (err)
+
         {
             console.log(err)
             alert("메세지룸 조회 실패 in Talklist")

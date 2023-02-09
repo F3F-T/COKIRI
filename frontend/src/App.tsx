@@ -66,16 +66,13 @@ function App() {
                 <Route path="/tagsearch" element={<TagSearch/>} />
 
 
-                <Route path="/mypage" element={<MyPageSet/>} >
-                    <Route path="" element={<MyPage/>}>
-                        {/*<Route path="edit" element={<EditProfile/>} />*/}
-                    </Route>
-                    <Route path="zzim" element={<Zzim/>}>
-                        {/*<Route path="edit" element={<EditProfile/>} />*/}
-
-                    </Route>
+                <Route path="/mypage/:id" element={<MyPageSet/>} >
+                    <Route path="" element={<MyPage/>}/>
+                    <Route path="zzim" element={<Zzim/>}/>
                 </Route>
                 {/*<Route path="/mypage" element={<MyPage/>}/ >*/}
+
+                {/*<Route path="/mypage/zzim" element={<Zzim/>} />*/}
 
                 <Route path="/kokiritalk/:id" element={<KokiriTalk/>} />
 
