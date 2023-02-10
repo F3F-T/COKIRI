@@ -1,0 +1,109 @@
+.box1{
+    width: 30rem;
+    height: 25rem;
+}
+.ad1{
+    margin-top: 3rem;
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 400;
+}
+.ad2{
+    margin-top: 3rem;
+    font-size: 1rem;
+    text-align: center;
+}
+.ad22{
+    font-size: 1rem;
+    text-align: center;
+}
+.inputNickBox{
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: center;
+    gap:10px;
+}
+.inputNick{
+    margin-top: 2rem;
+    border-radius: 10px;
+
+    font-size: 1rem;
+}
+.nickChangeBtn{
+    margin-top: 2rem;
+    border: none;
+    height: 2rem;
+    width: 3rem;
+    border-radius: 10px;
+}
+.valCheck{
+    margin-left: 7.3rem;
+    margin-top: 1.5rem;
+}
+.tBox{
+    margin: 2rem;
+    font-size: 0.9rem;
+    color: gray;
+}
+.delBtn{
+    margin-top: 1rem;
+    margin-left: 20rem;
+    border: none;
+    width: 8rem;
+    font-size: 0.8rem;
+    height: 2rem;
+    border-radius: 10px;
+}
+
+
+.set2{
+    width: 20rem;
+    margin-left: 4rem;
+    display: flex;
+    margin-bottom: 0.6rem;
+    gap: 10px;
+    justify-content: space-between;
+}
+.set{
+    width: 20rem;
+    height: 2.5rem;
+    margin-top: 2rem;
+}
+.set1{
+    width: 20rem;
+    margin-left: 4rem;
+    margin-bottom: 0.6rem;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+.inputPW{
+    height: 2rem;
+    background-color: #e5e8eb;
+    border-radius: 5px;
+    border: none;
+}
+.pwBtn{
+    margin-left: 12.66rem;
+    margin-top: 2rem;
+    height: 2rem;
+    border-radius: 10px;
+    border: none;
+    width: 6rem;
+    font-size: 0.8rem;
+}
+.lostPW{
+    margin-top: 0.8rem;
+    border: none;
+    color: cornflowerblue;
+    font-weight: 400;
+    background-color: transparent;
+    margin-left: 12.66rem;
+    font-size: 0.8rem;
+}
+.valCheck2{
+    margin-left: 12.4rem;
+    height: 1rem;
+    width: 10rem;
+}
+

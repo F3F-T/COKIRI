@@ -39,7 +39,7 @@ const MyPage = () =>  {
         nicknameCheck: checkNicknameTypes;
         nicknameCheckBoolean: boolean;
     }
-    const [tab1, setTab] = useState<string>('curr');
+    const [tab1, setTab] = useState<string>('next');
 
     function setDealTab(tab) {
         setTab(tab)

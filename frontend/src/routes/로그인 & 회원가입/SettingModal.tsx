@@ -18,6 +18,11 @@ import timeConvert from "../../utils/timeConvert";
 import TalkCard from "../../component/talk/TalkCard";
 import Message from "../../component/talk/Message";
 import {HiPencil} from "react-icons/hi";
+import AddressChange from "./Settings/AddressChange";
+import SignUp from "./SignUp";
+import NickNameChange from "./Settings/NickNameChange";
+import PasswordChange from "./Settings/PasswordChange";
+import UserDelete from "./Settings/UserDelete";
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -29,6 +34,19 @@ interface AddressType {
     latitude:string;
     longitude:string;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 function SettingModal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultType>)
 
 
@@ -53,158 +71,19 @@ function SettingModal({onClickToggleModal, children,}: PropsWithChildren<ModalDe
     const [count1,setCount1]=useState(0);
     const [count2,setCount2]=useState(0);
 
+    const [selectList,setSelectList] = useState(1);
     console.log("주소1이 잘 들어갔나",addressR)
 
     //주소 추가
-    async function postAddressData_1() {
-        try{
-            dispatch(parcelAddress1(parcel_1))
-            const res = await Api.post('/address',addressInfo);
-            console.log("첫번째 위치정보", addressInfo);
-            setAddressID(res.data.id);
-            dispatch(setUserAddressInfo1((res.data.id)))
-            dispatch(setAddressName1((res.data.addressName)))
-            dispatch(setClick1(1))
-            dispatch(setLat1(JSON.stringify(location.coordinates.lat)))
-            dispatch(setLng1(JSON.stringify(location.coordinates.lng)))
-        }
 
-        catch (err)
-        {
-            console.log(err)
-            alert("추가 실패")
-        }
-    }
-    async function postAddressData_2() {
-        try{
-            dispatch(parcelAddress2(parcel_2))
-            const res = await Api.post('/address',addressInfo);
-            console.log(res)
-            console.log("두번째 위치정보", addressInfo);
-            setAddressID(res.data.id);
-            dispatch(setUserAddressInfo2((res.data.id)))
-            dispatch(setAddressName2((res.data.addressName)))
-            dispatch(setClick2(1))
-            dispatch(setLat2(JSON.stringify(location.coordinates.lat)))
-            dispatch(setLng2(JSON.stringify(location.coordinates.lng)))
 
-            // alert("추가 성공")
-        }
-        catch (err)
-        {
-            console.log(err)
-            alert("추가 실패")
-        }
-    }
-    //주소 delete
-    async function deleteAddress_1() {
-        try{
-            const addressDelete1={
-                data: {
-                    userId: info.id,
-                    addressId: addressR.addressId1
-                }
-            }
-            const res = await Api.delete('/address', addressDelete1);
-            dispatch(resetaddress1())
-            // alert("삭제 성공")
-        }
-        catch (err)
-        {
-            console.log(err)
-            alert("삭제 실패")
-        }
-    }
-    async function deleteAddress_2() {
-        try{
-            const addressDelete2={
-                data: {
-                    userId: info.id,
-                    addressId: addressR.addressId2
-                }
-            }
-            const res = await Api.delete('/address', addressDelete2);
-            dispatch(resetaddress2())
-            // alert("삭제 성공")
-        }
-        catch (err)
-        {
-            console.log(err)
-            alert("삭제 실패")
-        }
-    }
+    const [key,setKey] = useState<number>(null)
 
-    //input기능
-    const inputAddressName_1 = (e) => {
-        console.log("대답1")
-        let inputName = e.target.value;
-        if (inputName.length > 0) {
-            getAddr_1(JSON.stringify(location.coordinates.lat),JSON.stringify(location.coordinates.lng))
-            setAddressInfo((prevState) => {
-                return {
-                    ...prevState,
-                    userId: info.id,
-                    addressName: e.target.value,
-                    postalAddress: parcel_1,
-                    latitude: JSON.stringify(location.coordinates.lat),
-                    longitude: JSON.stringify(location.coordinates.lng),
-                }
-            })
+    const onClickTotalTalkList = (key) => {
+        return (event: React.MouseEvent) => {
+            setKey(key);
+            event.preventDefault();
         }
-    }
-    const inputAddressName_2= (e) => {
-        console.log("대답2")
-        let inputName = e.target.value;
-        if (inputName.length > 0) {
-            getAddr_2(JSON.stringify(location.coordinates.lat),JSON.stringify(location.coordinates.lng))
-            setAddressInfo((prevState) => {
-                return {
-                    ...prevState,
-                    userId: info.id,
-                    addressName: e.target.value,
-                    postalAddress: parcel_2,
-                    latitude: JSON.stringify(location.coordinates.lat),
-                    longitude: JSON.stringify(location.coordinates.lng),
-                }
-            })
-        }
-        else{
-        }
-    }
-
-    //카카오 지도로 지번주소 불러오기
-    /*global kakao*/
-    function getAddr_1(lat,lng) {
-        // @ts-ignore
-        let geocoder = new kakao.maps.services.Geocoder();
-        // @ts-ignore
-        let coord = new kakao.maps.LatLng(lat, lng);
-        let callback = function (result, status) {
-            // @ts-ignore
-            if (status === kakao.maps.services.Status.OK) {
-                const arr = {...result};
-                const _arr = arr[0].address.address_name;
-                console.log("kakao주소1", _arr)
-                setParcel_1(_arr)
-            }
-        }
-        geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
-    }
-    function getAddr_2(lat,lng){
-        // @ts-ignore
-        let geocoder = new kakao.maps.services.Geocoder();
-        // @ts-ignore
-        let coord = new kakao.maps.LatLng(lat, lng);
-        let callback = function(result, status) {
-            // @ts-ignore
-            if (status === kakao.maps.services.Status.OK) {
-                const arr  ={ ...result};
-                const _arr = arr[0].address.address_name;
-                console.log("kakao주소2", _arr)
-                setParcel_2(_arr)
-            }
-        }
-        geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
     }
 
 
@@ -214,15 +93,32 @@ function SettingModal({onClickToggleModal, children,}: PropsWithChildren<ModalDe
             <div className={styles.box2}>
 
                 <div className={styles.left}>
-                    <button className={styles.left_1}>닉네임 변경</button>
-                    <button className={styles.left_1}>비밀번호 변경</button>
-                    <button className={styles.left_1}>주소 변경</button>
-                    <button className={styles.left_1}>로그아웃</button>
-                    <button className={styles.left_1}>회원탈퇴</button>
+                    <button className={styles.left_1} onClick={()=>{setSelectList(1)}}>닉네임 변경</button>
+                    <button className={styles.left_1} onClick={()=>{setSelectList(2)}}>비밀번호 변경</button>
+                    <button className={styles.left_1} onClick={()=>{setSelectList(3)}}>주소 변경</button>
+                    {/*<button className={styles.left_1} onClick={()=>{setSelectList(4)}}>로그아웃</button>*/}
+                    <button className={styles.left_1} onClick={()=>{setSelectList(5)}}>계정 탈퇴</button>
+                    <div className={styles.left_2}>
+                        <div className={styles.left_21}>COKIRI</div>
+                        <div className={styles.left_22}>계정 센터</div>
+                        <div className={styles.left_23}>개인정보 변경 및 회원 탈퇴 등 COKIRI 설정을 관리하세요.</div>
+                    </div>
 
                 </div>
+                <div className={styles.right}>
+                    {selectList ==1?
+                        <NickNameChange/>:<></>
+                    }
+                    {selectList ==2?
+                        <PasswordChange/>:<></>
+                    }
+                    {selectList ==3?
+                        <AddressChange/>:<></>
+                    }
+                    {selectList ==5?
+                        <UserDelete/>:<></>
+                    }
 
-                <div className={styles.right}>hello
                 </div>
             </div>
             <div className={styles.box3}
@@ -236,4 +132,5 @@ function SettingModal({onClickToggleModal, children,}: PropsWithChildren<ModalDe
         </div>
     );
 }
+
 export default SettingModal

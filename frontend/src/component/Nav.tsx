@@ -90,7 +90,7 @@ const Nav1 = () => {
                 <div>
                 <img className={styles.mypageI} onClick={()=>navigate('/')} src = {store.jwtTokenReducer.authenticated  ? mypage:mypage}/>
                 {(store.jwtTokenReducer.authenticated  ?
-                   <button className={styles.signBtn2} onClick={()=>navigate(`/mypage/${info.id}`)}>{store.userInfoReducer.nickname}님 상점</button>
+                   <button className={styles.signBtn2} onClick={()=>navigate(`/mypage`)}>{store.userInfoReducer.nickname}님 상점</button>
                    :
                    <button className={styles.signBtn} onClick={()=>navigate('/login')}>로그인/회원가입</button>)
                 }
