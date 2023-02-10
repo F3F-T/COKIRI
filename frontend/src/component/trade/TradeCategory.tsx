@@ -7,7 +7,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import {Rootstate} from "../../index";
 import {useDispatch, useSelector} from "react-redux";
 import {Root} from "react-dom/client";
-import {resetCategory, storeCategory} from "../../store/categoryReducer";
+import categoryReducer, {resetCategory, storeCategory} from "../../store/categoryReducer";
 import classNames from "classnames/bind";
 
 //TODO: REFACTORING) categories를 배열로 미리 만들고 map함수로 생성
@@ -19,11 +19,11 @@ const TradeCategory = () => {
     const store = useSelector((state:Rootstate) => state);
     //action을 사용하기 위해 dispatch를 선언한다.
     const dispatch = useDispatch();
-    const [isClicked, setIsClicked] = useState();
-
+    const [isClicked, setIsClicked] = useState<number>();
     const categories: string[] =
         ['전체', '도서', '생활가전', '의류', '유아도서', '유아동', '여성의류', '남성의류', '뷰티/미용', '스포츠/레저',
             '티켓/교환권', '식물', '가구', '반려동물용품', '가공용품', '취미/게임', '인테리어', '생활/주방']
+
 
     const onClickCategoryButton = (e,category)  => {
         dispatch(storeCategory(category))
@@ -39,6 +39,30 @@ const TradeCategory = () => {
         //category : categoryReducer.ts 안에 있는 categorySlice에 담긴 category이다. 이는 initialState : 안에 선언이 되어있다.
     }
 
+    useEffect(()=>{
+        if(store.categoryReducer.category === "도서"){
+            setIsClicked(prevState => {
+                return 1;
+            });
+        }
+        else if(store.categoryReducer.category === "남성의류"){
+            setIsClicked(prevState => {
+                return 7;
+            });
+        }
+        else if(store.categoryReducer.category === "티켓/교환권"){
+            setIsClicked(prevState => {
+                return 10;
+            });
+        }
+        else if(store.categoryReducer.category === "유아동"){
+            setIsClicked(prevState => {
+                return 5;
+            });
+        }
+
+
+    },[])
 
     return (
 

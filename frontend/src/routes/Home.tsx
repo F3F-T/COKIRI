@@ -93,7 +93,7 @@ const HomeMulmulTrade = () => {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
             //query string 날리기
-            const res = await Api.get(`/post?&sort=scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC&size=8&page=0`);
+            const res = await Api.get(`/post?&sort=scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC&size=10&page=0`);
             console.log(res);
 
             console.log(res.data)
@@ -144,7 +144,7 @@ const HomeKirikiriTrade = () => {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
             //query string 날리기
-            const res = await Api.get(`/post?productCategory=${category}&wishCategory=${category}&sort=scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC&size=20&page=0`);
+            const res = await Api.get(`/post?productCategory=${category}&wishCategory=${category}&sort=scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC&size=10&page=0`);
             console.log(res);
 
             console.log(res.data)

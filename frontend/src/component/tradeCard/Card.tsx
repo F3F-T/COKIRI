@@ -81,7 +81,6 @@ const MypageCard = (props1: props) => {
     )
 }
 
-
 const Card = (props1: props) => {
     return (
         <>
