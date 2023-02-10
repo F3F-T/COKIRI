@@ -397,6 +397,10 @@ const PostDetail = () => {
         navigate(`/post/${post.id}/edit`)
     }
 
+    const onClickTag = (tagname) => {
+        navigate(`/tagsearch?tags=${tagname}`);
+    }
+
 
 
     if (!post) {
@@ -494,9 +498,21 @@ const PostDetail = () => {
                     <div className={styles.postDetailInfo}>
                         <h2 className={styles.postDetailTitle}>{post.title}</h2>
                         <div className={styles.postDetailCategory}>{post.productCategory}</div>
-                        <div className={styles.postDetailPrice}></div>
+                        <div className={styles.postDetailPrice}>{post.price}원</div>
+                        <div className={styles.contentAndTag}>
                         <div className={styles.postDetailContent}>{post.content}</div>
-                        <div className={styles.postDetailTag}>#{post.tagNames}</div>
+                        <div className={styles.postDetailTag}>
+                            {
+
+                                    post.tagNames.map((tagname) => (
+                                        <span onClick={() => {onClickTag(tagname)}} className = {styles.tagC}>
+                                            #{tagname}
+                                        </span>
+                                    ))
+
+                            }
+                        </div>
+                    </div>
                     </div>
                     <div className={styles.categoryandStatus}>
                     <div className={styles.postDetailSwapCategoryBox}>
@@ -530,28 +546,7 @@ const PostDetail = () => {
                                     />
                                 </>)
                                 :
-                                <Select
-                                    className={styles.tradeStatus}
-                                    styles={{ // zIndex
-                                        menu: provided => ({...provided, zIndex: 999})
-                                    }}
-                                    // If you don't need a state you can remove the two following lines value & onChange
-                                    value={tradeState.selectedTradeStatus}
-                                    onChange={(option: TradeStatus | null) => {
-
-                                        setTradeState({selectedTradeStatus: option});
-                                        changeTradeStatus(option);
-
-                                    }}
-                                    isDisabled={true}
-                                    getOptionLabel={(category: TradeStatus) => category.name}
-                                    getOptionValue={(category: TradeStatus) => category.name}
-                                    options={tradeStatus}
-                                    isClearable={false}
-                                    isSearchable={false}
-                                    // backspaceRemovesValue={true}
-                                    placeholder={"교환가능"}
-                                />
+                                <span className = {styles.tradeStatusString}>{tradeState.selectedTradeStatus.name}</span>
                         }
                     </div>
                     </div>

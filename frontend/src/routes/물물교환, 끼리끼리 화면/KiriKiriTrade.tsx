@@ -51,7 +51,12 @@ const KiriKiriTrade = () => {
                     <TradeCategory/>
                     <PriceBox/>
                 </div>
-                <div className={styles.navPostOrWant}>{store.categoryReducer.category}끼리 교환해요</div>
+
+                <div className={styles.navPostOrWant}>
+                    {store.categoryReducer.category ==="전체" ?  <div className={styles.navPostOrWant}>끼리끼리 교환해요</div> :
+                        <div className={styles.navPostOrWant}>{store.categoryReducer.category}끼리 교환해요</div>
+                    }
+                </div>
                 <div className={styles.popularOrNewest}>
                     <div className={styles.popularOrNewest}>
                         {tab1 === 'next' ? <button className={`${styles["newsetBtn" + (tab1 === "next" ? "active" : "")]}`}

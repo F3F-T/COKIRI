@@ -31,10 +31,13 @@ const MulmulTrade1 = () => {
     return (
         <div className={styles.mulmulTrade}>
             <div className={styles.mulmulTradeContent}>
-                { categories2.includes(store.categoryReducer.category)?
-                    <div className={styles.navPostOrWant}>{store.categoryReducer.category}을 올린 사람들이에요.</div> :
-                    <div className={styles.navPostOrWant}>{store.categoryReducer.category}를 올린 사람들이에요.</div>
-                }
+                {store.categoryReducer.category ==="전체" ?  <div className={styles.navPostOrWant}>전체 게시글이에요.</div> :
+                    categories2.includes(store.categoryReducer.category) ?
+                            <div className={styles.navPostOrWant}>{store.categoryReducer.category}을 올린 사람들이에요.</div> :
+                            <div className={styles.navPostOrWant}>{store.categoryReducer.category}를 올린 사람들이에요.</div>
+                     }
+
+
                 <div className={styles.popularOrNewest}>
                     {tab1 === 'next' ? <button className={`${styles["newsetBtn" + (tab1 === "next" ? "active" : "")]}`}
                                                onClick={() => {
