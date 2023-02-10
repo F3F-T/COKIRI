@@ -145,6 +145,7 @@ const PostUpload = () => {
 
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
+
             console.log(jsonObj)
             const res = await Api.post('/post', jsonObj);
             console.log(res)
@@ -203,6 +204,7 @@ const PostUpload = () => {
                 "images": [...photoUrlList],
                 "thumbnail": photoUrlList[0]
             };
+            //업로드 유효검증 로직 추가로 짜야함
             uploadPost(jsonObj);
             console.log("업로드 성공")
         }

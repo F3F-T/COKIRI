@@ -54,7 +54,7 @@ const HomeStart = () => {
             </div>
 
         </section>
-            <hr className={styles.hrFull}/>
+
             </div>
     );
 }
