@@ -61,7 +61,11 @@ const Nav1 = () => {
     return (
         <div className={styles.navBarBar}>
         <Navbar className={styles.navBar} bg="white" variant="white">
-            <img className={styles.homeLogo} onClick={()=>navigate('/')}  src = {myImage}/>
+            <div className={styles.logoBox}>
+                <img className={styles.homeLogo} onClick={()=>navigate('/')}  src = {myImage}/>
+                <p className={styles.logoText} onClick={()=>navigate('/')} >COKIRI</p>
+
+            </div>
             <Nav className={styles.meauto}>
                 <Nav.Link className={styles.mulBtn}  onClick={()=>navigate('/mulmultrade')}>물물교환</Nav.Link>
                 <Nav.Link className={styles.kiriBtn}  onClick={()=>navigate('/kirikiritrade')}>끼리끼리</Nav.Link>
@@ -72,7 +76,6 @@ const Nav1 = () => {
                         className={styles.customLook}
                         placeholder="해시태그를 적고 엔터를 눌러주세요."
                         settings={settings}
-
                         //여기서 자동완성을 설정할수있음, 추후에 서버에서 tag 리스트를 가져와서 넣으면 될듯
                         whitelist={["스팸","식품","과일존맛","신상품","스팸클래식","이게자동완성이라는건데요"]}
                         // defaultValue="a,b,c"
