@@ -75,7 +75,7 @@ const MyPageZZIM = () =>  {
                 {/*</div>*/}
                 <div className={styles.container}>
                     {
-                        scrapList.map((SingleObject:Object)=>(
+                        scrapList.reverse().map((SingleObject:Object)=>(
                             <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['scrapCount']} wishCategory={SingleObject['wishCategory']}
                                    onClick={() => {onClickPost(SingleObject)}}/>
                         ))

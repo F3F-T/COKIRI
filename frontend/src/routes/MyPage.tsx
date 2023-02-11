@@ -82,7 +82,7 @@ const MyPage = () =>  {
                 {/*</div>*/}
               <div className={styles.container}>
                   {
-                      postList.map((SingleObject:Object)=>(
+                      postList.reverse().map((SingleObject:Object)=>(
                       <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['likeCount']} wishCategory={SingleObject['wishCategory']} thumbnail={SingleObject['thumbNail']}
                       onClick={() => {onClickPost(SingleObject)}}/>
                       ))
