@@ -101,7 +101,7 @@ const MyPage = () =>  {
         }
         catch (err){
             console.log(err);
-            alert("실패??")
+            alert("실패??????")
         }
     }
 
