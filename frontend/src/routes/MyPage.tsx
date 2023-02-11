@@ -1,6 +1,6 @@
 import React, {useState, useRef,useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/loginAndSignup/MyPage.module.css"
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import photo from "../img/photoSelect.png"
@@ -33,9 +33,12 @@ const MyPage = () =>  {
     const [tab1, setTab] = useState<string>('curr');
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const {state} = useLocation(); //다른 유저꺼 받을 때
+    console.log("포스트아이디 이거로 넘어온건지 확인", state)
+    const [otherPost,setOtherPostList] = useState(null)
 
     const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
-
+    const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
     const store = useSelector((state:Rootstate) => state);
     const [postList,setPostList] = useState<PostType[]>(null)
 
@@ -59,9 +62,26 @@ const MyPage = () =>  {
             alert("내 게시글 불러오기 실패");
         }
     }
+    async function getUserPost_2(){
+        try{
+            const res = await  Api.get(`/post/user/${state}`)
+            console.log("다른 유저 게시글 정보",res.data.content)
+            await setOtherPostList(prevState => {
+                return [ ...res.data.content];
+            })
+            console.log("다른 유저 게시글 정보222222222",otherPost)
 
+        }
+        catch (err){
+            console.log(err);
+            alert("실패??")
+        }
+    }
     useEffect(()=>{
         getMyPostList();
+    },[])
+    useEffect(()=>{
+        getUserPost_2();
     },[])
         // getMyPostList();
 
@@ -82,10 +102,18 @@ const MyPage = () =>  {
                 {/*</div>*/}
               <div className={styles.container}>
                   {
-                      postList.reverse().map((SingleObject:Object)=>(
-                      <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['likeCount']} wishCategory={SingleObject['wishCategory']} thumbnail={SingleObject['thumbNail']}
-                      onClick={() => {onClickPost(SingleObject)}}/>
-                      ))
+                      info.id==state?
+                          postList.reverse().map((SingleObject:Object)=>(
+                              <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['likeCount']} wishCategory={SingleObject['wishCategory']} thumbnail={SingleObject['thumbNail']}
+                                     onClick={() => {onClickPost(SingleObject)}}/>
+                          )):
+                          otherPost.reverse().map((SingleObject:Object)=>(
+                              <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['likeCount']} wishCategory={SingleObject['wishCategory']} thumbnail={SingleObject['thumbNail']}
+                                     onClick={() => {onClickPost(SingleObject)}}/>
+                          ))
+
+
+
                       // postList.map((post)=>(
                       //     <Card  className={"forMypage"} postTitle={post['title']} like={20} wishCategory={postList['wishCategory']}
                       //            onClick={() => {onClickPost(post)}}/>

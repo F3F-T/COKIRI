@@ -474,7 +474,7 @@ const PostDetail = () => {
     // console.log(scrapSaved);
     const onClickUserPage = () => {
         console.log("클릭")
-        navigate(`/mypage/${post.userInfoWithAddress.userDetail.id}`,{state:post})
+        navigate(`/mypage/${post.userInfoWithAddress.userDetail.id}`,{state:post.userInfoWithAddress.userDetail.id})
     }
 
     return (
