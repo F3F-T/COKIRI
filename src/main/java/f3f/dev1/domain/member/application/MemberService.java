@@ -230,4 +230,9 @@ public class MemberService {
     public UserDetail getUserDetail(Long memberId) {
         return memberCustomRepositoryImpl.getUserDetail(memberId);
     }
+
+    @Transactional(readOnly = true)
+    public GetOtherUserInfoDto getOtherUserById(Long memberId) {
+        return memberCustomRepositoryImpl.getOtherUserInfo(memberId);
+    }
 }

@@ -3,6 +3,8 @@ package f3f.dev1.domain.member.dao;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
 import f3f.dev1.domain.address.dto.QAddressDTO_AddressInfoDTO;
+import f3f.dev1.domain.member.dto.MemberDTO;
+import f3f.dev1.domain.member.dto.QMemberDTO_SimpleUserInfo;
 import f3f.dev1.domain.member.dto.QMemberDTO_UserDetail;
 import lombok.RequiredArgsConstructor;
 
@@ -45,7 +47,25 @@ public class MemberCustomRepositoryImpl implements MemberCustomRepository {
                 .where(member.id.eq(userId)).fetchOne();
     }
 
-//    @Override
+    @Override
+    public MemberDTO.SimpleUserInfo getSimplerUserInfo(Long userId) {
+        return queryFactory
+                .select(new QMemberDTO_SimpleUserInfo(
+                        member.nickname,
+                        member.imageUrl
+                )).from(member)
+                .where(member.id.eq(userId)).fetchOne();
+    }
+
+    @Override
+    public MemberDTO.GetOtherUserInfoDto getOtherUserInfo(Long userId) {
+        return MemberDTO.GetOtherUserInfoDto.builder()
+                .address(getUserAddress(userId))
+                .userInfo(getSimplerUserInfo(userId))
+                .build();
+    }
+
+    //    @Override
 //    public Page<GetUserPost> getUserPost(Long userId, Pageable pageable) {
 //        QueryResults<GetUserPost> getUserPostQueryResults = queryFactory.select(new QMemberDTO_GetUserPost(post.id, post.title, trade.tradeStatus, category.name, scrapPost.scrap.count().nullif(0L)))
 //                .from(post)
