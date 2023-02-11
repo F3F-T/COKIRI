@@ -18,7 +18,7 @@ import Card from "../../component/tradeCard/Card";
 import Message from "../../component/로그인 & 회원가입/Message";
 import {HiPencil} from "react-icons/hi";
 import {resetCategory} from "../../store/categoryReducer";
-import {changeRefreshState} from "../../store/refreshReducer";
+import {changeCommentRefreshState} from "../../store/refreshReducer";
 import comments from "../../component/comments/Comments";
 import timeConvert from "../../utils/timeConvert";
 import {LocalDateTime} from "js-joda";
@@ -37,10 +37,11 @@ import {
 } from "../../store/talkCardReducer";
 import {FALSE} from "sass";
 
-import CustomSwiper from "../../component/common/CustomSwiper";
+import ImageSwiper from "../../component/common/ImageSwiper";
 import tradeEx from "../../img/tradeEx.jpeg";
 import {prepend} from "list";
 import Select from "react-select";
+import {ClipLoader} from "react-spinners";
 
 
 const PostDetail = () => {
@@ -122,7 +123,6 @@ const PostDetail = () => {
     const [post, setPost] = useState<PostType>(null)
     const [commentList, setCommentList] = useState<CommentType[]>(null)
     const [writeComment, setWriteComment] = useState<WriteCommentType>(null)
-    const [refreshFetch, setRefreshFetch] = useState({commentChange: false})
     // const [isAuthor, setIsAuthor] = useState<boolean>();
     let isAuthor;
     const [isAuthorProps, setIsAuthorProps] = useState();
@@ -141,31 +141,27 @@ const PostDetail = () => {
     const isAuthorTrue = ["수정", "|", "삭제"];
     const isAuthorFalse = ["신고"]
     const [scrapCountInReact, setScrapCountInReact] = useState<number>();
-
+    const [scrapSaved, setScrapSaved] = useState<boolean>();
 
     //select
-    interface Category {
+    interface TradeStatus {
         name: string;
     }
 
-    const categories: Category[] =
+    const tradeStatus: TradeStatus[] =
         [
-            {name: '판매중'},
+            {name: '교환가능'},
             {name: '예약중'},
-            {name: '판매완료'},
+            {name: '교환완료'},
         ]
 
 
     interface ArrayObjectSelectState {
-        selectedCategory: Category | null;
+        selectedTradeStatus: TradeStatus | null;
     }
 
-    const [productState, setProductState] = React.useState<ArrayObjectSelectState>({
-        selectedCategory: null,
-    });
-
-    const [wishState, setWishState] = React.useState<ArrayObjectSelectState>({
-        selectedCategory: null,
+    const [tradeState, setTradeState] = React.useState<ArrayObjectSelectState>({
+        selectedTradeStatus: null,
     });
 
 
@@ -181,6 +177,20 @@ const PostDetail = () => {
             })
             setScrapSaved(prevState => res.data.scrap)
             setScrapCountInReact(prevState => res.data.scrapCount);
+
+            if(res.data.tradeStatus === "TRADABLE")
+            {
+                console.log("교환가능");
+                setTradeState({selectedTradeStatus: {name : "거래가능"}});
+            }
+            else if(res.data.tradeStatus === "TRADING")
+            {
+                setTradeState({selectedTradeStatus: {name : "예약중"}});
+            }
+            else if(res.data.tradeStatus === "TRADED")
+            {
+                setTradeState({selectedTradeStatus: {name : "교환완료"}});
+            }
 
         } catch (err) {
             console.log(err)
@@ -201,6 +211,33 @@ const PostDetail = () => {
         } catch (err) {
             console.log(err)
             alert("get 실패");
+        }
+    }
+
+    async function changeTradeStatus(option) {
+        let tradeStatusToBackend
+        if(option.name === "교환가능")
+        {
+            tradeStatusToBackend = "TRADABLE"
+        }
+        else if(option.name === "예약중")
+        {
+            tradeStatusToBackend = "TRADING"
+        }
+        else if(option.name ==="교환완료")
+        {
+            tradeStatusToBackend = "TRADED"
+        }
+        try {
+            const jsonObj = {userId : store.userInfoReducer.id, postId : post.id, tradeStatus : tradeStatusToBackend}
+            const res = await Api.patch(`/trade`,jsonObj);
+
+            console.log(res)
+            // alert("교환상태 변경")
+
+        } catch (err) {
+            console.log(err)
+            alert("교환상태 변경 실패");
         }
     }
 
@@ -308,9 +345,7 @@ const PostDetail = () => {
     }, [store.refreshReducer.commentChange])
 
 
-    const [scrapSaved, setScrapSaved] = useState<boolean>();
     const onClickScrap = async () => {
-        setScrapSaved(prevState => !prevState);
 
         const userId: Number = store.userInfoReducer.id;
 
@@ -348,11 +383,7 @@ const PostDetail = () => {
             const res = await Api.post(`/post/${postId}/comments`, writeComment);
             console.log(writeComment);
             console.log(res);
-            setRefreshFetch((prevState) => {
-                return {
-                    ...prevState, commentChange: true
-                }
-            })
+            dispatch(changeCommentRefreshState());
             setCommentText("");
             alert("댓글 작성 성공")
         } catch (err) {
@@ -386,6 +417,10 @@ const PostDetail = () => {
         navigate(`/post/${post.id}/edit`)
     }
 
+    const onClickTag = (tagname) => {
+        navigate(`/tagsearch?tags=${tagname}`);
+    }
+
 
 
     if (!post) {
@@ -401,8 +436,9 @@ const PostDetail = () => {
     }
     // console.log(post)
     // console.log(post.images);
+    console.log("이거이거..")
+    console.log(store.refreshReducer.commentChange);
 
-    // console.log(commentList);
 
     //게시글 작성자 판단
 
@@ -477,21 +513,65 @@ const PostDetail = () => {
                         {
                             ((post.images.length < 1) ?
                                     <img className={styles.postBodyImg} src={coatImg}></img> :
-                                    <CustomSwiper key={post.id} imageList={post.images}/>
+                                    <ImageSwiper key={post.id} imageList={post.images}/>
                             )
                         }
-                        {/*<CustomSwiper imageList = {post.images}/>*/}
+                        {/*<ImageSwiper imageList = {post.images}/>*/}
                     </div>
                     <div className={styles.postDetailInfo}>
                         <h2 className={styles.postDetailTitle}>{post.title}</h2>
                         <div className={styles.postDetailCategory}>{post.productCategory}</div>
-                        <div className={styles.postDetailPrice}></div>
+                        <div className={styles.postDetailPrice}>{post.price}원</div>
+                        <div className={styles.contentAndTag}>
                         <div className={styles.postDetailContent}>{post.content}</div>
-                        <div className={styles.postDetailTag}>#{post.tagNames}</div>
-                        <div className={styles.postDetailSwapCategoryBox}>
-                            <img className={styles.transfer} src={transfer}/>
-                            <div className={styles.postDetailSwapCategory}> {post.wishCategory}</div>
+                        <div className={styles.postDetailTag}>
+                            {
+
+                                    post.tagNames.map((tagname) => (
+                                        <span onClick={() => {onClickTag(tagname)}} className = {styles.tagC}>
+                                            #{tagname}
+                                        </span>
+                                    ))
+
+                            }
                         </div>
+                    </div>
+                    </div>
+                    <div className={styles.categoryandStatus}>
+                    <div className={styles.postDetailSwapCategoryBox}>
+                        <img className={styles.transfer} src={transfer}/>
+                        <div className={styles.postDetailSwapCategory}> {post.wishCategory}</div>
+                    </div>
+                    <div className = {styles.tradeStatusDiv}>
+                        {
+                            isAuthor ?
+                                (<>
+                                    <Select
+                                        className={styles.tradeStatus}
+                                        styles={{ // zIndex
+                                            menu: provided => ({...provided, zIndex: 999})
+                                        }}
+                                        // If you don't need a state you can remove the two following lines value & onChange
+                                        value={tradeState.selectedTradeStatus}
+                                        onChange={(option: TradeStatus | null) => {
+
+                                            setTradeState({selectedTradeStatus: option});
+                                            changeTradeStatus(option);
+
+                                        }}
+                                        getOptionLabel={(category: TradeStatus) => category.name}
+                                        getOptionValue={(category: TradeStatus) => category.name}
+                                        options={tradeStatus}
+                                        isSearchable={false}
+                                        isClearable={false}
+                                        backspaceRemovesValue={false}
+                                        placeholder={"교환가능"}
+                                    />
+                                </>)
+                                :
+                                <span className = {styles.tradeStatusString}>{tradeState.selectedTradeStatus.name}</span>
+                        }
+                    </div>
                     </div>
 
 
@@ -517,23 +597,6 @@ const PostDetail = () => {
                         {/*<button className={styles.tradeStatus} onClick={talkButton}>거래상태</button>*/}
                     </div>
                     <div className={styles.tradeAndTalk}>
-                    <Select
-                        className={styles.tradeStatus}
-                        styles={{ // zIndex
-                            menu: provided => ({...provided, zIndex: 999})
-                        }}
-                        // If you don't need a state you can remove the two following lines value & onChange
-                        value={productState.selectedCategory}
-                        onChange={(option: Category | null) => {
-                            setProductState({selectedCategory: option});
-                        }}
-                        getOptionLabel={(category: Category) => category.name}
-                        getOptionValue={(category: Category) => category.name}
-                        options={categories}
-                        // isClearable={true}
-                        // backspaceRemovesValue={true}
-                        placeholder={"판매중"}
-                    />
                     <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
                     </div>
                 </section>
@@ -560,6 +623,7 @@ const PostDetail = () => {
                 <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
             </div>
         </div>
+
 
 
     );

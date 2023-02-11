@@ -5,7 +5,7 @@ import SwiperCore, {Navigation, Pagination, Autoplay} from 'swiper';
 import React from 'react';
 
 import 'swiper/swiper.scss';
-import '../../styles/common/CustomSwipe.scss'
+import '../../styles/scss/CustomSwipe.scss'
 
 
 interface imageProps {
@@ -15,7 +15,7 @@ interface imageProps {
     }]
 }
 
-const CustomSwiper = (imageProps) => {
+const ImageSwiper = (imageProps) => {
 
     // console.log(imageProps.imageList["id"])
     if (!imageProps.imageList) {
@@ -53,4 +53,4 @@ const CustomSwiper = (imageProps) => {
         </>
     );
 };
-export default CustomSwiper;
+export default ImageSwiper;

@@ -6,7 +6,7 @@ import {HiPencil} from "react-icons/hi";
 import Api from "../../utils/api";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
-import {changeRefreshState} from "../../store/refreshReducer";
+import {changeCommentRefreshState} from "../../store/refreshReducer";
 import {useNavigate} from "react-router-dom";
 import login from "../../routes/로그인 & 회원가입/Login";
 
@@ -79,7 +79,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
     const UploadComment = async () => {
         try {
             const res = await Api.post(`/post/${commentInfo.postId}/comments`, writeComment);
-            dispatch(changeRefreshState());
+            dispatch(changeCommentRefreshState());
             console.log(writeComment);
             setReCommentText("");
             alert("대댓글 작성 성공")
@@ -119,7 +119,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
             const res = await Api.delete(`/post/${commentInfo.postId}/comments/ ${commentInfo.id}`, config);
             if (window.confirm("정말 게시글을 삭제하시겠어요?")) {
                 alert("댓글 삭제 성공")
-                dispatch(changeRefreshState());
+                dispatch(changeCommentRefreshState());
             }
         }
         catch (err) {
@@ -205,7 +205,7 @@ const SecondaryComment = (commentInfo: CommentProps) => {
             const res = await Api.delete(`/post/${commentInfo.postId}/comments/ ${commentInfo.id}`, config);
             if (window.confirm("정말 게시글을 삭제하시겠어요?")) {
                 alert("게시글 삭제 성공")
-                dispatch(changeRefreshState());
+                dispatch(changeCommentRefreshState());
             }
         }
         catch (err) {

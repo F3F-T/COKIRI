@@ -1,0 +1,6 @@
+.loading{
+    display: flex;
+    margin: 0 auto;
+    borderColor: #E50915;
+    textAlign: center;
+}

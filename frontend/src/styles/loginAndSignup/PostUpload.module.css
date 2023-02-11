@@ -127,9 +127,29 @@ input[type=number] {
     padding: 1.5rem;
 }
 
+/*.customLook{*/
+/*    width: 100%;*/
+/*    height: 3rem;*/
+/*}*/
+
+
 .customLook{
-    width: 100%;
-    height: 3rem;
+
+    /*margin : 0.7rem 0rem 0.5rem 0rem;*/
+    width : 700px;
+    /*height: 3.5rem;*/
+    overflow: auto !important;
+    flex-wrap: unset !important;
+
+    font-size: 1.0rem;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+    text-overflow: ellipsis;
+}
+
+
+.customLook::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
 }
 
 .imgClass{
@@ -164,17 +184,25 @@ input[type=number] {
 
 .contentArea{
     width: 100%;
-    height: 10rem;
     border: none;
     resize: none;
     color: black;
     outline: none;
+    font-size: 1.1rem;
+    /*margin-right: 1.8rem;*/
+    font-weight: 500;
+    height: 13.5rem;
+    max-height: 13.5rem;
+    max-width: 25rem;
+    /*overflow:hidden;*/
+    /*white-space: pre-wrap;*/
+    text-overflow:clip;
 }
 
 .contentAreaBox{
     display: flex;
     justify-content: left;
-    height: 10rem;
+    height: 13.5rem;
 }
 
 .imgClass{
