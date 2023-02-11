@@ -5,16 +5,37 @@ import {
 } from "../../../store/userAddressInfoReducer";
 import Api from "../../../utils/api";
 import {useDispatch} from "react-redux";
-
+import {logoutUserInfo} from "../../../store/userInfoReducer";
+import {useLocation, useNavigate} from "react-router-dom";
+import {logoutToken} from "../../../store/jwtTokenReducer";
+import {resetTalkCard} from "../../../store/talkCardReducer";
 
 const UserDelete = () =>  {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    async function logOut() {
+        try{
+            const res = await Api.get('/logout');
+            console.log(res);
+            // alert("로그아웃");
+            dispatch(logoutToken());
+            dispatch(logoutUserInfo());
+            dispatch(resetaddress1());
+            dispatch(resetaddress2());
+            dispatch(resetTalkCard());
+            navigate(`/`)
+        }
+        catch (err)
+        {
+            console.log(err)
+            alert("로그아웃 실패");
+        }
+    }
     async function deleteUser() {
         try{
             const res = await Api.delete('/user');
-            dispatch(resetaddress2())
-            dispatch(resetaddress1())
             alert("삭제 성공")
+            logOut()
         }
         catch (err)
         {

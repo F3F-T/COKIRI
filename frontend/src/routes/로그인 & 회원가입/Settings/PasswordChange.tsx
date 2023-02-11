@@ -73,26 +73,27 @@ const PwChange = () =>  {
     }
 
     async function pwChanges() {
-        try{
-            const res = await Api.delete('/user');
-            dispatch(resetaddress2())
-            dispatch(resetaddress1())
-            alert("삭제 성공")
-        }
-        catch (err)
-        {
-            console.log(err)
-            alert("삭제 실패")
-        }
-    }
-    const changeBtn = (e) => {
 
-        //유효성 검증이 모두 성공했을 경우 (모두 true일 경우) 회원가입
         if (validationCheck.passwordCheckBoolean){
-            alert("비번 변경")
-        } else { //유효성 검증 하나라도 실패한 경우 회원가입 실패
-            alert("변경X")
+            try{
+                const pwChange= {
+                    oldPassword: store.userInfoReducer.password,
+                    newPassword: userInfo.password
+                }
+                const res = await Api.patch("user/password", pwChange);
+                alert("변경 성공")
+            }
+            catch (err)
+            {
+                console.log(err)
+                alert("변경 실패")
+            }
         }
+        else{
+            alert("돌아가")
+
+        }
+
     }
     return (
         <div className={styles.box1}>
@@ -142,7 +143,7 @@ const PwChange = () =>  {
                         <div className={styles.valCheck2}>
                             <Message validCheck={passwordReCheck} content={"❌ 비밀번호가 일치하지 않습니다"}/></div>)}
             </div>
-            <button className={styles.pwBtn} onClick={changeBtn}>비밀번호 변경</button>
+            <button className={styles.pwBtn} onClick={pwChanges}>비밀번호 변경</button>
             <button className={styles.lostPW}>비밀번호를 잊으셨나요?</button>
 
         </div>
