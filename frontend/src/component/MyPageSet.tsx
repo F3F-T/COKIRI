@@ -23,6 +23,7 @@ import {deleteToken,logoutToken} from "../store/jwtTokenReducer";
 import {resetaddress1,resetaddress2} from "../store/userAddressInfoReducer";
 import {resetTalkCard} from "../store/talkCardReducer";
 import SettingModal from "../routes/로그인 & 회원가입/SettingModal";
+import AddressChange from "../routes/로그인 & 회원가입/Settings/AddressChange";
 
 // interface TextInputProps {
 //     init: string;
@@ -68,11 +69,19 @@ const MyPage = () =>  {
     const [postNum,setNum]=useState('');
     //모달창
     const [isOpenModal, setOpenModal] = useState<boolean>(false);
+    const [isChild, setIsChild] = useState<number>(1);
 
 
 
     const onClickToggleModal = useCallback(() => {
         setOpenModal(!isOpenModal);
+        setIsChild(1)
+    }, [isOpenModal]);
+
+    const onClickToggleModal2 = useCallback(() => {
+        setOpenModal(!isOpenModal);
+        setIsChild(3)
+
     }, [isOpenModal]);
     //프로필사진
     const[profile,setProfile] = useState("")
@@ -258,13 +267,14 @@ const MyPage = () =>  {
             alert("로그아웃 실패");
         }
     }
+    console.log("어디 주민인데", store.userAddressInfoReducer.oneWordAddress1)
 
     // logOut()
     return (
             <>
             <div className={styles.profile}>
-                {isOpenModal && (
-                    <SettingModal onClickToggleModal={onClickToggleModal}>
+                {isOpenModal && isChild==1 &&(
+                    <SettingModal onClickToggleModal={onClickToggleModal} >
                         <embed type="text/html"  width="800" height="608"/>
                     </SettingModal>
                 )}
@@ -307,7 +317,12 @@ const MyPage = () =>  {
                             <p>상품 거래</p> <p className={styles.tradeNum}>8</p>
                         </div>
                     </div>
-                    <p className={styles.i2}> 가락 1동 주민이에요.</p>
+                    {
+                        store.userAddressInfoReducer.oneWordAddress1 ==undefined?
+                            <p className={styles.i2_2} onClick={() => onClickToggleModal()}> 동네 인증을 해주세요!</p>:
+                            <p className={styles.i2}> {store.userAddressInfoReducer.oneWordAddress1} 주민이에요.</p>
+
+                    }
                     {/*<button className={styles.gpsBox} onClick={() => onClickToggleModal()}>*/}
                     {/*    동네 등록을 해주세요.*/}
                     {/*</button>*/}

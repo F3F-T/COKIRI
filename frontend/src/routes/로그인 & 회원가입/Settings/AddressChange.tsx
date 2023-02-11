@@ -11,7 +11,7 @@ import {
     parcelAddress2, resetaddress1, resetaddress2,
     setAddressName1, setAddressName2,
     setUserAddressInfo1,
-    setUserAddressInfo2, setClick1, setClick2, setLat2, setLng2,setLat1, setLng1
+    setUserAddressInfo2, setClick1, setClick2, setLat2, setLng2,setLat1, setLng1,setOneWord1,setOneWord2
 } from "../../../store/userAddressInfoReducer";
 
 interface ModalDefaultType {
@@ -60,15 +60,16 @@ const AddressChange = () =>
     const [addressID,setAddressID]=useState('')
     const [parcel_1,setParcel_1] = useState('');
     const [parcel_2,setParcel_2] = useState('');
+    const [oneWord1,setOneWord_1] = useState('');
     const [count1,setCount1]=useState(0);
     const [count2,setCount2]=useState(0);
 
     console.log("주소1이 잘 들어갔나",addressR)
-
     //주소 추가
     async function postAddressData_1() {
         try{
             dispatch(parcelAddress1(parcel_1))
+            dispatch(setOneWord1(oneWord1))
             const res = await Api.post('/address',addressInfo);
             console.log("첫번째 위치정보", addressInfo);
             setAddressID(res.data.id);
@@ -192,9 +193,15 @@ const AddressChange = () =>
             // @ts-ignore
             if (status === kakao.maps.services.Status.OK) {
                 const arr = {...result};
+                console.log("kakao주소 뭔지 확인", arr)
                 const _arr = arr[0].address.address_name;
+                const onewordAddress1 = arr[0].address.region_3depth_name
                 console.log("kakao주소1", _arr)
+                setOneWord1(onewordAddress1)
                 setParcel_1(_arr)
+                setOneWord_1(onewordAddress1)
+
+
             }
         }
         geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
@@ -209,7 +216,9 @@ const AddressChange = () =>
             if (status === kakao.maps.services.Status.OK) {
                 const arr  ={ ...result};
                 const _arr = arr[0].address.address_name;
+                const onewordAddress2 = arr[0].address.region_3depth_name
                 console.log("kakao주소2", _arr)
+                setOneWord1(onewordAddress2)
                 setParcel_2(_arr)
             }
         }

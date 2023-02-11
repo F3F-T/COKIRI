@@ -58,18 +58,9 @@ function SettingModal({onClickToggleModal, children,}: PropsWithChildren<ModalDe
         console.log(tab1)
         // return tab
     }
-    const store = useSelector((state:Rootstate) => state);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const location = useGeoLocation();
-    const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
+
     const addressR = useSelector((state : Rootstate)=>{return state.userAddressInfoReducer})
-    const [addressInfo, setAddressInfo] = useState<AddressType>(null);
-    const [addressID,setAddressID]=useState('')
-    const [parcel_1,setParcel_1] = useState('');
-    const [parcel_2,setParcel_2] = useState('');
-    const [count1,setCount1]=useState(0);
-    const [count2,setCount2]=useState(0);
+
 
     const [selectList,setSelectList] = useState(1);
     console.log("주소1이 잘 들어갔나",addressR)
