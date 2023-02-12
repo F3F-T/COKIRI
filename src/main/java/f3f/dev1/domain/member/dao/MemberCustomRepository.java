@@ -16,5 +16,9 @@ public interface MemberCustomRepository {
 
     MemberDTO.UserDetail getUserDetail(Long userId);
 
+    MemberDTO.GetOtherUserInfoDto getOtherUserInfo(Long userId);
+
+    MemberDTO.SimpleUserInfo getSimplerUserInfo(Long userId);
+
 //    Page<MemberDTO.GetUserPost> getUserPost(Long userId, Pageable pageable);
 }
