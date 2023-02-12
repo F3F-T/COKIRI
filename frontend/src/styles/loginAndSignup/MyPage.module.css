@@ -151,6 +151,12 @@
     gap: 1rem;
     display: grid;
 }
+.container2{
+    margin-top: 2rem;
+}
+.otherZzim{
+
+}
 .gpsBox{
     border-radius: 5px;
     border: none;

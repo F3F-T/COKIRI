@@ -66,10 +66,9 @@ const MyPage = () =>  {
         }
     }
     async function getUserPost_2(){
-        if(state != null){
             try{
                 const res = await  Api.get(`/post/user/${state}`)
-                console.log("다른 유저 게시글 정보",res.data.content)
+                console.log("다른 유저 게시글 정보",res)
                 setOtherPostList(prevState => {
                     return [ ...res.data.content];
                 })
@@ -79,28 +78,26 @@ const MyPage = () =>  {
                 console.log(err);
                 alert("실패인가")
             }
-        }
-
     }
     useEffect(()=>{
-        if(state==null) {
+        if(state==null || state == info.id) {
             getMyPostList();
         }
     },[])
     useEffect(()=>{
-        if(state!=null){
+        if(state!=null && state != info.id){
             getUserPost_2();
         }
     },[])
         // getMyPostList();
 
-    if(state==null){
+    if(state==null || state == info.id){
         if (!postList) {
             return null
         }
     }
 
-    if(state!=null){
+    if(state!=null && state != info.id){
         if (!otherPost) {
             return null
         }
