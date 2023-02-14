@@ -13,9 +13,13 @@ import useGeoLocation from "../../hooks/useGeolocation"
 
 import axios from "axios";
 import {forEach} from "list";
+import {useDispatch, useSelector} from "react-redux";
+import {Rootstate} from "../../index";
+import {setEmail, setPW} from "../../store/userInfoReducer";
 
 const SignUp = () => {
-
+    const store = useSelector((state:Rootstate) => state);
+    const dispatch = useDispatch();
     interface UserInfo {
         email: string;
         password: string;
@@ -223,9 +227,9 @@ const SignUp = () => {
                 //이메일 중복체크 백엔드 통신
                 //string인 inputEmail을 json형태의 객체로 변환
                 let jsonObj = {"email": inputEmail};
-
                 //변환한 json 객체로 이메일 중복체크
                 CheckEmailDuplicated(jsonObj);
+                // dispatch(setEmail(inputEmail))
             }
         } else //이메일 유효성 검사 실패했을때
         {
@@ -250,6 +254,7 @@ const SignUp = () => {
             setuserInfo((prevState) => {
                 return {...prevState, password: e.target.value}
             })
+            dispatch(setPW(e.target.value))
         } else {
             setValidationCheck((prevState) => {
                 return {...prevState, passwordCheck: false, passwordCheckBoolean: false}
