@@ -68,7 +68,12 @@ const MypageCard = (props1: props) => {
     return (
         <>
             <div className={styles.postItem}>
-                <img className={styles.postImage} src={tradeEx}/>
+                {
+                    ((props1.thumbnail != null && props1.thumbnail.includes("https://s3.ap-northeast-2.amazonaws.com"))?
+                            <img className={styles.postImage} src={props1.thumbnail}/> :
+                            <img className={styles.postImage} src={tradeEx}/>
+                    )
+                }
                 <p className={styles.postTitle}>{props1.postTitle}</p>
                 <div className={styles.detail}>
                     <p className={styles.like}>좋아요 {props1.like}개</p>
@@ -94,7 +99,7 @@ const Card = (props1: props) => {
             {props1.className === "forMypage" &&
                 <div className={ck(props1.className)} onClick={props1.onClick}>
                     <MypageCard postTitle={props1.postTitle} postContent={props1.postContent} like={props1.like} messageRoomCount={props1.messageRoomCount}
-                                comment={props1.comment} wishCategory={props1.wishCategory}/>
+                                comment={props1.comment} wishCategory={props1.wishCategory} thumbnail={props1.thumbnail}/>
                 </div>}
 
         </>

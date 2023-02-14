@@ -1,6 +1,6 @@
 import React, {useState, useRef,useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/loginAndSignup/MyPage.module.css"
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import photo from "../img/photoSelect.png"
@@ -33,9 +33,13 @@ const MyPage = () =>  {
     const [tab1, setTab] = useState<string>('curr');
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const {state} = useLocation(); //다른 유저꺼 받을 때
+    console.log("포스트아이디 이거로 넘어온건지 확인", state)
+    const [otherPost,setOtherPostList] = useState(null)
+    console.log("다른 유저 게시글 정보222222222",otherPost)
 
     const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
-
+    const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
     const store = useSelector((state:Rootstate) => state);
     const [postList,setPostList] = useState<PostType[]>(null)
 
@@ -44,6 +48,8 @@ const MyPage = () =>  {
         console.log(tab1)
         // return tab
     }
+
+
 
     async function getMyPostList() {
         try{
@@ -59,15 +65,45 @@ const MyPage = () =>  {
             alert("내 게시글 불러오기 실패");
         }
     }
+    async function getUserPost_2(){
+            try{
+                const res = await  Api.get(`/post/user/${state}`)
+                console.log("다른 유저 게시글 정보",res)
+                setOtherPostList(prevState => {
+                    return [ ...res.data.content];
+                })
 
+            }
+            catch (err){
+                console.log(err);
+                alert("실패인가")
+            }
+    }
     useEffect(()=>{
-        getMyPostList();
+        if(state==null || state == info.id) {
+            getMyPostList();
+        }
+    },[])
+    useEffect(()=>{
+        if(state!=null && state != info.id){
+            getUserPost_2();
+        }
     },[])
         // getMyPostList();
 
-    if (!postList) {
-        return null
+    if(state==null || state == info.id){
+        if (!postList) {
+            return null
+        }
     }
+
+    if(state!=null && state != info.id){
+        if (!otherPost) {
+            return null
+        }
+    }
+
+
     const onClickPost = (post) => {
         navigate(`/post/${post.postId}`)
     }
@@ -76,16 +112,39 @@ const MyPage = () =>  {
         <>
 
             <div className={styles.MyPage}>
-                <div className={styles.menu}>
-                    <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>
-                    <button className={styles.zzimactive} onClick={()=>{navigate('/mypage/zzim')}}>관심 상품</button>
-                </div>
+                {/*<div className={styles.menu}>*/}
+                {/*    <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>*/}
+                {/*    <button className={styles.zzimactive} onClick={()=>{navigate('/mypage/zzim')}}>관심 상품</button>*/}
+                {/*</div>*/}
               <div className={styles.container}>
                   {
-                      postList.map((SingleObject:Object)=>(
-                      <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['likeCount']} wishCategory={SingleObject['wishCategory']}
-                      onClick={() => {onClickPost(SingleObject)}}/>
-                      ))
+
+                      state ==null?
+                          postList.reverse().map((SingleObject:Object)=>(
+                              <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['likeCount']} wishCategory={SingleObject['wishCategory']} thumbnail={SingleObject['thumbNail']}
+                                     onClick={() => {onClickPost(SingleObject)}}/>
+                          ))
+
+
+                          :
+
+                          info.id==state?
+                              postList.reverse().map((SingleObject:Object)=>(
+                                  <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['likeCount']} wishCategory={SingleObject['wishCategory']} thumbnail={SingleObject['thumbNail']}
+                                         onClick={() => {onClickPost(SingleObject)}}/>
+                              )):
+                              otherPost.reverse().map((SingleObject:Object)=>(
+                                  <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['likeCount']} wishCategory={SingleObject['wishCategory']} thumbnail={SingleObject['thumbNail']}
+                                         onClick={() => {onClickPost(SingleObject)}}/>
+                              ))
+
+
+
+
+
+
+
+
                       // postList.map((post)=>(
                       //     <Card  className={"forMypage"} postTitle={post['title']} like={20} wishCategory={postList['wishCategory']}
                       //            onClick={() => {onClickPost(post)}}/>

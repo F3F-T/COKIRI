@@ -66,12 +66,11 @@ function App() {
                 <Route path="/tagsearch" element={<TagSearch/>} />
 
 
-                <Route path="/mypage" element={<MyPageSet/>} >
-                    <Route path="" element={<MyPage/>}/>
-                    <Route path="zzim" element={<Zzim/>}/>
+                <Route path="/mypage/" element={<MyPageSet/>} >
+                    <Route path=":id" element={<MyPage/>}/>
+                    <Route path="zzim/:id" element={<Zzim/>}/>
                 </Route>
                 {/*<Route path="/mypage" element={<MyPage/>}/ >*/}
-
                 {/*<Route path="/mypage/zzim" element={<Zzim/>} />*/}
 
                 <Route path="/kokiritalk/:id" element={<KokiriTalk/>} />
@@ -80,7 +79,6 @@ function App() {
                 <Route path="/upload" element={<PostUpload/>}/>
                 <Route path="/post/:id/edit" element={<PostEdit/>}/>
                 <Route path="/neighborauth" element={<NeighborAuth/>}/>
-
                 <Route path='*' element={<NotFound />}/>
 
             </Routes>

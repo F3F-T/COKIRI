@@ -25,6 +25,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getUserInfo(currentMemberId));
 
     }
+
     // 유저 디테일 조회
     @GetMapping(value = "/user/detail")
     public ResponseEntity<UserDetail> getUserDetail() {
@@ -90,8 +91,6 @@ public class MemberController {
     // 유저 주소 업데이트 --> AddressController로 변경
 
 
-
-
     // 마이페이지용 조회 - 유저가 작성한 게시글 리스트 리턴
     @GetMapping("/user/posts")
     public ResponseEntity<Page<GetUserPost>> getUserPosts(Pageable pageable) {
@@ -113,5 +112,10 @@ public class MemberController {
     public ResponseEntity<GetMemberAddressesDTO> getMemberAddress() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         return ResponseEntity.ok(memberService.getMemberAddressesDTO(currentMemberId));
+    }
+
+    @GetMapping("/user/{user_id}")
+    public ResponseEntity<GetOtherUserInfoDto> getUserById(@PathVariable(name = "user_id") Long userId) {
+        return ResponseEntity.ok(memberService.getOtherUserById(userId));
     }
 }

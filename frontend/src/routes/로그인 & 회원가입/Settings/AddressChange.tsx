@@ -1,18 +1,18 @@
-import styles from '../../styles/loginAndSignup/NeighborModal.module.css'
+import styles from '../../../styles/loginAndSignup/NeighborModal.module.css'
 import React, {PropsWithChildren, useState} from "react";
-import TextInput from "../../component/common/TextInput";
+import TextInput from "../../../component/common/TextInput"
 import {useDispatch, useSelector} from "react-redux";
-import {Rootstate} from "../../index";
+import {Rootstate} from "../../../index";
 import {useNavigate} from "react-router-dom";
-import useGeoLocation from "../../hooks/useGeolocation";
-import Api from "../../utils/api";
+import useGeoLocation from "../../../hooks/useGeolocation";
+import Api from "../../../utils/api";
 import {
     parcelAddress1,
     parcelAddress2, resetaddress1, resetaddress2,
     setAddressName1, setAddressName2,
     setUserAddressInfo1,
-    setUserAddressInfo2, setClick1, setClick2, setLat2, setLng2,setLat1, setLng1
-} from "../../store/userAddressInfoReducer";
+    setUserAddressInfo2, setClick1, setClick2, setLat2, setLng2,setLat1, setLng1,setOneWord1,setOneWord2
+} from "../../../store/userAddressInfoReducer";
 
 interface ModalDefaultType {
     onClickToggleModal: () => void;
@@ -24,8 +24,23 @@ interface AddressType {
     latitude:string;
     longitude:string;
 }
-function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultType>)
 
+
+
+
+interface props{
+    onClick?: (e : React.MouseEvent<HTMLButtonElement,MouseEvent>) => any;
+    partner : string;
+    lastContent : string;
+    date : string;
+    keys? : number;
+    counts? : number;
+}
+
+
+
+
+const AddressChange = () =>
 
 {
     //////////모달//////////
@@ -45,15 +60,16 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
     const [addressID,setAddressID]=useState('')
     const [parcel_1,setParcel_1] = useState('');
     const [parcel_2,setParcel_2] = useState('');
+    const [oneWord1,setOneWord_1] = useState('');
     const [count1,setCount1]=useState(0);
     const [count2,setCount2]=useState(0);
 
     console.log("주소1이 잘 들어갔나",addressR)
-
     //주소 추가
     async function postAddressData_1() {
         try{
             dispatch(parcelAddress1(parcel_1))
+            dispatch(setOneWord1(oneWord1))
             const res = await Api.post('/address',addressInfo);
             console.log("첫번째 위치정보", addressInfo);
             setAddressID(res.data.id);
@@ -177,9 +193,15 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
             // @ts-ignore
             if (status === kakao.maps.services.Status.OK) {
                 const arr = {...result};
+                console.log("kakao주소 뭔지 확인", arr)
                 const _arr = arr[0].address.address_name;
+                const onewordAddress1 = arr[0].address.region_3depth_name
                 console.log("kakao주소1", _arr)
+                setOneWord1(onewordAddress1)
                 setParcel_1(_arr)
+                setOneWord_1(onewordAddress1)
+
+
             }
         }
         geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
@@ -194,7 +216,9 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
             if (status === kakao.maps.services.Status.OK) {
                 const arr  ={ ...result};
                 const _arr = arr[0].address.address_name;
+                const onewordAddress2 = arr[0].address.region_3depth_name
                 console.log("kakao주소2", _arr)
+                setOneWord1(onewordAddress2)
                 setParcel_2(_arr)
             }
         }
@@ -204,7 +228,6 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
 
 
     return (
-        <div className={styles.box1}>
             <div className={styles.box2}>
                 {/*{children}*/}
                 <div className={styles.addressBox}>
@@ -228,7 +251,7 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
                     <div className={styles.registerBox}>
                         <div className={styles.inputBox}>
                             {tab1 === 'curr' ?
-                                    addressR.parcelName1===undefined?
+                                addressR.parcelName1===undefined?
                                     <>  <p className={styles.input1}>주소 이름</p>
                                         <input type="text" placeholder={'첫번째 주소 이름을 적어주세요.       [ 예시:  집, 회사 ]'}  className={`${styles["input2"+(tab1 ==="curr"? "active" : "")]}`} onChange={inputAddressName_1}/>
                                         <button className={styles.registerBtn} onClick={()=>{postAddressData_1();setCount1(count1+1)}}>등록</button>
@@ -250,32 +273,13 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
                                         <p className={styles.input1}>지번 주소</p>
                                         <div className={styles.input2}>{addressR.parcelName2}</div>
                                         <button className={styles.registerBtn} onClick={deleteAddress_2}>삭제</button>
-
                                     </>
                             }
                             {/*<input type="text" placeholder={'첫번째 주소 이름을 적어주세요.       [ 예시:  집, 회사 ]'} className={styles.input2}/>*/}
                         </div>
-                        {/*<div className={styles.outputBox}>*/}
-                        {/*    <p className={styles.input1}>지번주소</p>*/}
-                        {/*    <div className={styles.parcel}>주소자리</div>*/}
-                        {/*</div>*/}
                     </div>
                 </div>
-
-
-
-
-
-            </div>
-            <div className={styles.box3}
-                onClick={(e: React.MouseEvent) => {
-                    e.preventDefault();
-                    if (onClickToggleModal) {
-                            onClickToggleModal();
-                    }
-                }}
-            />
         </div>
     );
 }
-export default Modal
+export default AddressChange

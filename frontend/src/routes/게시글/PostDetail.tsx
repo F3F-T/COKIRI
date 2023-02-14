@@ -257,45 +257,65 @@ const PostDetail = () => {
             dispatch(setOpponetNick(post.userInfoWithAddress.userDetail.nickname))
         }
         // await dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
-        await getMessageRoom()
+        await getMessageRoom2()
         navigate(`/kokiriTalk/${info.id}`, {state: {existOrNot}})
     }
-    async function getMessageRoom() {
+    async function getMessageRoom2() {
         try{
             const res = await Api.get('/user/messageRooms');
             // console.log("김동준전체조회",res.data)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
             // console.log("김윤정전체조회",res2.data)
-            for(let i =0 ; i<res2.data.length;i++){
-                if(res2.data[i].buyerId === info.id)
-                {
-                    if(res2.data[i].postId === post.id){
-                        console.log("이미 방이 존재합니다.")
-                        dispatch(setMessageRoomId(res2.data[i].id))
-                        existOrNot = true
-                        break;
-                    }
-                    else {
-                        existOrNot = false
-                    }
+            if(res2.data.length == 0){
+                const post_buyerId2= {
+                    postId: post.id,
+                    buyerId: info.id
                 }
-                else{
-                    try{
-                        const post_buyerId1 = {
-                            postId: post.id,
-                            buyerId: info.id
+                const res4 = await Api.post(`/post/${post.id}/messageRooms`,post_buyerId2);
+                dispatch(setOpponetNick(res4.data.sellerNickName))
+                await dispatch(setMessageRoomId(res4.data.id))
+                await dispatch(setSellerId(res4.data.sellerId))
+                dispatch(setPostId(res4.data.postId))
+            }
+            else {
+
+                for (let i = 0; i < res2.data.length; i++) {
+                    // if(res2.data[i].sellerDelStatus == false && res2.data[i].buyerDelStatus == false  ) {
+                        console.log("postDetailSeller",res2.data[i].sellerDelStatus)
+                        console.log("postDetailbuyer",res2.data[i].buyerDelStatus)
+                    if (res2.data[i].buyerId === info.id) {
+                            console.log("들어옴?1")
+                            if (res2.data[i].postId === post.id) {
+                                console.log("들어옴?2")
+                                console.log("이미 방이 존재합니다.")
+                                dispatch(setMessageRoomId(res2.data[i].id))
+                                existOrNot = true
+                                break;
+                            } else {
+                                console.log("들어옴?3")
+                                existOrNot = false
                         }
-                        const res4 = await Api.post(`/post/${post.id}/messageRooms`,post_buyerId1);
-                        dispatch(setOpponetNick(res4.data.sellerNickName))
-                        await dispatch(setMessageRoomId(res4.data.id))
-                        await dispatch(setSellerId(res4.data.sellerId))
-                        dispatch(setPostId(res4.data.postId))
+                    } else {
+                        try {
+                            console.log("들어옴?4")
+                            const post_buyerId1 = {
+                                postId: post.id,
+                                buyerId: info.id
+                            }
+
+                            const res4 = await Api.post(`/post/${post.id}/messageRooms`, post_buyerId1);
+                            dispatch(setOpponetNick(res4.data.sellerNickName))
+                            await dispatch(setMessageRoomId(res4.data.id))
+                            await dispatch(setSellerId(res4.data.sellerId))
+                            dispatch(setPostId(res4.data.postId))
+                            break;
+                        } catch (err) {
+                            console.log("들어옴?5")
+                            console.log(err)
+                            alert("메세지룸 추가 실패 in postdetail")
+                        }
                     }
-                    catch (err)
-                    {
-                        console.log(err)
-                        alert("메세지룸 추가 실패 in postdetail")
-                    }
+
                 }
             }
         }
@@ -452,17 +472,20 @@ const PostDetail = () => {
 
     // console.log(commentSort);
     // console.log(scrapSaved);
+    const onClickUserPage = () => {
+        console.log("클릭")
+        navigate(`/mypage/${post.userInfoWithAddress.userDetail.id}`,{state:post.userInfoWithAddress.userDetail.id})
+    }
 
     return (
         <div className={styles.postDetail}>
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
-                        <img className={styles.postTopProfileImg} src={post.userInfoWithAddress.userDetail.imageUrl}
-                             onClick={() => navigate('/mypage')}></img>
+                        <img className={styles.postTopProfileImg} onClick={onClickUserPage} src={post.userInfoWithAddress.userDetail.imageUrl}/>
                         <div className={styles.postTopProfileInfo}>
 
-                            <div className={styles.postTopNickname}>{post.userInfoWithAddress.userDetail.nickname}</div>
+                            <div className={styles.postTopNickname} onClick={onClickUserPage}>{post.userInfoWithAddress.userDetail.nickname}</div>
                             {
                                 ((post.userInfoWithAddress.address.length < 1) ?
                                         null :

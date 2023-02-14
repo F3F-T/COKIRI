@@ -1,0 +1,189 @@
+.box1{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    position: fixed;
+    justify-content: center;
+    margin-top: 3rem;
+    /*border: 2px solid rgba(200, 0, 0, 1);*/
+    /*filter: brightness(50%);*/
+    z-index: 0;
+    background-color: transparent;
+
+    /*opacity: 0.5;*/
+    /*background-color: black;*/
+}
+.box2{
+    width: 40rem;
+    height: 25rem;
+    display: flex;
+    margin-top: 2rem;
+    flex-direction: row;
+    align-items: center;
+    border-radius: 5px;
+    box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
+    box-sizing: border-box;
+    background-color: white;
+    z-index: 10000;
+    border: 1px solid rgba(0, 0, 0, 1);
+
+}
+.left{
+    height: 100%;
+    width: 10rem;
+    justify-content: start;
+    border-right: 1px solid rgba(0, 0, 0, 1);
+
+}
+.left_1{
+    width: 10rem;
+    height: 2.2rem;
+    background-color: transparent;
+    border: none;
+    font-size: 0.8rem;
+    /*border-bottom: 1px solid rgba(0, 0, 0, 1);*/
+}
+.left_2{
+    padding-left: 1rem;
+    margin-top: 8.7rem;
+    width: 10rem;
+    height: 6rem;
+    background-color: transparent;
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 1);
+}
+.left_1:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    transition: all 0.1s ;
+}
+.left_21{
+    margin-top: 0.6rem;
+    color: cornflowerblue;
+    font-weight: 400;
+}
+.left_22{
+    margin-top: 0.2rem;
+}
+.left_23{
+    margin-top: 0.5rem;
+    font-size: 0.5rem;
+}
+.right{
+    width:30rem;
+
+}
+
+
+
+
+.box3{
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    z-index: 9999;
+}
+
+
+.addressBox{
+    width: 60rem;
+    height: 35rem;
+    border: 2px solid rgba(0, 0, 0, 1);
+    border-radius: 10px;
+}
+.addressBox_1{
+    /*border: 2px solid rgba(0, 0, 0, 1);*/
+}
+.ad1{
+    margin-top: 2rem;
+    font-size: 2rem;
+    text-align: center;
+    font-weight: bold;
+}
+.add2Box{
+    margin-top: 2rem;
+
+    /*display: flex;*/
+    /*justify-content: space-around;*/
+}
+.ad2{
+    font-size: 1rem;
+    text-align: center;
+}
+.plusBtnBox{
+    margin-top: 3rem;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+}
+.plusBtn1{
+    width: 13rem;
+    height: 3rem;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0);
+}
+.plusBtn1active{
+    width: 13rem;
+    height: 3rem;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+}
+.plusBtn2{
+    width: 13rem;
+    height: 3rem;
+    border: 2px solid rgba(0, 0, 0, 0);
+    border-radius: 10px;
+}
+.plusBtn2active{
+    width: 13rem;
+    height: 3rem;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+}
+
+
+.registerBox{
+    margin-top: 3rem;
+    /*border: 2px solid rgba(0, 0, 0, 1);*/
+}
+.inputBox{
+}
+.input1{
+    margin-left:6.5rem;
+    font-size: 0.8rem;
+}
+.input2{
+    margin-left: 6.2rem;
+    width: 28rem;
+    height: 3rem;
+    border-radius: 5px;
+}
+.input2active{
+    margin-left: 6.2rem;
+    width: 28rem;
+    height: 3rem;
+    border-radius: 5px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+
+}
+.input2_2{
+    margin-left: 6.2rem;
+    width: 28rem;
+    height: 3rem;
+    border-radius: 5px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+
+
+}
+.registerBtn{
+    margin-top: 4rem;
+    margin-left:30.7rem;
+    border: none;
+    height: 2rem;
+    width: 3rem;
+    border-radius: 10px;
+}
+
+
+

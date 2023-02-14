@@ -44,6 +44,9 @@ public class MessageRoomController {
         List<MessageRoomInfoDto> totalMessageRoomsDto = messageRoomService.ReadMessageRoomsByUserId(userId, currentMemberId);
         return new ResponseEntity<>(totalMessageRoomsDto, HttpStatus.OK);
     }
+    //채팅방 DelStatus 한개만 표시하는 전체 조회
+//    @GetMapping(value="/{userId}/totalMessageRooms")
+//    public void readTotal
     //sellingRoom 조회
     @GetMapping(value = "/user/{userId}/sellingMessageRooms")
     public ResponseEntity<List<SellingRoomInfoDto>> readSellingMessageRooms(@PathVariable(name="userId")Long userId){
