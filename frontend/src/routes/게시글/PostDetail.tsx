@@ -42,6 +42,7 @@ import tradeEx from "../../img/tradeEx.jpeg";
 import {prepend} from "list";
 import Select from "react-select";
 import {ClipLoader} from "react-spinners";
+import Modal from "../로그인 & 회원가입/ModalList";
 
 
 const PostDetail = () => {
@@ -49,7 +50,10 @@ const PostDetail = () => {
     // const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
     // console.log("asdfasdfa",detail)
     const navigate = useNavigate();
-
+    const [isOpenModal, setOpenModal] = useState<boolean>(false);
+    const onClickToggleModal = useCallback(() => {
+        setOpenModal(!isOpenModal);
+    }, [isOpenModal]);
     interface PostType {
         id?: number;
         title?: string;
@@ -483,6 +487,11 @@ const PostDetail = () => {
 
     return (
         <div className={styles.postDetail}>
+            {isOpenModal  &&(
+                <Modal onClickToggleModal={onClickToggleModal} >
+                    <embed type="text/html"  width="800" height="608"/>
+                </Modal>
+            )}
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
@@ -601,9 +610,14 @@ const PostDetail = () => {
                         {/*<button className={styles.tradeStatus} onClick={talkButton}>거래상태</button>*/}
                     </div>
                     <div className={styles.tradeAndTalk}>
-                    <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
+                        {
+                            store.userAddressInfoReducer.addressName1 != undefined?
+                                <button className={styles.exchangeBtn} onClick={()=>{talkButton()}}>코끼리톡으로 교환하기</button>
+                                :
+                                <button className={styles.exchangeBtn} onClick={()=>{onClickToggleModal()}}>코끼리톡으로 교환하기</button>
+                        }
                     </div>
-                </section>
+                </section>톡
             </article>
             <section className={styles.comments}>
                 {

@@ -19,6 +19,7 @@ import Api from "../utils/api";
 import HomePostCardSwiper from "../component/common/HomePostCardSwiper";
 import RoundImageSwiper from "../component/common/RoundImageSwiper";
 import classNames from "classnames/bind";
+import Modal from "./로그인 & 회원가입/ModalList";
 
 const cx = classNames.bind(styles)
 
@@ -34,9 +35,17 @@ const HomeStart = () => {
     const onClickUpload = () => {
         navigate(`/upload`)
     }
-
+    const [isOpenModal, setOpenModal] = useState<boolean>(false);
+    const onClickToggleModal = useCallback(() => {
+        setOpenModal(!isOpenModal);
+    }, [isOpenModal]);
     return (
         <div>
+            {isOpenModal  &&(
+                <Modal onClickToggleModal={onClickToggleModal} >
+                    <embed type="text/html"  width="800" height="608"/>
+                </Modal>
+            )}
         <section className={styles.start}>
             <div className={styles.startLeft}>CO끼리</div>
             <div className={styles.startRight}>
@@ -44,8 +53,15 @@ const HomeStart = () => {
                     중고 거래부터 동네 인증까지, 코끼리와 함께해요.<br/>
                     가볍고 따뜻한 코끼리를 만들어요.</div>
                 <div className={styles.startRight2}>
-                    <button className={cx('startBtn')} onClick={onClickStart}>시작하기</button>
-                    <button className={cx('startBtn')} onClick={onClickUpload}>내 물건 올리기</button>
+                    {
+                        store.userInfoReducer.id ==null?
+                            <button className={cx('startBtn')} onClick={onClickStart}>시작하기</button>:
+                            <></>
+
+                    }
+
+                    {/*<button className={cx('startBtn')} onClick={onClickUpload}>내 물건 올리기</button>*/}
+                    <button className={cx('startBtn')} onClick={() => onClickToggleModal()}>내 물건 올리기</button>
 
                     {/*<Button className={"lightblue"} content={"시작하기"} onClick={onClickStart} color={"black"} hover={true} size={"medium"}/>*/}
                     {/*<Button className={"lightblue"} content={"내 물건 올리기"} onClick={onClickUpload} color={"black"} hover={true} size={"medium"}/>*/}

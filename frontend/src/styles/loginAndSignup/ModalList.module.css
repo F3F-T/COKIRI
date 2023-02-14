@@ -1,32 +1,64 @@
 .box1{
     width: 100%;
+
     height: 100%;
     display: flex;
-    position: fixed;
+    position: absolute;
     justify-content: center;
-    margin-top: 3rem;
+    margin-top: 0;
     /*border: 2px solid rgba(200, 0, 0, 1);*/
     /*filter: brightness(50%);*/
+    z-index: 9999;
     background-color: transparent;
-    /*background-color: rgba(0, 0, 0, 0.2);*/
 
     /*opacity: 0.5;*/
     /*background-color: black;*/
 }
 .box2{
-    width: 40rem;
-    height: 25rem;
+    width: 30rem;
+    height: 10rem;
     display: flex;
-    margin-top: 2rem;
     flex-direction: row;
     align-items: center;
-    border-radius: 5px;
+    justify-content: center;
+    border-radius: 20px;
+    margin-top: 10rem;
     box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
     box-sizing: border-box;
     background-color: white;
     z-index: 10000;
-    border: 1px solid rgba(0, 0, 0, 1);
+    border: 3px solid cornflowerblue;
+}
+.box2_1{
 
+}
+.box2_2{
+    text-align: center;
+    font-size: 1.7rem;
+}
+.box2_3{
+    margin-top: 2rem;
+    margin-left: 12rem;
+    display: flex;
+}
+.btn1{
+    border: none;
+    background-color: transparent;
+    font-weight: 20;
+    /*color: cornflowerblue;*/
+}
+.btn2{
+    border: none;
+    background-color: transparent;
+    font-weight: 20;
+}
+.btn1:hover {
+    color: cornflowerblue;
+    transition: all 0.1s ;
+}
+.btn2:hover {
+    color: cornflowerblue;
+    transition: all 0.1s ;
 }
 .left{
     height: 100%;
@@ -77,11 +109,11 @@
 
 
 .box3{
-    width: 100%;
+    width: 100% ;
     height: 100vh;
     position: fixed;
     top: 0;
-    z-index: 9999;
+    z-index: 999;
     background-color: rgba(0, 0, 0, 0.2);
 
 }
