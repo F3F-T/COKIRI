@@ -265,20 +265,24 @@ const PostDetail = () => {
             const res = await Api.get('/user/messageRooms');
             // console.log("김동준전체조회",res.data)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
-            // console.log("김윤정전체조회",res2.data)
+            console.log("김윤정전체조회",res2.data.length)
             if(res2.data.length == 0){
+                console.log("여기로 들어온거야?")
+                console.log("postId",post.id)
+                console.log("info.id",info.id)
                 const post_buyerId2= {
                     postId: post.id,
                     buyerId: info.id
                 }
                 const res4 = await Api.post(`/post/${post.id}/messageRooms`,post_buyerId2);
+                console.log("룸생성정보 in postdetail",res4)
                 dispatch(setOpponetNick(res4.data.sellerNickName))
                 await dispatch(setMessageRoomId(res4.data.id))
                 await dispatch(setSellerId(res4.data.sellerId))
                 dispatch(setPostId(res4.data.postId))
             }
             else {
-
+                console.log("아니면 여기로 들어온거야")
                 for (let i = 0; i < res2.data.length; i++) {
                     // if(res2.data[i].sellerDelStatus == false && res2.data[i].buyerDelStatus == false  ) {
                         console.log("postDetailSeller",res2.data[i].sellerDelStatus)

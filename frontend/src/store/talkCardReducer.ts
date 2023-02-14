@@ -17,6 +17,7 @@ interface talkCardInfo {
     tradeCategory:string;
     postId:number;
     delStatus:boolean;
+    editDone:boolean;
 }
 
 const initialUserTalkCardInfoState : talkCardInfo = {
@@ -30,7 +31,8 @@ const initialUserTalkCardInfoState : talkCardInfo = {
     wishCategory:undefined,
     tradeCategory:undefined,
     postId:undefined,
-    delStatus:false
+    delStatus:false,
+    editDone:false
 }
 
 //state는 이 상태의 현재 상태 값을 의미한다
@@ -81,6 +83,9 @@ const talkCardInfoSlice = createSlice({
         setDelStatus(state,action){
             state.delStatus = action.payload;
         },
+        setEdit(state,action){
+            state.editDone = action.payload;
+        },
         resetTalkCard(state){
             state.opponentNickname = undefined
             state.productImg = undefined
@@ -104,7 +109,7 @@ const talkCardInfoSlice = createSlice({
 //위에서 선언해준 counterSlice의 reducer를 export해준다
 export default talkCardInfoSlice.reducer;
 export const {
-    setPostId,setSellerId,setBuyerId,setMessageRoomId,setProductImg,setOpponetNick,setTradeStatus,setTitle,setWishCategory,setTradeCategory,resetTalkCard,setDelStatus
+    setPostId,setSellerId,setBuyerId,setMessageRoomId,setProductImg,setOpponetNick,setTradeStatus,setTitle,setWishCategory,setTradeCategory,resetTalkCard,setDelStatus,setEdit
 } = talkCardInfoSlice.actions;
 
 //이제 이걸다른 컴포턴트에서 dispatch로 사용한다.

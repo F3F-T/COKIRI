@@ -18,7 +18,7 @@ import {
     setPostId,
     setSellerId,
     setBuyerId,
-    setProductImg, setTitle, setWishCategory, setTradeCategory, setTradeStatus, setDelStatus
+    setProductImg, setTitle, setWishCategory, setTradeCategory, setTradeStatus, setDelStatus, setEdit
 } from "../store/talkCardReducer";
 import {use} from "js-joda";
 import {log} from "util";
@@ -275,6 +275,11 @@ const KokiriTalk = () => {
     // if(!talkCard.delStatus){
     //     return null
     // }
+    function scrollToBottom(){
+        // console.log("내려가라고 시발라마 내려가라고 내려가라고")
+        // @ts-ignore
+        scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' })
+    }
 
     if(!contentInfo){
         return null
@@ -341,7 +346,7 @@ const KokiriTalk = () => {
                 </div>
                 <div ref={scrollRef} className = {styles.writeComments}>
                     <input type={"text"} className={styles.writeInput} placeholder={"쪽지를 보내세요"} value={input} onChange={onChangeMessage} />
-                    <HiPencil className={styles.pencilIcon}  onClick={()=>{createMessageRoom(); setCount(prevState => prevState+1); setInput("") }}  />
+                    <HiPencil className={styles.pencilIcon}  onClick={()=>{createMessageRoom(); setCount(prevState => prevState+1); setInput(""); }}  />
                 </div>
             </div>
         </div>
