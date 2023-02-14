@@ -38,7 +38,7 @@ const SignUp = () => {
      * 4) gmail : 구글 이메일일때
      */
     type checkEmailTypes = 'invalid' | 'valid' | 'gmail' | 'duplicated'
-    type checkNicknameTypes = 'invalid' | 'valid' | 'duplicated'
+    type checkNicknameTypes = 'invalid' | 'valid' | 'duplicated' | 'invalid2'
     type checkPhoneNumberTypes = 'invalid' | 'valid' | 'duplicated'
 
 
@@ -136,7 +136,8 @@ const SignUp = () => {
                     return {...prevState, nicknameCheck: "duplicated", nicknameCheckBoolean: false}
                 })
                 console.log(validationCheck);
-            } else //중복이 아닌 경우 -> false 반환
+            }
+            else //중복이 아닌 경우 -> false 반환
             {
                 setValidationCheck((prevState) => {
                     return {...prevState, nicknameCheck: "valid", nicknameCheckBoolean: true}
@@ -318,14 +319,20 @@ const SignUp = () => {
         let inputNickname = e.target.value;
 
         //이메일 유효성 검사를 통과했을때, (형식에 맞는 경우 true 리턴)
-        if (inputNickname.length > 0) {
+        if (inputNickname.length > 0 && inputNickname.length < 7) {
             //닉네임 중복체크 백엔드 통신
             //string인 inputNickname을 json형태의 객체로 변환
             let jsonObj = {"nickname": inputNickname};
             //변환한 json 객체로 이메일 중복체크
             CheckNickNameDuplicated(jsonObj);
 
-        } else //닉네임 유효성 검사 실패했을때
+        }
+        else if(inputNickname.length>=7){
+            setValidationCheck((prevState) => {
+                return {...prevState, nicknameCheck: "invalid2", nicknameCheckBoolean: false}
+            })
+        }
+        else //닉네임 유효성 검사 실패했을때
         {
             setValidationCheck((prevState) => {
                 return {...prevState, nicknameCheck: "invalid", nicknameCheckBoolean: false}
@@ -452,7 +459,15 @@ const SignUp = () => {
                         <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 닉네임은 한글자 이상이어야합니다."}/>)
                     ||
                     (validationCheck.nicknameCheck === "duplicated" &&
-                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)}
+                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)
+                    ||
+                    (validationCheck.nicknameCheck === "invalid2" &&
+                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 닉네임은 여섯글자까지 등록 가능합니다."}/>)
+
+
+
+
+                }
 
                 <TextInput type ={"text"} placeholder={"전화번호"} onBlur={onChangePhoneNumber}/>
                 {(validationCheck.phoneNumberCheck === undefined &&
