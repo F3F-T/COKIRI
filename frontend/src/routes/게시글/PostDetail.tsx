@@ -43,6 +43,7 @@ import {prepend} from "list";
 import Select from "react-select";
 import {ClipLoader} from "react-spinners";
 import Modal from "../로그인 & 회원가입/ModalList";
+import SettingModal from "../로그인 & 회원가입/SettingModal";
 
 
 const PostDetail = () => {
@@ -486,12 +487,14 @@ const PostDetail = () => {
     }
 
     return (
-        <div className={styles.postDetail}>
-            {isOpenModal  &&(
+        <div className={styles.Box}>
+            {isOpenModal &&(
                 <Modal onClickToggleModal={onClickToggleModal} >
                     <embed type="text/html"  width="800" height="608"/>
                 </Modal>
             )}
+        <div className={styles.postDetail}>
+
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
@@ -640,6 +643,7 @@ const PostDetail = () => {
                        onChange={onChangeComment} value={commentText}/>
                 <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
             </div>
+        </div>
         </div>
 
 
