@@ -18,12 +18,14 @@ import {Rootstate} from "../../../index";
 import {setEmail, setPW} from "../../../store/userInfoReducer";
 import Api from "../../../utils/api";
 
-const FindID = () => {
-    const store = useSelector((state:Rootstate) => state);
+const FindPW = () => {
+    const store = useSelector((state: Rootstate) => state);
     const dispatch = useDispatch();
+
     interface UserInfo {
         userName: string;
         phoneNumber: string;
+        email : string;
     }
 
     /**
@@ -35,9 +37,8 @@ const FindID = () => {
      */
 
 
-
-    //각 항목들의 유효성 체크와
-    //성공인지, 실패인지에 따라 UI(실패하면 빨간색, 성공하면 초록색)를 결정해주는 Boolean
+        //각 항목들의 유효성 체크와
+        //성공인지, 실패인지에 따라 UI(실패하면 빨간색, 성공하면 초록색)를 결정해주는 Boolean
     interface ValidationCheck {
         nameCheck: boolean;
         nameCheckBoolean: boolean;
@@ -45,7 +46,11 @@ const FindID = () => {
         phoneNumberCheck: boolean;
         phoneNumberCheckBoolean: boolean;
 
+        emailCheck: boolean;
+        emailCheckBoolean: boolean;
+
     }
+
     const location = useGeoLocation();
     const [validationCheck, setValidationCheck] = useState<ValidationCheck>(
         {
@@ -55,23 +60,23 @@ const FindID = () => {
 
             phoneNumberCheck: undefined,
             phoneNumberCheckBoolean: undefined,
+            emailCheck: undefined,
+            emailCheckBoolean: undefined,
 
         }
     );
 
-    const [passwordReCheck, setpasswordReCheck] = useState<boolean>(undefined);
 
     // const [emailCheck, setEmailCheck] = useState<string>(undefined);
     const [userInfo, setuserInfo] = useState<UserInfo>(null);
     const navigate = useNavigate();
 
-    async function findEmail() {
+    async function findPW() {
         try {
-            const res = await Api.post("http://localhost:8080/auth/find/email", userInfo);
+            const res = await Api.post("/auth/find/password", userInfo);
             console.log(res)
-            if(res.status === 200)
-            {
-                navigate('/findid/response', {state : res.data})
+            if (res.status === 200) {
+                navigate('/findpw/response', {state: res.data})
             }
 
 
@@ -86,8 +91,10 @@ const FindID = () => {
 
         //유효성 검증이 모두 성공했을 경우 (모두 true일 경우) 회원가입
         if (validationCheck.nameCheckBoolean &&
-            validationCheck.phoneNumberCheckBoolean) {
-            findEmail()
+            validationCheck.phoneNumberCheckBoolean&&
+            validationCheck.emailCheckBoolean
+        ) {
+            findPW()
 
         } else { //유효성 검증 하나라도 실패한 경우 회원가입 실패
             alert("정보를 모두 올바르게 입력해주세요")
@@ -95,13 +102,13 @@ const FindID = () => {
     }
 
 
-
     const onChangeName = (e) => {
         let inputName = e.target.value;
         //한글자 이상 작성했을때
         if (inputName.length > 0) {
             setuserInfo((prevState) => {
-                return {...prevState, userName: e.target.value,
+                return {
+                    ...prevState, userName: e.target.value,
                 }
             })
 
@@ -109,8 +116,7 @@ const FindID = () => {
                 return {...prevState, nameCheckBoolean: true}
             })
 
-            }
-        else{
+        } else {
             setValidationCheck((prevState) => {
                 return {...prevState, nameCheckBoolean: false}
             })
@@ -121,17 +127,16 @@ const FindID = () => {
     const onChangePhoneNumber = (e) => {
         let inputPhoneNumber = e.target.value;
 
-        if(inputPhoneNumber.length>7)
-        {
+        if (inputPhoneNumber.length > 7) {
             setuserInfo((prevState) => {
-                return {...prevState, phoneNumber: e.target.value,
+                return {
+                    ...prevState, phoneNumber: e.target.value,
                 }
             })
             setValidationCheck((prevState) => {
                 return {...prevState, phoneNumberCheckBoolean: true}
             })
-        }
-        else{
+        } else {
             setValidationCheck((prevState) => {
                 return {...prevState, phoneNumberCheckBoolean: false}
             })
@@ -139,6 +144,25 @@ const FindID = () => {
 
     }
 
+    const onChangeEmail = (e) => {
+        let inputEmail = e.target.value;
+
+        if (inputEmail.length > 5) {
+            setuserInfo((prevState) => {
+                return {
+                    ...prevState, email: e.target.value,
+                }
+            })
+            setValidationCheck((prevState) => {
+                return {...prevState, emailCheckBoolean: true}
+            })
+        } else {
+            setValidationCheck((prevState) => {
+                return {...prevState, emailCheckBoolean: false}
+            })
+        }
+
+    }
 
 
     return (
@@ -150,9 +174,9 @@ const FindID = () => {
 
             </div>
             <div className={styles.userInfo}>
-                <TextInput type ={"text"} placeholder={"이름을 입력하세요"} onBlur={onChangeName}/>
-                <TextInput type ={"text"} placeholder={"핸드폰 번호를 입력하세요"} onBlur={onChangePhoneNumber}/>
-
+                <TextInput type={"text"} placeholder={"이름을 입력하세요"} onBlur={onChangeName}/>
+                <TextInput type={"text"} placeholder={"핸드폰 번호를 입력하세요"} onBlur={onChangePhoneNumber}/>
+                <TextInput type={"text"} placeholder={"가입한 이메일을 입력하세요"} onBlur={onChangeEmail}/>
 
             </div>
 
@@ -165,4 +189,4 @@ const FindID = () => {
 }
 
 
-export default FindID;
+export default FindPW;
