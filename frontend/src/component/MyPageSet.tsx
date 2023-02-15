@@ -259,7 +259,11 @@ const MyPage = () =>  {
     return (
             <>
             <div className={styles.profile}>
-
+                {isOpenModal &&(
+                    <SettingModal onClickToggleModal={onClickToggleModal} >
+                        <embed type="text/html"  width="800" height="608"/>
+                    </SettingModal>
+                )}
                 <div className={styles.profileImage}>
                     {
                         state==null || state == info.id?
