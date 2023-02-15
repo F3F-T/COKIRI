@@ -31,6 +31,8 @@ import {Rootstate} from "./index";
 import MyPageSet from "./component/MyPageSet";
 import TagSearch from "./routes/물물교환, 끼리끼리 화면/TagSearch";
 import PostEdit from "./routes/게시글/PostEdit";
+import FindID from "./routes/로그인 & 회원가입/아이디 찾기/FindID";
+import FindIDResponse from "./routes/로그인 & 회원가입/아이디 찾기/FindIDResponse";
 
 function App() {
 //
@@ -52,6 +54,9 @@ function App() {
             <Routes>
                 <Route path="/" element={<Home/>} />
                 <Route path="/login" element={<Login/>}/>
+                <Route path="/findid" element={<FindID/>}/>
+                <Route path="/findid/response" element={<FindIDResponse/>}/>
+
 
                 <Route path="/signup" element={<SignUp/>}/>
                 <Route path="/signup/emailcheck" element={<EmailCheck/>}/>
