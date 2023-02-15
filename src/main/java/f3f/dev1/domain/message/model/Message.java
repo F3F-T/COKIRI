@@ -13,6 +13,8 @@ import lombok.NonNull;
 
 import javax.persistence.*;
 
+import java.time.LocalDateTime;
+
 import static f3f.dev1.domain.message.dto.MessageRoomDTO.*;
 
 @Getter
@@ -38,6 +40,8 @@ public class Message extends BaseTimeEntity {
     @JoinColumn(name = "messageRoom_id")
     private MessageRoom messageRoom;
 
+    private LocalDateTime createTime;
+
 
     @Builder
     public Message(Long id, String content, Member sender, Member receiver, MessageRoom messageRoom) {
@@ -58,6 +62,7 @@ public class Message extends BaseTimeEntity {
                 .senderId(this.sender.getId())
                 .receiverId(this.receiver.getId())
                 .messageRoomId(this.messageRoom.getId())
+                .createTime(super.getCreateDate())
                 .build();
 
 

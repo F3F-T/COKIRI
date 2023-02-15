@@ -26,8 +26,8 @@ public class MessageController {
         return new ResponseEntity<>(messageInfoDto, HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value="/messageRooms/{messageId}")
-    public ResponseEntity<String> deleteMessage(@PathVariable(name="messageId") Long messageId, @RequestBody @Valid MessageDTO.DeleteMessageRequest deleteMessageRequest){
+    @DeleteMapping(value="/messageRooms/{messageRoomId}/{messageId}")
+    public ResponseEntity<String> deleteMessage(@PathVariable(name="messageRoomId") Long messageRoomId, @PathVariable(name="messageId") Long messageId, @RequestBody @Valid MessageDTO.DeleteMessageRequest deleteMessageRequest){
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         String delete = messageService.deleteMessage(deleteMessageRequest, currentMemberId);
         return new ResponseEntity<>(delete, HttpStatus.OK);
