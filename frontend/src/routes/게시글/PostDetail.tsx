@@ -348,7 +348,6 @@ const PostDetail = () => {
 
     const onClickScrap = async () => {
 
-        console.log(accessableCount);
         const userId: Number = store.userInfoReducer.id;
 
         const jsonObj = {userId: userId, postId: post.id}
@@ -397,13 +396,21 @@ const PostDetail = () => {
     }
 
     const UploadComment = async () => {
+        console.log(accessableCount)
+        accessableCount = accessableCount -1 ;
         try {
-            const res = await Api.post(`/post/${postId}/comments`, writeComment);
-            console.log(writeComment);
-            console.log(res);
-            dispatch(changeCommentRefreshState());
-            setCommentText("");
-            alert("댓글 작성 성공")
+            if(accessableCount >= 0 ) {
+                const res = await Api.post(`/post/${postId}/comments`, writeComment);
+                console.log(writeComment);
+                console.log(res);
+                dispatch(changeCommentRefreshState());
+                setCommentText("");
+                alert("댓글 작성 성공")
+            }
+            else{
+                console.log("이미 클릭한번함")
+            }
+            accessableCount  = accessableCount + 1;
         } catch (err) {
             console.log(err)
             alert("댓글 작성 실패")
@@ -455,7 +462,7 @@ const PostDetail = () => {
     // console.log(post)
     // console.log(post.images);
     console.log("이거이거..")
-    console.log(store.refreshReducer.commentChange);
+    // console.log(store.refreshReducer.commentChange);
 
 
     //게시글 작성자 판단
