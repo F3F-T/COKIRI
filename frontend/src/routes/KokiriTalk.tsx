@@ -18,7 +18,7 @@ import {
     setPostId,
     setSellerId,
     setBuyerId,
-    setProductImg, setTitle, setWishCategory, setTradeCategory, setTradeStatus
+    setProductImg, setTitle, setWishCategory, setTradeCategory, setTradeStatus, setDelStatus
 } from "../store/talkCardReducer";
 import {use} from "js-joda";
 import {log} from "util";
@@ -44,9 +44,13 @@ interface contentInfo2 {
 }
 const KokiriTalk = () => {
     const navigate = useNavigate();
+
     const scrollRef = useRef();
+
     const store = useSelector((state:Rootstate) => state);
     const [count,setCount] = useState(0)
+    const [click,setClick] = useState(0)
+
     const [del,setDel] = useState(0)
     const [key,setKey] = useState<number>(null)
     const {state} = useLocation();
@@ -57,10 +61,12 @@ const KokiriTalk = () => {
     const [contentInfo,setContentInfo]=useState(null)
     const [roomList,setRoomList]=useState(null)
     // const [count,setCount]=useState(0)
-    console.log("count",count)
     const [input,setInput] = useState('');
+    console.log("초기시작으로 false를 해놧는데",talkCard.delStatus)
     useEffect(()=>{
-        getMessageRoom()
+        if(talkCard.delStatus==false){
+            getMessageRoom()
+        }
     },[])
 
     const onClickTotalTalkList = (key) => {
@@ -74,7 +80,7 @@ const KokiriTalk = () => {
 
     useEffect(()=>{
         if(talkCard.id!=undefined){
-            console.log("실행된거니??",talkCard.id)
+            // console.log("실행된거니??",talkCard.id)
             setKey(talkCard.id)
             getMessageContent(talkCard.id);
         }
@@ -136,14 +142,16 @@ const KokiriTalk = () => {
     async function getMessageRoom() {
         try{
             const res = await Api.get('/user/messageRooms');
-            console.log("메세지룸 조회", res.data.content)
+            // console.log("메세지룸 조회", res.data.content)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
-            // console.log("메세지룸 조회2",res2.data)
+            console.log("메세지룸 조회2",res2.data)
             if(talkCard.id === undefined){
                 // const res3 = await Api.get(`/post/${res2.data[0].postId}`)
                 for(let i=0;i<res2.data.length;i++){
-                    if(res2.data[i].delStatus ==false){
-                        if(res.data.content[0].messageRoomId == res2.data[i].id){
+                    if(res2.data[i].sellerDelStatus == false && res2.data[i].buyerDelStatus == false ) {
+                        console.log(`kokiriseller${i}`,res2.data[i].sellerDelStatus)
+                        console.log(`kokiriseller${i}`,res2.data[i].buyerDelStatus)
+                        if (res.data.content[0].messageRoomId == res2.data[i].id) {
                             const res3 = await Api.get(`/post/${res2.data[i].postId}`)
                             dispatch(setTradeStatus(res3.data.tradeStatus))
                             dispatch(setTradeCategory(res3.data.tradeCategory))
@@ -153,20 +161,31 @@ const KokiriTalk = () => {
                             dispatch(setPostId(res2.data[i].postId))
                             dispatch(setMessageRoomId(res2.data[i].id))
                             dispatch(setBuyerId(res2.data[i].buyerId))
-                            if(info.id === res2.data[i].buyerId){
+                            if (info.id === res2.data[i].buyerId) {
                                 dispatch(setOpponetNick(res2.data[i].sellerNickName))
-                            }
-                            else{
+                                dispatch(setDelStatus(res2.data[i].buyerDelStatus))
+                            } else {
                                 dispatch(setOpponetNick(res2.data[i].buyerNickName))
+                                dispatch(setDelStatus(res2.data[i].sellerDelStatus))
+
                             }
                             getMessageContent(res2.data[0].id);
-
                         }
+                    }
+                    else{
+                        if(info.id === res2.data[i].buyerId){
+                            dispatch(setDelStatus(res2.data[i].buyerDelStatus))
+                        }
+                        else{
+                            dispatch(setDelStatus(res2.data[i].sellerDelStatus))
+                        }
+                        console.log(`kokiri${i}`,talkCard.delStatus)
                     }
 
                 }
                 //title,wishCategory,productCategory,tradeStatu
             }
+
 
             setRoomList(()=>{
                 return [...res.data.content]
@@ -253,7 +272,9 @@ const KokiriTalk = () => {
             alert("메세지룸 내용 삭제 실패 in kokiritalk")
         }
     }
-
+    // if(!talkCard.delStatus){
+    //     return null
+    // }
 
     if(!contentInfo){
         return null
@@ -261,8 +282,6 @@ const KokiriTalk = () => {
     if(!roomList){
         return null
     }
-
-
     return (
         <div className={styles.kokiritalk}>
             <div className={styles.left}>
@@ -270,12 +289,29 @@ const KokiriTalk = () => {
                 <div className={styles.left2}>
                 <div className={styles.talkContainer}>
                     {roomList.map((SingleObject:object) => (
-                        SingleObject["buyerNickname"] === info.nickname ?
-                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
-                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+
+                        SingleObject['messageRoomId'] === talkCard.id ?//눌렸냐
+                            SingleObject["buyerNickname"] === info.nickname ?
+                                // <>눌렸는데 구매자</>
+                                <div className={styles.wrapper}>
+                                    <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
+                                              onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+                                </div>
+                                :
+                                // <>눌렸는데 판매자</>
+                                <div className={styles.wrapper}>
+                                    <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
+                                              onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+                                </div>
                             :
-                        <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
-                                  onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+                            // <>안눌림</>
+                            SingleObject["buyerNickname"] === info.nickname ?
+                                    <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
+                                              onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+                                :
+                                // <>눌렸는데 판매자</>
+                                    <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
+                                              onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
 
                     ))}
                 </div>
@@ -286,7 +322,7 @@ const KokiriTalk = () => {
                 <div className={styles.right_headerBox}>
                     <div className={styles.right_header}>
                         <div className={styles.right_header1}>
-                            <div className={styles.right_header1_1}> <TalkCard keys={key}/> </div>
+                            <div className={styles.right_header1_1}> <TalkCard keys={key} /> </div>
                         </div>
                         <div className={styles.right_header2}>
                             <button className={styles.sideBtn} onClick={()=>{deleteRoom();setDel(prevState => prevState+1);}} >삭제</button>

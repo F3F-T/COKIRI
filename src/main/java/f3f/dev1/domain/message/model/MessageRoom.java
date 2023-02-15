@@ -39,15 +39,22 @@ public class MessageRoom extends BaseTimeEntity {
     @OneToMany(mappedBy = "messageRoom", fetch = FetchType.LAZY)
     private List<Message> messages = new ArrayList<>();
 
-    private boolean delStatus;
+    //sender == 보내는 사람 == buyer
+    private boolean buyerDelStatus;
+    //receiver == 받는 사람 == seller
+    private boolean sellerDelStatus;
 
-    public void setDelStatus(boolean delStatus){ this.delStatus = delStatus; }
+    public void setSenderDelStatus(boolean buyerDelStatus){ this.buyerDelStatus = buyerDelStatus; }
+    public void setReceiverDelStatus(boolean sellerDelStatus){this.sellerDelStatus = sellerDelStatus;}
+    //생성할때!
     @Builder
     public MessageRoom(Long id, Post post, Member seller, Member buyer) {
         this.id = id;
         this.post = post;
         this.seller = seller;
         this.buyer = buyer;
+        this.buyerDelStatus = false;
+        this.sellerDelStatus = false;
     }
     public MessageRoomDTO.MessageRoomInfoDto toMessageRoomInfo(){
         return MessageRoomDTO.MessageRoomInfoDto.builder()
@@ -57,16 +64,53 @@ public class MessageRoom extends BaseTimeEntity {
                 .postId(this.post.getId())
                 .sellerId(this.seller.getId())
                 .buyerId(this.buyer.getId())
-                .delStatus(this.isDelStatus())
+                .buyerDelStatus(this.buyerDelStatus)
+                .sellerDelStatus(this.sellerDelStatus)
                 .createTime(super.getCreateDate())
                 .build();
     }
+
+    public MessageRoomDTO.UpdateMessageRoomInfoDto toUpdateMessageRoomInfo(){
+        return MessageRoomDTO.UpdateMessageRoomInfoDto.builder()
+                .id(this.getId())
+                .sellerNickName(this.seller.getNickname())
+                .buyerNickName(this.buyer.getNickname())
+                .postId(this.post.getId())
+                .sellerId(this.seller.getId())
+                .buyerId(this.buyer.getId())
+                .buyerDelStatus(this.buyerDelStatus)
+                .sellerDelStatus(this.sellerDelStatus)
+                .updateTime(super.getModifiedDate())
+                .build();
+    }
+
+    // 철웅 추가-------------------------------------------------------
+    public MessageRoomDTO.MessageRoomInfoWithOneDelStatus toMessageRoomInfoWithOneDelStatus(Member member, boolean delStatus) {
+        return MessageRoomDTO.MessageRoomInfoWithOneDelStatus.builder()
+                .id(this.id)
+                .postTitle(post.getTitle())
+                .memberNickname(member.getNickname())
+                .delStatus(delStatus)
+                .build();
+    }
+    //--------------------------------------------------------
+
+//    public MessageRoomDTO.MessageRoomInfoWithOneDelStatus toMessageRoomInfoWithOneDelStatus(){
+//        return MessageRoomDTO.MessageRoomInfoWithOneDelStatus.builder()
+//                .id(this.getId())
+//                .postTitle(this.post.getTitle())
+//                .memberNickname(this.seller.getNickname()||this.buyer.getNickname())
+//                .delStatus(this.isSenderDelStatus()||this.isReceiverDelStatus())
+//                .createTime(super.getCreateDate())
+//                .build();
+//
+//    }
     public MessageRoomDTO.BuyingRoomInfoDto toBuyingRoomInfo(){
         return MessageRoomDTO.BuyingRoomInfoDto.builder()
                 .id(this.getId())
                 .PostTitle(this.post.getTitle())
                 .sellerNickname(this.seller.getNickname())
-                .delStatus(this.isDelStatus())
+                .buyerDelStatus(this.buyerDelStatus)
                 .createTime(super.getCreateDate())
                 .build();
     }
@@ -76,7 +120,7 @@ public class MessageRoom extends BaseTimeEntity {
                 .id(this.getId())
                 .PostTitle(this.post.getTitle())
                 .buyerNickname(this.buyer.getNickname())
-                .delStatus(this.isDelStatus())
+                .sellerDelStatus(this.sellerDelStatus)
                 .createTime(super.getCreateDate())
                 .build();
     }

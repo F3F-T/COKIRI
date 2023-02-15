@@ -15,7 +15,7 @@
 
   .swiper-container {
     //margin : auto;
-    height: 22rem;
+    height: 15rem;
     width: 1100px;
     //padding-left : 50px;
     //paeding-right: 50px;
@@ -29,14 +29,14 @@
   .swiper-button-next {
     color: #5DC8CD !important;
     --swiper-navigation-size: 3rem;
-    top : 9.5rem;
+    //top : 9.5rem;
     position : absolute;
   }
 
   .swiper-button-prev {
     color: #5DC8CD !important;
     --swiper-navigation-size: 3rem;
-    top : 9.5rem;
+    //top : 9.5rem;
     position: absolute;
 
   }
@@ -53,3 +53,6 @@
 @import 'node_modules/swiper/swiper';
 @import 'node_modules/swiper/components/navigation/navigation';
 @import 'node_modules/swiper/components/pagination/pagination';
+@import 'node_modules/swiper/components/effect-fade/effect-fade';
+@import 'node_modules/swiper/components/effect-coverflow/effect-coverflow';
+

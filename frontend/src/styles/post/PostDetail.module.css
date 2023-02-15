@@ -74,43 +74,63 @@
 .postDetailInfo{
     width: 25rem;
     height: 26.5rem;
+    max-height: 26.5rem;
     /*height : 22rem;*/
     margin-left: 2rem;
     /*margin-right: 1rem;*/
     position: relative;
+    overflow: hidden;
 
 }
 
 .postDetailInfo .postDetailTitle{
-    font-size: 1.8rem;
+    /*margin-top : 1rem;*/
+    font-size: 2rem;
+    width : 26rem;
+    max-height: 4.5rem;
+    overflow:hidden;
+    font-weight: bold;
+    /*line-height: 100%;*/
+
+
 }
 
 .postDetailInfo .postDetailCategory{
-    margin-top: 0.7rem;
-    font-size: 1.5rem;
+    margin-top: 0.5rem;
+    font-size: 1.7rem;
     color: gray;
 }
 
 .postDetailInfo .postDetailPrice{
-    margin-top: 0.7rem;
-    font-size: 1.2rem;
+    margin-top: 0.4rem;
+    font-size: 1.4rem;
 }
 
 .postDetailInfo .postDetailContent{
     margin-top: 0.7rem;
-    font-size: 0.85rem;
+    font-size: 1.1rem;
     /*margin-right: 1.8rem;*/
-    /*font-weight: bold;*/
+    font-weight: 500;
+    max-height: 13.5rem;
+    overflow:hidden;
     white-space: pre-wrap;
 }
 
 .postDetailInfo .postDetailTag{
     color: blue;
-    position: absolute;
-    bottom: 0.5rem;
-    margin-top: 0.7rem;
+    margin-top: 0.4rem;
     font-size: 1rem;
-    right : 0;
+    text-overflow:ellipsis;
+}
+
+.tagC{
+    cursor: pointer;
+    margin-left: 0.3rem;
+}
+
+.contentAndTag{
+    max-height: 16rem;
+    overflow: hidden;
 }
 
 .categoryandStatus{
@@ -129,6 +149,12 @@
 .tradeStatus{
     font-size: 1.1rem;
     margin-bottom: 0.2rem;
+}
+
+.tradeStatusString{
+    font-size: 1.4rem;
+    color: gray;
+    /*margin-bottom: 0.2rem;*/
 }
 
 .postDetailSwapCategoryBox{
@@ -165,6 +191,7 @@
     gap:0.2rem;
 }
 .likeImg{
+    cursor: pointer;
     width:1rem;
     height: 1rem;
     margin-top: 0.3rem;

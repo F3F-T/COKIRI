@@ -19,7 +19,7 @@ import {
     deleteUserInfo,
     setUserNick,
     setUserName,
-    setOnelineIntro, logoutUserInfo,
+    setOnelineIntro, logoutUserInfo, setPW,
 } from "../../store/userInfoReducer";
 import {
     parcelAddress1, parcelAddress2,
@@ -67,6 +67,7 @@ const Login = () => {
         setuserInfo((prevState) => {
             return {...prevState, password: e.target.value}
         })
+        dispatch(setPW(e.target.value))
     }
     async function postLoginData() {
             //interceptor를 사용한 방식 (header에 token값 전달)
@@ -81,7 +82,6 @@ const Login = () => {
             dispatch(setToken(jwtToken));
             dispatch(setUserInfo(res.data.userInfo.userDetail))
             dispatch(setOnelineIntro(res.data.userInfo.userDetail.description))
-
             if(res.data.userInfo.address[0]!=null){
                 dispatch(setUserAddressInfo1(res.data.userInfo.address[0].id))
                 dispatch(setAddressName1(res.data.userInfo.address[0].addressName))
@@ -101,6 +101,7 @@ const Login = () => {
             // dispatch(setAddress2(res.data.userInfo.address[1]))
             console.log("store",store)
             alert("로그인 성공")
+            console.log("비밀번호",store.userInfoReducer.password)
             navigate(`/`)
             }
             catch (err)
@@ -170,6 +171,14 @@ const Login = () => {
         }
     });
 
+    const findId = () => {
+        navigate(`/findid`)
+    }
+
+    const findPw = () => {
+        navigate('/findpw')
+    }
+
 
     return (
         <><div className={styles.box}>
@@ -202,9 +211,9 @@ const Login = () => {
                         </fieldset>
                     </div>
                     <div className={styles.loginMenu}>
-                        <span onClick={signInClick}>회원가입</span>
-                        <span>ID 찾기</span>
-                        <span>비밀번호 찾기</span>
+                        <span className={styles.signup} onClick={signInClick}>회원가입</span>
+                        <span className={styles.findId} onClick={findId}>ID 찾기</span>
+                        <span className={styles.findPw} onClick={findPw}>비밀번호 찾기</span>
                     </div>
                 </section>
                 {/*<Button className={"white"} onClick={()=>{  onClickToggleModal(); }} content={"구글 로그인"}/>*/}

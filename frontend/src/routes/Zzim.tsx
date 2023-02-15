@@ -1,6 +1,6 @@
 import React, {useState, useRef,useEffect, useMemo, useCallback} from 'react';
 import styles from "../styles/loginAndSignup/MyPage.module.css"
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import photo from "../img/photoSelect.png"
@@ -26,6 +26,7 @@ interface PostType {
 const MyPageZZIM = () =>  {
     const [tab1, setTab] = useState('curr');
     const [scrapList,setScrapList] = useState<PostType[]>(null)
+    const {state} = useLocation(); //다른 유저꺼 받을 때
 
     function setDealTab(tab){
         setTab(tab)
@@ -57,30 +58,34 @@ const MyPageZZIM = () =>  {
     const onClickPost = (post) => {
         navigate(`/post/${post.postId}`)
     }
-
+    console.log("찜 페이지로 state", state)
     return (
         <>
             <div className={styles.MyPage}>
-                <div className={styles.menu}>
-                    {/*{tab1 === 'curr' ? <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>d게시글</button>*/}
-                    {/*    :<button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>*/}
-                    {/*}*/}
-                    {/*{tab1 === 'next' ? <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>d관심 상품</button>*/}
+                {/*<div className={styles.menu}>*/}
+                {/*    /!*{tab1 === 'curr' ? <button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>d게시글</button>*!/*/}
+                {/*    /!*    :<button className={`${styles["post"+(tab1 ==="curr"? "" : "active")]}`}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>*!/*/}
+                {/*    /!*}*!/*/}
+                {/*    /!*{tab1 === 'next' ? <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>d관심 상품</button>*!/*/}
 
-                    {/*    : <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); {tab1==="next"? navigate('/mypage/zzim'):navigate('/mypage')}}}>관심 상품</button>*/}
-                    {/*}*/}
-                    <button className={styles.postactive}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>
-                    {/*<button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>관심 상품</button>*/}
-                    <button className={styles.zzim} onClick={()=>{ setDealTab('next')}}>관심 상품</button>
-                </div>
-                <div className={styles.container}>
-                    {
-                        scrapList.map((SingleObject:Object)=>(
-                            <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['scrapCount']} wishCategory={SingleObject['wishCategory']}
-                                   onClick={() => {onClickPost(SingleObject)}}/>
-                        ))
-                    }
-                </div>
+                {/*    /!*    : <button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); {tab1==="next"? navigate('/mypage/zzim'):navigate('/mypage')}}}>관심 상품</button>*!/*/}
+                {/*    /!*}*!/*/}
+                {/*    <button className={styles.postactive}  onClick={() =>{ setDealTab('curr'); navigate('/mypage');}}>게시글</button>*/}
+                {/*    /!*<button className={`${styles["zzim"+(tab1 ==="next"? "" : "active")]}`} onClick={() =>{ setDealTab('next'); navigate('/mypage/zzim');}}>관심 상품</button>*!/*/}
+                {/*    <button className={styles.zzim} onClick={()=>{ setDealTab('next')}}>관심 상품</button>*/}
+                {/*</div>*/}
+
+                        <div className={styles.container}>
+                            {
+                                scrapList.reverse().map((SingleObject:Object)=>(
+                                    <Card  className={"forMypage"} postTitle={SingleObject['title']} like={SingleObject['scrapCount']} wishCategory={SingleObject['wishCategory']}
+                                           onClick={() => {onClickPost(SingleObject)}}/>
+                                ))
+                            }
+                        </div>
+
+
+
             </div>
         </>
     );

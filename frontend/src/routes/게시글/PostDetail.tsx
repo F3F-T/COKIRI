@@ -49,6 +49,7 @@ const PostDetail = () => {
     // const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
     // console.log("asdfasdfa",detail)
     const navigate = useNavigate();
+    let accessableCount = 1;
 
     interface PostType {
         id?: number;
@@ -257,45 +258,65 @@ const PostDetail = () => {
             dispatch(setOpponetNick(post.userInfoWithAddress.userDetail.nickname))
         }
         // await dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
-        await getMessageRoom()
+        await getMessageRoom2()
         navigate(`/kokiriTalk/${info.id}`, {state: {existOrNot}})
     }
-    async function getMessageRoom() {
+    async function getMessageRoom2() {
         try{
             const res = await Api.get('/user/messageRooms');
             // console.log("김동준전체조회",res.data)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
             // console.log("김윤정전체조회",res2.data)
-            for(let i =0 ; i<res2.data.length;i++){
-                if(res2.data[i].buyerId === info.id)
-                {
-                    if(res2.data[i].postId === post.id){
-                        console.log("이미 방이 존재합니다.")
-                        dispatch(setMessageRoomId(res2.data[i].id))
-                        existOrNot = true
-                        break;
-                    }
-                    else {
-                        existOrNot = false
-                    }
+            if(res2.data.length == 0){
+                const post_buyerId2= {
+                    postId: post.id,
+                    buyerId: info.id
                 }
-                else{
-                    try{
-                        const post_buyerId1 = {
-                            postId: post.id,
-                            buyerId: info.id
+                const res4 = await Api.post(`/post/${post.id}/messageRooms`,post_buyerId2);
+                dispatch(setOpponetNick(res4.data.sellerNickName))
+                await dispatch(setMessageRoomId(res4.data.id))
+                await dispatch(setSellerId(res4.data.sellerId))
+                dispatch(setPostId(res4.data.postId))
+            }
+            else {
+
+                for (let i = 0; i < res2.data.length; i++) {
+                    // if(res2.data[i].sellerDelStatus == false && res2.data[i].buyerDelStatus == false  ) {
+                        console.log("postDetailSeller",res2.data[i].sellerDelStatus)
+                        console.log("postDetailbuyer",res2.data[i].buyerDelStatus)
+                    if (res2.data[i].buyerId === info.id) {
+                            console.log("들어옴?1")
+                            if (res2.data[i].postId === post.id) {
+                                console.log("들어옴?2")
+                                console.log("이미 방이 존재합니다.")
+                                dispatch(setMessageRoomId(res2.data[i].id))
+                                existOrNot = true
+                                break;
+                            } else {
+                                console.log("들어옴?3")
+                                existOrNot = false
                         }
-                        const res4 = await Api.post(`/post/${post.id}/messageRooms`,post_buyerId1);
-                        dispatch(setOpponetNick(res4.data.sellerNickName))
-                        await dispatch(setMessageRoomId(res4.data.id))
-                        await dispatch(setSellerId(res4.data.sellerId))
-                        dispatch(setPostId(res4.data.postId))
+                    } else {
+                        try {
+                            console.log("들어옴?4")
+                            const post_buyerId1 = {
+                                postId: post.id,
+                                buyerId: info.id
+                            }
+
+                            const res4 = await Api.post(`/post/${post.id}/messageRooms`, post_buyerId1);
+                            dispatch(setOpponetNick(res4.data.sellerNickName))
+                            await dispatch(setMessageRoomId(res4.data.id))
+                            await dispatch(setSellerId(res4.data.sellerId))
+                            dispatch(setPostId(res4.data.postId))
+                            break;
+                        } catch (err) {
+                            console.log("들어옴?5")
+                            console.log(err)
+                            alert("메세지룸 추가 실패 in postdetail")
+                        }
                     }
-                    catch (err)
-                    {
-                        console.log(err)
-                        alert("메세지룸 추가 실패 in postdetail")
-                    }
+
                 }
             }
         }
@@ -327,20 +348,37 @@ const PostDetail = () => {
 
     const onClickScrap = async () => {
 
+        console.log(accessableCount);
         const userId: Number = store.userInfoReducer.id;
 
         const jsonObj = {userId: userId, postId: post.id}
         console.log(jsonObj);
-        if (!scrapSaved) {
-            await Api.post(`/user/scrap`, jsonObj);
-            setScrapCountInReact(prevState => prevState+1);
-        } else {
-            await Api.delete(`/user/scrap`, {
-                data: jsonObj
-            })
-            setScrapCountInReact(prevState => prevState-1);
+        accessableCount = accessableCount -1 ;
+        console.log(accessableCount);
+
+        if(accessableCount >= 0 ) {
+            if (!scrapSaved) {
+                accessableCount = accessableCount - 1
+                await Api.post(`/user/scrap`, jsonObj);
+                setScrapCountInReact(prevState => prevState + 1);
+            } else {
+                await Api.delete(`/user/scrap`, {
+                    data: jsonObj
+                })
+                setScrapCountInReact(prevState => prevState - 1);
+            }
+            setScrapSaved(prevState => !prevState);
         }
-        setScrapSaved(prevState => !prevState);
+        else{
+            console.log("이미 클릭 한번 함 ")
+        }
+        console.log(accessableCount)
+
+        accessableCount  = accessableCount + 1;
+
+
+
+
     }
 
     const onChangeComment = (e) => {
@@ -397,6 +435,10 @@ const PostDetail = () => {
         navigate(`/post/${post.id}/edit`)
     }
 
+    const onClickTag = (tagname) => {
+        navigate(`/tagsearch?tags=${tagname}`);
+    }
+
 
 
     if (!post) {
@@ -448,17 +490,20 @@ const PostDetail = () => {
 
     // console.log(commentSort);
     // console.log(scrapSaved);
+    const onClickUserPage = () => {
+        console.log("클릭")
+        navigate(`/mypage/${post.userInfoWithAddress.userDetail.id}`,{state:post.userInfoWithAddress.userDetail.id})
+    }
 
     return (
         <div className={styles.postDetail}>
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
-                        <img className={styles.postTopProfileImg} src={post.userInfoWithAddress.userDetail.imageUrl}
-                             onClick={() => navigate('/mypage')}></img>
+                        <img className={styles.postTopProfileImg} onClick={onClickUserPage} src={post.userInfoWithAddress.userDetail.imageUrl}/>
                         <div className={styles.postTopProfileInfo}>
 
-                            <div className={styles.postTopNickname}>{post.userInfoWithAddress.userDetail.nickname}</div>
+                            <div className={styles.postTopNickname} onClick={onClickUserPage}>{post.userInfoWithAddress.userDetail.nickname}</div>
                             {
                                 ((post.userInfoWithAddress.address.length < 1) ?
                                         null :
@@ -494,9 +539,21 @@ const PostDetail = () => {
                     <div className={styles.postDetailInfo}>
                         <h2 className={styles.postDetailTitle}>{post.title}</h2>
                         <div className={styles.postDetailCategory}>{post.productCategory}</div>
-                        <div className={styles.postDetailPrice}></div>
+                        <div className={styles.postDetailPrice}>{post.price}원</div>
+                        <div className={styles.contentAndTag}>
                         <div className={styles.postDetailContent}>{post.content}</div>
-                        <div className={styles.postDetailTag}>#{post.tagNames}</div>
+                        <div className={styles.postDetailTag}>
+                            {
+
+                                    post.tagNames.map((tagname) => (
+                                        <span onClick={() => {onClickTag(tagname)}} className = {styles.tagC}>
+                                            #{tagname}
+                                        </span>
+                                    ))
+
+                            }
+                        </div>
+                    </div>
                     </div>
                     <div className={styles.categoryandStatus}>
                     <div className={styles.postDetailSwapCategoryBox}>
@@ -530,28 +587,7 @@ const PostDetail = () => {
                                     />
                                 </>)
                                 :
-                                <Select
-                                    className={styles.tradeStatus}
-                                    styles={{ // zIndex
-                                        menu: provided => ({...provided, zIndex: 999})
-                                    }}
-                                    // If you don't need a state you can remove the two following lines value & onChange
-                                    value={tradeState.selectedTradeStatus}
-                                    onChange={(option: TradeStatus | null) => {
-
-                                        setTradeState({selectedTradeStatus: option});
-                                        changeTradeStatus(option);
-
-                                    }}
-                                    isDisabled={true}
-                                    getOptionLabel={(category: TradeStatus) => category.name}
-                                    getOptionValue={(category: TradeStatus) => category.name}
-                                    options={tradeStatus}
-                                    isClearable={false}
-                                    isSearchable={false}
-                                    // backspaceRemovesValue={true}
-                                    placeholder={"교환가능"}
-                                />
+                                <span className = {styles.tradeStatusString}>{tradeState.selectedTradeStatus.name}</span>
                         }
                     </div>
                     </div>

@@ -18,6 +18,9 @@ import coatImg from "../img/coat.png";
 import Api from "../utils/api";
 import HomePostCardSwiper from "../component/common/HomePostCardSwiper";
 import RoundImageSwiper from "../component/common/RoundImageSwiper";
+import classNames from "classnames/bind";
+
+const cx = classNames.bind(styles)
 
 //모르는 태그가 너무 많아 하다가 멈춤
 //허락 맡고 다시 진행 예정
@@ -33,6 +36,7 @@ const HomeStart = () => {
     }
 
     return (
+        <div>
         <section className={styles.start}>
             <div className={styles.startLeft}>CO끼리</div>
             <div className={styles.startRight}>
@@ -40,13 +44,18 @@ const HomeStart = () => {
                     중고 거래부터 동네 인증까지, 코끼리와 함께해요.<br/>
                     가볍고 따뜻한 코끼리를 만들어요.</div>
                 <div className={styles.startRight2}>
+                    <button className={cx('startBtn')} onClick={onClickStart}>시작하기</button>
+                    <button className={cx('startBtn')} onClick={onClickUpload}>내 물건 올리기</button>
 
-                    <Button className={"lightblue"} content={"시작하기"} onClick={onClickStart} color={"black"} hover={true} size={"medium"}/>
-                    <Button className={"lightblue"} content={"내 물건 올리기"} onClick={onClickUpload} color={"black"} hover={true} size={"medium"}/>
+                    {/*<Button className={"lightblue"} content={"시작하기"} onClick={onClickStart} color={"black"} hover={true} size={"medium"}/>*/}
+                    {/*<Button className={"lightblue"} content={"내 물건 올리기"} onClick={onClickUpload} color={"black"} hover={true} size={"medium"}/>*/}
 
                 </div>
             </div>
+
         </section>
+
+            </div>
     );
 }
 
@@ -84,7 +93,7 @@ const HomeMulmulTrade = () => {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
             //query string 날리기
-            const res = await Api.get(`/post?&sort=scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC&size=8&page=0`);
+            const res = await Api.get(`/post?&sort=scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC&size=10&page=0`);
             console.log(res);
 
             console.log(res.data)
@@ -111,9 +120,8 @@ const HomeMulmulTrade = () => {
 
     return (
         <section className={styles.mulmulTrade}>
-            <hr/>
             <div className ={styles.tradeTop}>
-            <h2>우리 동네 인기 물물교환</h2>
+            <h2>우리 동네의 인기있는 물물교환 아이템들 👏</h2>
             <li onClick={onClickMore}>더보기</li>
             </div>
             <div className={styles.mulmulCardView}>
@@ -129,12 +137,14 @@ const HomeMulmulTrade = () => {
 const HomeKirikiriTrade = () => {
 
     const [postList, setPostList] = useState<PostType[]>(null)
-
+    const navigate = useNavigate();
+    const store = useSelector((state: Rootstate) => state);
+    const category = store.categoryReducer.category;
     async function getPostList() {
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
             //query string 날리기
-            const res = await Api.get(`/post?&sort=scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC&size=8&page=0`);
+            const res = await Api.get(`/post?productCategory=${category}&wishCategory=${category}&sort=scrapPosts.size,DESC&messageRooms.size,DESC&sort=id,ASC&size=10&page=0`);
             console.log(res);
 
             console.log(res.data)
@@ -148,40 +158,30 @@ const HomeKirikiriTrade = () => {
         }
     }
 
+    const onClickMore = () => {
+        navigate(`/mulmultrade?sort=popular?category=${category}`);
+    }
+
     useEffect(() => {
         getPostList();
-    }, [])
+    }, [store.categoryReducer.category])
 
     console.log(postList)
 
     return (
         <section className={styles.kirikiriTrade}>
-            <hr/>
-            <h2>다른 카테고리 뿐만 아니라 같은 카테고리 끼리도 교환할 수 있어요</h2>
+            <hr className={styles.hrFull}/>
+            <div className={styles.kiriTop}>
+            <h2>다른 카테고리 뿐만 아니라 같은 카테고리끼리도 교환할 수 있어요 👇 </h2>
+            </div>
 
             <div className={styles.kirikiriCatagoryCardView}>
                 <div className={"roundImageSwiper"}>
                 <RoundImageSwiper imageList = {[book,fashion,ticket,young,book,fashion,ticket,young]}/>
                 </div>
-                {/*<Row>*/}
-                {/*    <Col xs={3}>*/}
-                {/*        <KiriKiriCategoryRoundImage props={book}/>*/}
-                {/*    </Col>*/}
-                {/*    <Col xs={3}>*/}
-                {/*        <KiriKiriCategoryRoundImage props={fashion}/>*/}
-                {/*    </Col>*/}
-                {/*    <Col xs={3}>*/}
-                {/*        <KiriKiriCategoryRoundImage props={ticket}/>*/}
-                {/*    </Col>*/}
-                {/*    <Col xs={3}>*/}
-                {/*        <KiriKiriCategoryRoundImage props={young}/>*/}
-                {/*    </Col>*/}
-                {/*</Row>*/}
             </div>
-                <ul className={styles.kirikiriMore}>
-                <li className={styles.kiriLi}>더보기</li>
-                </ul>
             <div className={styles.mulmulCardView}>
+                <li className={styles.kiriLi} onClick={onClickMore}>더보기</li>
                 <div className={"homeSwiper"}>
                     <HomePostCardSwiper postList={postList}/>
                 </div>

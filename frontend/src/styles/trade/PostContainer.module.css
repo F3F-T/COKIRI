@@ -12,17 +12,19 @@
     margin-top: 2rem;
 }
 .imageDiv{
-    margin-top : 4rem;
+    margin-top : 3.2rem;
+
     display: flex;
     font-size: 3rem;
     /*width : 1100px;*/
-    height : 200px;
+    height : 130px;
     justify-content: center;
 }
 
 .img{
     display: inline-block;
     text-align: center;
+    cursor: pointer;
 }
 
 

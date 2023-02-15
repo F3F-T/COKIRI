@@ -1,10 +1,14 @@
 
-$tag-bg                  : #E67A9A;
+$tag-bg                  :  cornflowerblue;
 $tag-text-color          : #FFF;
 $placeholder-color : gray;
+$tag-pad : 0.3rem 0.3rem;
+$tag-pad : 0.3rem 0.3rem 0.2rem 0.4rem;
 
 .tagify__tag-text, .tagify__input {
   white-space: nowrap !important;
+  --tag--max-width: 200px;
+
 }
 //$tags-border-color       : #DDD !default;
 //$tags-hover-border-color : #CCC !default;

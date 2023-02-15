@@ -1,72 +1,104 @@
 .navBarBar{
     width: 100%;
-    height: 72px;
+    height: 3.5rem;
     position: fixed;
     background-color: white;
     z-index: 999;
-    border-bottom-color: #e5e8eb;
 }
 
 .meauto{
-    position: relative;
+    height: 100%;
     width: 100%;
 }
 .navBar {
-    border-bottom : 1px solid lightgray;
+    margin: auto;
     width: 100%;
-    height: 74px;
+    height: 3.5rem;
+    border-bottom : 1px solid lightgray;
+}
+.logoBox{
+    display: flex;
+    gap: 0.3rem;
+    height: 100%;
+    width: 14rem;
+    justify-content: right;
+}
+.homeLogo {
+    /*margin-left : 3rem;*/
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+
+}
+.logoText {
+    margin-top: 0.3rem;
+    height: 100%;
+    width: 5rem;
+    font-weight: 400;
+    font-size: 1.5rem;
+    cursor: pointer;
 
 }
 
-.homeLogo {
-    /*border: 1px solid red;*/
-    margin-left : 3rem;
-    width: 72px;
-    height: 72px;
+.menu1{
+    display: flex;
+    justify-content: space-evenly;
+    width: 20rem;
 }
 
 .mulBtn{
-    /*border: 1px solid red;*/
+    height: 100%;
+    width: 5.3rem;
     font-size: 1.2rem !important;
-    margin : 0.8rem 0.5rem 0.5rem 4rem;
+    /*margin : 0 0.5rem 0.5rem 4rem;*/
+    margin : 0 0.5rem 0.5rem 0;
+
 }
 .kiriBtn{
+    height: 100%;
     font-size : 1.2rem !important;
-    margin : 0.8rem 0.5rem 0.5rem 1rem;
+    /*margin : 0 0.5rem 0.5rem 1rem;*/
+    margin : 0 0.5rem 0.5rem 0;
+
 }
 .searchBox{
     display: flex;
-    margin : 0.8rem 0rem 0.5rem 5rem;
-    /*border: 1px solid red;*/
+    height: 100%;
+    margin : 0 0 0.5rem 0;
+    /*margin : 0 0 0.5rem 5rem;*/
 }
 .search{
-    margin : 0.8rem 0rem 0.5rem 0.5rem;
+    border: none;
+    margin-left: 0.3rem;
     padding : 0.3rem;
-    border : 1px solid gray;
     background-color: white;
-    width: 3rem;
-    height : 3rem;
-    border-radius: 30px;
+    width: 2rem;
+    height : 100%;
 }
+.right{
+    display: flex;
+    width: 28rem;
+    gap: 3rem;
+    justify-content: right;
+    /*border: 1px solid red;*/
 
+}
 .loginAndImage{
-    position: absolute;
+    height: 100%;
     display : flex;
-    right: 15rem;
-    float : right;
+    /*float : right;*/
     /*margin : 0.5rem 0rem 0.5rem 0rem;*/
 }
 
 .talkDiv{
     display : flex;
-    position: absolute;
-    right : 3rem;
+    /*right : 3rem;*/
 }
 .signBtn{
-
+    height: 100%;
     display: inline-block;
     padding: 0.5rem;
-    margin : 0.9rem 0rem 0.5rem 0rem;
+    margin : 0 0 0.5rem 0;
     font-size: 1.2rem;
     font-weight: var(--bs-nav-link-font-weight);
     color: var(--bs-nav-link-color);
@@ -74,9 +106,10 @@
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
 }
 .signBtn2{
+    height: 100%;
     display: inline-block;
     padding: 0.5rem;
-    margin : 0.9rem 0rem 0.5rem 0rem;
+    margin : 0 0 0.5rem 0;
     font-size: 1.2rem;
     font-weight: var(--bs-nav-link-font-weight);
     color: var(--bs-nav-link-color);
@@ -87,7 +120,6 @@
 .signBtn3{
     border-radius: 10px;
     height: 40px;
-
     background-color: lightgray;
     border-color: transparent;
 
@@ -101,21 +133,30 @@
     height : 1.5rem;
 }
 .mypageI{
+
     font-size: 1.2rem;
-    width: 40px;
-    height: 40px;
-    margin : 1rem 0rem 0.5rem 0rem;
+    width: 2rem;
+    height: 2rem;
+    margin-top : 0.25rem;
+    /*margin-left: 10rem;*/
+}
+.mypageI2{
+
+    font-size: 1.2rem;
+    width: 2rem;
+    height: 2rem;
+    margin : 0.3rem 0 0.5rem 0;
 }
 
 .customLook{
-    margin : 0.7rem 0rem 0.5rem 0rem;
-    width : 30rem;
-    /*height: 3.5rem;*/
+    margin : 0 0 0.5rem 0;
 
+    width : 28vw;
+    height: 100%;
+    border-radius: 5px;
     overflow: auto !important;
     flex-wrap: unset !important;
-
-    font-size: 1.2rem;
+    font-size: 1rem;
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
     text-overflow: ellipsis;
@@ -128,6 +169,40 @@
 
 .tagDiv{
     display: flex;
-    margin-left: 5rem;
+    /*margin-left: 5rem;*/
+
+}
+
+.navbar__toggle-btn {
+    position: absolute;
+    right: 32px;
+    top: 24px;
+    font-size: 24px;
+    display: none;
+}
+@media screen and (max-width: 768px) {
+    .navbar__toggle-btn {
+        display: block;
+    }
+
+    #navbar {
+        /* logo와 gnb 수직배열 */
+        flex-direction: column;
+        /* logo 제자리로 돌리기 */
+        align-items: flex-start;
+    }
+
+    .navbar__menu {
+        /* gnb menu 수직배열 */
+        flex-direction: column;
+        /* 텍스트 화면전체 너비의 중앙배열  */
+        width: 100%;
+        text-align: center;
+        display: none;
+    }
+
+    .navbar__menu.open {
+        display: block;
+    }
 }
 

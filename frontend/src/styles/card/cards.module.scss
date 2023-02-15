@@ -1,4 +1,5 @@
 .forTrade{
+  cursor: pointer;
   height : 18.375rem;
   font-size : 1rem;
   .postItem{
@@ -6,6 +7,7 @@
     border-radius: 10px;
   }
   .postImage{
+
     width: 15rem;
     height: 12rem;
     margin: 0.2rem;
@@ -57,6 +59,7 @@
     margin-right: 0.3rem;
   }
   .detail2{
+    vertical-align: middle;
     display: flex;
     justify-content: space-between;
     margin-top: 0.5rem;
@@ -66,7 +69,7 @@
   .likeImg{
     width:1rem;
     height: 1rem;
-    margin-top: 0.3rem;
+    //margin-top: 0.3rem;
     margin-right: 0.2rem;
   }
   .commentBox{
@@ -78,12 +81,15 @@
     margin-left: 0.6rem;
     width:1rem;
     height: 1rem;
-    margin-top: 0.1rem;
+    //margin-top: 0.1rem;
     margin-right: 0.2rem;
 
   }
   .commmentNum{
     vertical-align: middle;
+    font-size: 0.75rem;
+  }
+  .tradestring{
     font-size: 0.75rem;
   }
 }
@@ -93,15 +99,16 @@
 
 .forMypage{
   .postItem{
-    border: 1px solid rgba(200, 200, 200);
-    width: 10.6rem;
-    height: 10rem;
+    //border: 1px solid rgba(200, 200, 200);
+    border: none;
+    width: 14.2rem;
+    height: 14.2rem;
     border-radius: 10px;
     margin-bottom: 0.9rem;
   }
   .postImage{
-    width: 10rem;
-    height: 6rem;
+    width: 13.7rem;
+    height:10rem;
     margin: 0.2rem;
     border-radius: 10px;
   }
@@ -143,3 +150,101 @@
   //  border: 0.5px solid rgba(0,255,5);
   //}
 }
+
+.more{
+  cursor: pointer;
+  margin-top : 2.5rem;
+  height : 18.375rem;
+  font-size : 1rem;
+  .postItem{
+    border: 1px solid rgba(200, 200, 200);
+    border-radius: 10px;
+  }
+  .postImage{
+
+    width: 15rem;
+    height: 12rem;
+    margin: 0.2rem;
+    border-radius: 10px;
+  }
+  .postTitle{
+    width: 15rem;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1rem;
+    overflow:hidden;
+    display: inline-block;
+
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    margin:0.3rem;
+  }
+  .postContent{
+    width : 15rem;
+    text-align: left;
+    font-weight: bold;
+    font-size: 0.75rem;
+    color : gray;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display: inline-block;
+    white-space:nowrap;
+    margin:0.3rem;
+  }
+  .detail{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0rem;
+  }
+  .heart{
+    font-weight: bold;
+    margin-top: 0.3rem;
+    margin-left: 0.3rem;
+    margin-bottom: 0.7rem;
+  }
+  .like{
+    vertical-align: middle;
+    font-size: 0.75rem;
+    //margin-left:0.3rem;
+  }
+  .tradeImage{
+    width: 1.4rem;
+    height: 1.4rem;
+    margin-right: 0.3rem;
+  }
+  .detail2{
+    vertical-align: middle;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    margin-right: 1rem;
+
+  }
+  .likeImg{
+    width:1rem;
+    height: 1rem;
+    //margin-top: 0.3rem;
+    margin-right: 0.2rem;
+  }
+  .commentBox{
+    display: flex;
+    gap:0.2rem;
+  }
+  .commentImg{
+    vertical-align: middle;
+    margin-left: 0.6rem;
+    width:1rem;
+    height: 1rem;
+    //margin-top: 0.1rem;
+    margin-right: 0.2rem;
+
+  }
+  .commmentNum{
+    vertical-align: middle;
+    font-size: 0.75rem;
+  }
+  .tradestring{
+    font-size: 0.75rem;
+  }
+}
+

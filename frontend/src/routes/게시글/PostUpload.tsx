@@ -78,9 +78,23 @@ const PostUpload = () => {
 
     const onChangeTitle = (e) => {
         const inputTitle = e.target.value;
-        setUploadData((prevState) => {
-            return {...prevState, title: inputTitle}
-        })
+        if(inputTitle.length > 30){
+            console.log("글자 5글자 이상")
+            console.log(inputTitle.length)
+            alert("제목은 30글자 이하로 작성해주세요")
+        }
+        else {
+            setUploadData((prevState) => {
+                return {...prevState, title: inputTitle}
+            })
+        }
+    }
+
+
+    const settings = {
+        maxTags : 6,
+        delimiters: ",|\n|\r"
+        // pattern : /^.{0,9}$/,
     }
 
     const onChangePrice = (e, value) => {
@@ -93,6 +107,9 @@ const PostUpload = () => {
 
     const onChangeContent = (e) => {
         const inputContent = e.target.value;
+        const str_arr = inputContent.split("\n");
+        console.log(str_arr);
+        console.log(inputContent)
         setUploadData((prevState) => {
             return {...prevState, content: inputContent}
         })
@@ -128,6 +145,7 @@ const PostUpload = () => {
 
         //interceptor를 사용한 방식 (header에 token값 전달)
         try {
+
             console.log(jsonObj)
             const res = await Api.post('/post', jsonObj);
             console.log(res)
@@ -186,6 +204,7 @@ const PostUpload = () => {
                 "images": [...photoUrlList],
                 "thumbnail": photoUrlList[0]
             };
+            //업로드 유효검증 로직 추가로 짜야함
             uploadPost(jsonObj);
             console.log("업로드 성공")
         }
@@ -316,11 +335,11 @@ const PostUpload = () => {
                     </div>
                     <div className={styles.item2}>
                         <p className={styles.star}>*</p><input type="text" className={styles.item2_2}
-                                                               placeholder="글 제목을 적어주세요." onBlur={onChangeTitle}/>
+                                                               placeholder=" 글 제목을 적어주세요." onBlur={onChangeTitle}/>
                     </div>
                     <div className={styles.item2}>
                         <p className={styles.star}>*</p> <NumericFormat className={styles.item2_2}
-                                                                        placeholder="생각하는 물건의 가격대를 숫자로 적어주세요."
+                                                                        placeholder=" 생각하는 물건의 가격대를 숫자로 적어주세요."
                                                                         prefix={"₩"} allowLeadingZeros
                                                                         thousandSeparator=","
                                                                         onValueChange={(values) => {
@@ -329,7 +348,7 @@ const PostUpload = () => {
                     </div>
                     <div className={styles.contentAreaBox}>
                         <p className={styles.star}>*</p>
-                        <textarea className={styles.contentArea} placeholder="상도1동에 올릴 게시글을 적어주세요."
+                        <textarea className={styles.contentArea} placeholder=" 게시글 본문을 최대 7줄로 작성해주세요."
                                   onBlur={onChangeContent} spellCheck={"false"}/>
                     </div>
                     <div className={styles.categoryBox}>
@@ -387,7 +406,8 @@ const PostUpload = () => {
 
                     <Tags
                         className={styles.customLook}
-                        placeholder="해시태그를 적고 엔터를 눌러주세요."
+                        settings={settings}
+                        placeholder="최대 6개의 해시태그를 적어주세요."
                         //여기서 자동완성을 설정할수있음, 추후에 서버에서 tag 리스트를 가져와서 넣으면 될듯
                         whitelist={["스팸", "식품", "과일존맛", "신상품", "스팸클래식", "이게자동완성이라는건데요"]}
                         // defaultValue="a,b,c"

@@ -49,8 +49,6 @@ const MulmulTrade = () => {
         navigate('/mulmultrade/mulmultrade2');
     }
 
-
-
     return (
         <div className={styles.mulmulTrade}>
             <div className={styles.mulmulTradeContent}>

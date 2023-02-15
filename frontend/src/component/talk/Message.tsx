@@ -28,13 +28,20 @@ const Message = (key:keyProps) => {
     const realCount = key.counts
 
     //
-    console.log("realCount",key.counts)
     useEffect(()=>{
+        if(talkCard.delStatus==false){
+            getMessageRoom()
+        }
         getMessageRoom()
-    },[realKey])
 
+    },[realKey])
+    console.log("메세지메세지메세지",talkCard.delStatus)
     useEffect(() => {
+        if(talkCard.delStatus==false){
+            getMessageRoom()
+        }
         getMessageRoom()
+
     }, [realCount])
 
     //키값에 해당하는거 띄우려고 호출
@@ -46,22 +53,26 @@ const Message = (key:keyProps) => {
             // console.log("메세지룸 조회2",res2.data)
             // dispatch(setMessageRoomId(res.data.content.messageRoomId))
 
-            for(let i=0;i<res2.data.length;i++){
-                if(res2.data[i].id == realKey){
+            for(let i=0;i<res2.data.length;i++) {
+                if(res2.data[i].sellerDelStatus == false && res2.data[i].buyerDelStatus == false  ) {
+
+                if (res2.data[i].id == realKey) {
                     dispatch(setPostId(res2.data[i].postId))
                     dispatch(setMessageRoomId(res2.data[i].id))
                     dispatch(setBuyerId(res2.data[i].buyerId))
                     dispatch(setSellerId(res2.data[i].sellerId))
-                    if(info.id === res2.data[i].buyerId){
+                    if (info.id === res2.data[i].buyerId) {
                         dispatch(setOpponetNick(res2.data[i].sellerNickName))
-                    }
-                    else{
+                    } else {
                         dispatch(setOpponetNick(res2.data[i].buyerNickName))
                     }
-                    getMessageContent(res2.data[i].id );
+                    getMessageContent(res2.data[i].id);
 
                 }
             }
+            }
+
+
 
 
             setRoomList(()=>{
@@ -78,7 +89,7 @@ const Message = (key:keyProps) => {
     async function getMessageContent(loading) {
         try{
             const res = await Api.get(`/messageRooms/${loading}`);
-            console.log("메세지룸 내용조회 in message", res.data)
+            // console.log("메세지룸 내용조회 in message", res.data)
             setContentInfo(()=>{
                 return [...res.data]
             })

@@ -56,6 +56,7 @@ const HomePostCardSwiper = (postProps) => {
                 // style={}
                 spaceBetween={30}
                 slidesPerGroup={4}
+                speed={1000}
                 loopFillGroupWithBlank={true}
                     slidesPerView={4}
                     onSlideChange={() => console.log('slide change')}
@@ -64,10 +65,10 @@ const HomePostCardSwiper = (postProps) => {
                 pagination={{clickable: true}}
                 autoplay={true}
                 // loop={true}
-                // autoplay={true}
             >
                 <div className={styles.postContainer}>
                     {
+
                         postProps.postList.map((post,index) => (
                             <SwiperSlide key={index}>
                             <Card key={index} className={"forTrade"} like={post.scrapCount} postTitle={post.title}

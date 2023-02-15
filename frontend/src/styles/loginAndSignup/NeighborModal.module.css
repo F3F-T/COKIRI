@@ -1,53 +1,19 @@
-.box1{
-    width: 100%;
-    height: 100%;
-    display: flex;
-    position: fixed;
-    justify-content: center;
-    margin-top: 3rem;
-
-}
-.box2{
-    width: 40rem;
-    height: 30rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 0 30px rgba(30, 30, 30, 0.185);
-    box-sizing: border-box;
-    background-color: white;
-    z-index: 10000;
-
-}
-.box3{
-    width: 100vw;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    z-index: 9999;
-}
-
 
 .addressBox{
-    width: 40rem;
-    height: 30rem;
-    border: 2px solid rgba(0, 0, 0, 1);
-    border-radius: 10px;
+    width: 30rem;
+    height: 25rem;
+
 }
 .addressBox_1{
-    /*border: 2px solid rgba(0, 0, 0, 1);*/
 }
 .ad1{
-    margin-top: 2rem;
+    margin-top: 2.5rem;
     font-size: 2rem;
     text-align: center;
-    font-weight: bold;
+    font-weight: 400;
 }
 .add2Box{
     margin-top: 2rem;
-
     /*display: flex;*/
     /*justify-content: space-around;*/
 }
@@ -64,25 +30,25 @@
 }
 .plusBtn1{
     width: 13rem;
-    height: 3rem;
+    height: 2.5rem;
     border-radius: 10px;
     border: 2px solid rgba(0, 0, 0, 0);
 }
 .plusBtn1active{
     width: 13rem;
-    height: 3rem;
+    height: 2.5rem;
     border-radius: 10px;
     border: 2px solid rgba(0, 0, 0, 0.5);
 }
 .plusBtn2{
     width: 13rem;
-    height: 3rem;
+    height: 2.5rem;
     border: 2px solid rgba(0, 0, 0, 0);
     border-radius: 10px;
 }
 .plusBtn2active{
     width: 13rem;
-    height: 3rem;
+    height: 2.5rem;
     border-radius: 10px;
     border: 2px solid rgba(0, 0, 0, 0.5);
 }
@@ -95,38 +61,38 @@
 .inputBox{
 }
 .input1{
-    margin-left:6.5rem;
+    margin-left:1.6rem;
     font-size: 0.8rem;
 }
 .input2{
-    margin-left: 6.2rem;
-    width: 28rem;
-    height: 3rem;
+    margin-left: 1.6rem;
+    width: 20rem;
+    height: 2rem;
     border-radius: 5px;
+
 }
 .input2active{
-    margin-left: 6.2rem;
-    width: 28rem;
-    height: 3rem;
+    margin-left: 1.5rem;
+    width: 20rem;
+    height: 2rem;
+    font-size: 0.8rem;
     border-radius: 5px;
     border: 2px solid rgba(0, 0, 0, 0.5);
-
 }
 .input2_2{
-    margin-left: 6.2rem;
-    width: 28rem;
-    height: 3rem;
+    margin-left: 1.5rem;
+    width: 20rem;
+    height: 2rem;
     border-radius: 5px;
+    font-size: 0.8rem;
     border: 2px solid rgba(0, 0, 0, 0.5);
-
-
 }
 .registerBtn{
-    margin-top: 4rem;
-    margin-left:30.7rem;
+    margin-left:25.5rem;
     border: none;
     height: 2rem;
     width: 3rem;
+    font-size: 0.8rem;
     border-radius: 10px;
 }
 
