@@ -87,6 +87,8 @@ const KokiriTalk = () => {
     },[talkCard.id])
     useEffect(() => {
         getMessageRoom()
+        getMessageRoom()
+
         // @ts-ignore
         // scrollRef.current.scrollIntoView({behavior:'smooth',block:'end',inline:'nearest'})
         // getMessageContent(talkCard.id)
@@ -106,31 +108,6 @@ const KokiriTalk = () => {
 
         //얘는 게시글통해서 들어왔을때만 그 톡방이 있는지 확인하면됨
         if(state===false){
-            // try{
-            //     const post_buyerId1 = {
-            //         postId: talkCard.postId,
-            //         buyerId: info.id
-            //     }
-            //     const res = await Api.post(`/post/${talkCard.postId}/messageRooms`,post_buyerId1);
-            //     dispatch(setOpponetNick(res.data.sellerNickName))
-            //     await dispatch(setMessageRoomId(res.data.id))
-            //     await dispatch(setSellerId(res.data.sellerId))
-            //     dispatch(setPostId(res.data.postId))
-            //
-            //     setRoomId(res.data.id)
-            //     console.log("메세지룸 추가", res.data)
-            //     // if(talkCard.id != undefined){
-            //     //     sendMessage()
-            //     // }
-            //     alert("메세지룸 추가 성공")
-            //     await sendMessage(res.data.id)
-            // }
-            // catch (err)
-            // {
-            //     console.log(err)
-            //     alert("메세지룸 추가 실패")
-            // }
-            // console.log("제발좀ㅋㅋ아님",talkCard.id)
             await sendMessage(talkCard.id)
         }
         else{
@@ -142,16 +119,21 @@ const KokiriTalk = () => {
     async function getMessageRoom() {
         try{
             const res = await Api.get('/user/messageRooms');
-            // console.log("메세지룸 조회", res.data.content)
+            console.log("count가 플러스가 되니까 이리로 넘어오겠지", count)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
             console.log("메세지룸 조회2",res2.data)
             if(talkCard.id === undefined){
                 // const res3 = await Api.get(`/post/${res2.data[0].postId}`)
                 for(let i=0;i<res2.data.length;i++){
+                    console.log("count가 플러스가 되니까 이리로 넘어오겠지2", count)
+
                     if(res2.data[i].sellerDelStatus == false && res2.data[i].buyerDelStatus == false ) {
+                        console.log("count가 플러스가 되니까 이리로 넘어오겠지3", count)
+
                         console.log(`kokiriseller${i}`,res2.data[i].sellerDelStatus)
                         console.log(`kokiriseller${i}`,res2.data[i].buyerDelStatus)
                         if (res.data.content[0].messageRoomId == res2.data[i].id) {
+                            console.log("count가 플러스가 되니까 이리로 넘어오겠지4", count)
                             const res3 = await Api.get(`/post/${res2.data[i].postId}`)
                             dispatch(setTradeStatus(res3.data.tradeStatus))
                             dispatch(setTradeCategory(res3.data.tradeCategory))
@@ -183,13 +165,17 @@ const KokiriTalk = () => {
                     }
 
                 }
-                //title,wishCategory,productCategory,tradeStatu
+                //title,wishCategory,productCategory,tradeStatus
             }
 
+            console.log("그다음은 이리로 오는거고?", count)
 
             setRoomList(()=>{
                 return [...res.data.content]
             })
+            console.log("roomlist좀 보자",roomList)
+            console.log("roomlist좀 보자33333",res.data.content)
+
         }
         catch (err)
         {
@@ -239,7 +225,7 @@ const KokiriTalk = () => {
     async function getMessageContent(loading) {
         try{
             const res = await Api.get(`/messageRooms/${loading}`);
-            // console.log("메세지룸 내용조회", res.data)
+            console.log("메세지룸 내용조회", res.data)
             setContentInfo(()=>{
                 return [...res.data]
             })
@@ -280,13 +266,14 @@ const KokiriTalk = () => {
         // @ts-ignore
         scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' })
     }
-
     if(!contentInfo){
         return null
     }
     if(!roomList){
         return null
     }
+    console.log("roomlist좀 보자22222",roomList)
+
     return (
         <div className={styles.kokiritalk}>
             <div className={styles.left}>

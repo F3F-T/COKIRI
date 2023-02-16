@@ -302,11 +302,29 @@ const PostDetail = () => {
                                 break;
                             } else {
                                 console.log("들어옴?3")
-                                existOrNot = false
+                                console.log("서로 같지만 방은 생성되어야하는거잖아")
+                                try {
+                                    console.log("들어옴?4")
+                                    const post_buyerId1 = {
+                                        postId: post.id,
+                                        buyerId: info.id
+                                    }
+                                    const res4 = await Api.post(`/post/${post.id}/messageRooms`, post_buyerId1);
+                                    dispatch(setOpponetNick(res4.data.sellerNickName))
+                                    await dispatch(setMessageRoomId(res4.data.id))
+                                    await dispatch(setSellerId(res4.data.sellerId))
+                                    dispatch(setPostId(res4.data.postId))
+                                    break;
+                                } catch (err) {
+                                    console.log("들어옴?6")
+                                    console.log(err)
+                                    alert("메세지룸 추가 실패 in postdetail222")
+                                }
                         }
-                    } else {
+                    }
+                    else {
                         try {
-                            console.log("들어옴?4")
+                            console.log("들어옴?5")
                             const post_buyerId1 = {
                                 postId: post.id,
                                 buyerId: info.id
