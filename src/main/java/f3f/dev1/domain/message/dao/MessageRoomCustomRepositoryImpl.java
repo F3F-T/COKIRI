@@ -39,7 +39,9 @@ public class MessageRoomCustomRepositoryImpl implements MessageRoomCustomReposit
                                 buyer.nickname,
                                 seller.nickname,
                                 buyer.imageUrl,
-                                seller.imageUrl
+                                seller.imageUrl,
+                                messageRoom.buyerDelStatus,
+                                messageRoom.sellerDelStatus
                         )
                 )
                 .from(messageRoom)
