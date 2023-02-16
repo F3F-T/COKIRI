@@ -17,7 +17,11 @@ interface UserAddressInfo {
     latitude1:string,
     longitude1:string,
     latitude2:string,
-    longitude2:string
+    longitude2:string,
+    oneWordAddress1: string,
+    oneWordAddress2: string
+
+
 }
 
 const initialUserAddressInfoState : UserAddressInfo = {
@@ -32,9 +36,9 @@ const initialUserAddressInfoState : UserAddressInfo = {
     latitude1:'',
     longitude1:'',
     latitude2:'',
-    longitude2:''
-
-
+    longitude2:'',
+    oneWordAddress1:'',
+    oneWordAddress2:'',
 }
 
 //state는 이 상태의 현재 상태 값을 의미한다
@@ -50,6 +54,7 @@ const userAddressInfoSlice = createSlice({
             state.parcelName1= action.payload.parcelName1;
             state.latitude1=action.payload.latitude1;
             state.longitude1=action.payload.longitude1;
+            state.oneWordAddress1=action.payload.oneWordAddress1
         },
         setUserAddressInfo1(state,action){
             state.addressId1 = action.payload;
@@ -65,7 +70,9 @@ const userAddressInfoSlice = createSlice({
         },
         setLng1(state,action){
             state.longitude1=action.payload
-
+        },
+        setOneWord1(state,action){
+            state.oneWordAddress1=action.payload
         },
         resetaddress1(state){
             state.addressId1 = undefined
@@ -74,6 +81,7 @@ const userAddressInfoSlice = createSlice({
             state.click1=0
             state.latitude1=undefined
             state.longitude1=undefined
+            state.oneWordAddress1=undefined
         },
         setClick1(state,action){
             state.click1=action.payload;
@@ -85,6 +93,8 @@ const userAddressInfoSlice = createSlice({
             state.parcelName2= action.payload.parcelName2;
             state.latitude2=action.payload.latitude2;
             state.longitude2=action.payload.longitude2;
+            state.oneWordAddress2=action.payload.oneWordAddress2;
+
         },
         setUserAddressInfo2(state,action){
             state.addressId2 = action.payload;
@@ -103,6 +113,9 @@ const userAddressInfoSlice = createSlice({
             state.longitude2=action.payload
 
         },
+        setOneWord2(state,action){
+            state.oneWordAddress2=action.payload
+        },
         resetaddress2(state) {
             state.addressId2 = undefined
             state.addressName2 = undefined
@@ -110,6 +123,7 @@ const userAddressInfoSlice = createSlice({
             state.click2 = 0
             state.latitude2=undefined
             state.longitude2=undefined
+            state.oneWordAddress2=undefined
         },
         setClick2(state,action){
             state.click2=action.payload;
@@ -121,8 +135,8 @@ const userAddressInfoSlice = createSlice({
 //위에서 선언해준 counterSlice의 reducer를 export해준다
 export default userAddressInfoSlice.reducer;
 export const {
-    setUserAddressInfo1,setAddressName1,resetaddress1,parcelAddress1,setClick1,setLng1,setLat1,setAddress1,
-    setUserAddressInfo2,setAddressName2,resetaddress2,parcelAddress2,setClick2,setLng2,setLat2,setAddress2
+    setUserAddressInfo1,setAddressName1,resetaddress1,parcelAddress1,setClick1,setLng1,setLat1,setAddress1,setOneWord1,
+    setUserAddressInfo2,setAddressName2,resetaddress2,parcelAddress2,setClick2,setLng2,setLat2,setAddress2,setOneWord2
 } = userAddressInfoSlice.actions;
 
 //이제 이걸다른 컴포턴트에서 dispatch로 사용한다.

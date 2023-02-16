@@ -39,9 +39,9 @@ function App() {
 
     //로그인 상태 변경에 따라 rendering 해주기 위함
     useEffect(()=>{
-        console.log("jwt 토큰 effect 바뀜")
+        // console.log("jwt 토큰 effect 바뀜")
         console.log(store)
-        console.log(store.jwtTokenReducer.authenticated);
+        // console.log(store.jwtTokenReducer.authenticated);
 
     },[store.jwtTokenReducer.authenticated])
 
@@ -66,21 +66,19 @@ function App() {
                 <Route path="/tagsearch" element={<TagSearch/>} />
 
 
-                <Route path="/mypage" element={<MyPageSet/>} >
-                    <Route path="" element={<MyPage/>}/>
-                    <Route path="zzim" element={<Zzim/>}/>
+                <Route path="/mypage/" element={<MyPageSet/>} >
+                    <Route path=":id" element={<MyPage/>}/>
+                    <Route path="zzim/:id" element={<Zzim/>}/>
                 </Route>
                 {/*<Route path="/mypage" element={<MyPage/>}/ >*/}
-
                 {/*<Route path="/mypage/zzim" element={<Zzim/>} />*/}
 
-                <Route path="/kokiritalk" element={<KokiriTalk/>} />
+                <Route path="/kokiritalk/:id" element={<KokiriTalk/>} />
 
                 <Route path="/post/:id" element={<PostDetail/>}/>
                 <Route path="/upload" element={<PostUpload/>}/>
                 <Route path="/post/:id/edit" element={<PostEdit/>}/>
                 <Route path="/neighborauth" element={<NeighborAuth/>}/>
-
                 <Route path='*' element={<NotFound />}/>
 
             </Routes>

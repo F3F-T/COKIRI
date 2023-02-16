@@ -5,6 +5,7 @@ import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.member.model.Member;
 import lombok.*;
+import org.apache.tomcat.jni.Local;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -12,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import java.beans.Visibility;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class MessageRoomDTO {
@@ -40,10 +42,17 @@ public class MessageRoomDTO {
 
         }
     }
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class MessageRoomIdDto{
+        private Long id;
+    }
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    @Builder
     public static class DeleteMessageRoomRequest{
         private Long id;
         private Long memberId;
@@ -51,6 +60,15 @@ public class MessageRoomDTO {
         //boolean deleteStatus;
 
     }
+
+//    @Getter
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    @Builder
+//    public static class DeleteMessageRoomInfoDto{
+//        private Long id;
+//        private boolean delStatus;
+//    }
 
     @Getter
     @AllArgsConstructor
@@ -63,10 +81,42 @@ public class MessageRoomDTO {
         private Long postId;
         private Long sellerId;
         private Long buyerId;
-        //private List<Message> messages;
-
+        private boolean buyerDelStatus;
+        private boolean sellerDelStatus;
+        private LocalDateTime createTime;
     }
 
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class UpdateMessageRoomInfoDto{
+        private Long id;
+        private String sellerNickName;
+        private String buyerNickName;
+        private Long postId;
+        private Long sellerId;
+        private Long buyerId;
+        private boolean buyerDelStatus;
+        private boolean sellerDelStatus;
+        private LocalDateTime updateTime;
+
+    }
+    //삭제가 해당 멤버에 맞게 하나만 나옴 -> 프론트가 편할듯
+    //멤버 아이디, 닉네임은 내가 조회하는거면, 상대방것만 뜨게 한것!
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class MessageRoomInfoWithOneDelStatus{
+        private Long id;
+        private String postTitle;
+        private String memberNickname;
+        private boolean delStatus;
+        private LocalDateTime createTime;
+    }
+
+    //파는 방이니까 이 사람은 receiver -> receiverDelStatus만 넣을것
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
@@ -75,8 +125,12 @@ public class MessageRoomDTO {
         private Long id;
         private String PostTitle;
         private String buyerNickname;
+        private boolean sellerDelStatus;
+        private LocalDateTime createTime;
+
     }
 
+    //사는 방이니까 이 사람은 sender -> senderDelStatus만 넣을것
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
@@ -85,6 +139,8 @@ public class MessageRoomDTO {
         private Long id;
         private String PostTitle;
         private String sellerNickname;
+        private boolean buyerDelStatus;
+        private LocalDateTime createTime;
     }
 
 

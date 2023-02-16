@@ -8,6 +8,19 @@ import classNames from "classnames/bind";
 import {storeCategory} from "../../store/categoryReducer";
 import {useDispatch, useSelector} from "react-redux";
 import Message from "./Message";
+import Api from "../../utils/api";
+import {
+    setBuyerId,
+    setMessageRoomId,
+    setOpponetNick,
+    setPostId, setProductImg, setSellerId, setTitle,
+    setTradeCategory,
+    setTradeStatus, setWishCategory
+} from "../../store/talkCardReducer";
+import {Rootstate} from "../../index";
+import {changeCommentRefreshState} from "../../store/refreshReducer";
+import timeConvert from "../../utils/timeConvert";
+import talkCard from "./TalkCard";
 
 
 
@@ -20,7 +33,16 @@ interface props{
     lastContent : string;
     date : string;
     keys? : number;
+    counts? : number;
 }
+interface talkInfoType{
+    partner : string;
+    lastContent : string;
+    date : string;
+    keys? : number;
+    counts? : number;
+}
+
 // const object ={
 //     a: 1,
 //     b: 2,
@@ -31,9 +53,12 @@ interface props{
 // type keys = keyof objectShape
 
 const TalkListLeft = (props2:props)=>{
+    const dispatch = useDispatch();
+    const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
+    const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
 
-    // props2.click =click
-    console.log("이건가",props2);
+
+    // console.log("TalkList props",props2);
     return(
         <>
                 <div className={styles.talkContent}>
@@ -54,34 +79,40 @@ const TalkListLeft = (props2:props)=>{
         </>
     )
 }
-const TalkListRight = ()=>{
-
-    return(
-        <>
-            <div className={styles.send}>
-                <div className={styles.sendTitle}>받은 쪽지</div>
-                <input className={styles.sendContent} type={"text"} />
-            </div>
-            <div className={styles.receive}>
-                <div className={styles.receiveTitle}>보낸 쪽지</div>
-                <input className={styles.receiveContent} type={"text"} />
-            </div>
-            <div className={styles.receive}>
-                <div className={styles.receiveTitle}>보낸 쪽지</div>
-                <input className={styles.receiveContent} type={"text"} />
-            </div>
-        </>
-    )
-}
 
 
 const TalkList = (props2: props) => {
-    const [click, setClick] = useState<boolean>(false);
+    const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
+
+    const realCount = props2.counts
+    // props2.click =click
+
+    // console.log("talklist들어옴",props2.keys)
+    //last message 한번더 호출
+    useEffect(() => {
+        if(talkCard.delStatus==false){
+            getMessageRoom()
+        }
+    }, [realCount])
 
 
+    async function getMessageRoom() {
+        try{
+
+            const res = await Api.get('/user/messageRooms');
+        }
+        catch (err)
+
+        {
+            console.log(err)
+            alert("메세지룸 조회 실패 in Talklist")
+        }
+    }
     return (
         <>
-            <TalkListLeft keys={props2.keys} onClick={props2.onClick} partner={props2.partner} lastContent={props2.lastContent} date={props2.date}/>
+            {/*<TalkListLeft keys={key} onClick={props2.onClick} partner={partner} lastContent={msg} date={timeConvert(date)} counts={realCount}/>*/}
+            <TalkListLeft keys={props2.keys} onClick={props2.onClick} partner={props2.partner} lastContent={props2.lastContent} date={props2.date} counts={realCount}/>
+
         </>
 
     );

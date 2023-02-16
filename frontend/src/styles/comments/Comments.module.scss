@@ -1,4 +1,7 @@
 .primary {
+  border : 1px #e5e8eb solid ;
+  margin-top: 0.2rem;
+  border-radius: 10px;
 
   .Profile {
     display: flex;
@@ -9,6 +12,7 @@
   .ProfileImg {
     width: 2rem;
     height: 2rem;
+    border-radius: 15px;
   }
 
   .ProfileInfo {
@@ -81,10 +85,10 @@
 }
 
 .secondary {
-margin-right: 0.8rem;
+  //margin-right: 0.8rem;
   margin-left: 3rem;
   border : 1px #e5e8eb solid ;
-  margin-top: 0.8rem;
+  margin-top: 0.2rem;
   border-radius: 10px;
 
 
@@ -93,6 +97,7 @@ margin-right: 0.8rem;
   }
 
   .ProfileImg {
+    border-radius: 15px;
     width: 2rem;
     height: 2rem;
     margin-left:0.3rem;

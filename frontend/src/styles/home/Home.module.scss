@@ -1,12 +1,25 @@
 
 :root {
+
     --start-height: 20rem; /*변수 할당, start div의 height*/
-    --mulmul-height: 25rem;
+    --mulmul-height: 21rem;
 }
 
 .home{
+
     width:1200px;
     margin: auto;
+    position : relative;
+}
+.boxbox{
+    width: 100%;
+    height: 100%;
+}
+.hrFull{
+
+    position: absolute;
+    width : 150%;
+    left : -20rem;
 }
 /************************************************************************
  시작하기 Component
@@ -22,38 +35,42 @@
     display: flex;  /*div 안에서 start left와 start right의 비율로 분할해준다*/
     font-size: 1.5rem;
 
+
 }
 
 
 /*시작하기 왼쪽*/
 .startLeft{
+
+    padding-left : 50px;
     /*padding-left: 6rem; !*left padding*!*/
     /*padding-top: calc(var( --start-height) /2 - 3.7rem); !*추후 height를 변경할시에 동적으로 변경될수 있게 calc 사용, -2.5는 startLeft의 font-size를 고려한것*!*/
     padding-top: 6rem;
     flex: 4.0; /*div 안에서 start left와 start right의 비율로 분할해준다*/
     font-size: 4.5rem;
+    font-weight: 600;
 
 }
 
 /*시작하기 오른쪽 전체*/
 .startRight{
     padding-top: 6rem;
-    padding-left: 5rem;
+    padding-left: 8rem;
     flex: 5;
     font-size: 1.5rem;
 }
 
 /*시작하기 설명 폰트 사이즈*/
 .startRight1{
-    margin-left: 3rem;
+    //margin-left: 3rem;
     font-size: 1em;
 
 }
 
 /*시작하기 버튼*/
 .startRight2 button{
-    margin-left: 3rem;
-    margin-top: 1.5rem;
+    margin-right: 1.7rem;
+    margin-top: 1.2rem;
     font-size: 0.75em;
 }
 
@@ -64,26 +81,85 @@
 
 /*물물교환 전체*/
 .mulmulTrade{
-    margin-top: 4rem;    /*width : 75%;*/
+
+    margin-top: 3rem;    /*width : 75%;*/
     height: var( --mulmul-height);
     max-height: var( --mulmul-height);
 }
 /*물물교환 h2(우리 동네 인기 물물교환)*/
 .mulmulTrade h2{
-    text-align: center;
+
+    font-size : 1.7rem;
+    font-weight: 600;
+    padding-left: 50px;
+    //text-align: center;
 }
 
+.startBtn{
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+    background-color: #F1F3F5;
+    border :none;
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 6px;
+    color: black;
+
+    padding: 14.5px 26px;
+    letter-spacing: -0.3px;
+    line-height: 1.47;
+
+    &:hover{
+        background-color: #E9ECEF;
+    }
+}
+
+.uploadBtn{
+    font-family: OhouseSans,Noto Sans KR,Apple SD Gothic Neo,맑은 고딕,Malgun Gothic,sans-serif;
+    background-color: #EAEDEF;
+    border :none;
+    margin-right :0.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    height: 2.8rem;
+    border-radius: 10px;
+    color: black;
+    padding: 0rem 0.75rem 0rem 0.75rem;
+}
+
+
+.tradeTop{
+    position: relative;
+}
+
+.tradeTop li{
+    cursor: pointer;
+    color: #5DC8CD;
+    list-style: none;
+    position : absolute;
+    right : -0.4rem;
+    margin-right : 4rem;
+    font-weight: bold;
+    font-size : 1.3rem;
+    line-height: 2.3rem;
+    top : 0rem;
+
+
+
+}
 
 /*물물교환 Carousel 안에 있는 cardView 전체*/
 /*TODO: 물물교환 MulMulcardView안에 있는 css, 현재는 home module에 있지만
 추후엔 MulMulcardView module을 따로 빼서 넣어야 함*/
 
 .mulmulCardView{
-    margin-top: 4rem;
+    position : relative;
+    margin-top: 1rem;
     width:1200px;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    //justify-content: space-between;
     font-size: 1rem;
     height: 22rem;
 
@@ -99,7 +175,7 @@
 
 
 }
-.carouselInner{
+.carousenner{
     width: 150%;
     background-color: red;
 }
@@ -141,13 +217,15 @@
 
 }
 
+
 /************************************************************************
  끼리끼리 Component
  ************************************************************************/
 
 /*끼리끼리 전체*/
 .kirikiriTrade{
-    width : 75%;
+    padding-top : 5rem;
+    //width : 75%;
     margin: auto; /* content를 중앙으로 보낸다*/
     height: var( --mulmul-height);
     max-height: var( --mulmul-height);
@@ -157,9 +235,9 @@
 /*끼리끼리 h2(다른 카테고리 뿐만 아니라 같은 카테고리 끼리도 교환할 수 있어요)*/
 .kirikiriTrade h2{
     margin-top: 3rem;
-    text-align: center;
+    margin-left : 50px;
+    font-size : 1.7rem;
 }
-
 
 /*끼리끼리 카테고리 원형 이미지*/
 .kirikiriCatagoryCardView{
@@ -178,4 +256,21 @@
     display: grid;
     grid-template-columns: repeat(4,1fr);
     gap: 1rem;
+}
+
+.kiriTop{
+    position: relative;
+    z-index: 0;
+}
+.kiriLi{
+    cursor: pointer;
+    color: #5DC8CD;
+    list-style: none;
+    position : absolute;
+    right : -0.4rem;
+    margin-right : 4rem;
+    font-weight: bold;
+    font-size : 1.3rem;
+    line-height: 2.3rem;
+    top : -2rem;
 }

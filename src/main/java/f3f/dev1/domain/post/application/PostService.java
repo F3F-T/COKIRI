@@ -112,7 +112,7 @@ public class PostService {
             }
         }
 
-        return new PageImpl<>(resultList);
+        return new PageImpl<>(resultList, pageable, all.getTotalElements());
     }
 
 
@@ -140,11 +140,13 @@ public class PostService {
 //        return response;
 //    }
 
-    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
+//    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
     @Transactional(readOnly = true)
     public Page<GetUserPost> findPostByAuthorId(Long authorId, Pageable pageable) {
-        List<GetUserPost> collect = postRepository.getUserPostById(authorId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
-        return new PageImpl<>(collect);
+//        List<GetUserPost> collect = postRepository.getUserPostById(authorId, pageable).stream().map(GetUserPost::new).collect(Collectors.toList());
+        Page<PostRepository.GetUserPostInterface> userPostById = postRepository.getUserPostById(authorId, pageable);
+        List<GetUserPost> collect = userPostById.stream().map(GetUserPost::new).collect(Collectors.toList());
+        return new PageImpl<>(collect, pageable, userPostById.getTotalElements());
     }
 
     // TODO 고려해야할 것 : 캐싱 동기화(sync), 비회면 조건부 캐싱
@@ -172,7 +174,7 @@ public class PostService {
                 list.add(build);
             }
         }
-        return new PageImpl<>(list);
+        return new PageImpl<>(list, pageable, dtoPages.getTotalElements());
     }
 
 
@@ -203,7 +205,7 @@ public class PostService {
                 resultList.add(build);
             }
         }
-        return new PageImpl<>(resultList);
+        return new PageImpl<>(resultList, pageable, dtoList.getTotalElements());
     }
 
     // TODO 거래 가능한 게시글만 검색하기
@@ -230,12 +232,16 @@ public class PostService {
             postImages.add(postImage.getImgPath());
         }
 
-        // 어쩔 수 없이 세션에서 받아온 현재 유저의 엔티티를 찾는 쿼리를 한번 날려야겠다.
-        // 비회원 defensive 한번 걸어주자. 오류뜸
-        Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-        boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), id);
-        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, isScrap);
-        return response;
+        // 비회원일 경우 member를 조회하면 오류가 발생한다. 따라서 null 여부를 체크하고, 이에 따라 로직이 분기해야 한다.
+        if(currentMemberId != null) {
+            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+            boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), id);
+            SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, isScrap);
+            return response;
+        } else {
+            SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, false);
+            return response;
+        }
     }
 
     /* TODO
@@ -367,8 +373,7 @@ public class PostService {
     }
 
     // 캐시 삭제 스케쥴러 등록
-
-    // 고민이 된다. tag 없이 조회한 모든 게시글 캐시가 3초 단위로 다 지워지는데, 더 나은 방법이 있을 것만 같은 느낌이다.
+    // 고민이 된다. tag 없이 조회한 모든 게시글 캐시가 5초 단위로 다 지워지는데, 더 나은 방법이 있을 것만 같은 느낌이다.
     @CacheEvict(value = POST_LIST_WITHOUT_TAG, allEntries = true)
     @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
     public void removePostWithoutTagCache() {
@@ -379,9 +384,9 @@ public class PostService {
     public void removePostWithTagCache() {
     }
 
-    @CacheEvict(value = AUTHOR_POST_LIST, allEntries = true)
-    @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
-    public void removeAuthorPostListCache() {
-    }
+//    @CacheEvict(value = AUTHOR_POST_LIST, allEntries = true)
+//    @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
+//    public void removeAuthorPostListCache() {
+//    }
 
 }

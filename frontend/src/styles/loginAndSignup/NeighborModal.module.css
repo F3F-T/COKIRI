@@ -1,0 +1,99 @@
+
+.addressBox{
+    width: 30rem;
+    height: 25rem;
+
+}
+.addressBox_1{
+}
+.ad1{
+    margin-top: 2.5rem;
+    font-size: 2rem;
+    text-align: center;
+    font-weight: 400;
+}
+.add2Box{
+    margin-top: 2rem;
+    /*display: flex;*/
+    /*justify-content: space-around;*/
+}
+.ad2{
+    font-size: 1rem;
+    text-align: center;
+}
+.plusBtnBox{
+    margin-top: 3rem;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+}
+.plusBtn1{
+    width: 13rem;
+    height: 2.5rem;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0);
+}
+.plusBtn1active{
+    width: 13rem;
+    height: 2.5rem;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+}
+.plusBtn2{
+    width: 13rem;
+    height: 2.5rem;
+    border: 2px solid rgba(0, 0, 0, 0);
+    border-radius: 10px;
+}
+.plusBtn2active{
+    width: 13rem;
+    height: 2.5rem;
+    border-radius: 10px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+}
+
+
+.registerBox{
+    margin-top: 3rem;
+    /*border: 2px solid rgba(0, 0, 0, 1);*/
+}
+.inputBox{
+}
+.input1{
+    margin-left:1.6rem;
+    font-size: 0.8rem;
+}
+.input2{
+    margin-left: 1.6rem;
+    width: 20rem;
+    height: 2rem;
+    border-radius: 5px;
+
+}
+.input2active{
+    margin-left: 1.5rem;
+    width: 20rem;
+    height: 2rem;
+    font-size: 0.8rem;
+    border-radius: 5px;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+}
+.input2_2{
+    margin-left: 1.5rem;
+    width: 20rem;
+    height: 2rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    border: 2px solid rgba(0, 0, 0, 0.5);
+}
+.registerBtn{
+    margin-left:25.5rem;
+    border: none;
+    height: 2rem;
+    width: 3rem;
+    font-size: 0.8rem;
+    border-radius: 10px;
+}
+
+

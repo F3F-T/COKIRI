@@ -1,4 +1,4 @@
-import styles from '../../styles/loginAndSignup/googleLoginModal.module.css'
+import styles from '../../styles/loginAndSignup/NeighborModal.module.css'
 import React, {PropsWithChildren, useState} from "react";
 import TextInput from "../../component/common/TextInput";
 import {useDispatch, useSelector} from "react-redux";
@@ -62,7 +62,6 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
             dispatch(setClick1(1))
             dispatch(setLat1(JSON.stringify(location.coordinates.lat)))
             dispatch(setLng1(JSON.stringify(location.coordinates.lng)))
-
         }
         catch (err)
         {
@@ -219,7 +218,7 @@ function Modal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultTy
                         {/*<button className={styles.plusBtn1}>첫번째 주소를 추가해주세요</button>*/}
                         {/*<button className={styles.plusBtn2}>두번째 주소를 추가해주세요</button>*/}
                         {tab1 === 'curr' ? <button className={`${styles["plusBtn1"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>첫번째 주소를 추가해주세요</button>
-                            : <button className={`${styles["plusBtn1"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>첫번째 주소를 추가해주세요</button>
+                            :              <button className={`${styles["plusBtn1"+(tab1 ==="curr"? "active" : "")]}`}  onClick={() =>{ setDealTab('curr')}}>첫번째 주소를 추가해주세요</button>
                         }
                         {tab1 === 'next' ? <button className={`${styles["plusBtn2"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>두번째 주소를 추가해주세요</button>
                             : <button className={`${styles["plusBtn2"+(tab1 ==="next"? "active" : "")]}`} onClick={() =>{ setDealTab('next')}}>두번째 주소를 추가해주세요</button>

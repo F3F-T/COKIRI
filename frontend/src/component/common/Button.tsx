@@ -69,9 +69,4 @@ const Button = (buttonProps: ButtonProps) => {
     );
 }
 
-
-
-
-
-
 export default Button;

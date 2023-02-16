@@ -18,6 +18,7 @@ interface UserInfo {
     scrapId : Number;
     address : object;
     onelineIntro : string;
+    password : string;
 }
 
 const initialUserInfoState : UserInfo = {
@@ -31,7 +32,8 @@ const initialUserInfoState : UserInfo = {
     phoneNumber: "",
     scrapId: 0,
     userName: "",
-    onelineIntro:""
+    onelineIntro:"",
+    password:""
 }
 
 //state는 이 상태의 현재 상태 값을 의미한다
@@ -66,6 +68,12 @@ const userInfoSlice = createSlice({
         setOnelineIntro(state,action){
             state.onelineIntro = action.payload;
         },
+        setEmail(state,action){
+            state.email = action.payload;
+        },
+        setPW(state,action){
+            state.password = action.payload;
+        },
         deleteUserInfo(state){
             return initialUserInfoState
         },
@@ -81,6 +89,7 @@ const userInfoSlice = createSlice({
             state.imageUrl = undefined;
             state.scrapId = undefined;
             state.address = undefined;
+            state.password = undefined;
         }
     }
 })
@@ -88,7 +97,7 @@ const userInfoSlice = createSlice({
 
 //위에서 선언해준 counterSlice의 reducer를 export해준다
 export default userInfoSlice.reducer;
-export const {setUserInfo,deleteUserInfo,setUserNick,setUserProfile,setUserName,setOnelineIntro,logoutUserInfo} = userInfoSlice.actions;
+export const {setUserInfo,deleteUserInfo,setUserNick,setUserProfile,setUserName,setOnelineIntro,logoutUserInfo,setPW,setEmail} = userInfoSlice.actions;
 //이제 이걸다른 컴포턴트에서 dispatch로 사용한다.
 
 //여기선 알아서 api가 해주는구나, 대충 여기서 선언한 initial state, type, action을 보내주면 된다고 생각하면 되겠네
