@@ -171,6 +171,14 @@ const Login = () => {
         }
     });
 
+    const findId = () => {
+        navigate(`/findid`)
+    }
+
+    const findPw = () => {
+        navigate('/findpw')
+    }
+
 
     return (
         <><div className={styles.box}>
@@ -203,9 +211,9 @@ const Login = () => {
                         </fieldset>
                     </div>
                     <div className={styles.loginMenu}>
-                        <span onClick={signInClick}>회원가입</span>
-                        <span>ID 찾기</span>
-                        <span>비밀번호 찾기</span>
+                        <span className={styles.signup} onClick={signInClick}>회원가입</span>
+                        <span className={styles.findId} onClick={findId}>ID 찾기</span>
+                        <span className={styles.findPw} onClick={findPw}>비밀번호 찾기</span>
                     </div>
                 </section>
                 {/*<Button className={"white"} onClick={()=>{  onClickToggleModal(); }} content={"구글 로그인"}/>*/}

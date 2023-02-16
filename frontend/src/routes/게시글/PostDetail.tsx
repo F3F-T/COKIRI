@@ -55,6 +55,8 @@ const PostDetail = () => {
     const onClickToggleModal = useCallback(() => {
         setOpenModal(!isOpenModal);
     }, [isOpenModal]);
+    let accessableCount = 1;
+
     interface PostType {
         id?: number;
         title?: string;
@@ -374,20 +376,37 @@ const PostDetail = () => {
 
     const onClickScrap = async () => {
 
+        console.log(accessableCount);
         const userId: Number = store.userInfoReducer.id;
 
         const jsonObj = {userId: userId, postId: post.id}
         console.log(jsonObj);
-        if (!scrapSaved) {
-            await Api.post(`/user/scrap`, jsonObj);
-            setScrapCountInReact(prevState => prevState+1);
-        } else {
-            await Api.delete(`/user/scrap`, {
-                data: jsonObj
-            })
-            setScrapCountInReact(prevState => prevState-1);
+        accessableCount = accessableCount -1 ;
+        console.log(accessableCount);
+
+        if(accessableCount >= 0 ) {
+            if (!scrapSaved) {
+                accessableCount = accessableCount - 1
+                await Api.post(`/user/scrap`, jsonObj);
+                setScrapCountInReact(prevState => prevState + 1);
+            } else {
+                await Api.delete(`/user/scrap`, {
+                    data: jsonObj
+                })
+                setScrapCountInReact(prevState => prevState - 1);
+            }
+            setScrapSaved(prevState => !prevState);
         }
-        setScrapSaved(prevState => !prevState);
+        else{
+            console.log("이미 클릭 한번 함 ")
+        }
+        console.log(accessableCount)
+
+        accessableCount  = accessableCount + 1;
+
+
+
+
     }
 
     const onChangeComment = (e) => {

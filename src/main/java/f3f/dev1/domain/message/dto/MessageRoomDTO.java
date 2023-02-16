@@ -84,6 +84,7 @@ public class MessageRoomDTO {
         private boolean buyerDelStatus;
         private boolean sellerDelStatus;
         private LocalDateTime createTime;
+        private LocalDateTime modifiedTime;
     }
 
     @Getter

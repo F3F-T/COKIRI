@@ -67,6 +67,7 @@ public class MessageRoom extends BaseTimeEntity {
                 .buyerDelStatus(this.buyerDelStatus)
                 .sellerDelStatus(this.sellerDelStatus)
                 .createTime(super.getCreateDate())
+                .modifiedTime(super.getModifiedDate())
                 .build();
     }
 

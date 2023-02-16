@@ -21,6 +21,8 @@ const Api = axios.create({
     baseURL: "http://localhost:8080",
 });
 
+const sourceRequest: any = {};
+
 //accessToken을 header에 넣어준다
 Api.interceptors.request.use(
     (config) => {
@@ -38,6 +40,23 @@ Api.interceptors.request.use(
         } catch (err) {
             console.error('[_axios.interceptors.request] config : ' + err);
         }
+
+        //post 메서드일때 중복 방지
+        // if (config.method === 'post') {
+        //     const key = `${config.url}$${JSON.stringify(config.data)}`;
+        //     //스크랩일때만 중복 허용
+        //     if(!key.includes("/user/scrap$"))
+        //     {
+        //         console.log("hi")
+        //         if (sourceRequest[key]) {
+        //             console.log("중복으로 요청 취소 ")
+        //             throw new Error('Automatic cancellation'); // If the request exists cancel
+        //         } else {
+        //             sourceRequest[key] = new Date(); // Store request key
+        //         }
+        //     }
+        //     console.log(key);
+        // }
 
         return config;
     },
@@ -95,8 +114,8 @@ Api.interceptors.response.use(
                             console.log("나중에 이부분확인")
                             console.log(err);
                             console.log("refreshToken이 만료돼서 accesToken을 재발급할수없음")
-                            alert("accessToken의 만료기간이 지나서 백엔드 accessToken의 검증실패, reissue로 refresh token을 활용하여 accessToken 재발급 시도," +
-                                "refresh token의 만료기간도 지나 재로그인 요청")
+                            // alert("accessToken의 만료기간이 지나서 백엔드 accessToken의 검증실패, reissue로 refresh token을 활용하여 accessToken 재발급 시도," +
+                            //     "refresh token의 만료기간도 지나 재로그인 요청")
                             history.push('/login');
                         }
                     } else { //로그인 되지 않은 상태일때
