@@ -245,7 +245,14 @@ const Home = () => {
                         }
 
                         {/*<button className={cx('startBtn')} onClick={onClickUpload}>내 물건 올리기</button>*/}
-                        <button className={cx('startBtn')} onClick={() => onClickToggleModal()}>내 물건 올리기</button>
+                        {
+                            store.userAddressInfoReducer.addressName1 ==null?
+                                <button className={cx('startBtn')} onClick={() => onClickToggleModal()}>내 물건 올리기</button>
+                                :
+                                <button className={cx('startBtn')} onClick={onClickUpload}>내 물건 올리기</button>
+
+
+                        }
 
                         {/*<Button className={"lightblue"} content={"시작하기"} onClick={onClickStart} color={"black"} hover={true} size={"medium"}/>*/}
                         {/*<Button className={"lightblue"} content={"내 물건 올리기"} onClick={onClickUpload} color={"black"} hover={true} size={"medium"}/>*/}

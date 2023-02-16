@@ -23,6 +23,7 @@ import {
 import {use} from "js-joda";
 import {log} from "util";
 import timeConvert from "../utils/timeConvert";
+import logOut from "./로그인 & 회원가입/Settings/LogOut";
 
 interface contentInfo {
         id: number,
@@ -42,6 +43,16 @@ interface contentInfo2 {
     receiverId: string,
     messageRoomId: number
 }
+const usePreventLeave = () => {
+    const listener = event => {
+        event.preventDefault();
+        event.returnValue = "";
+    };
+    const enablePrevent = () => window.addEventListener("beforeunload", listener); // beforeunload 이벤트 리스너로 listener 지정
+    const disablePrevent = () =>
+        window.removeEventListener("beforeunload", listener); // beforeunload 이벤트 제거
+    return { enablePrevent, disablePrevent }; // 두 함수를 return
+};
 const KokiriTalk = () => {
     const navigate = useNavigate();
 
@@ -60,13 +71,18 @@ const KokiriTalk = () => {
     const [roomId,setRoomId] = useState();
     const [contentInfo,setContentInfo]=useState(null)
     const [roomList,setRoomList]=useState(null)
+    const [roomList2,setRoomList2]=useState(null)
+
+
+    const { enablePrevent, disablePrevent } = usePreventLeave();
+
+
     // const [count,setCount]=useState(0)
     const [input,setInput] = useState('');
     console.log("초기시작으로 false를 해놧는데",talkCard.delStatus)
     useEffect(()=>{
-        if(talkCard.delStatus==false){
-            getMessageRoom()
-        }
+        getMessageRoom()
+        enablePrevent()
     },[])
 
     const onClickTotalTalkList = (key) => {
@@ -121,19 +137,22 @@ const KokiriTalk = () => {
             const res = await Api.get('/user/messageRooms');
             console.log("count가 플러스가 되니까 이리로 넘어오겠지", count)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
+            console.log("메세지룸 조회",res.data.content)
             console.log("메세지룸 조회2",res2.data)
+
+            for(let i=0;i<res2.data.length;i++){
+
+            }
             if(talkCard.id === undefined){
+                console.log("처음 켰을때",talkCard)
                 // const res3 = await Api.get(`/post/${res2.data[0].postId}`)
                 for(let i=0;i<res2.data.length;i++){
                     console.log("count가 플러스가 되니까 이리로 넘어오겠지2", count)
-
-                    if(res2.data[i].sellerDelStatus == false && res2.data[i].buyerDelStatus == false ) {
-                        console.log("count가 플러스가 되니까 이리로 넘어오겠지3", count)
-
-                        console.log(`kokiriseller${i}`,res2.data[i].sellerDelStatus)
-                        console.log(`kokiriseller${i}`,res2.data[i].buyerDelStatus)
-                        if (res.data.content[0].messageRoomId == res2.data[i].id) {
-                            console.log("count가 플러스가 되니까 이리로 넘어오겠지4", count)
+                    // 현재 유저가 buyer인지 seller인지 판단
+                    if (info.id === res2.data[i].buyerId) {
+                        if(res2.data[i].buyerDelStatus == false) {
+                            //원래대로
+                            console.log("buyerdelStatus가 false인 애들 중에 첫번째꺼를 앞에 띄워야지")
                             const res3 = await Api.get(`/post/${res2.data[i].postId}`)
                             dispatch(setTradeStatus(res3.data.tradeStatus))
                             dispatch(setTradeCategory(res3.data.tradeCategory))
@@ -143,38 +162,60 @@ const KokiriTalk = () => {
                             dispatch(setPostId(res2.data[i].postId))
                             dispatch(setMessageRoomId(res2.data[i].id))
                             dispatch(setBuyerId(res2.data[i].buyerId))
-                            if (info.id === res2.data[i].buyerId) {
-                                dispatch(setOpponetNick(res2.data[i].sellerNickName))
-                                dispatch(setDelStatus(res2.data[i].buyerDelStatus))
-                            } else {
-                                dispatch(setOpponetNick(res2.data[i].buyerNickName))
-                                dispatch(setDelStatus(res2.data[i].sellerDelStatus))
+                            getMessageContent(res2.data[i].id);
+                            break;
+                        }
+                    } else {
+                        if(res2.data[i].sellerDelStatus == false ) {
+                            //원래대로 출력
+                            console.log("SellerdelStatus가 false인 애들 중에 첫번째꺼를 앞에 띄워야지")
+                            const res3 = await Api.get(`/post/${res2.data[i].postId}`)
+                            dispatch(setTradeStatus(res3.data.tradeStatus))
+                            dispatch(setTradeCategory(res3.data.tradeCategory))
+                            dispatch(setWishCategory(res3.data.wishCategory))
+                            dispatch(setProductImg(res3.data.images[0]))
+                            dispatch(setTitle(res3.data.title))
+                            dispatch(setPostId(res2.data[i].postId))
+                            dispatch(setMessageRoomId(res2.data[i].id))
+                            dispatch(setBuyerId(res2.data[i].buyerId))
+                            getMessageContent(res2.data[i].id);
+                            break;
+                        }
 
-                            }
-                            getMessageContent(res2.data[0].id);
-                        }
                     }
-                    else{
-                        if(info.id === res2.data[i].buyerId){
-                            dispatch(setDelStatus(res2.data[i].buyerDelStatus))
-                        }
-                        else{
-                            dispatch(setDelStatus(res2.data[i].sellerDelStatus))
-                        }
-                        console.log(`kokiri${i}`,talkCard.delStatus)
-                    }
-
                 }
                 //title,wishCategory,productCategory,tradeStatus
             }
+            else{
+                console.log("여기로온다면",talkCard)
+            }
 
-            console.log("그다음은 이리로 오는거고?", count)
+            for(let i=0;i<res2.data.length;i++){
+                console.log("테스트입니다3",res.data.content[i])
+                // 현재 유저가 buyer인지 seller인지 판단
+                if (info.id === res2.data[i].buyerId) {
+                    if(res2.data[i].buyerDelStatus == false ) {
+                        console.log("테스트입니다1",res2.data[i].sellerNickName)
+                        console.log("테스트입니다2",res2.data[i].buyerNickName)
+
+                    }
+
+                } else {
+                    if(res2.data[i].sellerDelStatus == false ) {
+                        //원래대로 출력
+                    }
+                }
+            }
+
+            console.log("여기는 처음킨게 아닐때 dispatch에 리스트 첫번째꺼를 넣어줄 필요가 없음")
 
             setRoomList(()=>{
                 return [...res.data.content]
             })
             console.log("roomlist좀 보자",roomList)
-            console.log("roomlist좀 보자33333",res.data.content)
+            console.log("윤정데이터",roomList2)
+            console.log("윤정데이터22",[res2.data[0]])
+
 
         }
         catch (err)
@@ -239,24 +280,63 @@ const KokiriTalk = () => {
     }
 
     async function deleteRoom() {
+        console.log("메세지룸 내용조회 in delete22222")
+
         try{
-            const deleteInfo={
-                data: {
-                    id: talkCard.id,
-                    memberId: info.id
+            console.log("메세지룸 내용조회 in delete333333")
+
+            const res2 = await Api.get(`/messageRooms/${talkCard.id}`);
+            console.log("메세지룸 내용조회 in delete", res2.data.length)
+            console.log('talkcard.id',talkCard.id)
+
+            if(res2.data.length==0){
+                try{
+                    const deleteInfo={
+                        data: {
+                            id: talkCard.id,
+                        }
+                    }
+                    const res = await Api.delete('/messageRooms',deleteInfo);
+
+                    // console.log("메세지룸 내용조회", res.data)
+                    alert("메세지룸 내용 영구삭제 ")
+                }
+                catch (err)
+                {
+                    console.log(err)
+                    alert("메세지룸 내용 영구삭제 실패")
                 }
             }
-            const res = await Api.delete(`/messageRooms/${talkCard.id}`,deleteInfo);
+            else{
+                try{
+                    const deleteInfo={
+                        data: {
+                            id: talkCard.id,
+                            memberId: info.id,
+                            postId: talkCard.postId
+                        }
+                    }
+                    const res = await Api.delete(`/messageRooms/${talkCard.id}`,deleteInfo);
 
-            // console.log("메세지룸 내용조회", res.data)
-            alert("메세지룸 내용 삭제  in kokiritalk")
+                    // console.log("메세지룸 내용조회", res.data)
+                    alert("메세지룸 내용 삭제  in kokiritalk")
 
+                }
+                catch (err)
+                {
+                    console.log(err)
+                    alert("메세지룸 내용 삭제 실패 in kokiritalk")
+                }
+
+
+            }
         }
         catch (err)
         {
             console.log(err)
-            alert("메세지룸 내용 삭제 실패 in kokiritalk")
+            alert("메세지룸 내용 조회 실패 in delete")
         }
+
     }
     // if(!talkCard.delStatus){
     //     return null
@@ -272,8 +352,7 @@ const KokiriTalk = () => {
     if(!roomList){
         return null
     }
-    console.log("roomlist좀 보자22222",roomList)
-
+    console.log("roomlist좀 보자22222",roomList2)
     return (
         <div className={styles.kokiritalk}>
             <div className={styles.left}>

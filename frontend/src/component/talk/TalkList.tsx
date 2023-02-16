@@ -83,6 +83,7 @@ const TalkListLeft = (props2:props)=>{
 
 const TalkList = (props2: props) => {
     const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
+    const info = useSelector((state : Rootstate)=>{return state.userInfoReducer})
 
     const realCount = props2.counts
     // props2.click =click
@@ -98,8 +99,8 @@ const TalkList = (props2: props) => {
 
     async function getMessageRoom() {
         try{
+            const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
 
-            const res = await Api.get('/user/messageRooms');
         }
         catch (err)
 

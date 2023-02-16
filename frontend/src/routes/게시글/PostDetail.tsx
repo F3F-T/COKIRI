@@ -638,7 +638,7 @@ const PostDetail = () => {
                                 <button className={styles.exchangeBtn} onClick={()=>{onClickToggleModal()}}>코끼리톡으로 교환하기</button>
                         }
                     </div>
-                </section>톡
+                </section>
             </article>
             <section className={styles.comments}>
                 {
