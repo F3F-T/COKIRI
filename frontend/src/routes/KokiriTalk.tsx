@@ -18,12 +18,13 @@ import {
     setPostId,
     setSellerId,
     setBuyerId,
-    setProductImg, setTitle, setWishCategory, setTradeCategory, setTradeStatus, setDelStatus, setEdit
+    setProductImg, setTitle, setWishCategory, setTradeCategory, setTradeStatus, setDelStatus, setEdit,resetTalkCard
 } from "../store/talkCardReducer";
 import {use} from "js-joda";
 import {log} from "util";
 import timeConvert from "../utils/timeConvert";
 import logOut from "./로그인 & 회원가입/Settings/LogOut";
+import {update} from "list";
 
 interface contentInfo {
         id: number,
@@ -72,10 +73,11 @@ const KokiriTalk = () => {
     const [contentInfo,setContentInfo]=useState(null)
     const [roomList,setRoomList]=useState(null)
     const [roomList2,setRoomList2]=useState(null)
+    const [deleteBtn,setDeleteBtn]=useState(false)
 
 
     const { enablePrevent, disablePrevent } = usePreventLeave();
-
+    const [,updateState] = useState();
 
     // const [count,setCount]=useState(0)
     const [input,setInput] = useState('');
@@ -114,7 +116,6 @@ const KokiriTalk = () => {
         getMessageRoom()
     }, [del])
 
-
     const onChangeMessage = (e) => {
         const inputMessage = e.target.value;
         setInput(inputMessage)
@@ -134,6 +135,8 @@ const KokiriTalk = () => {
     }
     async function getMessageRoom() {
         try{
+            console.log("삭제 그 후 2")
+
             const res = await Api.get('/user/messageRooms');
             console.log("count가 플러스가 되니까 이리로 넘어오겠지", count)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
@@ -300,6 +303,7 @@ const KokiriTalk = () => {
 
                     // console.log("메세지룸 내용조회", res.data)
                     alert("메세지룸 내용 영구삭제 ")
+                    await dispatch(resetTalkCard())
                 }
                 catch (err)
                 {
@@ -321,6 +325,7 @@ const KokiriTalk = () => {
                     // console.log("메세지룸 내용조회", res.data)
                     alert("메세지룸 내용 삭제  in kokiritalk")
 
+                    await dispatch(resetTalkCard())
                 }
                 catch (err)
                 {
@@ -330,6 +335,7 @@ const KokiriTalk = () => {
 
 
             }
+            setDel(prevState => prevState+1);
         }
         catch (err)
         {
@@ -364,52 +370,97 @@ const KokiriTalk = () => {
                         SingleObject['messageRoomId'] === talkCard.id ?//눌렸냐
                             SingleObject["buyerNickname"] === info.nickname ?
                                 // <>눌렸는데 구매자</>
-                                <div className={styles.wrapper}>
+                                SingleObject["buyerDelStatus"] === false?
+
+                                    <div className={styles.wrapper}>
                                     <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
                                               onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
-                                </div>
+                                    </div>
+                                    :
+                                    <></>
                                 :
                                 // <>눌렸는데 판매자</>
-                                <div className={styles.wrapper}>
+                                SingleObject["sellerDelStatus"] === false?
+
+                                    <div className={styles.wrapper}>
                                     <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
                                               onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
-                                </div>
+                                    </div>
+                                    :
+                                    <></>
                             :
                             // <>안눌림</>
                             SingleObject["buyerNickname"] === info.nickname ?
+                                SingleObject["buyerDelStatus"] === false?
                                     <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["sellerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
                                               onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+                                    :
+                                    <></>
                                 :
                                 // <>눌렸는데 판매자</>
+                                SingleObject["sellerDelStatus"] === false?
+
                                     <TalkList keys={SingleObject["messageRoomId"]} partner={SingleObject["buyerNickname"]} lastContent={SingleObject["lastMsg"]} date={timeConvert(SingleObject["createdDate"])}
                                               onClick = {onClickTotalTalkList(SingleObject["messageRoomId"])} counts={count}/>
+                                    :
+                                    <></>
 
                     ))}
                 </div>
                 </div>
             </div>
 
+
             <div className={styles.right}>
-                <div className={styles.right_headerBox}>
-                    <div className={styles.right_header}>
-                        <div className={styles.right_header1}>
-                            <div className={styles.right_header1_1}> <TalkCard keys={key} /> </div>
-                        </div>
-                        <div className={styles.right_header2}>
-                            <button className={styles.sideBtn} onClick={()=>{deleteRoom();setDel(prevState => prevState+1);}} >삭제</button>
-                            <p> | </p>
-                            <button className={styles.sideBtn}>차단</button>
-                            <p> | </p>
-                            <button className={styles.sideBtn}>신고</button>
-                        </div>
-                    </div>
-                    <div className={styles.right_header1_2}>{talkCard.opponentNickname}님과의 쪽지방입니다.</div>
-                </div>
-                <div className={styles.talkContainer2}>
-                    {key===null?
-                        <></>:<Message keys={key} counts={count}/>
-                    }
-                </div>
+                {
+                    deleteBtn ==true?
+                        <>
+                            <div className={styles.right_headerBox}>
+                                <div className={styles.right_header}>
+                                    <div className={styles.right_header1}>
+                                        <div className={styles.right_header1_1}> <TalkCard keys={key} /> </div>
+                                    </div>
+                                    <div className={styles.right_header2}>
+                                        <button className={styles.sideBtn} onClick={()=>{deleteRoom();setDel(prevState => prevState+1);}} >삭제</button>
+                                        <p> | </p>
+                                        <button className={styles.sideBtn}>차단</button>
+                                        <p> | </p>
+                                        <button className={styles.sideBtn}>신고</button>
+                                    </div>
+                                </div>
+                                <div className={styles.right_header1_2}>{talkCard.opponentNickname}님과의 쪽지방입니다.</div>
+                            </div>
+                            <div className={styles.talkContainer2}>
+                                {key===null?
+                                    <></>:<Message keys={key} counts={count}/>
+                                }
+                            </div>
+                        </>
+                        :
+                        <>
+                            <div className={styles.right_headerBox}>
+                                <div className={styles.right_header}>
+                                    <div className={styles.right_header1}>
+                                        <div className={styles.right_header1_1}> <TalkCard keys={key} /> </div>
+                                    </div>
+                                    <div className={styles.right_header2}>
+                                        <button className={styles.sideBtn} onClick={()=>{deleteRoom();}} >삭제</button>
+                                        <p> | </p>
+                                        <button className={styles.sideBtn}>차단</button>
+                                        <p> | </p>
+                                        <button className={styles.sideBtn}>신고</button>
+                                    </div>
+                                </div>
+                                <div className={styles.right_header1_2}>{talkCard.opponentNickname}님과의 쪽지방입니다.</div>
+                            </div>
+                            <div className={styles.talkContainer2}>
+                                {key===null?
+                                    <></>:<Message keys={key} counts={count}/>
+                                }
+                            </div>
+                        </>
+                }
+
                 <div ref={scrollRef} className = {styles.writeComments}>
                     <input type={"text"} className={styles.writeInput} placeholder={"쪽지를 보내세요"} value={input} onChange={onChangeMessage} />
                     <HiPencil className={styles.pencilIcon}  onClick={()=>{createMessageRoom(); setCount(prevState => prevState+1); setInput(""); }}  />

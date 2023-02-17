@@ -27,33 +27,16 @@ const Message = (key:keyProps) => {
     const [roomList,setRoomList]=useState(null)
     const realKey = key.keys;
     const realCount = key.counts
-    // const scrollToBottom = useCallback(() => {
-    //     if (editDone) {
-    //         // 스크롤 내리기
-    //         scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-    //     }
-    // }, [editDone]);
-    const scrollToBottom = useCallback(()=>{
-        if(talkCard.editDone){
-            // @ts-ignore
-            scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' })        }
-    },[talkCard.editDone]);
-    //
+
     useEffect(()=>{
-        if(talkCard.delStatus==false){
-            getMessageRoom()
-        }
+
         getMessageRoom()
 
     },[realKey])
 
     console.log("메세지메세지메세지",talkCard.delStatus)
     useEffect(() => {
-        if(talkCard.delStatus==false){
-            getMessageRoom()
-        }
         getMessageRoom()
-
     }, [realCount])
     useEffect(() => {
       if(contentInfo != null){
@@ -72,7 +55,6 @@ const Message = (key:keyProps) => {
             // dispatch(setMessageRoomId(res.data.content.messageRoomId))
 
             for(let i=0;i<res2.data.length;i++) {
-                if(res2.data[i].sellerDelStatus == false && res2.data[i].buyerDelStatus == false  ) {
 
                 if (res2.data[i].id == realKey) {
                     dispatch(setPostId(res2.data[i].postId))
@@ -87,7 +69,6 @@ const Message = (key:keyProps) => {
                     getMessageContent(res2.data[i].id);
 
                 }
-            }
             }
 
 

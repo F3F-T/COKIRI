@@ -255,7 +255,6 @@ const MyPage = () =>  {
         }
     }
 
-    // logOut()
     return (
             <>
             <div className={styles.profile}>
