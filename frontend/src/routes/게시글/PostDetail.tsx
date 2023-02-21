@@ -669,7 +669,10 @@ const PostDetail = () => {
                     <div className={styles.tradeAndTalk}>
                         {
                             store.userAddressInfoReducer.addressName1 != undefined?
-                                <button className={styles.exchangeBtn} onClick={()=>{talkButton()}}>코끼리톡으로 교환하기</button>
+                                info.nickname == post.authorNickname?
+                                    <button className={styles.exchangeBtn} onClick={()=>{talkButton()}}>코끼리톡으로 교환하기</button>
+                                    :
+                                    <></>
                                 :
                                 <button className={styles.exchangeBtn} onClick={()=>{onClickToggleModal()}}>코끼리톡으로 교환하기</button>
                         }

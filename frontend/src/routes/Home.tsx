@@ -20,6 +20,7 @@ import HomePostCardSwiper from "../component/common/HomePostCardSwiper";
 import RoundImageSwiper from "../component/common/RoundImageSwiper";
 import classNames from "classnames/bind";
 import Modal from "./로그인 & 회원가입/ModalList";
+import Footer from "./Footer";
 
 const cx = classNames.bind(styles)
 
@@ -137,6 +138,7 @@ const HomeKirikiriTrade = () => {
     console.log(postList)
 
     return (
+        <>
         <section className={styles.kirikiriTrade}>
             <hr className={styles.hrFull}/>
             <div className={styles.kiriTop}>
@@ -156,6 +158,8 @@ const HomeKirikiriTrade = () => {
             </div>
 
         </section>
+            </>
+
     );
 }
 
@@ -223,6 +227,7 @@ const Home = () => {
         setOpenModal(!isOpenModal);
     }, [isOpenModal]);
     return (
+        <div className={styles.wrap}>
         <div className={styles.boxbox}>
             {isOpenModal  &&(
                 <Modal onClickToggleModal={onClickToggleModal} >
@@ -263,6 +268,9 @@ const Home = () => {
             </section>        <HomeMulmulTrade/>
         <HomeKirikiriTrade/>
         </div>
+        </div>
+            <Footer/>
+
         </div>
     );
 }

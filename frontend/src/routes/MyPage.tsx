@@ -13,6 +13,7 @@ import Api from "../utils/api";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
 import {log} from "util";
+import Footer from "./Footer";
 
 // interface TextInputProps {
 //     init: string;
@@ -109,7 +110,7 @@ const MyPage = () =>  {
     }
 
     return (
-        <>
+        <div className={styles.wrap}>
 
             <div className={styles.MyPage}>
                 {/*<div className={styles.menu}>*/}
@@ -154,7 +155,9 @@ const MyPage = () =>  {
               </div>
 
             </div>
-        </>
+
+            <Footer/>
+        </div>
 
     );
 }
