@@ -91,9 +91,7 @@ const TalkList = (props2: props) => {
     // console.log("talklist들어옴",props2.keys)
     //last message 한번더 호출
     useEffect(() => {
-        if(talkCard.delStatus==false){
-            getMessageRoom()
-        }
+            // getMessageRoom()
     }, [realCount])
 
 

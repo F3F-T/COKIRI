@@ -25,6 +25,7 @@ import {log} from "util";
 import timeConvert from "../utils/timeConvert";
 import logOut from "./로그인 & 회원가입/Settings/LogOut";
 import {update} from "list";
+import {components} from "react-select";
 
 interface contentInfo {
         id: number,
@@ -44,21 +45,21 @@ interface contentInfo2 {
     receiverId: string,
     messageRoomId: number
 }
-const usePreventLeave = () => {
-    const listener = event => {
-        event.preventDefault();
-        event.returnValue = "";
-    };
-    const enablePrevent = () => window.addEventListener("beforeunload", listener); // beforeunload 이벤트 리스너로 listener 지정
-    const disablePrevent = () =>
-        window.removeEventListener("beforeunload", listener); // beforeunload 이벤트 제거
-    return { enablePrevent, disablePrevent }; // 두 함수를 return
-};
+// const usePreventLeave = () => {
+//     const listener = event => {
+//         event.preventDefault();
+//         event.returnValue = "";
+//     };
+//     const enablePrevent = () => window.addEventListener("beforeunload", listener); // beforeunload 이벤트 리스너로 listener 지정
+//     const disablePrevent = () =>
+//         window.removeEventListener("beforeunload", listener); // beforeunload 이벤트 제거
+//     return { enablePrevent, disablePrevent }; // 두 함수를 return
+// };
+
+
 const KokiriTalk = () => {
     const navigate = useNavigate();
-
     const scrollRef = useRef();
-
     const store = useSelector((state:Rootstate) => state);
     const [count,setCount] = useState(0)
     const [click,setClick] = useState(0)
@@ -74,21 +75,29 @@ const KokiriTalk = () => {
     const [roomList,setRoomList]=useState(null)
     const [roomList2,setRoomList2]=useState(null)
     const [deleteBtn,setDeleteBtn]=useState(false)
+    console.log('톡카드id톡카드id톡카드id톡카드id톡카드id',talkCard.id);
 
-
-    const { enablePrevent, disablePrevent } = usePreventLeave();
+    // const { enablePrevent, disablePrevent } = usePreventLeave();
     const [,updateState] = useState();
 
     // const [count,setCount]=useState(0)
     const [input,setInput] = useState('');
     console.log("초기시작으로 false를 해놧는데",talkCard.delStatus)
+    //페이지 벗어남 감지
+    const [shouldConfirm, setShouldConfirm] = useState(false);
+
+
+    // getMessageRoom()
     useEffect(()=>{
         getMessageRoom()
-        enablePrevent()
+        getMessageRoom()
+
+        // enablePrevent()
     },[])
 
     const onClickTotalTalkList = (key) => {
         return (event: React.MouseEvent) => {
+            // setCount(prevState => prevState+1);
             setKey(key);
             event.preventDefault();
         }
@@ -99,6 +108,7 @@ const KokiriTalk = () => {
     useEffect(()=>{
         if(talkCard.id!=undefined){
             // console.log("실행된거니??",talkCard.id)
+            setCount(prevState => prevState+1);
             setKey(talkCard.id)
             getMessageContent(talkCard.id);
         }
@@ -116,6 +126,12 @@ const KokiriTalk = () => {
         getMessageRoom()
     }, [del])
 
+    /////////
+
+
+
+
+
     const onChangeMessage = (e) => {
         const inputMessage = e.target.value;
         setInput(inputMessage)
@@ -124,7 +140,7 @@ const KokiriTalk = () => {
     const createMessageRoom = async () => {
 
         //얘는 게시글통해서 들어왔을때만 그 톡방이 있는지 확인하면됨
-        if(state===false){
+        if(state===0){
             await sendMessage(talkCard.id)
         }
         else{
@@ -142,7 +158,6 @@ const KokiriTalk = () => {
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
             console.log("메세지룸 조회",res.data.content)
             console.log("메세지룸 조회2",res2.data)
-
             for(let i=0;i<res2.data.length;i++){
 
             }
@@ -215,9 +230,9 @@ const KokiriTalk = () => {
             setRoomList(()=>{
                 return [...res.data.content]
             })
-            console.log("roomlist좀 보자",roomList)
-            console.log("윤정데이터",roomList2)
-            console.log("윤정데이터22",[res2.data[0]])
+            console.log("roomlist좀 보자",res.data.content)
+            console.log("roomlist좀 보자김윤정",res2.data)
+
 
 
         }
@@ -281,6 +296,47 @@ const KokiriTalk = () => {
             alert("메세지룸 내용 조회 실패 in kokiritalk")
         }
     }
+
+    //자동삭제
+    async function deleteRoom2() {
+        if(talkCard.id != null){
+            try{
+
+                const res2 = await Api.get(`/messageRooms/${talkCard.id}`);
+                console.log("메세지룸 내용조회 in delete", res2.data.length)
+                console.log('talkcard.id',talkCard.id)
+                if(res2.data.length==0){
+                    try{
+                        const deleteInfo={
+                            data: {
+                                id: talkCard.id,
+                            }
+                        }
+                        const res = await Api.delete('/messageRooms',deleteInfo);
+                        // console.log("메세지룸 내용조회", res.data)
+                        alert("메세지룸 내용 영구삭제 ")
+                        await dispatch(resetTalkCard())
+                    }
+                    catch (err)
+                    {
+                        console.log(err)
+                        alert("메세지룸 내용 영구삭제 실패")
+                    }
+                    setDel(prevState => prevState+1);
+                }
+
+            }
+            catch (err)
+            {
+                console.log(err)
+                alert("메세지룸 내용 조회 실패 in delete")
+            }
+        }
+
+    }
+
+
+
 
     async function deleteRoom() {
         console.log("메세지룸 내용조회 in delete22222")
@@ -358,7 +414,7 @@ const KokiriTalk = () => {
     if(!roomList){
         return null
     }
-    console.log("roomlist좀 보자22222",roomList2)
+    console.log("state확인좀할게",state)
     return (
         <div className={styles.kokiritalk}>
             <div className={styles.left}>
@@ -412,32 +468,6 @@ const KokiriTalk = () => {
 
 
             <div className={styles.right}>
-                {
-                    deleteBtn ==true?
-                        <>
-                            <div className={styles.right_headerBox}>
-                                <div className={styles.right_header}>
-                                    <div className={styles.right_header1}>
-                                        <div className={styles.right_header1_1}> <TalkCard keys={key} /> </div>
-                                    </div>
-                                    <div className={styles.right_header2}>
-                                        <button className={styles.sideBtn} onClick={()=>{deleteRoom();setDel(prevState => prevState+1);}} >삭제</button>
-                                        <p> | </p>
-                                        <button className={styles.sideBtn}>차단</button>
-                                        <p> | </p>
-                                        <button className={styles.sideBtn}>신고</button>
-                                    </div>
-                                </div>
-                                <div className={styles.right_header1_2}>{talkCard.opponentNickname}님과의 쪽지방입니다.</div>
-                            </div>
-                            <div className={styles.talkContainer2}>
-                                {key===null?
-                                    <></>:<Message keys={key} counts={count}/>
-                                }
-                            </div>
-                        </>
-                        :
-                        <>
                             <div className={styles.right_headerBox}>
                                 <div className={styles.right_header}>
                                     <div className={styles.right_header1}>
@@ -458,9 +488,6 @@ const KokiriTalk = () => {
                                     <></>:<Message keys={key} counts={count}/>
                                 }
                             </div>
-                        </>
-                }
-
                 <div ref={scrollRef} className = {styles.writeComments}>
                     <input type={"text"} className={styles.writeInput} placeholder={"쪽지를 보내세요"} value={input} onChange={onChangeMessage} />
                     <HiPencil className={styles.pencilIcon}  onClick={()=>{createMessageRoom(); setCount(prevState => prevState+1); setInput(""); }}  />
