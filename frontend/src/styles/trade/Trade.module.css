@@ -1,3 +1,10 @@
+.wrap{
+    min-height: 140vh;
+    position: relative;
+    width: 100%;
+    border-bottom: 2px black;
+    background-color: transparent;
+}
 .mulmulTrade {
     /*margin-top: 7rem;*/
     width : 100%;
@@ -6,6 +13,8 @@
     /*border: 1px solid red;*/
     display: block;
     font-size: 0.75rem;
+    height: 100%;
+    padding-bottom: 400px;
 
 }
 .mulmulTradeContent

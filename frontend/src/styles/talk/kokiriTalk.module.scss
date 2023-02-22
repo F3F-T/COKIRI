@@ -14,11 +14,18 @@
 //message컴포넌트 하나 send와 receive분리
 //card컴퍼넌트를 forTalk으로 유니온하나 추가
 //talklist에 있는 애들도 컴포넌트화 props로 값 넘겨야되니까
-
+.wrap{
+  min-height: 150vh;
+  position: relative;
+  width: 100%;
+  border-bottom: 2px black;
+  background-color: transparent;
+}
 .kokiritalk{
 
+  padding-bottom: 600px;
   width: 1200px;
-  height: 600px;
+  height: 100%;
   display: flex;
   padding-top: 2rem;
   margin: auto;

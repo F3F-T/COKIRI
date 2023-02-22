@@ -12,6 +12,8 @@ import {HiPencil} from "react-icons/hi";
 import Api from "../utils/api";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../index";
+import Footer from "./Footer";
+
 import {
     setMessageRoomId,
     setOpponetNick,
@@ -416,6 +418,7 @@ const KokiriTalk = () => {
     }
     console.log("state확인좀할게",state)
     return (
+        <div className={styles.wrap}>
         <div className={styles.kokiritalk}>
             <div className={styles.left}>
                 <div className={styles.leftHeader}>코끼리톡</div>
@@ -493,6 +496,8 @@ const KokiriTalk = () => {
                     <HiPencil className={styles.pencilIcon}  onClick={()=>{createMessageRoom(); setCount(prevState => prevState+1); setInput(""); }}  />
                 </div>
             </div>
+        </div>
+        <Footer/>
         </div>
     );
 }
