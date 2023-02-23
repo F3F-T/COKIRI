@@ -2,7 +2,7 @@
 import React, {useEffect} from "react";
 
 import Home from "./routes/Home";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes,BrowserRouter as Router } from "react-router-dom";
 import MyPage from "./routes/MyPage";
 import MulmulTrade from "./routes/물물교환, 끼리끼리 화면/MulmulTrade";
 import MulmulTrade2 from "./routes/물물교환, 끼리끼리 화면/MulmulTrade2";
@@ -35,6 +35,8 @@ import FindID from "./routes/로그인 & 회원가입/아이디 찾기/FindID";
 import FindIDResponse from "./routes/로그인 & 회원가입/아이디 찾기/FindIDResponse";
 import FindPW from "./routes/로그인 & 회원가입/비밀번호 찾기/FindPW";
 import FindPWResponse from "./routes/로그인 & 회원가입/비밀번호 찾기/FindPWResponse";
+import Footer from "./routes/Footer";
+import ScrollToTop from "./component/ScrollToTop";
 
 function App() {
 //
@@ -52,8 +54,10 @@ function App() {
     return (
         <div className="App">
             <Nav />
+            <div className={styles.content_1}>
             <div className={styles.content}>
             <Routes>
+
                 <Route path="/" element={<Home/>} />
                 <Route path="/login" element={<Login/>}/>
                 <Route path="/findid" element={<FindID/>}/>
@@ -92,8 +96,9 @@ function App() {
                 <Route path='*' element={<NotFound />}/>
 
             </Routes>
-
-        </div>
+            </div>
+            <Footer/>
+            </div>
         </div>
     );
 }

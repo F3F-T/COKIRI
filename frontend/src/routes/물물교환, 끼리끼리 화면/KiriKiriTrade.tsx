@@ -89,7 +89,7 @@ const KiriKiriTrade = () => {
                 <PostContainer categoryOption={"both"}  filterType={filterType}/>
             </div>
         </div>
-            <Footer/>
+            {/*<Footer/>*/}
         </div>
     );
 }

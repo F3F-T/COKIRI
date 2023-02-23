@@ -490,6 +490,7 @@ const PostDetail = () => {
         return null;
     }
 
+
     if (!post.images) {
         return null;
     }
@@ -539,6 +540,7 @@ const PostDetail = () => {
         console.log("클릭")
         navigate(`/mypage/${post.userInfoWithAddress.userDetail.id}`,{state:post.userInfoWithAddress.userDetail.id})
     }
+    console.log("post.authorNickname",post.userInfoWithAddress.userDetail.nickname)
 
     return (
         <div className={styles.Box}>
@@ -669,10 +671,10 @@ const PostDetail = () => {
                     <div className={styles.tradeAndTalk}>
                         {
                             store.userAddressInfoReducer.addressName1 != undefined?
-                                info.nickname == post.authorNickname?
-                                    <button className={styles.exchangeBtn} onClick={()=>{talkButton()}}>코끼리톡으로 교환하기</button>
-                                    :
+                                info.nickname == post.userInfoWithAddress.userDetail.nickname?
                                     <></>
+                                    :
+                                    <button className={styles.exchangeBtn} onClick={()=>{talkButton()}}>코끼리톡으로 교환하기</button>
                                 :
                                 <button className={styles.exchangeBtn} onClick={()=>{onClickToggleModal()}}>코끼리톡으로 교환하기</button>
                         }
