@@ -69,7 +69,7 @@ const MulmulTrade = () => {
                 <Outlet/>
             </div>
         </div>
-            <Footer/>
+            {/*<Footer/>*/}
         </div>
 
 );

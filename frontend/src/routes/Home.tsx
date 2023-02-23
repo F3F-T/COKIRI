@@ -269,7 +269,7 @@ const Home = () => {
         <HomeKirikiriTrade/>
         </div>
         </div>
-            <Footer/>
+            {/*<Footer/>*/}
 
         </div>
     );

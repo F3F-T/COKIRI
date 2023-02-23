@@ -1,7 +1,16 @@
 .content{
     position: relative;
     top : 72px;
+    height: 100%;
+    padding-bottom: 200px;
     /*padding-top: 72px;*/
+}
+.content_1{
+    min-height: 120vh;
+    position: relative;
+    width: 100%;
+    border-bottom: 2px black;
+    background-color: transparent;
 }
 
 body{
