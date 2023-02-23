@@ -1,11 +1,11 @@
 import styles from "../../styles/talk/talkList.module.scss";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef, useCallback} from "react";
 import MyPage from "../MyPageSet";
 import {HiPencil} from "react-icons/hi";
 import Api from "../../utils/api";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
-import {setBuyerId, setMessageRoomId, setOpponetNick, setPostId, setSellerId} from "../../store/talkCardReducer";
+import {setBuyerId, setMessageRoomId, setOpponetNick, setPostId, setSellerId,setEdit} from "../../store/talkCardReducer";
 import timeConvert from "../../utils/timeConvert";
 
 
@@ -19,6 +19,7 @@ interface keyProps {
 
 // props: {key: keyProps,count:countProps}
 const Message = (key:keyProps) => {
+    const scrollRef = useRef();
     const [contentInfo,setContentInfo]=useState(null)
     const dispatch = useDispatch();
     const talkCard = useSelector((state : Rootstate)=>{return state.talkCardReducer})
@@ -27,22 +28,22 @@ const Message = (key:keyProps) => {
     const realKey = key.keys;
     const realCount = key.counts
 
-    //
     useEffect(()=>{
-        if(talkCard.delStatus==false){
-            getMessageRoom()
-        }
+
         getMessageRoom()
 
     },[realKey])
+
     console.log("메세지메세지메세지",talkCard.delStatus)
     useEffect(() => {
-        if(talkCard.delStatus==false){
-            getMessageRoom()
-        }
         getMessageRoom()
-
     }, [realCount])
+    useEffect(() => {
+      if(contentInfo != null){
+          // @ts-ignore
+          scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+      }
+    }, [contentInfo])
 
     //키값에 해당하는거 띄우려고 호출
     async function getMessageRoom() {
@@ -54,7 +55,6 @@ const Message = (key:keyProps) => {
             // dispatch(setMessageRoomId(res.data.content.messageRoomId))
 
             for(let i=0;i<res2.data.length;i++) {
-                if(res2.data[i].sellerDelStatus == false && res2.data[i].buyerDelStatus == false  ) {
 
                 if (res2.data[i].id == realKey) {
                     dispatch(setPostId(res2.data[i].postId))
@@ -69,7 +69,6 @@ const Message = (key:keyProps) => {
                     getMessageContent(res2.data[i].id);
 
                 }
-            }
             }
 
 
@@ -93,6 +92,8 @@ const Message = (key:keyProps) => {
             setContentInfo(()=>{
                 return [...res.data]
             })
+
+
             // for(let i=0;i<res.data.length;i++){
             //     contentInfo1[i]=res.data[i]
             // }
@@ -110,12 +111,13 @@ const Message = (key:keyProps) => {
     if(!contentInfo){
         return null
     }
+
     if(!roomList){
         return null
     }
 
     return (
-        <>
+        <div ref={scrollRef}>
             {contentInfo.map((a,i)=>(
                contentInfo[i].senderId === info.id?
                     <div className={styles.receive}>
@@ -136,7 +138,7 @@ const Message = (key:keyProps) => {
                     </div>
             ))
             }
-        </>
+        </div>
     )
 }
 export default Message;

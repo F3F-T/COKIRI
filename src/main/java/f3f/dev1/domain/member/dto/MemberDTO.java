@@ -433,7 +433,6 @@ public class MemberDTO {
         private String wishCategory;
         private Long likeCount;
 
-
         public GetUserPost(PostRepository.GetUserPostInterface getUserPostInterface) {
             this.postId = getUserPostInterface.getPostId();
             this.thumbNail = getUserPostInterface.getThumbnail();
@@ -464,8 +463,12 @@ public class MemberDTO {
         private String buyerThumbnail;
         private String sellerThumbnail;
 
+        private boolean buyerDelStatus;
+        private boolean sellerDelStatus;
+
+
         @QueryProjection
-        public GetUserMessageRoom(Long messageRoomId, Long authorId, String lastMsg, LocalDateTime createdDate, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail) {
+        public GetUserMessageRoom(Long messageRoomId, Long authorId, String lastMsg, LocalDateTime createdDate, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail, boolean buyerDelStatus, boolean sellerDelStatus) {
             this.messageRoomId = messageRoomId;
             this.authorId = authorId;
             this.lastMsg = lastMsg;
@@ -474,6 +477,8 @@ public class MemberDTO {
             this.sellerNickname = sellerNickname;
             this.buyerThumbnail = buyerThumbnail;
             this.sellerThumbnail = sellerThumbnail;
+            this.buyerDelStatus = buyerDelStatus;
+            this.sellerDelStatus = sellerDelStatus;
         }
     }
 

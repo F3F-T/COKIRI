@@ -42,13 +42,20 @@ import tradeEx from "../../img/tradeEx.jpeg";
 import {prepend} from "list";
 import Select from "react-select";
 import {ClipLoader} from "react-spinners";
+import Modal from "../로그인 & 회원가입/ModalList";
+import SettingModal from "../로그인 & 회원가입/SettingModal";
 
 
 const PostDetail = () => {
     let existOrNot : boolean = false
+    let roomClassification : number =0;
     // const detail = useSelector((state : Rootstate)=>{return state.postDetailReducer})
     // console.log("asdfasdfa",detail)
     const navigate = useNavigate();
+    const [isOpenModal, setOpenModal] = useState<boolean>(false);
+    const onClickToggleModal = useCallback(() => {
+        setOpenModal(!isOpenModal);
+    }, [isOpenModal]);
     let accessableCount = 1;
 
     interface PostType {
@@ -138,6 +145,7 @@ const PostDetail = () => {
     //에서 value를 사용하기 위해선 onBlur가 아닌 onChange를 사용해야만 한다
     const [commentText, setCommentText] = useState("");
     const [exist,setExist] = useState<boolean>(false);
+
     // dispatch(resetTalkCard())
     const isAuthorTrue = ["수정", "|", "삭제"];
     const isAuthorFalse = ["신고"]
@@ -259,51 +267,82 @@ const PostDetail = () => {
         }
         // await dispatch(setSellerId(post.userInfoWithAddress.userDetail.id))
         await getMessageRoom2()
-        navigate(`/kokiriTalk/${info.id}`, {state: {existOrNot}})
+        navigate(`/kokiriTalk/${info.id}`, {state: {roomClassification}})
     }
     async function getMessageRoom2() {
         try{
             const res = await Api.get('/user/messageRooms');
             // console.log("김동준전체조회",res.data)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
-            // console.log("김윤정전체조회",res2.data)
+            console.log("김윤정전체조회",res2.data.length)
             if(res2.data.length == 0){
+                console.log("이 유저의 방이 아예 없을때 첫 메세지룸일때")
+                console.log("postId",post.id)
+                console.log("info.id",info.id)
                 const post_buyerId2= {
                     postId: post.id,
                     buyerId: info.id
                 }
                 const res4 = await Api.post(`/post/${post.id}/messageRooms`,post_buyerId2);
+                console.log("룸생성정보 in postdetail",res4)
                 dispatch(setOpponetNick(res4.data.sellerNickName))
                 await dispatch(setMessageRoomId(res4.data.id))
                 await dispatch(setSellerId(res4.data.sellerId))
                 dispatch(setPostId(res4.data.postId))
             }
             else {
-
+                console.log("방을 한개 이상 가지고 있을때 ")
                 for (let i = 0; i < res2.data.length; i++) {
                     // if(res2.data[i].sellerDelStatus == false && res2.data[i].buyerDelStatus == false  ) {
                         console.log("postDetailSeller",res2.data[i].sellerDelStatus)
                         console.log("postDetailbuyer",res2.data[i].buyerDelStatus)
                     if (res2.data[i].buyerId === info.id) {
-                            console.log("들어옴?1")
+                            console.log("현재유저가 구매하는 사람일때1")
+
                             if (res2.data[i].postId === post.id) {
-                                console.log("들어옴?2")
-                                console.log("이미 방이 존재합니다.")
+                                console.log("현재유저가 구매하는 사람일때2, 이 게시글로 대화 나눈게 이미 있는거지",res2.data[i].postId)
+                                console.log("이미 방이 존재합니다.",post.id)
                                 dispatch(setMessageRoomId(res2.data[i].id))
-                                existOrNot = true
+                                roomClassification = 1 //
                                 break;
-                            } else {
-                                console.log("들어옴?3")
-                                existOrNot = false
-                        }
-                    } else {
+                            }
+                            else {
+                                console.log("한번 들여다보자",res2.data)
+                                console.log("현재 유저가 구매하는 사람에 있는데, 이 게시글로는 대화나눈게 없어, 방을 새로 파는거지",res2.data[i].postId)
+                                console.log("서로 같지만 방은 생성되어야하는거잖아",post.id)
+                                console.log("서로 같지만 방은 생성되어야하는거잖아2",post.title)
+
+                                try {
+                                    console.log("들어옴?4")
+                                    const post_buyerId1 = {
+                                        postId: post.id,
+                                        buyerId: info.id
+                                    }
+                                    roomClassification = 2
+                                    const res4 = await Api.post(`/post/${post.id}/messageRooms`, post_buyerId1);
+                                    dispatch(setOpponetNick(res4.data.sellerNickName))
+                                    await dispatch(setMessageRoomId(res4.data.id))
+                                    await dispatch(setSellerId(res4.data.sellerId))
+                                    dispatch(setPostId(res4.data.postId))
+                                    alert("메세지룸 추가 성공 in postdetail222")
+
+                                    break;
+                                } catch (err) {
+                                    console.log("들어옴?6")
+                                    console.log(err)
+                                    alert("메세지룸 추가 실패 in postdetail222")
+                                }
+                            }
+                    }
+                    else {
+                        console.log("현재유저가 구매자가 아님1")
                         try {
-                            console.log("들어옴?4")
+                            console.log("들어옴?5")
                             const post_buyerId1 = {
                                 postId: post.id,
                                 buyerId: info.id
                             }
-
+                            roomClassification = 3
                             const res4 = await Api.post(`/post/${post.id}/messageRooms`, post_buyerId1);
                             dispatch(setOpponetNick(res4.data.sellerNickName))
                             await dispatch(setMessageRoomId(res4.data.id))
@@ -318,6 +357,12 @@ const PostDetail = () => {
                     }
 
                 }
+
+
+
+
+
+
             }
         }
         catch (err)
@@ -348,7 +393,6 @@ const PostDetail = () => {
 
     const onClickScrap = async () => {
 
-        console.log(accessableCount);
         const userId: Number = store.userInfoReducer.id;
 
         const jsonObj = {userId: userId, postId: post.id}
@@ -397,18 +441,30 @@ const PostDetail = () => {
     }
 
     const UploadComment = async () => {
+        console.log(accessableCount)
+        accessableCount = accessableCount -1 ;
+        console.log(accessableCount)
         try {
-            const res = await Api.post(`/post/${postId}/comments`, writeComment);
-            console.log(writeComment);
-            console.log(res);
-            dispatch(changeCommentRefreshState());
-            setCommentText("");
-            alert("댓글 작성 성공")
+            if(accessableCount >= 0 ) {
+                console.log("접근")
+                const res = await Api.post(`/post/${postId}/comments`, writeComment);
+                console.log(writeComment);
+                console.log(res);
+                dispatch(changeCommentRefreshState());
+                setCommentText("");
+                alert("댓글 작성 성공")
+            }
+            else{
+                console.log(accessableCount)
+                console.log("이미 클릭한번함")
+            }
+            accessableCount  = accessableCount + 1;
+            console.log(accessableCount)
         } catch (err) {
             console.log(err)
             alert("댓글 작성 실패")
         }
-    }
+    }//
 
     const deletePost = async () => {
         try {
@@ -454,8 +510,7 @@ const PostDetail = () => {
     }
     // console.log(post)
     // console.log(post.images);
-    console.log("이거이거..")
-    console.log(store.refreshReducer.commentChange);
+    // console.log(store.refreshReducer.commentChange);
 
 
     //게시글 작성자 판단
@@ -496,7 +551,14 @@ const PostDetail = () => {
     }
 
     return (
+        <div className={styles.Box}>
+            {isOpenModal &&(
+                <Modal onClickToggleModal={onClickToggleModal} >
+                    <embed type="text/html"  width="800" height="608"/>
+                </Modal>
+            )}
         <div className={styles.postDetail}>
+
             <article className={styles.post}>
                 <section className={styles.postTop}>
                     <div className={styles.postTopProfile}>
@@ -615,7 +677,15 @@ const PostDetail = () => {
                         {/*<button className={styles.tradeStatus} onClick={talkButton}>거래상태</button>*/}
                     </div>
                     <div className={styles.tradeAndTalk}>
-                    <button className={styles.exchangeBtn} onClick={talkButton}>코끼리톡으로 교환하기</button>
+                        {
+                            store.userAddressInfoReducer.addressName1 != undefined?
+                                info.nickname == post.authorNickname?
+                                    <button className={styles.exchangeBtn} onClick={()=>{talkButton()}}>코끼리톡으로 교환하기</button>
+                                    :
+                                    <></>
+                                :
+                                <button className={styles.exchangeBtn} onClick={()=>{onClickToggleModal()}}>코끼리톡으로 교환하기</button>
+                        }
                     </div>
                 </section>
             </article>
@@ -640,6 +710,7 @@ const PostDetail = () => {
                        onChange={onChangeComment} value={commentText}/>
                 <HiPencil className={styles.pencilIcon} onClick={UploadComment}/>
             </div>
+        </div>
         </div>
 
 
