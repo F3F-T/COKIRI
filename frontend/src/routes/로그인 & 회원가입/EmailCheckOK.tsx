@@ -15,6 +15,7 @@ import {
 } from "../../store/userAddressInfoReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
+import Modal from "./ModalList";
 
 const EmailCheckOK = () => {
 
@@ -23,8 +24,14 @@ const EmailCheckOK = () => {
     const dispatch = useDispatch();
     const startCokiri = () => {
         postLoginData()
+        // onClickToggleModal();
         navigate(`/`)
     }
+
+    const [isOpenModal, setOpenModal] = useState<boolean>(false);
+    const onClickToggleModal = useCallback(() => {
+        setOpenModal(!isOpenModal);
+    }, [isOpenModal]);
     //회원가입 동시에 자동으로 로그인
     async function postLoginData() {
         //interceptor를 사용한 방식 (header에 token값 전달)
@@ -81,10 +88,10 @@ const EmailCheckOK = () => {
 
 
 
-
     return (
         <>
             <div className={styles.EmailCheckAllContent}>
+
                 <section className={styles.header}>
                     <img src={loginImg} className={styles.loginImg}></img>
                     <h1>코끼리에 오신걸 환영해요.</h1>

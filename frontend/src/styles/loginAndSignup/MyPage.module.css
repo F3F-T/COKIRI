@@ -1,10 +1,18 @@
+.wrap{
+    min-height: 100vh;
+    /*position: relative;*/
+    width: 100%;
+    border-bottom: 2px black;
+    background-color: transparent;
+}
 .MyPage{
-    padding-top: 0rem;
+    padding-top: 0;
     width : 700px;
-    height: 1000px;
+    height: 100%;
     text-align: left;
     /*border: 1px solid red;*/
     margin : auto; /*가운데 정렬*/
+    padding-bottom: 330px;
 }
 .profile{
     padding-top: 0rem;

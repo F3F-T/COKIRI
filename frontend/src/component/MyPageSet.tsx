@@ -255,11 +255,10 @@ const MyPage = () =>  {
         }
     }
 
-    // logOut()
     return (
             <>
             <div className={styles.profile}>
-                {isOpenModal && isChild==1 &&(
+                {isOpenModal &&(
                     <SettingModal onClickToggleModal={onClickToggleModal} >
                         <embed type="text/html"  width="800" height="608"/>
                     </SettingModal>
@@ -322,7 +321,6 @@ const MyPage = () =>  {
                             :
                             <></>
                     }
-
                     <div className={styles.intro2}>
                         <div className={styles.i1}>
                             {/*다른유저일때 if문 걸어서 체크해야지*/}

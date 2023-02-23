@@ -20,9 +20,11 @@ import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static f3f.dev1.domain.message.dto.MessageDTO.*;
@@ -140,6 +142,10 @@ public class MessageRoomService {
             MessageRoomInfoDto msgRoomInfoDto = msgRoom.toMessageRoomInfo();
             totalMsgRoomDtoList.add(msgRoomInfoDto);
         }
+//        for(MessageRoomInfoDto msgRoom : totalMsgRoomDtoList ){
+//            LocalDateTime modified = msgRoom.getModifiedTime();
+//            totalMsgRoomDtoList.sort(Comparator.comparing(LocalDateTime::));
+//        }
 //        List<MessageRoom> totalMsgRoom = new ArrayList<>();
 //        totalMsgRoom.addAll(member.getBuyingRooms());
 //        totalMsgRoom.addAll(member.getSellingRooms());
@@ -259,9 +265,10 @@ public class MessageRoomService {
         //TODO 거래 완료 후 일주일 뒤에 지워지도록 수정
         //유저 메시지 방에 있는지 확인해야함.
         //포스트 작성자는 seller이기 때문에 메시지를 받는 사람임. -> 우리는 내가 보낸 메시지방, 리스트로 나눠져있지만 프론트는 아니기때문에 우선 이렇게 구현
-        if(post.getAuthor().equals(member.getId())) {
+        if(post.getAuthor().getId().equals(member.getId())) {
 
             messageRoom.setReceiverDelStatus(true);
+            return "ReceiverDELETE";
 //            for (MessageRoom mr : member.getSellingRooms()) {//객체 비교 보다 아이디 비교가 빠르려나?
 //                //selling 방에 지우고자 하는 채팅방이 있으면 메시지 다 지움
 //                    if(mr.getId().equals(messageRoom.getId())) {
@@ -278,12 +285,13 @@ public class MessageRoomService {
 //            for(MessageRoom mr : member.getBuyingRooms()){
 //                if(mr.getId().equals(messageRoom.getId())){
 //                    mr.getMessages().clear();
+            return "SenderDELETE";
 //                }
 //
 //            }
 
         }
-    return "DELETE";
+
     }
 
     //currentMemberID는 받지 않음 -> 생성시, 이미 확인을 했고, 뒤로가기를 눌렀을 때 지우는거고 빈방이니까 굳이 없어도 될듯.?

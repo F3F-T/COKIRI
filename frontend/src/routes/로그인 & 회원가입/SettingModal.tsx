@@ -35,18 +35,6 @@ interface AddressType {
     longitude:string;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 function SettingModal({onClickToggleModal, children,}: PropsWithChildren<ModalDefaultType>)
 
 
