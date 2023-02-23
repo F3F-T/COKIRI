@@ -29,15 +29,17 @@ const Message = (key:keyProps) => {
     const realCount = key.counts
 
     useEffect(()=>{
-
         getMessageRoom()
 
-    },[realKey])
+    },[realKey,realCount])
 
     console.log("메세지메세지메세지",talkCard.delStatus)
-    useEffect(() => {
-        getMessageRoom()
-    }, [realCount])
+
+    // useEffect(() => {
+    //     getMessageRoom() //혹시 안되면 이거 푸셈
+    //     console.log("ㄷㄹㄴ아ㅣㅇㄴ르ㅏㅣㄴㅇ리ㅏㅡ")
+    //
+    // }, [realCount])
     useEffect(() => {
       if(contentInfo != null){
           // @ts-ignore
@@ -48,7 +50,9 @@ const Message = (key:keyProps) => {
     //키값에 해당하는거 띄우려고 호출
     async function getMessageRoom() {
         try{
-            const res = await Api.get('/user/messageRooms');
+            console.log("메세지컨포넌트에서의 호출")
+
+            // const res = await Api.get('/user/messageRooms');
             // console.log("메세지룸 조회", res.data.content)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
             // console.log("메세지룸 조회2",res2.data)
@@ -74,9 +78,7 @@ const Message = (key:keyProps) => {
 
 
 
-            setRoomList(()=>{
-                return [...res.data.content]
-            })
+
             // alert("메세지룸 조회 성공 in message")
         }
         catch (err)
@@ -111,10 +113,10 @@ const Message = (key:keyProps) => {
     if(!contentInfo){
         return null
     }
-
-    if(!roomList){
-        return null
-    }
+    //
+    // if(!roomList){
+    //     return null
+    // }
 
     return (
         <div ref={scrollRef}>

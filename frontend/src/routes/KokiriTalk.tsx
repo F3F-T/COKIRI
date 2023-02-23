@@ -77,25 +77,10 @@ const KokiriTalk = () => {
     const [roomList,setRoomList]=useState(null)
     const [roomList2,setRoomList2]=useState(null)
     const [deleteBtn,setDeleteBtn]=useState(false)
-    console.log('톡카드id톡카드id톡카드id톡카드id톡카드id',talkCard.id);
 
-    // const { enablePrevent, disablePrevent } = usePreventLeave();
     const [,updateState] = useState();
-
-    // const [count,setCount]=useState(0)
     const [input,setInput] = useState('');
-    console.log("초기시작으로 false를 해놧는데",talkCard.delStatus)
-    //페이지 벗어남 감지
-    const [shouldConfirm, setShouldConfirm] = useState(false);
 
-
-    // getMessageRoom()
-    useEffect(()=>{
-        getMessageRoom()
-        getMessageRoom()
-
-        // enablePrevent()
-    },[])
 
     const onClickTotalTalkList = (key) => {
         return (event: React.MouseEvent) => {
@@ -104,6 +89,11 @@ const KokiriTalk = () => {
             event.preventDefault();
         }
     }
+
+    useEffect(() => {
+        getMessageRoom()
+    }, [del,count])
+
 
     // console.log("talkCard??",talkCard.id)
 
@@ -115,18 +105,7 @@ const KokiriTalk = () => {
             getMessageContent(talkCard.id);
         }
     },[talkCard.id])
-    useEffect(() => {
-        getMessageRoom()
-        getMessageRoom()
 
-        // @ts-ignore
-        // scrollRef.current.scrollIntoView({behavior:'smooth',block:'end',inline:'nearest'})
-        // getMessageContent(talkCard.id)
-    }, [count])
-
-    useEffect(() => {
-        getMessageRoom()
-    }, [del])
 
     /////////
 
@@ -151,73 +130,70 @@ const KokiriTalk = () => {
         }
 
     }
+
+
+
     async function getMessageRoom() {
         try{
-            console.log("삭제 그 후 2")
 
             const res = await Api.get('/user/messageRooms');
-            console.log("count가 플러스가 되니까 이리로 넘어오겠지", count)
             const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
-            console.log("메세지룸 조회",res.data.content)
-            console.log("메세지룸 조회2",res2.data)
-            for(let i=0;i<res2.data.length;i++){
-
-            }
-            if(talkCard.id === undefined){
-                console.log("처음 켰을때",talkCard)
-                // const res3 = await Api.get(`/post/${res2.data[0].postId}`)
-                for(let i=0;i<res2.data.length;i++){
-                    console.log("count가 플러스가 되니까 이리로 넘어오겠지2", count)
-                    // 현재 유저가 buyer인지 seller인지 판단
-                    if (info.id === res2.data[i].buyerId) {
-                        if(res2.data[i].buyerDelStatus == false) {
-                            //원래대로
-                            console.log("buyerdelStatus가 false인 애들 중에 첫번째꺼를 앞에 띄워야지")
-                            const res3 = await Api.get(`/post/${res2.data[i].postId}`)
-                            dispatch(setTradeStatus(res3.data.tradeStatus))
-                            dispatch(setTradeCategory(res3.data.tradeCategory))
-                            dispatch(setWishCategory(res3.data.wishCategory))
-                            dispatch(setProductImg(res3.data.images[0]))
-                            dispatch(setTitle(res3.data.title))
-                            dispatch(setPostId(res2.data[i].postId))
-                            dispatch(setMessageRoomId(res2.data[i].id))
-                            dispatch(setBuyerId(res2.data[i].buyerId))
-                            getMessageContent(res2.data[i].id);
-                            break;
+            // console.log("메세지룸 조회",res.data.content)
+            // console.log("메세지룸 조회2",res2.data)
+            for(let i=0;i<res2.data.length;i++) {
+                if (talkCard.id === undefined) {
+                    // console.log("처음 켰을때",talkCard)
+                    // const res3 = await Api.get(`/post/${res2.data[0].postId}`)
+                    for (let i = 0; i < res2.data.length; i++) {
+                        // console.log("count가 플러스가 되니까 이리로 넘어오겠지2", count)
+                        // 현재 유저가 buyer인지 seller인지 판단
+                        if (info.id === res2.data[i].buyerId) {
+                            if (res2.data[i].buyerDelStatus == false) {
+                                //원래대로
+                                // console.log("buyerdelStatus가 false인 애들 중에 첫번째꺼를 앞에 띄워야지")
+                                const res3 = await Api.get(`/post/${res2.data[i].postId}`)
+                                dispatch(setTradeStatus(res3.data.tradeStatus))
+                                dispatch(setTradeCategory(res3.data.tradeCategory))
+                                dispatch(setWishCategory(res3.data.wishCategory))
+                                dispatch(setProductImg(res3.data.images[0]))
+                                dispatch(setTitle(res3.data.title))
+                                dispatch(setPostId(res2.data[i].postId))
+                                dispatch(setMessageRoomId(res2.data[i].id))
+                                dispatch(setBuyerId(res2.data[i].buyerId))
+                                // getMessageContent(res2.data[i].id);
+                                break;
+                            }
+                        } else {
+                            if (res2.data[i].sellerDelStatus == false) {
+                                //원래대로 출력
+                                // console.log("SellerdelStatus가 false인 애들 중에 첫번째꺼를 앞에 띄워야지")
+                                const res3 = await Api.get(`/post/${res2.data[i].postId}`)
+                                dispatch(setTradeStatus(res3.data.tradeStatus))
+                                dispatch(setTradeCategory(res3.data.tradeCategory))
+                                dispatch(setWishCategory(res3.data.wishCategory))
+                                dispatch(setProductImg(res3.data.images[0]))
+                                dispatch(setTitle(res3.data.title))
+                                dispatch(setPostId(res2.data[i].postId))
+                                dispatch(setMessageRoomId(res2.data[i].id))
+                                dispatch(setBuyerId(res2.data[i].buyerId))
+                                // getMessageContent(res2.data[i].id);
+                                break;
+                            }
                         }
-                    } else {
-                        if(res2.data[i].sellerDelStatus == false ) {
-                            //원래대로 출력
-                            console.log("SellerdelStatus가 false인 애들 중에 첫번째꺼를 앞에 띄워야지")
-                            const res3 = await Api.get(`/post/${res2.data[i].postId}`)
-                            dispatch(setTradeStatus(res3.data.tradeStatus))
-                            dispatch(setTradeCategory(res3.data.tradeCategory))
-                            dispatch(setWishCategory(res3.data.wishCategory))
-                            dispatch(setProductImg(res3.data.images[0]))
-                            dispatch(setTitle(res3.data.title))
-                            dispatch(setPostId(res2.data[i].postId))
-                            dispatch(setMessageRoomId(res2.data[i].id))
-                            dispatch(setBuyerId(res2.data[i].buyerId))
-                            getMessageContent(res2.data[i].id);
-                            break;
-                        }
-
                     }
+                    //title,wishCategory,productCategory,tradeStatus
+                } else {
+                    // console.log("여기로온다면",talkCard)
                 }
-                //title,wishCategory,productCategory,tradeStatus
-            }
-            else{
-                console.log("여기로온다면",talkCard)
             }
 
             for(let i=0;i<res2.data.length;i++){
-                console.log("테스트입니다3",res.data.content[i])
+                // console.log("테스트입니다3",res.data.content[i])
                 // 현재 유저가 buyer인지 seller인지 판단
                 if (info.id === res2.data[i].buyerId) {
                     if(res2.data[i].buyerDelStatus == false ) {
-                        console.log("테스트입니다1",res2.data[i].sellerNickName)
-                        console.log("테스트입니다2",res2.data[i].buyerNickName)
-
+                        // console.log("테스트입니다1",res2.data[i].sellerNickName)
+                        // console.log("테스트입니다2",res2.data[i].buyerNickName)
                     }
 
                 } else {
@@ -232,8 +208,8 @@ const KokiriTalk = () => {
             setRoomList(()=>{
                 return [...res.data.content]
             })
-            console.log("roomlist좀 보자",res.data.content)
-            console.log("roomlist좀 보자김윤정",res2.data)
+            // console.log("roomlist좀 보자",res.data.content)
+            // console.log("roomlist좀 보자김윤정",res2.data)
 
 
 
@@ -254,7 +230,7 @@ const KokiriTalk = () => {
         }
         try{
             if(info.id===talkCard.sellerId){
-                console.log("메세지보내는사람이 파는 사람")
+                // console.log("메세지보내는사람이 파는 사람")
                 messageInfo1={
                     content:input,
                     senderId:info.id,
@@ -264,7 +240,7 @@ const KokiriTalk = () => {
                 }
             }
             else{
-                console.log("메세지보내는사람이 사는 사람")
+                // console.log("메세지보내는사람이 사는 사람")
                 messageInfo1={
                     content:input,
                     senderId:info.id,
@@ -275,7 +251,8 @@ const KokiriTalk = () => {
             }
             // setInput("")
             const res = await Api.post(`/messageRooms/${loading}`,messageInfo1);
-            console.log("메세지 전송", res.data)
+            // console.log("메세지 전송", res.data)
+            getMessageRoom()
         }
         catch (err)
         {
@@ -416,7 +393,7 @@ const KokiriTalk = () => {
     if(!roomList){
         return null
     }
-    console.log("state확인좀할게",state)
+    // console.log("state확인좀할게",state)
     return (
         <div className={styles.wrap}>
         <div className={styles.kokiritalk}>
