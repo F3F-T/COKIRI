@@ -1,0 +1,68 @@
+footer {
+    border-top: 0.5px solid rgba(200, 200, 200);
+
+    width: 100%;
+    height: 100px; /* 내용물에 따라 알맞는 값 설정 */
+    bottom: 0;
+    position: absolute;
+}
+.container{
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr;
+    height: 100px;
+    width: 100%;
+}
+.leftLogo{
+    display: flex;
+    gap: 0.3rem;
+    height: 100px;
+    width: 14rem;
+    margin-left: 2rem;
+}
+.logo{
+    margin-left: 1rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    cursor: pointer;
+}
+.logoText{
+    margin-top: 0.3rem;
+    height: 100%;
+    width: 5rem;
+    font-weight: 400;
+    font-size: 2rem;
+    cursor: pointer;
+
+}
+.center{
+    margin-top: 1rem;
+    height: 100px;
+    margin-left: 4rem;
+    width: 50rem;
+    padding-left: 2rem;
+}
+.center_1{
+    display: flex;
+    gap: 1.5rem;
+}
+.center_1_1 {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.center_2{
+    margin-top: 1.5rem;
+    display: flex;
+    font-size: 0.8rem;
+}
+.center_2_1{
+    margin-right: 2rem;
+}
+.right{
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    font-weight: bold;
+    height: 100px;
+
+
+}

@@ -34,6 +34,7 @@ import RefreshReducer from "./store/refreshReducer";
 import PostQueryStringReducer from "./store/priceReducer";
 import PriceReducer from "./store/priceReducer";
 import talkCardReducer from "./store/talkCardReducer";
+import ScrollToTop from "./component/ScrollToTop";
 
 /**
  * configureStore을 import해온다.
@@ -94,7 +95,7 @@ root.render(
     <GoogleOAuthProvider clientId={'502345601007-gv64iag1rq1un755oo06q126ghmfgkqk.apps.googleusercontent.com'}>
         {/*@ts-ignore*/}
         <HistoryRouter history={history}>
-
+            <ScrollToTop/>
             <Provider store={store}>
                 <PersistGate loading={null} persistor={persistor}>
                     <App/>

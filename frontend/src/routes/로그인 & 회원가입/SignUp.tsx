@@ -16,6 +16,7 @@ import {forEach} from "list";
 import {useDispatch, useSelector} from "react-redux";
 import {Rootstate} from "../../index";
 import {setEmail, setPW} from "../../store/userInfoReducer";
+import logOut from "./Settings/LogOut";
 
 const SignUp = () => {
     const store = useSelector((state:Rootstate) => state);
@@ -388,7 +389,6 @@ const SignUp = () => {
 
         }
     }
-
     return (
         <div className={styles.signup}>
             <div className={styles.signupHeader}>

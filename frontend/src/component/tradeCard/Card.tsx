@@ -32,6 +32,8 @@ interface props {
 
 
 const TradeCard = (props1: props) => {
+
+    let changeImgSize = props1.thumbnail
     return (
         <>
             <div className={styles.postItem}>

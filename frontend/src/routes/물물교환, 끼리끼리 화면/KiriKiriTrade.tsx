@@ -13,6 +13,7 @@ import {resetCategory} from "../../store/categoryReducer";
 import Button from "../../component/common/Button";
 import classNames from "classnames/bind";
 import {resetPrice} from "../../store/priceReducer";
+import Footer from "./../Footer";
 
 
 const KiriKiriTrade = () => {
@@ -41,6 +42,8 @@ const KiriKiriTrade = () => {
     },[]);
 
     return (
+        <div className={styles.wrap}>
+
         <div className={styles.mulmulTrade}>
             <div className={styles.mulmulTradeContent}>
                 <div className={styles.categoryBox}>
@@ -85,6 +88,8 @@ const KiriKiriTrade = () => {
                 </div>
                 <PostContainer categoryOption={"both"}  filterType={filterType}/>
             </div>
+        </div>
+            {/*<Footer/>*/}
         </div>
     );
 }

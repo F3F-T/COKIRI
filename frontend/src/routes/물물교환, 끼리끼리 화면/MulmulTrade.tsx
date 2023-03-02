@@ -16,6 +16,7 @@ import Button from "../../component/common/Button";
 import classNames from "classnames/bind";
 import ImageSwiper from "../../component/common/ImageSwiper";
 import {resetPrice} from "../../store/priceReducer";
+import Footer from "./../Footer";
 
 
 const MulmulTrade = () => {
@@ -50,6 +51,8 @@ const MulmulTrade = () => {
     }
 
     return (
+        <div className={styles.wrap}>
+
         <div className={styles.mulmulTrade}>
             <div className={styles.mulmulTradeContent}>
                 <div className={styles.categoryBox}>
@@ -66,7 +69,10 @@ const MulmulTrade = () => {
                 <Outlet/>
             </div>
         </div>
-    );
+            {/*<Footer/>*/}
+        </div>
+
+);
 }
 
 export default MulmulTrade;

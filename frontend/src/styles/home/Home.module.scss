@@ -1,4 +1,8 @@
-
+.wrap{
+    min-height: 200vh;
+    position: relative;
+    width: 100%;
+}
 :root {
 
     --start-height: 20rem; /*변수 할당, start div의 height*/
@@ -6,7 +10,6 @@
 }
 
 .home{
-
     width:1200px;
     margin: auto;
     position : relative;
@@ -14,6 +17,7 @@
 .boxbox{
     width: 100%;
     height: 100%;
+    //padding-bottom: 900px;
 }
 .hrFull{
 

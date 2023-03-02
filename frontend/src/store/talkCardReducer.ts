@@ -99,7 +99,6 @@ const talkCardInfoSlice = createSlice({
             state.buyerId=undefined
             state.postId=undefined
             state.delStatus = undefined;
-
         },
 
     }
