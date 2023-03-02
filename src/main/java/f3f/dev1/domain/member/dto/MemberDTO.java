@@ -43,7 +43,7 @@ public class MemberDTO {
 
         private UserLoginType userLoginType;
 
-        public void encrypt(PasswordEncoder passwordEncoder){
+        public void encrypt(PasswordEncoder passwordEncoder) {
             this.password = passwordEncoder.encode(password);
         }
 
@@ -72,7 +72,7 @@ public class MemberDTO {
         private String password;
 
 
-        public void encrypt(PasswordEncoder passwordEncoder){
+        public void encrypt(PasswordEncoder passwordEncoder) {
             this.password = passwordEncoder.encode(password);
         }
 
@@ -108,7 +108,6 @@ public class MemberDTO {
         private UserLoginType loginType;
 
 
-
     }
 
     @Builder
@@ -120,7 +119,6 @@ public class MemberDTO {
 
         private List<AddressInfoDTO> address;
     }
-
 
 
     @Builder
@@ -145,6 +143,7 @@ public class MemberDTO {
         private String birthDate;
 
         private UserLoginType loginType;
+
         @QueryProjection
         public UserDetail(Long id, Long scrapId, String userName, String imageUrl, String nickname, String description, String phoneNumber, String email, String birthDate, UserLoginType loginType) {
             this.id = id;
@@ -189,16 +188,17 @@ public class MemberDTO {
 
         private String newPassword;
 
-        public void encrypt(PasswordEncoder passwordEncoder){
+        public void encrypt(PasswordEncoder passwordEncoder) {
             this.oldPassword = passwordEncoder.encode(oldPassword);
             this.newPassword = passwordEncoder.encode(newPassword);
         }
     }
+
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    public static class UpdateUserImage{
+    public static class UpdateUserImage {
 
         private Long userId;
 
@@ -206,13 +206,11 @@ public class MemberDTO {
     }
 
 
-
-
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    public static class FindEmailDto{
+    public static class FindEmailDto {
         private String userName;
         private String phoneNumber;
     }
@@ -221,7 +219,7 @@ public class MemberDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    public static class EncryptEmailDto{
+    public static class EncryptEmailDto {
         private String email;
     }
 
@@ -229,7 +227,7 @@ public class MemberDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    public static class FindPasswordDto{
+    public static class FindPasswordDto {
         private String userName;
         private String phoneNumber;
 
@@ -241,7 +239,7 @@ public class MemberDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
-    public static class ReturnPasswordDto{
+    public static class ReturnPasswordDto {
         private String password;
     }
 
@@ -252,6 +250,7 @@ public class MemberDTO {
     public static class ConfirmEmailDto {
         private String email;
     }
+
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
@@ -260,7 +259,6 @@ public class MemberDTO {
         private String email;
         private boolean success;
     }
-
 
 
     @Builder
@@ -323,8 +321,6 @@ public class MemberDTO {
     public static class GetUserPostDto {
         List<PostInfoDto> userPosts;
     }
-
-
 
 
     @Builder
@@ -437,7 +433,6 @@ public class MemberDTO {
         private String wishCategory;
         private Long likeCount;
 
-
         public GetUserPost(PostRepository.GetUserPostInterface getUserPostInterface) {
             this.postId = getUserPostInterface.getPostId();
             this.thumbNail = getUserPostInterface.getThumbnail();
@@ -458,7 +453,7 @@ public class MemberDTO {
     @Builder
     @NoArgsConstructor
     @Getter
-    public static class GetUserMessageRoom{
+    public static class GetUserMessageRoom {
         private Long messageRoomId;
         private Long authorId;
         private String lastMsg;
@@ -468,8 +463,12 @@ public class MemberDTO {
         private String buyerThumbnail;
         private String sellerThumbnail;
 
+        private boolean buyerDelStatus;
+        private boolean sellerDelStatus;
+
+
         @QueryProjection
-        public GetUserMessageRoom(Long messageRoomId, Long authorId, String lastMsg, LocalDateTime createdDate, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail) {
+        public GetUserMessageRoom(Long messageRoomId, Long authorId, String lastMsg, LocalDateTime createdDate, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail, boolean buyerDelStatus, boolean sellerDelStatus) {
             this.messageRoomId = messageRoomId;
             this.authorId = authorId;
             this.lastMsg = lastMsg;
@@ -478,7 +477,35 @@ public class MemberDTO {
             this.sellerNickname = sellerNickname;
             this.buyerThumbnail = buyerThumbnail;
             this.sellerThumbnail = sellerThumbnail;
+            this.buyerDelStatus = buyerDelStatus;
+            this.sellerDelStatus = sellerDelStatus;
         }
     }
+
+
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    public static class GetOtherUserInfoDto {
+        private List<AddressInfoDTO> address;
+        private SimpleUserInfo userInfo;
+
+    }
+
+    @Builder
+    @NoArgsConstructor
+    @Getter
+    public static class SimpleUserInfo {
+        private String nickname;
+        private String imageUrl;
+
+        @QueryProjection
+        public SimpleUserInfo(String nickname, String imageUrl) {
+            this.nickname = nickname;
+            this.imageUrl = imageUrl;
+        }
+    }
+
 
 }

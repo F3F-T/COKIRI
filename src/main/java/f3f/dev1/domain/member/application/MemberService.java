@@ -155,6 +155,7 @@ public class MemberService {
     public String deleteUser(Long currentMemberId) {
         Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
         memberRepository.delete(member);
+
         return "DELETE";
     }
 
@@ -229,5 +230,10 @@ public class MemberService {
     @Transactional(readOnly = true)
     public UserDetail getUserDetail(Long memberId) {
         return memberCustomRepositoryImpl.getUserDetail(memberId);
+    }
+
+    @Transactional(readOnly = true)
+    public GetOtherUserInfoDto getOtherUserById(Long memberId) {
+        return memberCustomRepositoryImpl.getOtherUserInfo(memberId);
     }
 }

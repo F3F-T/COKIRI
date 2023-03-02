@@ -3,6 +3,7 @@
     margin-top: 2rem;
     display: flex; /*내용물 가로 정렬*/
     flex-direction: row;
+    position: relative;
     /*border: 0.5px solid red;*/
 }
 .priceList {
@@ -15,7 +16,9 @@
     margin: 15px 6px 6px 6px;
 }
 .priceSet {
-    margin-left: 7.3rem;
+    position : absolute;
+    right : 0;
+    /*margin-left: 7.3rem;*/
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -25,14 +28,14 @@
     /*flex로 가로정렬 후 space-evenly로 가로 위치 잡고 alogn-items로 세로 가운데에 위치*/
 }
 .setBox1{
-    background-color: lightgray;
+    background-color: white;
     border-radius: 10px;
     border: none;
     height: 1.5rem;
     /*height: 30%;*/
 }
 .setBox2{
-    background-color: lightgray;
+    background-color: white;
     border-radius: 10px;
     height: 1.5rem;
     border: none;
@@ -40,13 +43,18 @@
     /*height: 30%;*/
 }
 
+/*깔끔한 btn */
 .priceBtn{
-    background-color: #5DC8CD;
+    font-family: OhouseSans,Noto Sans KR,Apple SD Gothic Neo,맑은 고딕,Malgun Gothic,sans-serif;
+    background-color: #EAEDEF;
     border :none;
     margin-right :0.5rem;
+    font-size: 14px;
+    font-weight: 700;
     height: 1.8rem;
-    border-radius: 10px;
-    color: #FFF;
+    border-radius: 15px;
+    color: black;
+    padding: 0rem 0.75rem 0rem 0.75rem;
 
 }
 
@@ -55,4 +63,8 @@
 }
 .blue{
     background-color: blue;
+}
+.colored{
+    background-color: #5DC8CD;
+    color : white;
 }
