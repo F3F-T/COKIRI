@@ -63,6 +63,7 @@ const PrimaryComment = (commentInfo: CommentProps) => {
     const dispatch = useDispatch();
     const [reCommentText, setReCommentText] = useState("");
     let isCommentAuthor:boolean;
+    let accessableCount = 1;
     const onClickReComment = (comment) => {
         setEnableReComment(prevState => !prevState);
     }
@@ -77,12 +78,16 @@ const PrimaryComment = (commentInfo: CommentProps) => {
 
 
     const UploadComment = async () => {
+        accessableCount = accessableCount -1 ;
         try {
-            const res = await Api.post(`/post/${commentInfo.postId}/comments`, writeComment);
-            dispatch(changeCommentRefreshState());
-            console.log(writeComment);
-            setReCommentText("");
-            alert("대댓글 작성 성공")
+            if(accessableCount >= 0 ) {
+                const res = await Api.post(`/post/${commentInfo.postId}/comments`, writeComment);
+                dispatch(changeCommentRefreshState());
+                console.log(writeComment);
+                setReCommentText("");
+                alert("대댓글 작성 성공")
+            }
+            accessableCount  = accessableCount + 1;
         } catch (err) {
             console.log(err)
             alert("대댓글 작성 실패")
