@@ -44,6 +44,7 @@ public class PostController {
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
             @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
             @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
+            @RequestParam(value = "tradable", required = true, defaultValue = "1") String tradable,
             Pageable pageable) {
         Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
             SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
@@ -51,6 +52,7 @@ public class PostController {
                     .wishCategory(wishCategoryName)
                     .minPrice(minPrice)
                     .maxPrice(maxPrice)
+                    .tradable(tradable)
                     .build();
             Page<PostSearchResponseDto> pageDto = postService.findPostsByCategoryAndPriceRange(request, currentMemberId, pageable);
             return new ResponseEntity<>(pageDto, HttpStatus.OK);

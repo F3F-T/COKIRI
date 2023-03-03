@@ -109,6 +109,7 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
                         wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
                         priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
+
                 .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
