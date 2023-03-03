@@ -30,6 +30,7 @@ import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.exception.NotFoundByPostAndTagException;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
+import f3f.dev1.domain.trade.application.TradeService;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.common.constants.RedisCacheConstants;
@@ -65,16 +66,13 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final TradeRepository tradeRepository;
     private final CommentRepository commentRepository;
-    private final ScrapRepository scrapRepository;
     private final ScrapPostRepository scrapPostRepository;
-    private final MessageRoomRepository messageRoomRepository;
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final PostTagRepository postTagRepository;
     // Custom repository
     private final PostCustomRepositoryImpl postCustomRepository;
     private final MemberCustomRepositoryImpl memberCustomRepository;
-    private final PostImageCustomRepositoryImpl postImageCustomRepository;
 
     // TODO 게시글 사진 개수 제한 걸기
     @Transactional
@@ -85,7 +83,6 @@ public class PostService {
         Category productCategory = categoryRepository.findCategoryByName(postSaveRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
         Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-
 
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
         member.getPosts().add(post);
@@ -161,7 +158,6 @@ public class PostService {
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
             for (Post post : dtoPages) {
-                // 캐싱 적용하기 전에는 이게 최선이다..
                 boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
                 PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
                 list.add(build);

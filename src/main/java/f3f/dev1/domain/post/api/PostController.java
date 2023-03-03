@@ -153,8 +153,6 @@ public class PostController {
     }
 
     // 게시글 삭제
-    // TODO delete method의 경우 body를 거절하는 서버가 많다고 한다. 그리고 query string 보다는 보안이 좋은 requestHeader의 사용을 추천한다고 한다.
-    // TODO @RequestHeader로 했는데 테스트 방법을 모르겠다. 나중에 물어봐야겠다.
     @DeleteMapping(value = "/post/{postId}")
     public ResponseEntity<String> deletePost(@RequestBody @Valid DeletePostRequest deletePostRequest,@PathVariable(name = "postId") Long postId) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
