@@ -147,6 +147,7 @@ public class PostService {
     }
 
     // TODO 고려해야할 것 : 캐싱 동기화(sync), 비회면 조건부 캐싱
+    // TODO 쿼리DSL에서 Enum 클래스의 세부 필드를 where절에서 비교할 수 없다. 따라서 서비스 로직 (자바코드) 단에서 직접 거래 가능 여부를 체크해줘야 할 것 같다.
     // + 캐시 만료, 삭제 시점
     // pageable 관련 key값은 현재 페이지 수만 추가해뒀다. 각 페이지마다 보여주는 데이터의 수가 같아야만 한다.
     @Cacheable(value = POST_LIST_WITHOUT_TAG, key = "#request.productCategory + '_' + #request.wishCategory + '_' + #request.minPrice + '_' + #request.maxPrice + '_' + 'p' + #pageable.getPageNumber()")
@@ -158,16 +159,20 @@ public class PostService {
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
             for (Post post : dtoPages) {
-                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
-                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
-                list.add(build);
+                if(post.getTrade().getTradeStatus().getId() == request.getTradable()) {
+                    boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
+                    list.add(build);
+                }
             }
         }
         // 조회하는 사용자가 비회원일 경우
         else {
             for (Post post : dtoPages) {
-                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
-                list.add(build);
+                if(post.getTrade().getTradeStatus().getId() == request.getTradable()) {
+                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
+                    list.add(build);
+                }
             }
         }
         return new PageImpl<>(list, pageable, dtoPages.getTotalElements());

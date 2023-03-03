@@ -86,7 +86,7 @@ public class PostDTO {
         String wishCategory;
         String minPrice;
         String maxPrice;
-        String tradable;
+        int tradable;
     }
 
     // U : Update 담당 DTO들

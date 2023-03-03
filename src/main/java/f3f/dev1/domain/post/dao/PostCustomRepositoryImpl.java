@@ -103,13 +103,13 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
     }
 
+    // 쿼리 DSL에서는 Enum 타입만 조회할 수 있고 세부 필드는 조회할 수 없다.
     private List<Post> findPostListWithConditionWithoutTag(SearchPostRequestExcludeTag requestExcludeTag, Pageable pageable) {
         List<Post> results = jpaQueryFactory.
                 selectFrom(post)
                 .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
                         wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
                         priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
-
                 .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
