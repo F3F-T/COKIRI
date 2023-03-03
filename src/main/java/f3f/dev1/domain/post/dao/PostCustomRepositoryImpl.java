@@ -131,7 +131,6 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 
 
     @Override
-    // 조인때문에 (select 결과로 얻지 못한 필드는 조인에서 사용할 수 없음) DTO로 바로 뱉는건 힘들거같다.
     public Page<Post> findPostsByTags(List<String>tagNames, Pageable pageable) {
         QueryResults<Post> results = jpaQueryFactory
                 .selectFrom(post)

@@ -83,11 +83,12 @@ public class PostController {
     @GetMapping(value = "/post/tagSearch")
     public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithTagNames(
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
+            @RequestParam(value="tradable", required = true, defaultValue = "1") int tradable,
             Pageable pageable) {
         Page<PostSearchResponseDto> resultList;
         Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
         if(!tagNames.isEmpty()) {
-            resultList = postService.findPostsWithTagNameList(tagNames, currentMemberId, pageable);
+            resultList = postService.findPostsWithTagNameList(tagNames, currentMemberId, tradable, pageable);
         } else {
             resultList = postService.findAll(currentMemberId, pageable);
         }

@@ -36,6 +36,7 @@ import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.common.constants.RedisCacheConstants;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -57,6 +58,7 @@ import static f3f.dev1.domain.postImage.dto.PostImageDTO.*;
 import static f3f.dev1.domain.trade.dto.TradeDTO.*;
 import static f3f.dev1.global.common.constants.RedisCacheConstants.*;
 
+@Slf4j
 @Service
 @Validated
 @RequiredArgsConstructor
@@ -170,6 +172,7 @@ public class PostService {
         else {
             for (Post post : dtoPages) {
                 if(post.getTrade().getTradeStatus().getId() == request.getTradable()) {
+                    log.error(post.getTrade().getTradeStatus().getId().toString());
                     PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
                     list.add(build);
                 }
@@ -190,20 +193,24 @@ public class PostService {
 
     @Cacheable(value = POST_LIST_WITH_TAG, keyGenerator = "customKeyGenerator")
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, Pageable pageable) {
+    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, int tradable, Pageable pageable) {
         Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
         List<PostSearchResponseDto> resultList = new ArrayList<>();
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
             for (Post post : dtoList) {
-                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
-                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
-                resultList.add(build);
+                if(post.getTrade().getTradeStatus().getId() == tradable) {
+                    boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
+                    resultList.add(build);
+                }
             }
         } else {
             for (Post post : dtoList) {
-                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
-                resultList.add(build);
+                if(post.getTrade().getTradeStatus().getId() == tradable) {
+                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
+                    resultList.add(build);
+                }
             }
         }
         return new PageImpl<>(resultList, pageable, dtoList.getTotalElements());
