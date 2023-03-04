@@ -11,6 +11,7 @@ import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.model.MessageRoom;
+import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotContainAuthorInfoException;
@@ -161,11 +162,6 @@ public class PostService {
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
             for (Post post : dtoPages) {
-//                if(post.getTrade().getTradeStatus().getId().equals(trade)) {
-//                    boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
-//                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
-//                    list.add(build);
-//                }
                 boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
                 PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
                 list.add(build);
@@ -174,10 +170,6 @@ public class PostService {
         // 조회하는 사용자가 비회원일 경우
         else {
             for (Post post : dtoPages) {
-//                if(post.getTrade().getTradeStatus().getId().equals(trade)) {
-//                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
-//                    list.add(build);
-//                }
                 PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
                 list.add(build);
             }
@@ -197,28 +189,18 @@ public class PostService {
 
     @Cacheable(value = POST_LIST_WITH_TAG, keyGenerator = "customKeyGenerator")
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, int tradable, Pageable pageable) {
-        Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
+    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, TradeStatus tradeStatus, Pageable pageable) {
+        Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, tradeStatus, pageable);
         List<PostSearchResponseDto> resultList = new ArrayList<>();
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
             for (Post post : dtoList) {
-                // TODO 아래와 같이 비교하는건 잘못됨. dtoList는 전체 결과가 아니라 페이징된 결과이기 때문에 전체 결과에서는 담고 있는 값이 dtoList에는 없을 수도 있다.
-//                if(post.getTrade().getTradeStatus().getId() == tradable) {
-//                    boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
-//                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
-//                    resultList.add(build);
-//                }
                 boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
                 PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
                 resultList.add(build);
             }
         } else {
             for (Post post : dtoList) {
-//                if(post.getTrade().getTradeStatus().getId() == tradable) {
-//                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
-//                    resultList.add(build);
-//                }
                 PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
                 resultList.add(build);
             }

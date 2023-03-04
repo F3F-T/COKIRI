@@ -134,11 +134,12 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 
 
     @Override
-    public Page<Post> findPostsByTags(List<String>tagNames, Pageable pageable) {
+    public Page<Post> findPostsByTags(List<String>tagNames, TradeStatus tradeStatus, Pageable pageable) {
         QueryResults<Post> results = jpaQueryFactory
                 .selectFrom(post)
                 .leftJoin(post.postTags, postTag).fetchJoin()
                 .where(postTag.tag.name.in(tagNames))
+                .where(post.trade.tradeStatus.eq(tradeStatus))
                 .groupBy(post.id)
                 .having(post.id.count().eq((long) tagNames.size()))
                 .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))

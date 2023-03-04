@@ -85,13 +85,15 @@ public class PostController {
     @GetMapping(value = "/post/tagSearch")
     public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithTagNames(
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
-            @RequestParam(value="tradable", required = true, defaultValue = "1") int tradable,
+            @RequestParam(value="trade", required = true, defaultValue = "1") long trade,
             Pageable pageable) {
         Page<PostSearchResponseDto> resultList;
+        TradeStatus tradeStatus = TradeStatus.findById(trade);
         Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
         if(!tagNames.isEmpty()) {
-            resultList = postService.findPostsWithTagNameList(tagNames, currentMemberId, tradable, pageable);
+            resultList = postService.findPostsWithTagNameList(tagNames, currentMemberId, tradeStatus, pageable);
         } else {
+            // TODO 태그 검색은 동적 쿼리로 작성을 못해서 분기를 나눴다. findAll에서 tradeStatus를 고려해주게 코드를 바꿔주면 될 것 같다.
             resultList = postService.findAll(currentMemberId, pageable);
         }
         return new ResponseEntity<>(resultList, HttpStatus.OK);
