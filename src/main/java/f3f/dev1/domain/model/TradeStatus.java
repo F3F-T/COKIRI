@@ -13,4 +13,12 @@ public enum TradeStatus {
     public Long getId() {
         return id;
     }
+
+    public static TradeStatus findById(Long id) {
+        for(TradeStatus status : TradeStatus.values()) {
+            if(status.getId().equals(id))
+                return status;
+        }
+        throw new IllegalArgumentException("임시 예외 : TradeStatus에 해당하지 않는 id값");
+    }
 }

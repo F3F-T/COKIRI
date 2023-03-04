@@ -2,6 +2,7 @@ package f3f.dev1.domain.post.api;
 
 import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
+import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.postImage.application.PostImageService;
 import f3f.dev1.domain.tag.application.PostTagService;
@@ -47,13 +48,15 @@ public class PostController {
             @RequestParam(value="trade", required = true, defaultValue = "1") long trade,
             Pageable pageable) {
         Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
+        TradeStatus tradeStatus = TradeStatus.findById(trade);
             SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
                     .productCategory(productCategoryName)
                     .wishCategory(wishCategoryName)
+                    .tradeStatus(tradeStatus)
                     .minPrice(minPrice)
                     .maxPrice(maxPrice)
                     .build();
-            Page<PostSearchResponseDto> pageDto = postService.findPostsByCategoryAndPriceRange(request, currentMemberId, trade, pageable);
+        Page<PostSearchResponseDto> pageDto = postService.findPostsByCategoryAndPriceRange(request, currentMemberId, pageable);
             return new ResponseEntity<>(pageDto, HttpStatus.OK);
     }
 

@@ -10,6 +10,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import f3f.dev1.domain.message.model.QMessageRoom;
+import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.QScrapPost;
 import f3f.dev1.domain.scrap.model.QScrap;
@@ -110,6 +111,8 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
                         wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
                         priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
+                // TradeStatus를 비교하는 아래 조건은 필수 조건이기 때문에 BooleanExpression을 활용한 동적 쿼리로 짜지는 않겠다.
+                .where(post.trade.tradeStatus.eq(requestExcludeTag.getTradeStatus()))
                 .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
