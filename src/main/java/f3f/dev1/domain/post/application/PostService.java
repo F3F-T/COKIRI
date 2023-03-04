@@ -154,28 +154,32 @@ public class PostService {
     // pageable 관련 key값은 현재 페이지 수만 추가해뒀다. 각 페이지마다 보여주는 데이터의 수가 같아야만 한다.
     @Cacheable(value = POST_LIST_WITHOUT_TAG, key = "#request.productCategory + '_' + #request.wishCategory + '_' + #request.minPrice + '_' + #request.maxPrice + '_' + 'p' + #pageable.getPageNumber()")
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag request, Long currentMemberId, Pageable pageable) {
+    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRange(SearchPostRequestExcludeTag request, Long currentMemberId, Long trade, Pageable pageable) {
         List<PostSearchResponseDto> list = new ArrayList<>();
         Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(request, pageable);
         // 조회하는 사용자가 로그인된 회원인 경우
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
             for (Post post : dtoPages) {
-                if(post.getTrade().getTradeStatus().getId() == request.getTradable()) {
-                    boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
-                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
-                    list.add(build);
-                }
+//                if(post.getTrade().getTradeStatus().getId().equals(trade)) {
+//                    boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+//                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
+//                    list.add(build);
+//                }
+                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
+                list.add(build);
             }
         }
         // 조회하는 사용자가 비회원일 경우
         else {
             for (Post post : dtoPages) {
-                if(post.getTrade().getTradeStatus().getId() == request.getTradable()) {
-                    log.error(post.getTrade().getTradeStatus().getId().toString());
-                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
-                    list.add(build);
-                }
+//                if(post.getTrade().getTradeStatus().getId().equals(trade)) {
+//                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
+//                    list.add(build);
+//                }
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
+                list.add(build);
             }
         }
         return new PageImpl<>(list, pageable, dtoPages.getTotalElements());
@@ -199,18 +203,24 @@ public class PostService {
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
             for (Post post : dtoList) {
-                if(post.getTrade().getTradeStatus().getId() == tradable) {
-                    boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
-                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
-                    resultList.add(build);
-                }
+                // TODO 아래와 같이 비교하는건 잘못됨. dtoList는 전체 결과가 아니라 페이징된 결과이기 때문에 전체 결과에서는 담고 있는 값이 dtoList에는 없을 수도 있다.
+//                if(post.getTrade().getTradeStatus().getId() == tradable) {
+//                    boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+//                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
+//                    resultList.add(build);
+//                }
+                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
+                resultList.add(build);
             }
         } else {
             for (Post post : dtoList) {
-                if(post.getTrade().getTradeStatus().getId() == tradable) {
-                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
-                    resultList.add(build);
-                }
+//                if(post.getTrade().getTradeStatus().getId() == tradable) {
+//                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
+//                    resultList.add(build);
+//                }
+                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
+                resultList.add(build);
             }
         }
         return new PageImpl<>(resultList, pageable, dtoList.getTotalElements());
