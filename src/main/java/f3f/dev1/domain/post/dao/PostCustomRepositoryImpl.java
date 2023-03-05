@@ -127,8 +127,8 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .from(post)
                 .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
                         wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
-                        priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice())
-                );
+                        priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
+                .where(post.trade.tradeStatus.eq(requestExcludeTag.getTradeStatus()));
         return countQuery;
     }
 
@@ -150,6 +150,29 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         List<Post> responseList = results.getResults();
         long total = results.getTotal();
         return new PageImpl<>(responseList, pageable, total);
+    }
+
+    @Override
+    public Page<Post> findPostsWithTradeStatus(TradeStatus tradeStatus, Pageable pageable) {
+        List<Post> results = findPostsWithTradeStatusQuery(tradeStatus, pageable);
+        // 카운트 쿼리
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.trade.tradeStatus.eq(tradeStatus));
+        return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
+    }
+
+    private List<Post> findPostsWithTradeStatusQuery(TradeStatus tradeStatus, Pageable pageable) {
+        List<Post> results = jpaQueryFactory
+                .selectFrom(post)
+                .where(post.trade.tradeStatus.eq(tradeStatus))
+                .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return results;
     }
 
     private BooleanExpression productCategoryNameFilter(String productCategoryName) {

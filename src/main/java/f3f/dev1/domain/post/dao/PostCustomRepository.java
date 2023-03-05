@@ -14,7 +14,7 @@ import static f3f.dev1.domain.post.dto.PostDTO.*;
 public interface PostCustomRepository {
     Page<Post> findPostDTOByConditions(SearchPostRequestExcludeTag requestExcludeTag, Pageable pageable);
     Page<Post> findPostsByTags(List<String> tagNames, TradeStatus tradeStatus, Pageable pageable);
-
+    Page<Post> findPostsWithTradeStatus(TradeStatus tradeStatus, Pageable pageable);
 //    Page<PostSearchResponseDto> findPostDTOByConditionsWIthQ(SearchPostRequestExcludeTag requestExcludeTag, Long currentMemberId, Pageable pageable);
 //    Page<PostSearchResponseDto> findPostsByTags(List<String> tagNames, Long currentMemberId, Pageable pageable);
 }

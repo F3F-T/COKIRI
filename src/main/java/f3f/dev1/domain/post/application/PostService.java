@@ -115,6 +115,24 @@ public class PostService {
         return new PageImpl<>(resultList, pageable, all.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
+    public Page<PostSearchResponseDto> findOnlyWithTradeStatus (Long currentMemberId, TradeStatus tradeStatus, Pageable pageable) {
+        Page<Post> all = postCustomRepository.findPostsWithTradeStatus(tradeStatus, pageable);
+        List<PostSearchResponseDto> resultList = new ArrayList<>();
+        if(currentMemberId != null) {
+            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+            for (Post post : all) {
+                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                resultList.add(post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(),isScrap));
+            }
+        } else {
+            for (Post post : all) {
+                resultList.add(post.toSearchResponseDto((long) post.getMessageRooms().size(), (long) post.getScrapPosts().size(), false));
+            }
+        }
+        return new PageImpl<>(resultList, pageable, all.getTotalElements());
+    }
+
 
     // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
     // controller에서 사용되지 않는 로직. 현재 테스트에서만 사용되고 있다.

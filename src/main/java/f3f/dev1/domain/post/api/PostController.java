@@ -94,7 +94,8 @@ public class PostController {
             resultList = postService.findPostsWithTagNameList(tagNames, currentMemberId, tradeStatus, pageable);
         } else {
             // TODO 태그 검색은 동적 쿼리로 작성을 못해서 분기를 나눴다. findAll에서 tradeStatus를 고려해주게 코드를 바꿔주면 될 것 같다.
-            resultList = postService.findAll(currentMemberId, pageable);
+//            resultList = postService.findAll(currentMemberId, pageable);
+            resultList = postService.findOnlyWithTradeStatus(currentMemberId, tradeStatus, pageable);
         }
         return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
