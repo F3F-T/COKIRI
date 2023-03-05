@@ -135,7 +135,21 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
 
     @Override
     public Page<Post> findPostsByTags(List<String>tagNames, TradeStatus tradeStatus, Pageable pageable) {
-        QueryResults<Post> results = jpaQueryFactory
+        List<Post> result = findPostsByTagsQuery(tagNames, tradeStatus, pageable);
+        // 카운트 쿼리
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .leftJoin(post.postTags, postTag).fetchJoin()
+                .where(postTag.tag.name.in(tagNames))
+                .where(post.trade.tradeStatus.eq(tradeStatus))
+                .groupBy(post.id)
+                .having(post.id.count().eq((long) tagNames.size()));
+        return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
+    }
+
+    private List<Post> findPostsByTagsQuery(List<String> tagNames, TradeStatus tradeStatus, Pageable pageable) {
+        List<Post> results = jpaQueryFactory
                 .selectFrom(post)
                 .leftJoin(post.postTags, postTag).fetchJoin()
                 .where(postTag.tag.name.in(tagNames))
@@ -145,11 +159,8 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
-
-        List<Post> responseList = results.getResults();
-        long total = results.getTotal();
-        return new PageImpl<>(responseList, pageable, total);
+                .fetch();
+        return results;
     }
 
     @Override
