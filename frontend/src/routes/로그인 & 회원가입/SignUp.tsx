@@ -1,26 +1,20 @@
-import React, {useState, useEffect, useMemo, useCallback, forwardRef, useImperativeHandle} from 'react';
-import styles from "../../styles/loginAndSignup/Signup.module.css"
-import {useNavigate} from "react-router-dom";
-import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
-import myImage from "../../img/cokkiriLogo.png"
-import PriceBox from "../../component/trade/PriceBox";
-import TextInput from "../../component/common/TextInput";
-import Button from "../../component/common/Button";
-import Message from "../../component/로그인 & 회원가입/Message";
-import {stringify} from "querystring";
-import useGeoLocation from "../../hooks/useGeolocation"
+import React, { useState } from 'react';
+import styles from '../../styles/loginAndSignup/Signup.module.css';
+import { useNavigate } from 'react-router-dom';
+import TextInput from '../../component/common/TextInput';
+import Button from '../../component/common/Button';
+import Message from '../../component/로그인 & 회원가입/Message';
+import useGeoLocation from '../../hooks/useGeolocation';
 
-import axios from "axios";
-import {forEach} from "list";
-import {useDispatch, useSelector} from "react-redux";
-import {Rootstate} from "../../index";
-import {setEmail, setPW} from "../../store/userInfoReducer";
-import logOut from "./Settings/LogOut";
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { Rootstate } from '../../index';
+import { setPW } from '../../store/userInfoReducer';
 
 const SignUp = () => {
-    const store = useSelector((state:Rootstate) => state);
+    const store = useSelector((state: Rootstate) => state);
     const dispatch = useDispatch();
+
     interface UserInfo {
         email: string;
         password: string;
@@ -61,25 +55,26 @@ const SignUp = () => {
         phoneNumberCheckBoolean: boolean;
 
     }
+
     const location = useGeoLocation();
     const [validationCheck, setValidationCheck] = useState<ValidationCheck>(
-        {
-            emailCheck: undefined,
-            emailCheckBoolean: undefined,
+      {
+          emailCheck: undefined,
+          emailCheckBoolean: undefined,
 
-            passwordCheck: undefined,
-            passwordCheckBoolean: undefined,
+          passwordCheck: undefined,
+          passwordCheckBoolean: undefined,
 
-            nameAndBirthCheck: undefined,
-            nameAndBirthCheckBoolean: undefined,
+          nameAndBirthCheck: undefined,
+          nameAndBirthCheckBoolean: undefined,
 
-            nicknameCheck: undefined,
-            nicknameCheckBoolean: undefined,
+          nicknameCheck: undefined,
+          nicknameCheckBoolean: undefined,
 
-            phoneNumberCheck: undefined,
-            phoneNumberCheckBoolean: undefined,
+          phoneNumberCheck: undefined,
+          phoneNumberCheckBoolean: undefined,
 
-        }
+      }
     );
 
     const [passwordReCheck, setpasswordReCheck] = useState<boolean>(undefined);
@@ -99,15 +94,15 @@ const SignUp = () => {
             if (duplicated) //중복인 경우 -> true 반환
             {
                 setValidationCheck((prevState) => {
-                    console.log("프리베이트 슽이트",prevState)
+                    console.log("프리베이트 슽이트", prevState)
 
-                    return {...prevState, emailCheck: "duplicated", emailCheckBoolean: false}
+                    return { ...prevState, emailCheck: "duplicated", emailCheckBoolean: false }
                 })
             } else //중복이 아닌 경우 -> false 반환
             {
 
                 setValidationCheck((prevState) => {
-                    return {...prevState, emailCheck: "valid", emailCheckBoolean: true}
+                    return { ...prevState, emailCheck: "valid", emailCheckBoolean: true }
                 })
                 setuserInfo((prevState) => {
                     return {
@@ -134,14 +129,13 @@ const SignUp = () => {
             if (duplicated) //중복인 경우 -> true 반환
             {
                 setValidationCheck((prevState) => {
-                    return {...prevState, nicknameCheck: "duplicated", nicknameCheckBoolean: false}
+                    return { ...prevState, nicknameCheck: "duplicated", nicknameCheckBoolean: false }
                 })
                 console.log(validationCheck);
-            }
-            else //중복이 아닌 경우 -> false 반환
+            } else //중복이 아닌 경우 -> false 반환
             {
                 setValidationCheck((prevState) => {
-                    return {...prevState, nicknameCheck: "valid", nicknameCheckBoolean: true}
+                    return { ...prevState, nicknameCheck: "valid", nicknameCheckBoolean: true }
                 })
                 setuserInfo((prevState) => {
                     return {
@@ -167,12 +161,12 @@ const SignUp = () => {
             if (duplicated) //중복인 경우 -> true 반환
             {
                 setValidationCheck((prevState) => {
-                    return {...prevState, phoneNumberCheck: "duplicated", phoneNumberCheckBoolean: false}
+                    return { ...prevState, phoneNumberCheck: "duplicated", phoneNumberCheckBoolean: false }
                 })
             } else //중복이 아닌 경우 -> false 반환
             {
                 setValidationCheck((prevState) => {
-                    return {...prevState, phoneNumberCheck: "valid", phoneNumberCheckBoolean: true}
+                    return { ...prevState, phoneNumberCheck: "valid", phoneNumberCheckBoolean: true }
                 })
                 setuserInfo((prevState) => {
                     return {
@@ -199,12 +193,12 @@ const SignUp = () => {
 
         //유효성 검증이 모두 성공했을 경우 (모두 true일 경우) 회원가입
         if (validationCheck.emailCheckBoolean &&
-            validationCheck.passwordCheckBoolean &&
-            validationCheck.nameAndBirthCheckBoolean &&
-            validationCheck.nicknameCheckBoolean &&
-            validationCheck.phoneNumberCheckBoolean) {
-            MailConfirm({"email" : userInfo.email})
-            navigate('/signup/emailcheck', {state : userInfo})
+          validationCheck.passwordCheckBoolean &&
+          validationCheck.nameAndBirthCheckBoolean &&
+          validationCheck.nicknameCheckBoolean &&
+          validationCheck.phoneNumberCheckBoolean) {
+            MailConfirm({ "email": userInfo.email })
+            navigate('/signup/emailcheck', { state: userInfo })
 
         } else { //유효성 검증 하나라도 실패한 경우 회원가입 실패
             alert("회원가입 정보를 모두 만족시켜주세요")
@@ -223,12 +217,12 @@ const SignUp = () => {
             //@gmail.com일때
             if (inputEmail.includes("@gmail.com")) {
                 setValidationCheck((prevState) => {
-                    return {...prevState, emailCheck: "gmail", emailCheckBoolean: false}
+                    return { ...prevState, emailCheck: "gmail", emailCheckBoolean: false }
                 })
             } else { //일반 이메일일때
                 //이메일 중복체크 백엔드 통신
                 //string인 inputEmail을 json형태의 객체로 변환
-                let jsonObj = {"email": inputEmail};
+                let jsonObj = { "email": inputEmail };
                 //변환한 json 객체로 이메일 중복체크
                 CheckEmailDuplicated(jsonObj);
                 // dispatch(setEmail(inputEmail))
@@ -236,7 +230,7 @@ const SignUp = () => {
         } else //이메일 유효성 검사 실패했을때
         {
             setValidationCheck((prevState) => {
-                return {...prevState, emailCheck: "invalid", emailCheckBoolean: false}
+                return { ...prevState, emailCheck: "invalid", emailCheckBoolean: false }
             })
         }
     }
@@ -251,15 +245,15 @@ const SignUp = () => {
         //유효성 검사 통과할때(안전할때)
         if (passwordValidation.test(inputPassword)) {
             setValidationCheck((prevState) => {
-                return {...prevState, passwordCheck: true, passwordCheckBoolean: true}
+                return { ...prevState, passwordCheck: true, passwordCheckBoolean: true }
             })
             setuserInfo((prevState) => {
-                return {...prevState, password: e.target.value}
+                return { ...prevState, password: e.target.value }
             })
             dispatch(setPW(e.target.value))
         } else {
             setValidationCheck((prevState) => {
-                return {...prevState, passwordCheck: false, passwordCheckBoolean: false}
+                return { ...prevState, passwordCheck: false, passwordCheckBoolean: false }
             })
         }
     }
@@ -277,19 +271,20 @@ const SignUp = () => {
         //한글자 이상 작성했을때
         if (inputName.length > 0) {
             setuserInfo((prevState) => {
-                return {...prevState, userName: e.target.value,
-                   }
+                return {
+                    ...prevState, userName: e.target.value,
+                }
             })
 
             setValidationCheck((prevState) => {
-                return {...prevState, nameAndBirthCheck: true, nameAndBirthCheckBoolean: true}
+                return { ...prevState, nameAndBirthCheck: true, nameAndBirthCheckBoolean: true }
             })
 
         }
         //한글자도 작성하지 않았을때 에러
         else {
             setValidationCheck((prevState) => {
-                return {...prevState, nameAndBirthCheck: false, nameAndBirthCheckBoolean: false}
+                return { ...prevState, nameAndBirthCheck: false, nameAndBirthCheckBoolean: false }
             })
         }
 
@@ -300,17 +295,17 @@ const SignUp = () => {
         //생일 6자리 입력했을때 올바른 값
         if (inputBirth.length === 6) {
             setuserInfo((prevState) => {
-                return {...prevState, birthDate: e.target.value}
+                return { ...prevState, birthDate: e.target.value }
             })
 
             setValidationCheck((prevState) => {
-                return {...prevState, nameAndBirthCheck: true, nameAndBirthCheckBoolean: true}
+                return { ...prevState, nameAndBirthCheck: true, nameAndBirthCheckBoolean: true }
             })
 
         } //생일 6자리가 아닐때
         else {
             setValidationCheck((prevState) => {
-                return {...prevState, nameAndBirthCheck: false, nameAndBirthCheckBoolean: false}
+                return { ...prevState, nameAndBirthCheck: false, nameAndBirthCheckBoolean: false }
             })
         }
 
@@ -323,20 +318,18 @@ const SignUp = () => {
         if (inputNickname.length > 0 && inputNickname.length < 7) {
             //닉네임 중복체크 백엔드 통신
             //string인 inputNickname을 json형태의 객체로 변환
-            let jsonObj = {"nickname": inputNickname};
+            let jsonObj = { "nickname": inputNickname };
             //변환한 json 객체로 이메일 중복체크
             CheckNickNameDuplicated(jsonObj);
 
-        }
-        else if(inputNickname.length>=7){
+        } else if (inputNickname.length >= 7) {
             setValidationCheck((prevState) => {
-                return {...prevState, nicknameCheck: "invalid2", nicknameCheckBoolean: false}
+                return { ...prevState, nicknameCheck: "invalid2", nicknameCheckBoolean: false }
             })
-        }
-        else //닉네임 유효성 검사 실패했을때
+        } else //닉네임 유효성 검사 실패했을때
         {
             setValidationCheck((prevState) => {
-                return {...prevState, nicknameCheck: "invalid", nicknameCheckBoolean: false}
+                return { ...prevState, nicknameCheck: "invalid", nicknameCheckBoolean: false }
             })
         }
     }
@@ -350,7 +343,7 @@ const SignUp = () => {
             //중복체크 백엔드 통신
             //string type인 inputPhonenumber을 json형태의 객체로 변환
             let jsonObj =
-                {"phoneNumber": inputPhoneNumber};
+              { "phoneNumber": inputPhoneNumber };
 
             //변환한 json 객체로 이메일 중복체크
             CheckPhoneNumberDuplicated(jsonObj);
@@ -359,13 +352,13 @@ const SignUp = () => {
         } else //유효성 검사 실패했을때
         {
             setValidationCheck((prevState) => {
-                return {...prevState, phoneNumberCheck: "invalid", phoneNumberCheckBoolean: false}
+                return { ...prevState, phoneNumberCheck: "invalid", phoneNumberCheckBoolean: false }
             })
         }
 
     }
 
-    async function MailConfirm(jsonEmail:object) {
+    async function MailConfirm(jsonEmail: object) {
         try {
             const res = await axios.post("http://localhost:8080/auth/mailConfirm", jsonEmail);
 
@@ -375,11 +368,9 @@ const SignUp = () => {
                 data: res.data,
             };
 
-            if(result.data.success)
-            {
+            if (result.data.success) {
                 console.log("이메일 전송")
-            }
-            else{
+            } else {
                 console.log("이메일 전송 실패2")
             }
 
@@ -389,107 +380,106 @@ const SignUp = () => {
 
         }
     }
+
     return (
-        <div className={styles.signup}>
-            <div className={styles.signupHeader}>
-                <div className={styles.signup_1}>코끼리 ID 회원가입</div>
-                <div className={styles.signup_2}><br/></div>
-                <div className={styles.signup_3}>회원정보 입력</div>
+      <div className={styles.signup}>
+          <div className={styles.signupHeader}>
+              <div className={styles.signup_1}>코끼리 ID 회원가입</div>
+              <div className={styles.signup_2}><br /></div>
+              <div className={styles.signup_3}>회원정보 입력</div>
 
-            </div>
-            <div className={styles.userInfo}>
-                <TextInput type ={"text"} placeholder={"이메일"} onBlur={onChangeEmail}/>
-                {(validationCheck.emailCheck === undefined &&
-                        <Message validCheck={validationCheck.emailCheckBoolean} content={""}/>)
-                    ||
-                    (validationCheck.emailCheck === "valid" &&
-                        <Message validCheck={validationCheck.emailCheckBoolean} content={"✔ 사용 가능한 이메일입니다."}/>)
-                    ||
-                    (validationCheck.emailCheck === "gmail" &&
-                        <Message validCheck={validationCheck.emailCheckBoolean}
-                                 content={"❌ gmail 계정은 Google 로그인을 이용해주세요."}/>)
-                    ||
-                    (validationCheck.emailCheck === "invalid" &&
-                        <Message validCheck={validationCheck.emailCheckBoolean} content={"❌ 유효하지 않은 이메일입니다."}/>)
-                    ||
-                    (validationCheck.emailCheck === "duplicated" &&
-                        <Message validCheck={validationCheck.emailCheckBoolean} content={"❌ 이미 가입된 이메일입니다."}/>)}
-
-
-                <TextInput type ={"password"} placeholder={"비밀번호"} onBlur={onChangePassword}/>
-                {(validationCheck.passwordCheck === undefined &&
-                        <Message validCheck={validationCheck.passwordCheckBoolean} content={""}/>)
-                    ||
-                    (validationCheck.passwordCheck ?
-                        <Message validCheck={validationCheck.passwordCheckBoolean} content={"✔ 안전한 비밀번호입니다."}/>
-                        :
-                        <Message validCheck={validationCheck.passwordCheckBoolean}
-                                 content={"❌ 숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요."}/>)}
-
-                <TextInput type ={"password"} placeholder={"비밀번호 확인"} onBlur={onChangeCheckPassword}/>
-                {(passwordReCheck === undefined && <Message validCheck={passwordReCheck} content={""}/>)
-                    ||
-                    (passwordReCheck ?
-                        <Message validCheck={passwordReCheck} content={"✔ 비밀번호가 일치합니다"}/>
-                        :
-                        <Message validCheck={passwordReCheck} content={"❌ 비밀번호가 일치하지 않습니다"}/>)}
+          </div>
+          <div className={styles.userInfo}>
+              <TextInput type={"text"} placeholder={"이메일"} onBlur={onChangeEmail} />
+              {(validationCheck.emailCheck === undefined &&
+                  <Message validCheck={validationCheck.emailCheckBoolean} content={""} />)
+                ||
+                (validationCheck.emailCheck === "valid" &&
+                  <Message validCheck={validationCheck.emailCheckBoolean} content={"✔ 사용 가능한 이메일입니다."} />)
+                ||
+                (validationCheck.emailCheck === "gmail" &&
+                  <Message validCheck={validationCheck.emailCheckBoolean}
+                           content={"❌ gmail 계정은 Google 로그인을 이용해주세요."} />)
+                ||
+                (validationCheck.emailCheck === "invalid" &&
+                  <Message validCheck={validationCheck.emailCheckBoolean} content={"❌ 유효하지 않은 이메일입니다."} />)
+                ||
+                (validationCheck.emailCheck === "duplicated" &&
+                  <Message validCheck={validationCheck.emailCheckBoolean} content={"❌ 이미 가입된 이메일입니다."} />)}
 
 
-                <section className={styles.userNameBirth}>
-                    <TextInput type ={"text"} placeholder={"이름"} onBlur={onChangeName}/>
-                    <TextInput type ={"text"} placeholder={"생일 6자리"} onBlur={onChangeBirth}/>
-                </section>
-                {(validationCheck.nameAndBirthCheck === undefined &&
-                        <Message validCheck={validationCheck.nameAndBirthCheckBoolean} content={""}/>)
-                    ||
-                    (validationCheck.nameAndBirthCheck ?
-                        <Message validCheck={undefined} content={""}/>
-                        :
-                        <Message validCheck={validationCheck.nameAndBirthCheckBoolean}
-                                 content={"❌ 이름과 생일을 올바르게 입력해주세요"}/>)}
+              <TextInput type={"password"} placeholder={"비밀번호"} onBlur={onChangePassword} />
+              {(validationCheck.passwordCheck === undefined &&
+                  <Message validCheck={validationCheck.passwordCheckBoolean} content={""} />)
+                ||
+                (validationCheck.passwordCheck ?
+                  <Message validCheck={validationCheck.passwordCheckBoolean} content={"✔ 안전한 비밀번호입니다."} />
+                  :
+                  <Message validCheck={validationCheck.passwordCheckBoolean}
+                           content={"❌ 숫자+영문자+특수문자 조합으로 8자리 이상 입력해주세요."} />)}
 
-                <TextInput type ={"text"} placeholder={"닉네임"} onBlur={onChangeNickname}/>
-                {(validationCheck.nicknameCheck === undefined &&
-                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={""}/>)
-                    ||
-                    (validationCheck.nicknameCheck === "valid" &&
-                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"✔ 사용 가능한 닉네임입니다."}/>)
-                    ||
-                    (validationCheck.nicknameCheck === "invalid" &&
-                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 닉네임은 한글자 이상이어야합니다."}/>)
-                    ||
-                    (validationCheck.nicknameCheck === "duplicated" &&
-                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."}/>)
-                    ||
-                    (validationCheck.nicknameCheck === "invalid2" &&
-                        <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 닉네임은 여섯글자까지 등록 가능합니다."}/>)
+              <TextInput type={"password"} placeholder={"비밀번호 확인"} onBlur={onChangeCheckPassword} />
+              {(passwordReCheck === undefined && <Message validCheck={passwordReCheck} content={""} />)
+                ||
+                (passwordReCheck ?
+                  <Message validCheck={passwordReCheck} content={"✔ 비밀번호가 일치합니다"} />
+                  :
+                  <Message validCheck={passwordReCheck} content={"❌ 비밀번호가 일치하지 않습니다"} />)}
 
 
+              <section className={styles.userNameBirth}>
+                  <TextInput type={"text"} placeholder={"이름"} onBlur={onChangeName} />
+                  <TextInput type={"text"} placeholder={"생일 6자리"} onBlur={onChangeBirth} />
+              </section>
+              {(validationCheck.nameAndBirthCheck === undefined &&
+                  <Message validCheck={validationCheck.nameAndBirthCheckBoolean} content={""} />)
+                ||
+                (validationCheck.nameAndBirthCheck ?
+                  <Message validCheck={undefined} content={""} />
+                  :
+                  <Message validCheck={validationCheck.nameAndBirthCheckBoolean}
+                           content={"❌ 이름과 생일을 올바르게 입력해주세요"} />)}
+
+              <TextInput type={"text"} placeholder={"닉네임"} onBlur={onChangeNickname} />
+              {(validationCheck.nicknameCheck === undefined &&
+                  <Message validCheck={validationCheck.nicknameCheckBoolean} content={""} />)
+                ||
+                (validationCheck.nicknameCheck === "valid" &&
+                  <Message validCheck={validationCheck.nicknameCheckBoolean} content={"✔ 사용 가능한 닉네임입니다."} />)
+                ||
+                (validationCheck.nicknameCheck === "invalid" &&
+                  <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 닉네임은 한글자 이상이어야합니다."} />)
+                ||
+                (validationCheck.nicknameCheck === "duplicated" &&
+                  <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 이미 가입된 닉네임입니다."} />)
+                ||
+                (validationCheck.nicknameCheck === "invalid2" &&
+                  <Message validCheck={validationCheck.nicknameCheckBoolean} content={"❌ 닉네임은 여섯글자까지 등록 가능합니다."} />)
 
 
-                }
+              }
 
-                <TextInput type ={"text"} placeholder={"전화번호"} onBlur={onChangePhoneNumber}/>
-                {(validationCheck.phoneNumberCheck === undefined &&
-                        <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={""}/>)
-                    ||
-                    (validationCheck.phoneNumberCheck === "valid" &&
-                        <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={"✔ 사용 가능한 전화번호 입니다."}/>)
-                    ||
-                    (validationCheck.phoneNumberCheck === "invalid" &&
-                        <Message validCheck={validationCheck.phoneNumberCheckBoolean}
-                                 content={"❌ 유효하지 않은 핸드폰 번호입니다. 예시) 01012345678"}/>)
-                    ||
-                    (validationCheck.phoneNumberCheck === "duplicated" &&
-                        <Message validCheck={validationCheck.phoneNumberCheckBoolean}
-                                 content={"❌ 이미 가입된 핸드폰 번호입니다."}/>)}
-            </div>
+              <TextInput type={"text"} placeholder={"전화번호"} onBlur={onChangePhoneNumber} />
+              {(validationCheck.phoneNumberCheck === undefined &&
+                  <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={""} />)
+                ||
+                (validationCheck.phoneNumberCheck === "valid" &&
+                  <Message validCheck={validationCheck.phoneNumberCheckBoolean} content={"✔ 사용 가능한 전화번호 입니다."} />)
+                ||
+                (validationCheck.phoneNumberCheck === "invalid" &&
+                  <Message validCheck={validationCheck.phoneNumberCheckBoolean}
+                           content={"❌ 유효하지 않은 핸드폰 번호입니다. 예시) 01012345678"} />)
+                ||
+                (validationCheck.phoneNumberCheck === "duplicated" &&
+                  <Message validCheck={validationCheck.phoneNumberCheckBoolean}
+                           content={"❌ 이미 가입된 핸드폰 번호입니다."} />)}
+          </div>
 
-            <div className={styles.btnPlace}>
-                <Button content={"회원가입"} className={"black"} onClick={signUpButtonClick}/>
-            </div>
+          <div className={styles.btnPlace}>
+              <Button content={"회원가입"} className={"black"} onClick={signUpButtonClick} />
+          </div>
 
-        </div>
+      </div>
     );
 }
 
