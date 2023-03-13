@@ -2,6 +2,7 @@ package f3f.dev1.domain.post.api;
 
 import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
+import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.postImage.application.PostImageService;
 import f3f.dev1.domain.tag.application.PostTagService;
@@ -44,15 +45,18 @@ public class PostController {
             @RequestParam(value= "wishCategory", required = false, defaultValue = "") String wishCategoryName,
             @RequestParam(value = "minPrice", required = false, defaultValue = "") String minPrice,
             @RequestParam(value = "maxPrice", required = false, defaultValue = "") String maxPrice,
+            @RequestParam(value="trade", required = true, defaultValue = "1") long trade,
             Pageable pageable) {
         Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
+        TradeStatus tradeStatus = TradeStatus.findById(trade);
             SearchPostRequestExcludeTag request = SearchPostRequestExcludeTag.builder()
                     .productCategory(productCategoryName)
                     .wishCategory(wishCategoryName)
+                    .tradeStatus(tradeStatus)
                     .minPrice(minPrice)
                     .maxPrice(maxPrice)
                     .build();
-            Page<PostSearchResponseDto> pageDto = postService.findPostsByCategoryAndPriceRange(request, currentMemberId, pageable);
+        Page<PostSearchResponseDto> pageDto = postService.findPostsByCategoryAndPriceRange(request, currentMemberId, pageable);
             return new ResponseEntity<>(pageDto, HttpStatus.OK);
     }
 
@@ -81,13 +85,17 @@ public class PostController {
     @GetMapping(value = "/post/tagSearch")
     public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithTagNames(
             @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
+            @RequestParam(value="trade", required = true, defaultValue = "1") long trade,
             Pageable pageable) {
         Page<PostSearchResponseDto> resultList;
+        TradeStatus tradeStatus = TradeStatus.findById(trade);
         Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
         if(!tagNames.isEmpty()) {
-            resultList = postService.findPostsWithTagNameList(tagNames, currentMemberId, pageable);
+            resultList = postService.findPostsWithTagNameList(tagNames, currentMemberId, tradeStatus, pageable);
         } else {
-            resultList = postService.findAll(currentMemberId, pageable);
+            // TODO 태그 검색은 동적 쿼리로 작성을 못해서 분기를 나눴다. findAll에서 tradeStatus를 고려해주게 코드를 바꿔주면 될 것 같다.
+//            resultList = postService.findAll(currentMemberId, pageable);
+            resultList = postService.findOnlyWithTradeStatus(currentMemberId, tradeStatus, pageable);
         }
         return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
@@ -153,8 +161,6 @@ public class PostController {
     }
 
     // 게시글 삭제
-    // TODO delete method의 경우 body를 거절하는 서버가 많다고 한다. 그리고 query string 보다는 보안이 좋은 requestHeader의 사용을 추천한다고 한다.
-    // TODO @RequestHeader로 했는데 테스트 방법을 모르겠다. 나중에 물어봐야겠다.
     @DeleteMapping(value = "/post/{postId}")
     public ResponseEntity<String> deletePost(@RequestBody @Valid DeletePostRequest deletePostRequest,@PathVariable(name = "postId") Long postId) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();

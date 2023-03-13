@@ -15,6 +15,7 @@ import f3f.dev1.domain.trade.exception.InvalidSellerIdException;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.Optional;
 import static f3f.dev1.domain.trade.dto.TradeDTO.CreateTradeDto;
 import static f3f.dev1.domain.trade.dto.TradeDTO.UpdateTradeDto;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TradeService {

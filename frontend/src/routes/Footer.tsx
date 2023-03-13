@@ -20,8 +20,11 @@ const Footer = () =>  {
                     </div>
                     <div className={styles.center_2}>
                         <p className={styles.center_2_1}>(주) 코끼리 대표이사 : 홍의성</p>
-                        <p className={styles.center_2_1}>주소: 서울시 송파구 잠실로 124 3층</p>
+                        <p className={styles.center_2_1}>|</p>
+                        <p className={styles.center_2_1}>주소 : 서울시 송파구 잠실로 124 3층</p>
+                        <p className={styles.center_2_1}>|</p>
                         <p className={styles.center_2_1}>사업자등록번호 : 487-99-03455</p>
+                        <p className={styles.center_2_1}>|</p>
                         <p className={styles.center_2_1}>Github</p>
                     </div>
                 </div>

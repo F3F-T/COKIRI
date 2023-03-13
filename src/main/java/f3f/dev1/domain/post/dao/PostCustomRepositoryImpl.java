@@ -10,6 +10,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import f3f.dev1.domain.message.model.QMessageRoom;
+import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.post.model.QScrapPost;
 import f3f.dev1.domain.scrap.model.QScrap;
@@ -103,12 +104,15 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
         return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
     }
 
+    // 쿼리 DSL에서는 Enum 타입만 조회할 수 있고 세부 필드는 조회할 수 없다.
     private List<Post> findPostListWithConditionWithoutTag(SearchPostRequestExcludeTag requestExcludeTag, Pageable pageable) {
         List<Post> results = jpaQueryFactory.
                 selectFrom(post)
                 .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
                         wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
                         priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
+                // TradeStatus를 비교하는 아래 조건은 필수 조건이기 때문에 BooleanExpression을 활용한 동적 쿼리로 짜지는 않겠다.
+                .where(post.trade.tradeStatus.eq(requestExcludeTag.getTradeStatus()))
                 .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -123,29 +127,63 @@ public class PostCustomRepositoryImpl implements PostCustomRepository {
                 .from(post)
                 .where(productCategoryNameFilter(requestExcludeTag.getProductCategory()),
                         wishCategoryNameFilter(requestExcludeTag.getWishCategory()),
-                        priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice())
-                );
+                        priceFilter(requestExcludeTag.getMinPrice(), requestExcludeTag.getMaxPrice()))
+                .where(post.trade.tradeStatus.eq(requestExcludeTag.getTradeStatus()));
         return countQuery;
     }
 
 
     @Override
-    // 조인때문에 (select 결과로 얻지 못한 필드는 조인에서 사용할 수 없음) DTO로 바로 뱉는건 힘들거같다.
-    public Page<Post> findPostsByTags(List<String>tagNames, Pageable pageable) {
-        QueryResults<Post> results = jpaQueryFactory
+    public Page<Post> findPostsByTags(List<String>tagNames, TradeStatus tradeStatus, Pageable pageable) {
+        List<Post> result = findPostsByTagsQuery(tagNames, tradeStatus, pageable);
+        // 카운트 쿼리
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .leftJoin(post.postTags, postTag).fetchJoin()
+                .where(postTag.tag.name.in(tagNames))
+                .where(post.trade.tradeStatus.eq(tradeStatus))
+                .groupBy(post.id)
+                .having(post.id.count().eq((long) tagNames.size()));
+        return PageableExecutionUtils.getPage(result, pageable, countQuery::fetchOne);
+    }
+
+    private List<Post> findPostsByTagsQuery(List<String> tagNames, TradeStatus tradeStatus, Pageable pageable) {
+        List<Post> results = jpaQueryFactory
                 .selectFrom(post)
                 .leftJoin(post.postTags, postTag).fetchJoin()
                 .where(postTag.tag.name.in(tagNames))
+                .where(post.trade.tradeStatus.eq(tradeStatus))
                 .groupBy(post.id)
                 .having(post.id.count().eq((long) tagNames.size()))
                 .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
+                .fetch();
+        return results;
+    }
 
-        List<Post> responseList = results.getResults();
-        long total = results.getTotal();
-        return new PageImpl<>(responseList, pageable, total);
+    @Override
+    public Page<Post> findPostsWithTradeStatus(TradeStatus tradeStatus, Pageable pageable) {
+        List<Post> results = findPostsWithTradeStatusQuery(tradeStatus, pageable);
+        // 카운트 쿼리
+        JPAQuery<Long> countQuery = jpaQueryFactory
+                .select(post.count())
+                .from(post)
+                .where(post.trade.tradeStatus.eq(tradeStatus));
+        return PageableExecutionUtils.getPage(results, pageable, countQuery::fetchOne);
+    }
+
+    private List<Post> findPostsWithTradeStatusQuery(TradeStatus tradeStatus, Pageable pageable) {
+        List<Post> results = jpaQueryFactory
+                .selectFrom(post)
+                .where(post.trade.tradeStatus.eq(tradeStatus))
+                .orderBy(dynamicSorting(pageable.getSort()).toArray(OrderSpecifier[]::new))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return results;
     }
 
     private BooleanExpression productCategoryNameFilter(String productCategoryName) {

@@ -156,7 +156,7 @@ const MyPage = () =>  {
 
             </div>
 
-            <Footer/>
+            {/*<Footer/>*/}
         </div>
 
     );

@@ -35,7 +35,6 @@ public class TradeController {
     }
 
     // 거래 상태 변경
-    // TODO: 프론트와 경로 상의후 수정 예정
     @PatchMapping(value = "/trade")
     public ResponseEntity<TradeInfoDto> updateTradeStatus(@RequestBody UpdateTradeDto updateTradeDto) {
         return new ResponseEntity<>(tradeService.updateTradeStatus(updateTradeDto, SecurityUtil.getCurrentMemberId()), HttpStatus.OK);

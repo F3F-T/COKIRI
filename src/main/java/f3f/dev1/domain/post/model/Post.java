@@ -73,6 +73,8 @@ public class Post extends BaseTimeEntity {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private List<PostImage> postImages = new ArrayList<>();
 
+
+
     public void updateTitle(String title) {
         this.title = title;
     }
@@ -97,10 +99,6 @@ public class Post extends BaseTimeEntity {
         this.wishCategory = wishCategory;
     }
 
-    // TODO 태그는 어떻게 하지?
-
-    // TODO 이미지는 어떻게 하지??
-
     public void updateThumbnail(String thumbnailImgPath) {
         this.thumbnailImgPath = thumbnailImgPath;
     }
@@ -115,7 +113,7 @@ public class Post extends BaseTimeEntity {
     }
 
     @Builder
-    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags, Long price, String thumbnailImgPath) {
+    public Post(Long id, String title, String content, Boolean tradeEachOther, Category productCategory, Category wishCategory, Member author, List<PostTag> postTags, Long price, String thumbnailImgPath, Trade trade) {
         this.thumbnailImgPath = thumbnailImgPath;
         this.productCategory = productCategory;
         this.tradeEachOther = tradeEachOther;
@@ -123,6 +121,7 @@ public class Post extends BaseTimeEntity {
         this.postTags = postTags;
         this.content = content;
         this.author = author;
+        this.trade = trade;
         this.price = price;
         this.title = title;
         this.id = id;
