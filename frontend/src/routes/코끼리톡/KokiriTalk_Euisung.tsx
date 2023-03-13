@@ -77,7 +77,7 @@ interface TalkCardInfo {
 const KokiriTalk2 = () => {
   const { state } = useLocation();
   const store = useSelector((state: Rootstate) => state);
-  console.log(state);
+  // console.log(state);
   //왼쪽 roomList를 담는 state
   const [roomList, setRoomList] = useState<MessageRoomInfo[]>();
   //왼쪽 roomList를 클릭헀을때 오른쪽 밑에 필요한 단일 메시지룸의 쪽지들의 정보들이 담김
@@ -97,7 +97,7 @@ const KokiriTalk2 = () => {
         wishCategory: state.post.wishCategory,
         postId: state.post.id,
         price: state.post.price,
-        authorId: state.post.userInfoWithAddress.id,
+        authorId: state.post.userInfoWithAddress.userDetail.id,
       };
       return jsonObj;
     });
@@ -111,7 +111,7 @@ const KokiriTalk2 = () => {
       const res = await Api.get('/user/messageRooms');
 
       roomList_original = res.data.content;
-      console.log(roomList_original);
+      // console.log(roomList_original);
       changeMessageRoomState(roomList_original);
 
     } catch (err) {
@@ -172,7 +172,6 @@ const KokiriTalk2 = () => {
     };
   };
 
-  console.log(roomList);
   if (!roomList) {
     return null;
   }
@@ -180,8 +179,6 @@ const KokiriTalk2 = () => {
   if (!talkCardInfo) {
     return null;
   }
-
-  console.log(talkCardInfo);
 
 
   // @ts-ignore

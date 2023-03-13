@@ -22,7 +22,7 @@ interface ContentInfo {
 
 const Message2 = ({ contentInfo }: MessageProps) => {
   const store = useSelector((state: Rootstate) => state);
-  console.log(contentInfo);
+  // console.log(contentInfo);
 
   if (!contentInfo) {
     return null;
