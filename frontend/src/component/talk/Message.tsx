@@ -119,6 +119,7 @@ const Message = (key: keyProps) => {
     <div ref={scrollRef}>
       {contentInfo.map((a, i) => (
         contentInfo[i].senderId === info.id ?
+          //TODO: 의성) map함수인데 왜 a를 안쓰고 contentInfo[i]로 한거야 a.senderId로 하면 됨
           <div className={styles.receive}>
             <div className={styles.receiveTitle}>보낸 쪽지</div>
             <div className={styles.timeBox}>

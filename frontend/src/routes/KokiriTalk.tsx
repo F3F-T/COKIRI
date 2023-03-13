@@ -148,6 +148,13 @@ const KokiriTalk = () => {
 
       // console.log('count가 플러스가 되니까 이리로 넘어오겠지', count);
       const res2 = await Api.get(`/user/${info.id}/totalMessageRooms`);
+      //
+      /**
+       * TODO: 의성) 메세지 하나를 클릭하기 전까지 모든 메세지를 다 불러올 필요가 없음
+       * (조회) 메시지룸 전체 조회_유저아이디로 (받은 메시지룸, 보낸 메시지룸) API를 사용하지 말고
+       * (조회)채팅방 쪽지 전체 조회를 사용하는게 좋음.
+       */
+      //
       // console.log('메세지룸 조회', res.data.content);
       // console.log('메세지룸 조회2', res2.data);
       for (let i = 0; i < res2.data.length; i++) {

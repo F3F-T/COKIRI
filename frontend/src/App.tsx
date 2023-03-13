@@ -20,7 +20,6 @@ import styles from './styles/App.module.css';
 import EmailCheckOK from './routes/로그인 & 회원가입/EmailCheckOK';
 import PostDetail from './routes/게시글/PostDetail';
 import MulmulTrade1 from './routes/물물교환, 끼리끼리 화면/MulMulTrade1';
-// import KokiriTalk from './routes/KokiriTalk';
 import { useDispatch, useSelector } from 'react-redux';
 import { Rootstate } from './index';
 import MyPageSet from './component/MyPageSet';
