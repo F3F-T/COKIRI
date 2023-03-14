@@ -56,6 +56,7 @@ public class Message extends BaseTimeEntity {
     public MessageDTO.MessageInfoDto toMessageInfo(){
         return MessageDTO.MessageInfoDto.builder()
                 .id(this.getId())
+                .postId(this.messageRoom.getPost().getId())
                 .senderNickname(this.sender.getNickname())
                 .receiverNickname(this.receiver.getNickname())
                 .content(this.content)
