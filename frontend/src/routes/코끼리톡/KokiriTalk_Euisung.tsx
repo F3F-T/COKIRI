@@ -36,6 +36,7 @@ import styles from '../../styles/talk/kokiriTalk.module.scss';
 import { useLocation } from 'react-router-dom';
 import Api from '../../utils/api';
 import TalkList2 from '../../component/talk/TalkList2';
+import TalkCard2 from '../../component/talk/TalkCard2';
 import timeConvert from '../../utils/timeConvert';
 import { useSelector } from 'react-redux';
 import { Rootstate } from '../../index';
@@ -208,7 +209,7 @@ const KokiriTalk2 = () => {
       setIsClicked(idx);
       //TODO: 의성) talkCard의 정보들이 roomList가 변할때마다 postId로 오른쪽 위의 게시글정보를 띄워준다. 동준이한테 postId 뿐만아니라 여기에 필요한 post DTO를 다 넘겨달라고 하면 좋을듯 아니면 post api를 사용해야함
       //TODO: 원래는 setKey로 식별후에 talkCard component에서 api를 호출해서 문제가 되었다. 그냥 부모에서 정보를 다 갖고 자식에선 api를 호출하지 않는 방식으로 구현함
-      console.log(contentInfo);
+      // console.log(contentInfo);
       event.preventDefault();
     };
   };
@@ -293,8 +294,8 @@ const KokiriTalk2 = () => {
           <div className={styles.right_headerBox}>
             <div className={styles.right_header}>
               <div className={styles.right_header1}>
-                {/*<div className={styles.right_header1_1}><TalkCard2 talkCardInfo={talkCardInfo} /></div>*/}
-                <div className={styles.right_header1_1}>동준이의 postid 가 구현되어야 가능한 기능</div>
+                <div className={styles.right_header1_1}><TalkCard2 talkCardInfo={talkCardInfo} /></div>
+                {/*<div className={styles.right_header1_1}>동준이의 postid 가 구현되어야 가능한 기능</div>*/}
               </div>
               <div className={styles.right_header2}>
                 <button className={styles.sideBtn} onClick={() => {
