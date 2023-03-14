@@ -1,4 +1,10 @@
 /**
+ *
+ * 질문)
+ * 메시지룸은 어느 시점에 생성되나? 메시지만 날려도 바로 생성되게 하는건가?
+ *
+ *
+ *
  * 코끼리 톡 구현 로직
  *
  * Default )
@@ -34,6 +40,8 @@ import timeConvert from '../../utils/timeConvert';
 import { useSelector } from 'react-redux';
 import { Rootstate } from '../../index';
 import Message2 from '../../component/talk/Message2';
+
+import { HiPencil } from 'react-icons/hi';
 
 
 // 회원이 속한 메시지룸 조회 API : /user/messageRooms API에서 가져올 데이터 interface
@@ -84,8 +92,9 @@ const KokiriTalk2 = () => {
   //오른쪽 위 post 정보
   const [talkCardInfo, setTalkCardInfo] = useState<TalkCardInfo>();
   const [isClicked, setIsClicked] = useState<number>();
+
+  const [input, setInput] = useState('');
   let roomList_original: MessageRoomInfo[];
-  console.log(state);
 
   //오른쪽 위 post 정보를 불러옴
   function getTalkCardInfo() {
@@ -143,6 +152,8 @@ const KokiriTalk2 = () => {
           if (authorIdInState === item.authorId) {
             //TODO: 나중에 동준이 postId 구현되면 postid까지 일치하는지 검증
             setIsClicked(idx);
+            //TODO: 둘다 검증되지 않는다면 만들어진 방이 없다는것, 새로운 빈 껍질 UI를 만들기
+            //[껍질, ...prevstate]
           }
           //상대방 닉네임 확인
         });
@@ -150,6 +161,7 @@ const KokiriTalk2 = () => {
         setIsClicked(0);
       } else { //일반 코끼리톡 버튼을 클릭해서 들어온 경우 : 맨 위에 있는 쪽지방 선택
         getMessageContent(roomList[0].messageRoomId); //맨 위에 있는(최신순) 쪽지방을 선택하고, 메시지를 띄워준다
+        setIsClicked(0);
       }
 
     }
@@ -166,6 +178,7 @@ const KokiriTalk2 = () => {
         } else if (store.userInfoReducer.nickname === room.buyerNickname) {
           partner = room.sellerNickname;
         }
+        //TODO: buyeruserId랑 sellerUserId 동준이가 만들면 partneruserId 만들기
         room['partnerName'] = partner;
       });
       return newRoomList;
@@ -200,6 +213,31 @@ const KokiriTalk2 = () => {
     };
   };
 
+  const onChangeMessage = (e) => {
+    const inputMessage = e.target.value;
+    setInput(inputMessage);
+    return setInput;
+  };
+
+  const sendMessage = async () => {
+    try {
+      let messageInfo1 = {
+        content: input,
+        senderId: store.userInfoReducer.id,
+        // receiverId: roomList[isClicked]., //TODO: 동준이 partnerUserId구현되면 하기
+        // postId: roomList[isClicked].postId, //TODO: 동준이 postID구현 되면 하기
+        messageRoomId: roomList[isClicked].messageRoomId,
+      };
+      // const res = await Api.post(`/messageRooms/${loading}`, messageInfo1);
+      // console.log('메세지 전송', res.data);
+
+
+    } catch (err) {
+      console.log(err);
+      alert('메세지전송  실패');
+    }
+  };
+
   if (!roomList) {
     return null;
   }
@@ -211,9 +249,9 @@ const KokiriTalk2 = () => {
   if (!contentInfo) {
     return null;
   }
-  console.log('----------state---');
-
-  console.log(state);
+  // console.log('----------state---');
+  //
+  // console.log(state);
 
 
   // @ts-ignore
@@ -226,6 +264,7 @@ const KokiriTalk2 = () => {
             <div className={styles.talkContainer}>
               {roomList.map((room, idx) => (
                 (
+                  //클릭시 border 주기
                   (isClicked === idx && <div className={styles.wrapperOn} key={room.messageRoomId}>
                     <TalkList2 keys={room['messageRoomId']}
                                partner={room['partnerName']}
@@ -274,15 +313,14 @@ const KokiriTalk2 = () => {
           <div className={styles.talkContainer2}>
             <Message2 contentInfo={contentInfo} />
           </div>
-          {/*<div ref={scrollRef} className={styles.writeComments}>*/}
-          {/*  <input type={'text'} className={styles.writeInput} placeholder={'쪽지를 보내세요'} value={input}*/}
-          {/*         onChange={onChangeMessage} />*/}
-          {/*  <HiPencil className={styles.pencilIcon} onClick={() => {*/}
-          {/*    createMessageRoom();*/}
-          {/*    setCount(prevState => prevState + 1);*/}
-          {/*    setInput('');*/}
-          {/*  }} />*/}
-          {/*</div>*/}
+          <div className={styles.writeComments}>
+            <input type={'text'} className={styles.writeInput} placeholder={'쪽지를 보내세요'} value={input}
+                   onChange={onChangeMessage} />
+            <HiPencil className={styles.pencilIcon} onClick={() => {
+              sendMessage();
+              setInput('');
+            }} />
+          </div>
         </div>
       </div>
       {/*<Footer/>*/}
