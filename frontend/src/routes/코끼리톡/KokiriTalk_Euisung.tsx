@@ -29,12 +29,11 @@ import React, { useEffect, useState } from 'react';
 import styles from '../../styles/talk/kokiriTalk.module.scss';
 import { useLocation } from 'react-router-dom';
 import Api from '../../utils/api';
-import TalkList from '../../component/talk/TalkList';
+import TalkList2 from '../../component/talk/TalkList2';
 import timeConvert from '../../utils/timeConvert';
 import { useSelector } from 'react-redux';
 import { Rootstate } from '../../index';
 import Message2 from '../../component/talk/Message2';
-import TalkCard2 from '../../component/talk/TalkCard2';
 
 
 // 회원이 속한 메시지룸 조회 API : /user/messageRooms API에서 가져올 데이터 interface
@@ -84,7 +83,9 @@ const KokiriTalk2 = () => {
   const [contentInfo, setContentInfo] = useState<ContentInfo[]>();
   //오른쪽 위 post 정보
   const [talkCardInfo, setTalkCardInfo] = useState<TalkCardInfo>();
+  const [isClicked, setIsClicked] = useState<number>();
   let roomList_original: MessageRoomInfo[];
+  console.log(state);
 
   //오른쪽 위 post 정보를 불러옴
   function getTalkCardInfo() {
@@ -109,9 +110,9 @@ const KokiriTalk2 = () => {
 
     try {
       const res = await Api.get('/user/messageRooms');
-
+      console.log(res);
       roomList_original = res.data.content;
-      // console.log(roomList_original);
+      console.log(roomList_original);
       changeMessageRoomState(roomList_original);
 
     } catch (err) {
@@ -122,12 +123,37 @@ const KokiriTalk2 = () => {
 
   useEffect(() => {
     getMessageRoom();
+
     if (state) {
       getTalkCardInfo();
     } else {
+
       //게시글에서 바로 이동하지 않았을떄, 제일 최신의 채팅방의 postId 정보를 이용해서 띄움
     }
   }, []);
+
+  //getMessageRoom에서 비동기적으로 처리된 roomList를 접근해서 오른쪽의 messageContent를 띄우기 위해 사용
+  useEffect(() => {
+    if (roomList && roomList.length > 0) {
+      if (state != null) //게시글에서 "코끼리톡으로 교환하기" 버튼을 클릭해서 들어온 경우
+      {
+        let authorIdInState = state.post.userInfoWithAddress.userDetail.id;
+        //state에 있는 유저 id와 roomlist의 authorid를 비교
+        roomList.forEach((item, idx) => {
+          if (authorIdInState === item.authorId) {
+            //TODO: 나중에 동준이 postId 구현되면 postid까지 일치하는지 검증
+            setIsClicked(idx);
+          }
+          //상대방 닉네임 확인
+        });
+        getMessageContent(roomList[0].messageRoomId);
+        setIsClicked(0);
+      } else { //일반 코끼리톡 버튼을 클릭해서 들어온 경우 : 맨 위에 있는 쪽지방 선택
+        getMessageContent(roomList[0].messageRoomId); //맨 위에 있는(최신순) 쪽지방을 선택하고, 메시지를 띄워준다
+      }
+
+    }
+  }, [roomList]);
 
   //roomlist에서 검증할 부분이 많으니 객체에 추가를 해서 UI에서 map으로 한번에 띄워주겠다.
   const changeMessageRoomState = (originalRoomList) => {
@@ -162,12 +188,14 @@ const KokiriTalk2 = () => {
 
 
   //왼쪽 talkList를 클릭했을때
-  const onClickTalkList = (messageRoomId) => {
+  const onClickTalkList = (messageRoomId, idx) => {
     return (event: React.MouseEvent) => {
       // setCount(prevState => prevState+1);
       getMessageContent(messageRoomId);
+      setIsClicked(idx);
+      //TODO: 의성) talkCard의 정보들이 roomList가 변할때마다 postId로 오른쪽 위의 게시글정보를 띄워준다. 동준이한테 postId 뿐만아니라 여기에 필요한 post DTO를 다 넘겨달라고 하면 좋을듯 아니면 post api를 사용해야함
       //TODO: 원래는 setKey로 식별후에 talkCard component에서 api를 호출해서 문제가 되었다. 그냥 부모에서 정보를 다 갖고 자식에선 api를 호출하지 않는 방식으로 구현함
-
+      console.log(contentInfo);
       event.preventDefault();
     };
   };
@@ -176,9 +204,16 @@ const KokiriTalk2 = () => {
     return null;
   }
 
-  if (!talkCardInfo) {
+  // if (!talkCardInfo) {
+  //   return null;
+  // }
+
+  if (!contentInfo) {
     return null;
   }
+  console.log('----------state---');
+
+  console.log(state);
 
 
   // @ts-ignore
@@ -189,15 +224,26 @@ const KokiriTalk2 = () => {
           <div className={styles.leftHeader}>코끼리톡</div>
           <div className={styles.left2}>
             <div className={styles.talkContainer}>
-              {roomList.map((room) => (
-                <div className={styles.wrapper} key={room.messageRoomId}>
-                  <TalkList keys={room['messageRoomId']}
-                            partner={room['partnerName']}
-                            lastContent={room['lastMsg']}
-                            date={timeConvert(room['createdDate'])}
-                            onClick={onClickTalkList(room['messageRoomId'])} />
+              {roomList.map((room, idx) => (
+                (
+                  (isClicked === idx && <div className={styles.wrapperOn} key={room.messageRoomId}>
+                    <TalkList2 keys={room['messageRoomId']}
+                               partner={room['partnerName']}
+                               lastContent={room['lastMsg']}
+                               date={timeConvert(room['createdDate'])}
+                               onClick={onClickTalkList(room['messageRoomId'], idx)} />
 
-                </div>
+                  </div>) ||
+                  (isClicked != idx && <div key={room.messageRoomId}>
+                    <TalkList2 keys={room['messageRoomId']}
+                               partner={room['partnerName']}
+                               lastContent={room['lastMsg']}
+                               date={timeConvert(room['createdDate'])}
+                               onClick={onClickTalkList(room['messageRoomId'], idx)} />
+
+                  </div>)
+                )
+
               ))}
             </div>
           </div>
@@ -208,7 +254,8 @@ const KokiriTalk2 = () => {
           <div className={styles.right_headerBox}>
             <div className={styles.right_header}>
               <div className={styles.right_header1}>
-                <div className={styles.right_header1_1}><TalkCard2 talkCardInfo={talkCardInfo} /></div>
+                {/*<div className={styles.right_header1_1}><TalkCard2 talkCardInfo={talkCardInfo} /></div>*/}
+                <div className={styles.right_header1_1}>동준이의 postid 가 구현되어야 가능한 기능</div>
               </div>
               <div className={styles.right_header2}>
                 <button className={styles.sideBtn} onClick={() => {
