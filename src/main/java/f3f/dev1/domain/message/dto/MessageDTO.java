@@ -63,6 +63,7 @@ public class MessageDTO {
     @Builder
     public static class MessageInfoDto{
         private Long id;
+        private Long postId;
         private String senderNickname;
         private String receiverNickname;
         private String content;
