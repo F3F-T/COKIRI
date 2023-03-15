@@ -34,6 +34,7 @@ public class MessageRoomCustomRepositoryImpl implements MessageRoomCustomReposit
                         new QMemberDTO_GetUserMessageRoom(
                                 messageRoom.id,
                                 author.id,
+                                post.id,
                                 message.content,
                                 message.createDate,
                                 buyer.nickname,

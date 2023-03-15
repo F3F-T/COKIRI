@@ -456,6 +456,7 @@ public class MemberDTO {
     public static class GetUserMessageRoom {
         private Long messageRoomId;
         private Long authorId;
+        private Long postId;
         private String lastMsg;
         private LocalDateTime createdDate;
         private String buyerNickname;
@@ -468,9 +469,10 @@ public class MemberDTO {
 
 
         @QueryProjection
-        public GetUserMessageRoom(Long messageRoomId, Long authorId, String lastMsg, LocalDateTime createdDate, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail, boolean buyerDelStatus, boolean sellerDelStatus) {
+        public GetUserMessageRoom(Long messageRoomId, Long authorId, Long postId, String lastMsg, LocalDateTime createdDate, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail, boolean buyerDelStatus, boolean sellerDelStatus) {
             this.messageRoomId = messageRoomId;
             this.authorId = authorId;
+            this.postId = postId;
             this.lastMsg = lastMsg;
             this.createdDate = createdDate;
             this.buyerNickname = buyerNickname;
