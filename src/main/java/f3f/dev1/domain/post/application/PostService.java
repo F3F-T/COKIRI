@@ -11,6 +11,7 @@ import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.model.MessageRoom;
+import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotContainAuthorInfoException;
@@ -30,11 +31,13 @@ import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.exception.NotFoundByPostAndTagException;
 import f3f.dev1.domain.tag.model.PostTag;
 import f3f.dev1.domain.tag.model.Tag;
+import f3f.dev1.domain.trade.application.TradeService;
 import f3f.dev1.domain.trade.dao.TradeRepository;
 import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.common.constants.RedisCacheConstants;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -56,6 +59,7 @@ import static f3f.dev1.domain.postImage.dto.PostImageDTO.*;
 import static f3f.dev1.domain.trade.dto.TradeDTO.*;
 import static f3f.dev1.global.common.constants.RedisCacheConstants.*;
 
+@Slf4j
 @Service
 @Validated
 @RequiredArgsConstructor
@@ -65,16 +69,13 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final TradeRepository tradeRepository;
     private final CommentRepository commentRepository;
-    private final ScrapRepository scrapRepository;
     private final ScrapPostRepository scrapPostRepository;
-    private final MessageRoomRepository messageRoomRepository;
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final PostTagRepository postTagRepository;
     // Custom repository
     private final PostCustomRepositoryImpl postCustomRepository;
     private final MemberCustomRepositoryImpl memberCustomRepository;
-    private final PostImageCustomRepositoryImpl postImageCustomRepository;
 
     // TODO 게시글 사진 개수 제한 걸기
     @Transactional
@@ -85,7 +86,6 @@ public class PostService {
         Category productCategory = categoryRepository.findCategoryByName(postSaveRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
         Category wishCategory = categoryRepository.findCategoryByName(postSaveRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-
 
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
         member.getPosts().add(post);
@@ -112,6 +112,24 @@ public class PostService {
             }
         }
 
+        return new PageImpl<>(resultList, pageable, all.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<PostSearchResponseDto> findOnlyWithTradeStatus (Long currentMemberId, TradeStatus tradeStatus, Pageable pageable) {
+        Page<Post> all = postCustomRepository.findPostsWithTradeStatus(tradeStatus, pageable);
+        List<PostSearchResponseDto> resultList = new ArrayList<>();
+        if(currentMemberId != null) {
+            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
+            for (Post post : all) {
+                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                resultList.add(post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(),isScrap));
+            }
+        } else {
+            for (Post post : all) {
+                resultList.add(post.toSearchResponseDto((long) post.getMessageRooms().size(), (long) post.getScrapPosts().size(), false));
+            }
+        }
         return new PageImpl<>(resultList, pageable, all.getTotalElements());
     }
 
@@ -150,6 +168,7 @@ public class PostService {
     }
 
     // TODO 고려해야할 것 : 캐싱 동기화(sync), 비회면 조건부 캐싱
+    // TODO 쿼리DSL에서 Enum 클래스의 세부 필드를 where절에서 비교할 수 없다. 따라서 서비스 로직 (자바코드) 단에서 직접 거래 가능 여부를 체크해줘야 할 것 같다.
     // + 캐시 만료, 삭제 시점
     // pageable 관련 key값은 현재 페이지 수만 추가해뒀다. 각 페이지마다 보여주는 데이터의 수가 같아야만 한다.
     @Cacheable(value = POST_LIST_WITHOUT_TAG, key = "#request.productCategory + '_' + #request.wishCategory + '_' + #request.minPrice + '_' + #request.maxPrice + '_' + 'p' + #pageable.getPageNumber()")
@@ -161,7 +180,6 @@ public class PostService {
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
             for (Post post : dtoPages) {
-                // 캐싱 적용하기 전에는 이게 최선이다..
                 boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
                 PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
                 list.add(build);
@@ -189,8 +207,8 @@ public class PostService {
 
     @Cacheable(value = POST_LIST_WITH_TAG, keyGenerator = "customKeyGenerator")
     @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, Pageable pageable) {
-        Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, pageable);
+    public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, TradeStatus tradeStatus, Pageable pageable) {
+        Page<Post> dtoList = postCustomRepository.findPostsByTags(tagNames, tradeStatus, pageable);
         List<PostSearchResponseDto> resultList = new ArrayList<>();
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);

@@ -6,6 +6,7 @@ import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.model.Post;
 import f3f.dev1.domain.tag.model.PostTag;
+import f3f.dev1.domain.trade.model.Trade;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -39,9 +40,9 @@ public class PostDTO {
         private String wishCategory;
         @NotNull
         private List<String> tagNames;
-
         private List<String> images;
         private String thumbnail;
+
 
         public Post toEntity(Member author, Category product, Category wish, List<PostTag> postTags) {
             return Post.builder()
@@ -85,6 +86,7 @@ public class PostDTO {
         String wishCategory;
         String minPrice;
         String maxPrice;
+        TradeStatus tradeStatus;
     }
 
     // U : Update 담당 DTO들
