@@ -158,6 +158,7 @@ const KokiriTalk2 = () => {
       //게시글에서 바로 이동하지 않았을떄, 제일 최신의 채팅방의 postId 정보를 이용해서 띄움
     }
   }, []);
+  let foundRoom = false;
 
   //getMessageRoom에서 비동기적으로 처리된 roomList를 접근해서 오른쪽의 messageContent를 띄우기 위해 사용
   useEffect(() => {
@@ -167,7 +168,7 @@ const KokiriTalk2 = () => {
         let authorIdInState = state.post.userInfoWithAddress.userDetail.id;
         let postId = state.post.id;
         //state에 있는 유저 id와 roomlist의 authorid를 비교
-        roomList.forEach((item, idx) => {
+        roomList.forEach(function(item, idx) {
           if (authorIdInState === item.authorId && postId === item.postId) {
             console.log('---------------------');
             console.log('게시글에서 들어온 로직');
@@ -175,7 +176,10 @@ const KokiriTalk2 = () => {
             //둘다 검증되지 않는다면 만들어진 방이 없다는것, 새로운 빈 껍질 UI 만들지 않기
             setInitialRoom(false);
             setIsClicked(idx);
-          } else {
+            foundRoom = true;
+            return false;
+          }
+          if (!foundRoom) {
             //빈 껍질 UI 만들기
             setInitialRoom(true);
             setIsClicked(-1);
@@ -275,7 +279,7 @@ const KokiriTalk2 = () => {
           content: input,
           senderId: store.userInfoReducer.id,
           receiverId: roomList[isClicked].partnerId, //TODO: 동준이 partnerUserId구현되면 하기
-          postId: roomList[isClicked].postId, //TODO: 동준이 postID구현 되면 하기
+          postId: roomList[isClicked].postId, //TODO: 동준이 postID슈 구현 되면 하기
           messageRoomId: roomList[isClicked].messageRoomId,
         };
         let messageRoomId = roomList[isClicked].messageRoomId;
