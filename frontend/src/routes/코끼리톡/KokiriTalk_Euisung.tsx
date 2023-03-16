@@ -96,6 +96,7 @@ const KokiriTalk2 = () => {
   //오른쪽 위 post 정보
   const [talkCardInfo, setTalkCardInfo] = useState<TalkCardInfo>();
   const [isClicked, setIsClicked] = useState<number>();
+  const [initialRoom, setInitialRoom] = useState<boolean>();
 
   const [input, setInput] = useState('');
   let roomList_original: MessageRoomInfo[];
@@ -125,7 +126,6 @@ const KokiriTalk2 = () => {
       const res = await Api.get('/user/messageRooms');
       console.log(res);
       roomList_original = res.data.content;
-      console.log(roomList_original);
       changeMessageRoomState(roomList_original);
 
     } catch (err) {
@@ -157,17 +157,18 @@ const KokiriTalk2 = () => {
           if (authorIdInState === item.authorId && postId === item.postId) {
             console.log('---------------------');
             console.log('게시글에서 들어온 로직');
-            setIsClicked(idx);
+            // setIsClicked(idx);
             //TODO: 둘다 검증되지 않는다면 만들어진 방이 없다는것, 새로운 빈 껍질 UI를 만들기
-            //[껍질, ...prevstate]
-
+            setInitialRoom(false);
+            setIsClicked(idx);
           } else {
-
+            setInitialRoom(true);
+            setIsClicked(-1);
           }
           //상대방 닉네임 확인
         });
         getMessageContent(roomList[0].messageRoomId);
-        setIsClicked(0);
+        // setIsClicked(0);
       } else { //일반 코끼리톡 버튼을 클릭해서 들어온 경우 : 맨 위에 있는 쪽지방 선택
         getMessageContent(roomList[0].messageRoomId); //맨 위에 있는(최신순) 쪽지방을 선택하고, 메시지를 띄워준다
         setIsClicked(0);
@@ -257,6 +258,13 @@ const KokiriTalk2 = () => {
     }
   };
 
+  const onClickInitialRoom = () => {
+    return (event: React.MouseEvent) => {
+      setIsClicked(-1);
+      event.preventDefault();
+    };
+  };
+
   if (!roomList) {
     return null;
   }
@@ -272,6 +280,7 @@ const KokiriTalk2 = () => {
   // console.log('----------state---');
   //
   // console.log(state);
+  console.log(state);
 
 
   // @ts-ignore
@@ -282,6 +291,26 @@ const KokiriTalk2 = () => {
           <div className={styles.leftHeader}>코끼리톡</div>
           <div className={styles.left2}>
             <div className={styles.talkContainer}>
+              {isClicked === -1 &&
+              initialRoom ?
+                <div className={styles.wrapperOn}>
+                  <TalkList2 partner={state.post.userInfoWithAddress.userDetail.nickname}
+                             lastContent={''}
+                             date={'방금전'}
+                             onClick={onClickInitialRoom()} />
+                </div>
+                : ''
+              }
+              {isClicked != -1 &&
+              initialRoom ?
+                <div>
+                  <TalkList2 partner={state.post.userInfoWithAddress.userDetail.nickname}
+                             lastContent={''}
+                             date={'방금전'}
+                             onClick={onClickInitialRoom()} />
+                </div>
+                : ''
+              }
               {roomList.map((room, idx) => (
                 (
                   //클릭시 border 주기
@@ -331,7 +360,9 @@ const KokiriTalk2 = () => {
             <div className={styles.right_header1_2}>님과의 쪽지방입니다.</div>
           </div>
           <div className={styles.talkContainer2}>
-            <Message2 contentInfo={contentInfo} />
+            {
+              initialRoom ? "" : <Message2 contentInfo={contentInfo} />
+            }
           </div>
           <div className={styles.writeComments}>
             <input type={'text'} className={styles.writeInput} placeholder={'쪽지를 보내세요'} value={input}

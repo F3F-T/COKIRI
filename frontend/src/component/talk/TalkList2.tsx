@@ -17,14 +17,6 @@ interface TalkListProps {
   counts?: number;
 }
 
-interface talkInfoType {
-  partner: string;
-  lastContent: string;
-  date: string;
-  keys?: number;
-  counts?: number;
-}
-
 
 const TalkList2 = (talkListProps: TalkListProps) => {
   const store = useSelector((state: Rootstate) => state);
