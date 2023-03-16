@@ -450,7 +450,7 @@ public class MemberDTO {
     }
 
 
-    @Builder
+
     @NoArgsConstructor
     @Getter
     public static class GetUserMessageRoom {
@@ -468,10 +468,18 @@ public class MemberDTO {
 
         private boolean buyerDelStatus;
         private boolean sellerDelStatus;
+        private String thumbnailImgPath;
+        private TradeStatus tradeStatus;
+        private String title;
+        private String productCategory;
+        private String wishCategory;
+        private Long price;
 
 
+        @Builder
         @QueryProjection
-        public GetUserMessageRoom(Long messageRoomId, Long authorId, Long postId, String lastMsg, LocalDateTime createdDate,Long buyerId, Long sellerId, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail, boolean buyerDelStatus, boolean sellerDelStatus) {
+        public GetUserMessageRoom(Long messageRoomId, Long authorId, Long postId, String lastMsg, LocalDateTime createdDate, Long buyerId, Long sellerId, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail, boolean buyerDelStatus, boolean sellerDelStatus, String thumbnailImgPath, TradeStatus tradeStatus, String title, String productCategory, String wishCategory, Long price) {
+
             this.messageRoomId = messageRoomId;
             this.authorId = authorId;
             this.postId = postId;
@@ -485,6 +493,11 @@ public class MemberDTO {
             this.sellerThumbnail = sellerThumbnail;
             this.buyerDelStatus = buyerDelStatus;
             this.sellerDelStatus = sellerDelStatus;
+            this.thumbnailImgPath = thumbnailImgPath;
+            this.title = title;
+            this.productCategory = productCategory;
+            this.wishCategory = wishCategory;
+            this.price = price;
         }
     }
 
