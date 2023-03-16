@@ -54,6 +54,9 @@ interface MessageRoomInfo {
   buyerNickname: string,
   sellerNickname: string,
   partnerName: string,
+  buyerId: number,
+  sellerId: number,
+  postId: number
   // buyerThumbnail : string
 
 }
@@ -64,7 +67,7 @@ interface ContentInfo {
   receiverNickname: string,
   content: string,
   senderId: number,
-  receiverId: number,
+  buyerId: number,
   messageRoomId: number
   createTime: string;
 }
@@ -148,13 +151,18 @@ const KokiriTalk2 = () => {
       if (state != null) //게시글에서 "코끼리톡으로 교환하기" 버튼을 클릭해서 들어온 경우
       {
         let authorIdInState = state.post.userInfoWithAddress.userDetail.id;
+        let postId = state.post.id;
         //state에 있는 유저 id와 roomlist의 authorid를 비교
         roomList.forEach((item, idx) => {
-          if (authorIdInState === item.authorId) {
-            //TODO: 나중에 동준이 postId 구현되면 postid까지 일치하는지 검증
+          if (authorIdInState === item.authorId && postId === item.postId) {
+            console.log('---------------------');
+            console.log('게시글에서 들어온 로직');
             setIsClicked(idx);
             //TODO: 둘다 검증되지 않는다면 만들어진 방이 없다는것, 새로운 빈 껍질 UI를 만들기
             //[껍질, ...prevstate]
+
+          } else {
+
           }
           //상대방 닉네임 확인
         });
@@ -170,17 +178,27 @@ const KokiriTalk2 = () => {
 
   //roomlist에서 검증할 부분이 많으니 객체에 추가를 해서 UI에서 map으로 한번에 띄워주겠다.
   const changeMessageRoomState = (originalRoomList) => {
-    let partner;
+    let partnerNickname;
+    let partnerId;
+
     setRoomList(prevState => {
       let newRoomList = [...originalRoomList];
       newRoomList.forEach(room => {
         if (store.userInfoReducer.nickname === room.sellerNickname) {
-          partner = room.buyerNickname;
+          partnerNickname = room.buyerNickname;
         } else if (store.userInfoReducer.nickname === room.buyerNickname) {
-          partner = room.sellerNickname;
+          partnerNickname = room.sellerNickname;
+        }
+
+        //partnerId 추가
+        if (store.userInfoReducer.id === room.sellerId) {
+          partnerId = room.buyerId;
+        } else if (store.userInfoReducer.id === room.buyerId) {
+          partnerId = room.sellerId;
         }
         //TODO: buyeruserId랑 sellerUserId 동준이가 만들면 partneruserId 만들기
-        room['partnerName'] = partner;
+        room['partnerName'] = partnerNickname;
+        room['partnerId'] = partnerId;
       });
       return newRoomList;
     });
@@ -242,6 +260,7 @@ const KokiriTalk2 = () => {
   if (!roomList) {
     return null;
   }
+  console.log(roomList);
 
   // if (!talkCardInfo) {
   //   return null;

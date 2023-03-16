@@ -1,9 +1,9 @@
 package f3f.dev1.domain.member.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.member.model.UserLoginType;
-import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.dao.PostRepository;
 import lombok.*;
@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static f3f.dev1.domain.address.dto.AddressDTO.*;
+import static f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
 import static f3f.dev1.domain.post.dto.PostDTO.PostInfoDto;
 import static f3f.dev1.domain.token.dto.TokenDTO.TokenIssueDTO;
 
@@ -450,7 +450,6 @@ public class MemberDTO {
     }
 
 
-    @Builder
     @NoArgsConstructor
     @Getter
     public static class GetUserMessageRoom {
@@ -469,9 +468,9 @@ public class MemberDTO {
         private boolean buyerDelStatus;
         private boolean sellerDelStatus;
 
-
+        @Builder
         @QueryProjection
-        public GetUserMessageRoom(Long messageRoomId, Long authorId, Long postId, String lastMsg, LocalDateTime createdDate,Long buyerId, Long sellerId, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail, boolean buyerDelStatus, boolean sellerDelStatus) {
+        public GetUserMessageRoom(Long messageRoomId, Long authorId, Long postId, String lastMsg, LocalDateTime createdDate, Long buyerId, Long sellerId, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail, boolean buyerDelStatus, boolean sellerDelStatus) {
             this.messageRoomId = messageRoomId;
             this.authorId = authorId;
             this.postId = postId;

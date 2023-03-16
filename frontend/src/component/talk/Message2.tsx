@@ -14,7 +14,7 @@ interface ContentInfo {
   receiverNickname: string,
   content: string,
   senderId: number,
-  receiverId: number,
+  buyerId: number,
   messageRoomId: number
   createTime: string;
 }
