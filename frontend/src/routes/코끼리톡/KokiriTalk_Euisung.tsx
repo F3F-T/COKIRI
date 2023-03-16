@@ -1,9 +1,6 @@
 /**
- *
  * 질문)
  * 메시지룸은 어느 시점에 생성되나? 메시지만 날려도 바로 생성되게 하는건가?
- *
- *
  *
  * 코끼리 톡 구현 로직
  *
@@ -141,7 +138,6 @@ const KokiriTalk2 = () => {
 
   //왼쪽 메시지룸 리스트를 갖고오는 api 호출
   async function getMessageRoom() {
-
     try {
       const res = await Api.get('/user/messageRooms');
       console.log(res);
@@ -156,12 +152,10 @@ const KokiriTalk2 = () => {
 
   useEffect(() => {
     getMessageRoom();
-
     if (state) {
       getTalkCardInfo();
     } else {
       //게시글에서 바로 이동하지 않았을떄, 제일 최신의 채팅방의 postId 정보를 이용해서 띄움
-
     }
   }, []);
 
@@ -260,18 +254,48 @@ const KokiriTalk2 = () => {
     return setInput;
   };
 
+  const createMessageRoom = async () => {
+    try {
+      const postId = state.post.id;
+      //buyerid는 코키리톡으로 교환하기를 클릭한 자신임
+      const buyerId = store.userInfoReducer.id;
+      const res = await Api.post(`/post/${postId}/messageRooms`, { postId, buyerId });
+      return res.data;
+      console.log(res);
+    } catch (err) {
+      console.log(err);
+    }
+
+  };
   const sendMessage = async () => {
     try {
-      let messageInfo1 = {
-        content: input,
-        senderId: store.userInfoReducer.id,
-        receiverId: roomList[isClicked].partnerId, //TODO: 동준이 partnerUserId구현되면 하기
-        postId: roomList[isClicked].postId, //TODO: 동준이 postID구현 되면 하기
-        messageRoomId: roomList[isClicked].messageRoomId,
-      };
-      let messageRoomId = roomList[isClicked].messageRoomId;
-      const res = await Api.post(`/messageRooms/${messageRoomId}`, messageInfo1);
-      console.log('메세지 전송', res.data);
+      if (isClicked != -1) //새로운 방이 생성되지 않은경우
+      {
+        let messageInfo = {
+          content: input,
+          senderId: store.userInfoReducer.id,
+          receiverId: roomList[isClicked].partnerId, //TODO: 동준이 partnerUserId구현되면 하기
+          postId: roomList[isClicked].postId, //TODO: 동준이 postID구현 되면 하기
+          messageRoomId: roomList[isClicked].messageRoomId,
+        };
+        let messageRoomId = roomList[isClicked].messageRoomId;
+        const res = await Api.post(`/messageRooms/${messageRoomId}`, messageInfo);
+        console.log('메세지 전송', res.data);
+      } else { //새로운 방이 생성된경우
+        const newMessageRoomInfo = await createMessageRoom();
+        console.log(newMessageRoomInfo);
+
+        let messageInfo = {
+          content: input,
+          senderId: store.userInfoReducer.id,
+          receiverId: state.post.userInfoWithAddress.userDetail.id,
+          postId: newMessageRoomInfo.postId, //TODO: 동준이 postID구현 되면 하기
+          messageRoomId: newMessageRoomInfo.id,
+        };
+
+        const res = await Api.post(`/messageRooms/${newMessageRoomInfo.id}`, messageInfo);
+        console.log('메세지 전송', res.data);
+      }
 
 
     } catch (err) {
@@ -303,9 +327,8 @@ const KokiriTalk2 = () => {
   //
   // console.log(state);
   console.log(state);
+  console.log(isClicked);
 
-
-  // @ts-ignore
   return (
     <div className={styles.wrap}>
       <div className={styles.kokiritalk}>
@@ -350,15 +373,12 @@ const KokiriTalk2 = () => {
                                lastContent={room['lastMsg']}
                                date={timeConvert(room['createdDate'])}
                                onClick={onClickTalkList(room['messageRoomId'], idx)} />
-
                   </div>)
                 )
-
               ))}
             </div>
           </div>
         </div>
-
 
         <div className={styles.right}>
           <div className={styles.right_headerBox}>
@@ -383,7 +403,7 @@ const KokiriTalk2 = () => {
           </div>
           <div className={styles.talkContainer2}>
             {//최초 생성된 방이 클릭된 경우 메세지를 null로 설정
-              isClicked === -1 && ""
+              isClicked === -1 && ''
             }
             {//최초 생성된 방이 아닌 경우, 또는 최초 생성된 방의 동선이 아닌경우
               isClicked != -1 && <Message2 contentInfo={contentInfo} />
