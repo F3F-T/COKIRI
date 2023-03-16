@@ -57,6 +57,7 @@ interface MessageRoomInfo {
   buyerId: number,
   sellerId: number,
   postId: number
+  partnerId?: number,
   // buyerThumbnail : string
 
 }
@@ -103,19 +104,38 @@ const KokiriTalk2 = () => {
 
   //오른쪽 위 post 정보를 불러옴
   function getTalkCardInfo() {
-    setTalkCardInfo(prevState => {
-      let jsonObj = {
-        productImg: state.post.images[0],
-        tradeStatus: state.post.tradeStatus,
-        title: state.post.title,
-        tradeCategory: state.post.productCategory,
-        wishCategory: state.post.wishCategory,
-        postId: state.post.id,
-        price: state.post.price,
-        authorId: state.post.userInfoWithAddress.userDetail.id,
-      };
-      return jsonObj;
-    });
+    if (state) { //게시글에서 코키리톡으로 교환하기 버튼을 눌렀을때
+
+      setTalkCardInfo(prevState => {
+        let jsonObj = {
+          productImg: state.post.images[0],
+          tradeStatus: state.post.tradeStatus,
+          title: state.post.title,
+          tradeCategory: state.post.productCategory,
+          wishCategory: state.post.wishCategory,
+          postId: state.post.id,
+          price: state.post.price,
+          authorId: state.post.userInfoWithAddress.userDetail.id,
+        };
+        return jsonObj;
+      });
+    } else {
+      //코끼리톡 버튼을 직접 들어갔을때
+
+      setTalkCardInfo(prevState => {
+        let jsonObj = {
+          productImg: state.post.images[0],
+          tradeStatus: state.post.tradeStatus,
+          title: state.post.title,
+          tradeCategory: state.post.productCategory,
+          wishCategory: state.post.wishCategory,
+          postId: state.post.id,
+          price: state.post.price,
+          authorId: state.post.userInfoWithAddress.userDetail.id,
+        };
+        return jsonObj;
+      });
+    }
 
   }
 
@@ -140,8 +160,8 @@ const KokiriTalk2 = () => {
     if (state) {
       getTalkCardInfo();
     } else {
-
       //게시글에서 바로 이동하지 않았을떄, 제일 최신의 채팅방의 postId 정보를 이용해서 띄움
+
     }
   }, []);
 
@@ -158,10 +178,11 @@ const KokiriTalk2 = () => {
             console.log('---------------------');
             console.log('게시글에서 들어온 로직');
             // setIsClicked(idx);
-            //TODO: 둘다 검증되지 않는다면 만들어진 방이 없다는것, 새로운 빈 껍질 UI를 만들기
+            //둘다 검증되지 않는다면 만들어진 방이 없다는것, 새로운 빈 껍질 UI 만들지 않기
             setInitialRoom(false);
             setIsClicked(idx);
           } else {
+            //빈 껍질 UI 만들기
             setInitialRoom(true);
             setIsClicked(-1);
           }
@@ -244,12 +265,13 @@ const KokiriTalk2 = () => {
       let messageInfo1 = {
         content: input,
         senderId: store.userInfoReducer.id,
-        // receiverId: roomList[isClicked]., //TODO: 동준이 partnerUserId구현되면 하기
-        // postId: roomList[isClicked].postId, //TODO: 동준이 postID구현 되면 하기
+        receiverId: roomList[isClicked].partnerId, //TODO: 동준이 partnerUserId구현되면 하기
+        postId: roomList[isClicked].postId, //TODO: 동준이 postID구현 되면 하기
         messageRoomId: roomList[isClicked].messageRoomId,
       };
-      // const res = await Api.post(`/messageRooms/${loading}`, messageInfo1);
-      // console.log('메세지 전송', res.data);
+      let messageRoomId = roomList[isClicked].messageRoomId;
+      const res = await Api.post(`/messageRooms/${messageRoomId}`, messageInfo1);
+      console.log('메세지 전송', res.data);
 
 
     } catch (err) {
@@ -360,8 +382,11 @@ const KokiriTalk2 = () => {
             <div className={styles.right_header1_2}>님과의 쪽지방입니다.</div>
           </div>
           <div className={styles.talkContainer2}>
-            {
-              initialRoom ? "" : <Message2 contentInfo={contentInfo} />
+            {//최초 생성된 방이 클릭된 경우 메세지를 null로 설정
+              isClicked === -1 && ""
+            }
+            {//최초 생성된 방이 아닌 경우, 또는 최초 생성된 방의 동선이 아닌경우
+              isClicked != -1 && <Message2 contentInfo={contentInfo} />
             }
           </div>
           <div className={styles.writeComments}>
