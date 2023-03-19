@@ -100,6 +100,8 @@ const KokiriTalk2 = () => {
   const [count, setCount] = useState(0);
 
   const [input, setInput] = useState('');
+
+  let talkCardChanged = 0;
   let roomList_original: MessageRoomInfo[];
 
   let localIsClicked;
@@ -174,12 +176,6 @@ const KokiriTalk2 = () => {
 
   useEffect(() => {
     getMessageRoom();
-
-    // if (state) {
-    //   getTalkCardInfo();
-    // } else {
-    //   //게시글에서 바로 이동하지 않았을떄, 제일 최신의 채팅방의 postId 정보를 이용해서 띄움
-    // }
   }, [count]);
 
   useEffect(() => {
@@ -215,23 +211,31 @@ const KokiriTalk2 = () => {
             foundRoom = true;
             return false;
           }
-          if (!foundRoom) {
-            //빈 껍질 UI 만들기
-            setInitialRoom(true);
-            setIsClicked(-1);
-          } else {
-            getMessageContent(roomList[localIsClicked].messageRoomId);
-          }
+
           //상대방 닉네임 확인
         });
+        if (!foundRoom) {
+          //빈 껍질 UI 만들기
+          setInitialRoom(true);
+          setIsClicked(-1);
+        } else {
+          getMessageContent(roomList[localIsClicked].messageRoomId);
+        }
         // setIsClicked(0);
       } else { //일반 코끼리톡 버튼을 클릭해서 들어온 경우 : 맨 위에 있는 쪽지방 선택
         getMessageContent(roomList[0].messageRoomId); //맨 위에 있는(최신순) 쪽지방을 선택하고, 메시지를 띄워준다
         setIsClicked(0);
       }
 
+
     }
   }, [roomList]);
+
+  useEffect(() => {
+    if (talkCardChanged > 0) {
+      getTalkCardInfo()
+    }
+  }, [talkCardChanged]);
 
   //roomlist에서 검증할 부분이 많으니 객체에 추가를 해서 UI에서 map으로 한번에 띄워주겠다.
   const changeMessageRoomState = (originalRoomList) => {
@@ -285,6 +289,8 @@ const KokiriTalk2 = () => {
       // setCount(prevState => prevState+1);
       getMessageContent(messageRoomId);
       setIsClicked(idx);
+      localIsClicked = idx;
+      talkCardChanged++;
       //TODO: 의성) talkCard의 정보들이 roomList가 변할때마다 postId로 오른쪽 위의 게시글정보를 띄워준다. 동준이한테 postId 뿐만아니라 여기에 필요한 post DTO를 다 넘겨달라고 하면 좋을듯 아니면 post api를 사용해야함
       //TODO: 원래는 setKey로 식별후에 talkCard component에서 api를 호출해서 문제가 되었다. 그냥 부모에서 정보를 다 갖고 자식에선 api를 호출하지 않는 방식으로 구현함
       // console.log(contentInfo);
@@ -353,6 +359,8 @@ const KokiriTalk2 = () => {
   const onClickInitialRoom = () => {
     return (event: React.MouseEvent) => {
       setIsClicked(-1);
+      localIsClicked = -1;
+      talkCardChanged++;
       event.preventDefault();
     };
   };
