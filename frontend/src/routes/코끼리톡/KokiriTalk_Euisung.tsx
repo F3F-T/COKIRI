@@ -96,8 +96,12 @@ const KokiriTalk2 = () => {
   const [isClicked, setIsClicked] = useState<number>();
   const [initialRoom, setInitialRoom] = useState<boolean>();
 
+  const [count, setCount] = useState(0);
+
   const [input, setInput] = useState('');
   let roomList_original: MessageRoomInfo[];
+
+  let localIsClicked;
 
   //오른쪽 위 post 정보를 불러옴
   function getTalkCardInfo() {
@@ -152,16 +156,21 @@ const KokiriTalk2 = () => {
 
   useEffect(() => {
     getMessageRoom();
+    console.log(count);
     if (state) {
       getTalkCardInfo();
     } else {
       //게시글에서 바로 이동하지 않았을떄, 제일 최신의 채팅방의 postId 정보를 이용해서 띄움
     }
-  }, []);
+  }, [count]);
+
+  // 메세지를 보내면 새로고침
+
   let foundRoom = false;
 
   //getMessageRoom에서 비동기적으로 처리된 roomList를 접근해서 오른쪽의 messageContent를 띄우기 위해 사용
   useEffect(() => {
+    console.log('room list 변화 useEffect');
     if (roomList && roomList.length > 0) {
       if (state != null) //게시글에서 "코끼리톡으로 교환하기" 버튼을 클릭해서 들어온 경우
       {
@@ -170,12 +179,13 @@ const KokiriTalk2 = () => {
         //state에 있는 유저 id와 roomlist의 authorid를 비교
         roomList.forEach(function(item, idx) {
           if (authorIdInState === item.authorId && postId === item.postId) {
-            console.log('---------------------');
-            console.log('게시글에서 들어온 로직');
+            // console.log('---------------------');
+            // console.log('게시글에서 들어온 로직');
             // setIsClicked(idx);
             //둘다 검증되지 않는다면 만들어진 방이 없다는것, 새로운 빈 껍질 UI 만들지 않기
             setInitialRoom(false);
             setIsClicked(idx);
+            localIsClicked = idx;
             foundRoom = true;
             return false;
           }
@@ -186,7 +196,7 @@ const KokiriTalk2 = () => {
           }
           //상대방 닉네임 확인
         });
-        getMessageContent(roomList[0].messageRoomId);
+        getMessageContent(roomList[localIsClicked].messageRoomId);
         // setIsClicked(0);
       } else { //일반 코끼리톡 버튼을 클릭해서 들어온 경우 : 맨 위에 있는 쪽지방 선택
         getMessageContent(roomList[0].messageRoomId); //맨 위에 있는(최신순) 쪽지방을 선택하고, 메시지를 띄워준다
@@ -301,6 +311,8 @@ const KokiriTalk2 = () => {
         console.log('메세지 전송', res.data);
       }
 
+      setCount(prevState => prevState + 1);
+
 
     } catch (err) {
       console.log(err);
@@ -315,10 +327,14 @@ const KokiriTalk2 = () => {
     };
   };
 
+  const onClickPencil = async () => {
+    await sendMessage();
+    setInput('');
+  };
+
   if (!roomList) {
     return null;
   }
-  console.log(roomList);
 
   // if (!talkCardInfo) {
   //   return null;
@@ -330,8 +346,6 @@ const KokiriTalk2 = () => {
   // console.log('----------state---');
   //
   // console.log(state);
-  console.log(state);
-  console.log(isClicked);
 
   return (
     <div className={styles.wrap}>
@@ -416,10 +430,7 @@ const KokiriTalk2 = () => {
           <div className={styles.writeComments}>
             <input type={'text'} className={styles.writeInput} placeholder={'쪽지를 보내세요'} value={input}
                    onChange={onChangeMessage} />
-            <HiPencil className={styles.pencilIcon} onClick={() => {
-              sendMessage();
-              setInput('');
-            }} />
+            <HiPencil className={styles.pencilIcon} onClick={onClickPencil} />
           </div>
         </div>
       </div>
