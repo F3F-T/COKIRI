@@ -497,6 +497,7 @@ public class MemberDTO {
             this.title = title;
             this.productCategory = productCategory;
             this.wishCategory = wishCategory;
+            this.tradeStatus = tradeStatus;
             this.price = price;
         }
     }
