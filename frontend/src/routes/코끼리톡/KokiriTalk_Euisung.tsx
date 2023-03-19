@@ -104,8 +104,9 @@ const KokiriTalk2 = () => {
 
   let localIsClicked;
 
+  //최초 게시글 정보 불러오기
   //오른쪽 위 post 정보를 불러옴
-  function getTalkCardInfo() {
+  function getInitialTalkCardInfo() {
     if (state) { //게시글에서 코키리톡으로 교환하기 버튼을 눌렀을때
 
       setTalkCardInfo(prevState => {
@@ -139,6 +140,22 @@ const KokiriTalk2 = () => {
       });
     }
 
+  }
+
+  function getTalkCardInfo() {
+    setTalkCardInfo(prevState => {
+      let jsonObj = {
+        productImg: state.post.images[0],
+        tradeStatus: state.post.tradeStatus,
+        title: state.post.title,
+        tradeCategory: state.post.productCategory,
+        wishCategory: state.post.wishCategory,
+        postId: state.post.id,
+        price: state.post.price,
+        authorId: state.post.userInfoWithAddress.userDetail.id,
+      };
+      return jsonObj;
+    });
   }
 
   //왼쪽 메시지룸 리스트를 갖고오는 api 호출
@@ -181,9 +198,8 @@ const KokiriTalk2 = () => {
 
   //getMessageRoom에서 비동기적으로 처리된 roomList를 접근해서 오른쪽의 messageContent를 띄우기 위해 사용
   useEffect(() => {
-    console.log('room list 변화 useEffect');
+    getInitialTalkCardInfo();
     if (roomList && roomList.length > 0) {
-      getTalkCardInfo();
       console.log(roomList);
       if (state != null) //게시글에서 "코끼리톡으로 교환하기" 버튼을 클릭해서 들어온 경우
       {
@@ -203,10 +219,11 @@ const KokiriTalk2 = () => {
             //빈 껍질 UI 만들기
             setInitialRoom(true);
             setIsClicked(-1);
+          } else {
+            getMessageContent(roomList[localIsClicked].messageRoomId);
           }
           //상대방 닉네임 확인
         });
-        getMessageContent(roomList[localIsClicked].messageRoomId);
         // setIsClicked(0);
       } else { //일반 코끼리톡 버튼을 클릭해서 들어온 경우 : 맨 위에 있는 쪽지방 선택
         getMessageContent(roomList[0].messageRoomId); //맨 위에 있는(최신순) 쪽지방을 선택하고, 메시지를 띄워준다
@@ -353,9 +370,10 @@ const KokiriTalk2 = () => {
   // if (!talkCardInfo) {
   //   return null;
   // }
-
-  if (!contentInfo) {
-    return null;
+  if (foundRoom) {
+    if (!contentInfo) {
+      return null;
+    }
   }
   // console.log('----------state---');
   //
