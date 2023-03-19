@@ -523,6 +523,7 @@ const PostDetail = () => {
           <embed type='text/html' width='800' height='608' />
         </Modal>
       )}
+
       <div className={styles.postDetail}>
 
         <article className={styles.post}>

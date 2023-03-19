@@ -40,12 +40,12 @@ const Message = (key: keyProps) => {
   useEffect(() => {
     getMessageRoom();
   }, [realCount]);
-  useEffect(() => {
-    if (contentInfo != null) {
-      // @ts-ignore
-      scrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
-    }
-  }, [contentInfo]);
+  // useEffect(() => {
+  //   if (contentInfo != null) {
+  //     // @ts-ignore
+  //     scrollRef.current.lastChild.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+  //   }
+  // }, [contentInfo]);
 
   //키값에 해당하는거 띄우려고 호출
   async function getMessageRoom() {

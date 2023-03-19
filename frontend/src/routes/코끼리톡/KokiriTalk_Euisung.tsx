@@ -28,7 +28,7 @@
  *
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from '../../styles/talk/kokiriTalk.module.scss';
 import { useLocation } from 'react-router-dom';
 import Api from '../../utils/api';
@@ -85,6 +85,7 @@ interface TalkCardInfo {
 
 const KokiriTalk2 = () => {
   const { state } = useLocation();
+  const scrollRef = useRef();
   const store = useSelector((state: Rootstate) => state);
   // console.log(state);
   //왼쪽 roomList를 담는 state
@@ -156,13 +157,23 @@ const KokiriTalk2 = () => {
 
   useEffect(() => {
     getMessageRoom();
-    console.log(count);
-    if (state) {
-      getTalkCardInfo();
-    } else {
-      //게시글에서 바로 이동하지 않았을떄, 제일 최신의 채팅방의 postId 정보를 이용해서 띄움
-    }
+
+    // if (state) {
+    //   getTalkCardInfo();
+    // } else {
+    //   //게시글에서 바로 이동하지 않았을떄, 제일 최신의 채팅방의 postId 정보를 이용해서 띄움
+    // }
   }, [count]);
+
+  useEffect(() => {
+    console.log(contentInfo);
+    if (contentInfo != null) {
+      setTimeout(() => {
+        // @ts-ignore
+        scrollRef.current.lastChild.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+      }, 100);
+    }
+  }, [contentInfo]);
 
   // 메세지를 보내면 새로고침
 
@@ -172,6 +183,8 @@ const KokiriTalk2 = () => {
   useEffect(() => {
     console.log('room list 변화 useEffect');
     if (roomList && roomList.length > 0) {
+      getTalkCardInfo();
+      console.log(roomList);
       if (state != null) //게시글에서 "코끼리톡으로 교환하기" 버튼을 클릭해서 들어온 경우
       {
         let authorIdInState = state.post.userInfoWithAddress.userDetail.id;
@@ -179,9 +192,6 @@ const KokiriTalk2 = () => {
         //state에 있는 유저 id와 roomlist의 authorid를 비교
         roomList.forEach(function(item, idx) {
           if (authorIdInState === item.authorId && postId === item.postId) {
-            // console.log('---------------------');
-            // console.log('게시글에서 들어온 로직');
-            // setIsClicked(idx);
             //둘다 검증되지 않는다면 만들어진 방이 없다는것, 새로운 빈 껍질 UI 만들지 않기
             setInitialRoom(false);
             setIsClicked(idx);
@@ -238,8 +248,11 @@ const KokiriTalk2 = () => {
     try {
       const res = await Api.get(`/messageRooms/${messageRoomId}`);
 
+      const array = [...res.data];
+      const reversedArray = array.reverse();
+
       setContentInfo(() => {
-        return [...res.data];
+        return [...reversedArray];
       });
 
     } catch (err) {
@@ -332,6 +345,7 @@ const KokiriTalk2 = () => {
     setInput('');
   };
 
+
   if (!roomList) {
     return null;
   }
@@ -419,7 +433,7 @@ const KokiriTalk2 = () => {
             {/*<div className={styles.right_header1_2}>{talkCard.opponentNickname}님과의 쪽지방입니다.</div>*/}
             <div className={styles.right_header1_2}>님과의 쪽지방입니다.</div>
           </div>
-          <div className={styles.talkContainer2}>
+          <div ref={scrollRef} className={styles.talkContainer2}>
             {//최초 생성된 방이 클릭된 경우 메세지를 null로 설정
               isClicked === -1 && ''
             }
