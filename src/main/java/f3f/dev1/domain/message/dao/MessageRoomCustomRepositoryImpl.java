@@ -75,7 +75,7 @@ public class MessageRoomCustomRepositoryImpl implements MessageRoomCustomReposit
                                         .where(newMsg.messageRoom.id.eq(messageRoom.id))
                                         .groupBy(newMsg.messageRoom.id)
                         )))
-                .groupBy(messageRoom.id, message.id)
+                .groupBy(messageRoom.id)
                 .orderBy(message.createDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
