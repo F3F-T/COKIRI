@@ -20,6 +20,7 @@ import f3f.dev1.domain.trade.model.Trade;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -73,7 +74,7 @@ public class MessageRoomService {
         if(!post.getMessageRooms().isEmpty()) {
             for (MessageRoom msgRoom : post.getMessageRooms()) {
                 if (msgRoom.getBuyer().getId().equals(buyer.getId()) && msgRoom.isBuyerDelStatus()==false) {
-                    MessageRoomDTO.MessageRoomInfoDto msgRoomInfo = msgRoom.toMessageRoomInfo();
+                    MessageRoomInfoDto msgRoomInfo = msgRoom.toMessageRoomInfo();
                     return msgRoomInfo;
                 }
 //                  else if (msgRoom.getBuyer().getId().equals(buyer.getId()) && msgRoom.isBuyerDelStatus()==true) {
@@ -130,22 +131,23 @@ public class MessageRoomService {
     @Transactional(readOnly = true)
     public List<MessageRoomInfoDto> ReadMessageRoomsByUserId(Long memberId, Long currentMemberId){
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        List<MessageRoom> sellingRooms = messageRoomRepository.findBySellerIdOrderByModifiedDateDesc(memberId);
+        List<MessageRoom> buyingRooms = messageRoomRepository.findByBuyerIdOrderByModifiedDateDesc(memberId);
         if(!memberId.equals(currentMemberId)){
             throw new NotAuthorizedException("로그인한 요청자가 아닙니다!");
         }
         List<MessageRoomInfoDto> totalMsgRoomDtoList = new ArrayList<>();
-        for(MessageRoom msgRoom : member.getBuyingRooms()){
+
+        for(MessageRoom msgRoom : buyingRooms){
             MessageRoomInfoDto msgRoomInfoDto = msgRoom.toMessageRoomInfo();
             totalMsgRoomDtoList.add(msgRoomInfoDto);
         }
-        for(MessageRoom msgRoom : member.getSellingRooms()){
+        for(MessageRoom msgRoom : sellingRooms){
             MessageRoomInfoDto msgRoomInfoDto = msgRoom.toMessageRoomInfo();
             totalMsgRoomDtoList.add(msgRoomInfoDto);
         }
-//        for(MessageRoomInfoDto msgRoom : totalMsgRoomDtoList ){
-//            LocalDateTime modified = msgRoom.getModifiedTime();
-//            totalMsgRoomDtoList.sort(Comparator.comparing(LocalDateTime::));
-//        }
+
+//        Collections.sort(totalMsgRoomDtoList, new messageRoomComparator());
 //        List<MessageRoom> totalMsgRoom = new ArrayList<>();
 //        totalMsgRoom.addAll(member.getBuyingRooms());
 //        totalMsgRoom.addAll(member.getSellingRooms());
@@ -195,11 +197,12 @@ public class MessageRoomService {
     @Transactional(readOnly = true)
     public List<SellingRoomInfoDto> ReadSellingMessageRoomsByUserId(Long memberId, Long currentMemberId){
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        List<MessageRoom> sellingRooms = messageRoomRepository.findBySellerIdOrderByModifiedDateDesc(memberId);
         if(!memberId.equals(currentMemberId)){
             throw new NotAuthorizedException("로그인한 요청자가 아닙니다!");
         }
         List<SellingRoomInfoDto> sellingRoomsInfoDto = new ArrayList<>();
-        for(MessageRoom msgRoom : member.getSellingRooms()){
+        for(MessageRoom msgRoom : sellingRooms){
             SellingRoomInfoDto msgRoomInfoDto = msgRoom.toSellingRoomInfo();
             sellingRoomsInfoDto.add(msgRoomInfoDto);
         }
@@ -209,11 +212,12 @@ public class MessageRoomService {
     @Transactional(readOnly = true)
     public List<BuyingRoomInfoDto> ReadBuyingMessageRoomsByUserId(Long memberId, Long currentMemberId){
         Member member = memberRepository.findById(memberId).orElseThrow(NotFoundByIdException::new);
+        List<MessageRoom> buyingRooms = messageRoomRepository.findByBuyerIdOrderByModifiedDateDesc(memberId);
         if(!memberId.equals(currentMemberId)){
             throw new NotAuthorizedException("로그인한 요청자가 아닙니다!");
         }
         List <BuyingRoomInfoDto> buyingRoomsInfoDto = new ArrayList<>();
-        for(MessageRoom msgRoom : member.getBuyingRooms()){
+        for(MessageRoom msgRoom : buyingRooms ){
             BuyingRoomInfoDto buyingRoomInfoDto = msgRoom.toBuyingRoomInfo();
             buyingRoomsInfoDto.add(buyingRoomInfoDto);
         }
@@ -225,8 +229,9 @@ public class MessageRoomService {
     @Transactional(readOnly = true)
     public List<MessageInfoDto> ReadMessagesByMessageRoomId(Long id, Long currentMemberId){
        MessageRoom messageRoom = messageRoomRepository.findById(id).orElseThrow(NotFoundByIdException::new);
+       List<Message> messages = messageRepository.findByMessageRoomIdOrderByCreateDateDesc(id);
        List <MessageInfoDto> totalMsgInfoDto = new ArrayList<>();
-       for(Message msg : messageRoom.getMessages()){
+       for(Message msg : messages){
            MessageInfoDto msgInfoDto = msg.toMessageInfo();
            totalMsgInfoDto.add(msgInfoDto);
        }
@@ -305,6 +310,16 @@ public class MessageRoomService {
         return "DELETE";
     }
 
-
+    //메시지룸 업데이트 시 최근 순으로 정렬 -> 나갈 때도 수정되기 때문에 메시지 목록에서 마지막 메시지 시간 받아와야할듯
+//    public class  messageRoomComparator implements Comparator<MessageRoomInfoDto> {
+//        @Override
+//        public int compare(MessageRoomInfoDto msgRoom1, MessageRoomInfoDto msgRoom2){
+//            Message message1 = messageRepository.findById(msgRoom1.getId()).orElseThrow(NotFoundByIdException::new);
+//            Message message2 = messageRepository.findById(msgRoom2.getId()).orElseThrow(NotFoundByIdException::new);
+//
+//            return msgRoom2.getModifiedTime().compareTo(msgRoom1.getModifiedTime()); //내림차순을 위해 2에서1 뺌
+//        }
+//    }
 
 }
+
