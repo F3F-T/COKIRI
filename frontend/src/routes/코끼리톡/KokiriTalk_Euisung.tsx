@@ -30,7 +30,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import styles from '../../styles/talk/kokiriTalk.module.scss';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Api from '../../utils/api';
 import TalkList2 from '../../component/talk/TalkList2';
 import TalkCard2 from '../../component/talk/TalkCard2';
@@ -102,23 +102,25 @@ const KokiriTalk2 = () => {
   const [talkCardInfo, setTalkCardInfo] = useState<TalkCardInfo>();
   const [isClicked, setIsClicked] = useState<number>();
   const [initialRoom, setInitialRoom] = useState<boolean>();
+  const navigate = useNavigate();
 
   const [count, setCount] = useState(0);
 
   const [input, setInput] = useState('');
+  const [condition, setCondition] = useState(false);
 
   let roomList_original: MessageRoomInfo[];
 
   let localIsClicked;
   const [initialRender, setInitialRender] = useState(true);
   const [talkCardChanged, setTalkCardChanged] = useState(0);
+  const [firstTimeTalk, setFirstTimeTalk] = useState(false);
 
   //최초 게시글 정보 불러오기
   //오른쪽 위 post 정보를 불러옴
 
   //최초에만 오른쪽 위 게시글 정보(talkCardInfo)를 불러옴,
   function getInitialTalkCardInfo() {
-    console.log(state);
     if (state) { //게시글에서 코키리톡으로 교환하기 버튼을 눌렀을때
 
       setTalkCardInfo(prevState => {
@@ -136,20 +138,27 @@ const KokiriTalk2 = () => {
       });
     } else {
       //코끼리톡 버튼을 직접 들어갔을때
-      setTalkCardInfo(prevState => {
-        let jsonObj = {
-          productImg: roomList[0].thumbnailImgPath,
-          tradeStatus: roomList[0].tradeStatus,
-          title: roomList[0].title,
-          tradeCategory: roomList[0].productCategory,
-          wishCategory: roomList[0].wishCategory,
-          postId: roomList[0].postId,
-          price: roomList[0].price,
-          authorId: roomList[0].authorId,
-        };
-        return jsonObj;
-      });
+      //코끼리톡이 처음이 아닐때
+      if (!firstTimeTalk) {
+        setTalkCardInfo(prevState => {
+          let jsonObj = {
+            productImg: roomList[0].thumbnailImgPath,
+            tradeStatus: roomList[0].tradeStatus,
+            title: roomList[0].title,
+            tradeCategory: roomList[0].productCategory,
+            wishCategory: roomList[0].wishCategory,
+            postId: roomList[0].postId,
+            price: roomList[0].price,
+            authorId: roomList[0].authorId,
+          };
+          return jsonObj;
+        });
+      } else {
+        //코끼리톡이 처음일때
+        setCondition(true);
+      }
     }
+
 
   }
 
@@ -194,8 +203,10 @@ const KokiriTalk2 = () => {
   async function getMessageRoom() {
     try {
       const res = await Api.get('/user/messageRooms');
-      console.log(res);
       roomList_original = res.data.content;
+      if (roomList_original.length < 1) {
+        setFirstTimeTalk(true);
+      }
       changeMessageRoomState(roomList_original);
 
     } catch (err) {
@@ -210,7 +221,6 @@ const KokiriTalk2 = () => {
 
 
   useEffect(() => {
-    console.log(contentInfo);
     if (contentInfo != null) {
       setTimeout(() => {
         // @ts-ignore
@@ -237,8 +247,6 @@ const KokiriTalk2 = () => {
           roomList.forEach(function(item, idx) {
             if (authorIdInState === item.authorId && postId === item.postId) {
               //둘다 검증된다면 만들어진 방이 존재한다는것, 새로운 빈 껍질 UI 만들지 않기
-              console.log('--------');
-              console.log(isClicked);
               setInitialRoom(false);
               setIsClicked(idx);
               localIsClicked = idx;
@@ -256,10 +264,17 @@ const KokiriTalk2 = () => {
             getMessageContent(roomList[localIsClicked].messageRoomId);
           }
         } else { //일반 코끼리톡 버튼을 클릭해서 들어온 경우 : 맨 위에 있는 쪽지방 선택
+          getInitialTalkCardInfo();
           getMessageContent(roomList[0].messageRoomId); //맨 위에 있는(최신순) 쪽지방을 선택하고, 메시지를 띄워준다
           setIsClicked(0);
         }
 
+      }
+      //완전 처음일때 ㅜㅜㅜㅜㅜㅜㅜㅜㅜ
+      if (firstTimeTalk) {
+        getInitialTalkCardInfo();
+        setInitialRoom(true);
+        setIsClicked(-1);
       }
 
     }
@@ -308,7 +323,6 @@ const KokiriTalk2 = () => {
   async function getMessageContent(messageRoomId) {
     try {
       const res = await Api.get(`/messageRooms/${messageRoomId}`);
-      console.log(res);
 
       const array = [...res.data];
       const reversedArray = array.reverse();
@@ -347,13 +361,11 @@ const KokiriTalk2 = () => {
 
   const createMessageRoom = async () => {
     try {
-      console.log('asdff');
       const postId = state.post.id;
       //buyerid는 코키리톡으로 교환하기를 클리릭한 자신임
       const buyerId = store.userInfoReducer.id;
       const res = await Api.post(`/post/${postId}/messageRooms`, { postId, buyerId });
       return res.data;
-      console.log(res);
     } catch (err) {
       console.log(err);
     }
@@ -361,11 +373,9 @@ const KokiriTalk2 = () => {
   };
   const sendMessage = async () => {
     setInitialRender(prevState => false);
-    console.log('sendMessage isClicked : ', isClicked);
     try {
       if (isClicked != -1) //새로운 방이 생성되지 않은경우
       {
-        console.log('sendMessage isClicked : 2', isClicked);
         let messageInfo = {
           content: input,
           senderId: store.userInfoReducer.id,
@@ -375,11 +385,9 @@ const KokiriTalk2 = () => {
         };
         let messageRoomId = roomList[isClicked].messageRoomId;
         const res = await Api.post(`/messageRooms/${messageRoomId}`, messageInfo);
-        console.log('메세지 전송 새로운 방이 생성되지 않은 경우', res.data);
+
       } else { //새로운 방이 생성된경우
-        console.log('sendMessage isClicked:3새로운방생성', isClicked);
         const newMessageRoomInfo = await createMessageRoom();
-        console.log(newMessageRoomInfo);
 
         let messageInfo = {
           content: input,
@@ -420,24 +428,35 @@ const KokiriTalk2 = () => {
     setInput('');
   };
 
+  if (firstTimeTalk != true) {
 
-  if (!roomList) {
-    return null;
-  }
-
-
-  if (!talkCardInfo) {
-    return null;
-  }
-
-  if (foundRoom) {
-    if (!contentInfo) {
+    if (!roomList) {
       return null;
     }
+
+    if (!talkCardInfo) {
+      return null;
+    }
+
+    if (foundRoom) {
+      if (!contentInfo) {
+        return null;
+      }
+    }
+  } else {
+    if (roomList.length < 1) {
+      if (condition) {
+        alert('대화중인 방이 없습니다.');
+        navigate(`/mulmultrade`);
+      }
+
+    }
+    if (!talkCardInfo) {
+      return null;
+    }
+
   }
-  // console.log('----------state---');
-  //
-  // console.log(state);
+
 
   return (
     <div className={styles.wrap}>
