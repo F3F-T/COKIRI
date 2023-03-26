@@ -197,7 +197,6 @@ const KokiriTalk2 = () => {
   useEffect(() => {
     //첫번째 렌더때만 아래 코드 실행, 그 이외 roomList가 변화할때는 호출하지 않기 (isClicked 가 변화함에 따라 데이터 변환)
     if (initialRender) {
-      console.log('initialRender 한번만 되야해,');
       getInitialTalkCardInfo();
       if (roomList && roomList.length > 0) {
         if (state != null) //게시글에서 "코끼리톡으로 교환하기" 버튼을 클릭해서 들어온 경우
@@ -233,6 +232,12 @@ const KokiriTalk2 = () => {
 
       }
 
+    }
+    //sendMessage를 해서 렌더링이 최초가 아닐때
+    else {
+      console.log(roomList);
+      console.log(isClicked);
+      getMessageContent(roomList[isClicked].messageRoomId);
     }
   }, [roomList]);
 
@@ -313,7 +318,7 @@ const KokiriTalk2 = () => {
     try {
       console.log('asdff');
       const postId = state.post.id;
-      //buyerid는 코키리톡으로 교환하기를 클릭한 자신임
+      //buyerid는 코키리톡으로 교환하기를 클리릭한 자신임
       const buyerId = store.userInfoReducer.id;
       const res = await Api.post(`/post/${postId}/messageRooms`, { postId, buyerId });
       return res.data;
@@ -358,6 +363,7 @@ const KokiriTalk2 = () => {
       }
 
       setCount(prevState => prevState + 1);
+      localIsClicked = 0;
       setIsClicked(0);
 
 
