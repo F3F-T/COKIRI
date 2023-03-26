@@ -136,7 +136,43 @@ const KokiriTalk2 = () => {
       });
     } else {
       //코끼리톡 버튼을 직접 들어갔을때
+      setTalkCardInfo(prevState => {
+        let jsonObj = {
+          productImg: roomList[0].thumbnailImgPath,
+          tradeStatus: roomList[0].tradeStatus,
+          title: roomList[0].title,
+          tradeCategory: roomList[0].productCategory,
+          wishCategory: roomList[0].wishCategory,
+          postId: roomList[0].postId,
+          price: roomList[0].price,
+          authorId: roomList[0].authorId,
+        };
+        return jsonObj;
+      });
+    }
 
+  }
+
+  //왼쪽 roomlist를 클릭할때마다 talkCardList가 변화하는 로직
+  function getTalkCardInfo() {
+    //새로운 방이 만들어지지 않았을떄 일반적인 로직
+    if (isClicked != -1) {
+      setTalkCardInfo(prevState => {
+        let jsonObj = {
+          productImg: roomList[isClicked].thumbnailImgPath,
+          tradeStatus: roomList[isClicked].tradeStatus,
+          title: roomList[isClicked].title,
+          tradeCategory: roomList[isClicked].productCategory,
+          wishCategory: roomList[isClicked].wishCategory,
+          postId: roomList[isClicked].postId,
+          price: roomList[isClicked].price,
+          authorId: roomList[isClicked].authorId,
+        };
+        return jsonObj;
+      });
+    }
+    //새로운 방이 만들어졌을때는 roomList에 정보가 없으니, state에서 불러온다
+    else {
       setTalkCardInfo(prevState => {
         let jsonObj = {
           productImg: state.post.images[0],
@@ -152,23 +188,6 @@ const KokiriTalk2 = () => {
       });
     }
 
-  }
-
-  //왼쪽 roomlist를 클릭할때마다 talkCardList가 변화하는 로직
-  function getTalkCardInfo() {
-    setTalkCardInfo(prevState => {
-      let jsonObj = {
-        productImg: roomList[isClicked].thumbnailImgPath,
-        tradeStatus: roomList[isClicked].tradeStatus,
-        title: roomList[isClicked].title,
-        tradeCategory: roomList[isClicked].productCategory,
-        wishCategory: roomList[isClicked].wishCategory,
-        postId: roomList[isClicked].postId,
-        price: roomList[isClicked].price,
-        authorId: roomList[isClicked].authorId,
-      };
-      return jsonObj;
-    });
   }
 
   //왼쪽 메시지룸 리스트를 갖고오는 api 호출
@@ -189,6 +208,7 @@ const KokiriTalk2 = () => {
     getMessageRoom();
   }, [count]);
 
+
   useEffect(() => {
     console.log(contentInfo);
     if (contentInfo != null) {
@@ -207,8 +227,8 @@ const KokiriTalk2 = () => {
   useEffect(() => {
     //첫번째 렌더때만 아래 코드 실행, 그 이외 roomList가 변화할때는 호출하지 않기 (isClicked 가 변화함에 따라 데이터 변환)
     if (initialRender) {
-      getInitialTalkCardInfo();
       if (roomList && roomList.length > 0) {
+        getInitialTalkCardInfo();
         if (state != null) //게시글에서 "코끼리톡으로 교환하기" 버튼을 클릭해서 들어온 경우
         {
           let authorIdInState = state.post.userInfoWithAddress.userDetail.id;
@@ -288,6 +308,7 @@ const KokiriTalk2 = () => {
   async function getMessageContent(messageRoomId) {
     try {
       const res = await Api.get(`/messageRooms/${messageRoomId}`);
+      console.log(res);
 
       const array = [...res.data];
       const reversedArray = array.reverse();
@@ -310,7 +331,7 @@ const KokiriTalk2 = () => {
       getMessageContent(messageRoomId);
       setIsClicked(idx);
       localIsClicked = idx;
-      setTalkCardChanged(prevState => prevState + 1)
+      setTalkCardChanged(prevState => prevState + 1);
       //TODO: 의성) talkCard의 정보들이 roomList가 변할때마다 postId로 오른쪽 위의 게시글정보를 띄워준다. 동준이한테 postId 뿐만아니라 여기에 필요한 post DTO를 다 넘겨달라고 하면 좋을듯 아니면 post api를 사용해야함
       //TODO: 원래는 setKey로 식별후에 talkCard component에서 api를 호출해서 문제가 되었다. 그냥 부모에서 정보를 다 갖고 자식에선 api를 호출하지 않는 방식으로 구현함
       // console.log(contentInfo);
@@ -375,6 +396,7 @@ const KokiriTalk2 = () => {
       setCount(prevState => prevState + 1);
       localIsClicked = 0;
       setIsClicked(0);
+      setInitialRoom(false);
 
 
     } catch (err) {
@@ -387,7 +409,7 @@ const KokiriTalk2 = () => {
     return (event: React.MouseEvent) => {
       setIsClicked(-1);
       localIsClicked = -1;
-      setTalkCardChanged(prevState => prevState + 1)
+      setTalkCardChanged(prevState => prevState + 1);
       event.preventDefault();
     };
   };
@@ -403,11 +425,11 @@ const KokiriTalk2 = () => {
     return null;
   }
 
-  // if (!talkCardInfo) {
-  //   return null;
-  // }
 
-  console.log(talkCardInfo);
+  if (!talkCardInfo) {
+    return null;
+  }
+
   if (foundRoom) {
     if (!contentInfo) {
       return null;
