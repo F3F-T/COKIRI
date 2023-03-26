@@ -450,35 +450,55 @@ public class MemberDTO {
     }
 
 
-    @Builder
+
     @NoArgsConstructor
     @Getter
     public static class GetUserMessageRoom {
         private Long messageRoomId;
         private Long authorId;
+        private Long postId;
         private String lastMsg;
         private LocalDateTime createdDate;
         private String buyerNickname;
         private String sellerNickname;
+        private Long buyerId;
+        private Long sellerId;
         private String buyerThumbnail;
         private String sellerThumbnail;
 
         private boolean buyerDelStatus;
         private boolean sellerDelStatus;
+        private String thumbnailImgPath;
+        private TradeStatus tradeStatus;
+        private String title;
+        private String productCategory;
+        private String wishCategory;
+        private Long price;
 
 
+        @Builder
         @QueryProjection
-        public GetUserMessageRoom(Long messageRoomId, Long authorId, String lastMsg, LocalDateTime createdDate, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail, boolean buyerDelStatus, boolean sellerDelStatus) {
+        public GetUserMessageRoom(Long messageRoomId, Long authorId, Long postId, String lastMsg, LocalDateTime createdDate, Long buyerId, Long sellerId, String buyerNickname, String sellerNickname, String buyerThumbnail, String sellerThumbnail, boolean buyerDelStatus, boolean sellerDelStatus, String thumbnailImgPath, TradeStatus tradeStatus, String title, String productCategory, String wishCategory, Long price) {
+
             this.messageRoomId = messageRoomId;
             this.authorId = authorId;
+            this.postId = postId;
             this.lastMsg = lastMsg;
             this.createdDate = createdDate;
+            this.buyerId = buyerId;
+            this.sellerId = sellerId;
             this.buyerNickname = buyerNickname;
             this.sellerNickname = sellerNickname;
             this.buyerThumbnail = buyerThumbnail;
             this.sellerThumbnail = sellerThumbnail;
             this.buyerDelStatus = buyerDelStatus;
             this.sellerDelStatus = sellerDelStatus;
+            this.thumbnailImgPath = thumbnailImgPath;
+            this.title = title;
+            this.productCategory = productCategory;
+            this.wishCategory = wishCategory;
+            this.tradeStatus = tradeStatus;
+            this.price = price;
         }
     }
 
