@@ -55,6 +55,12 @@ interface MessageRoomInfo {
   sellerId: number,
   postId: number
   partnerId?: number,
+  thumbnailImgPath: string,
+  title: string,
+  tradeStatus: string,
+  wishCategory: string,
+  productCategory: string,
+  price: number,
   // buyerThumbnail : string
 
 }
@@ -79,7 +85,7 @@ interface TalkCardInfo {
   wishCategory: string
   postId: number,
   price: number,
-  authorId: number
+  authorId: number,
 }
 
 
@@ -101,15 +107,18 @@ const KokiriTalk2 = () => {
 
   const [input, setInput] = useState('');
 
-  let talkCardChanged = 0;
   let roomList_original: MessageRoomInfo[];
 
   let localIsClicked;
   const [initialRender, setInitialRender] = useState(true);
+  const [talkCardChanged, setTalkCardChanged] = useState(0);
 
   //최초 게시글 정보 불러오기
   //오른쪽 위 post 정보를 불러옴
+
+  //최초에만 오른쪽 위 게시글 정보(talkCardInfo)를 불러옴,
   function getInitialTalkCardInfo() {
+    console.log(state);
     if (state) { //게시글에서 코키리톡으로 교환하기 버튼을 눌렀을때
 
       setTalkCardInfo(prevState => {
@@ -145,17 +154,18 @@ const KokiriTalk2 = () => {
 
   }
 
+  //왼쪽 roomlist를 클릭할때마다 talkCardList가 변화하는 로직
   function getTalkCardInfo() {
     setTalkCardInfo(prevState => {
       let jsonObj = {
-        productImg: state.post.images[0],
-        tradeStatus: state.post.tradeStatus,
-        title: state.post.title,
-        tradeCategory: state.post.productCategory,
-        wishCategory: state.post.wishCategory,
-        postId: state.post.id,
-        price: state.post.price,
-        authorId: state.post.userInfoWithAddress.userDetail.id,
+        productImg: roomList[isClicked].thumbnailImgPath,
+        tradeStatus: roomList[isClicked].tradeStatus,
+        title: roomList[isClicked].title,
+        tradeCategory: roomList[isClicked].productCategory,
+        wishCategory: roomList[isClicked].wishCategory,
+        postId: roomList[isClicked].postId,
+        price: roomList[isClicked].price,
+        authorId: roomList[isClicked].authorId,
       };
       return jsonObj;
     });
@@ -235,12 +245,12 @@ const KokiriTalk2 = () => {
     }
     //sendMessage를 해서 렌더링이 최초가 아닐때
     else {
-      console.log(roomList);
-      console.log(isClicked);
       getMessageContent(roomList[isClicked].messageRoomId);
     }
   }, [roomList]);
 
+  //talkCardChanged가 변화할때 실행
+  //변화하는 조건 : 왼쪽 roomList를 클릭할때마다
   useEffect(() => {
     if (talkCardChanged > 0) {
       getTalkCardInfo();
@@ -300,7 +310,7 @@ const KokiriTalk2 = () => {
       getMessageContent(messageRoomId);
       setIsClicked(idx);
       localIsClicked = idx;
-      talkCardChanged++;
+      setTalkCardChanged(prevState => prevState + 1)
       //TODO: 의성) talkCard의 정보들이 roomList가 변할때마다 postId로 오른쪽 위의 게시글정보를 띄워준다. 동준이한테 postId 뿐만아니라 여기에 필요한 post DTO를 다 넘겨달라고 하면 좋을듯 아니면 post api를 사용해야함
       //TODO: 원래는 setKey로 식별후에 talkCard component에서 api를 호출해서 문제가 되었다. 그냥 부모에서 정보를 다 갖고 자식에선 api를 호출하지 않는 방식으로 구현함
       // console.log(contentInfo);
@@ -377,7 +387,7 @@ const KokiriTalk2 = () => {
     return (event: React.MouseEvent) => {
       setIsClicked(-1);
       localIsClicked = -1;
-      talkCardChanged++;
+      setTalkCardChanged(prevState => prevState + 1)
       event.preventDefault();
     };
   };
@@ -396,6 +406,8 @@ const KokiriTalk2 = () => {
   // if (!talkCardInfo) {
   //   return null;
   // }
+
+  console.log(talkCardInfo);
   if (foundRoom) {
     if (!contentInfo) {
       return null;
