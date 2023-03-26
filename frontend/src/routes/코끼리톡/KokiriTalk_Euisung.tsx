@@ -105,6 +105,7 @@ const KokiriTalk2 = () => {
   let roomList_original: MessageRoomInfo[];
 
   let localIsClicked;
+  const [initialRender, setInitialRender] = useState(true);
 
   //최초 게시글 정보 불러오기
   //오른쪽 위 post 정보를 불러옴
@@ -194,46 +195,50 @@ const KokiriTalk2 = () => {
 
   //getMessageRoom에서 비동기적으로 처리된 roomList를 접근해서 오른쪽의 messageContent를 띄우기 위해 사용
   useEffect(() => {
-    getInitialTalkCardInfo();
-    if (roomList && roomList.length > 0) {
-      console.log(roomList);
-      if (state != null) //게시글에서 "코끼리톡으로 교환하기" 버튼을 클릭해서 들어온 경우
-      {
-        let authorIdInState = state.post.userInfoWithAddress.userDetail.id;
-        let postId = state.post.id;
-        //state에 있는 유저 id와 roomlist의 authorid를 비교
-        roomList.forEach(function(item, idx) {
-          if (authorIdInState === item.authorId && postId === item.postId) {
-            //둘다 검증되지 않는다면 만들어진 방이 없다는것, 새로운 빈 껍질 UI 만들지 않기
-            setInitialRoom(false);
-            setIsClicked(idx);
-            localIsClicked = idx;
-            foundRoom = true;
-            return false;
+    //첫번째 렌더때만 아래 코드 실행, 그 이외 roomList가 변화할때는 호출하지 않기 (isClicked 가 변화함에 따라 데이터 변환)
+    if (initialRender) {
+      console.log('initialRender 한번만 되야해,');
+      getInitialTalkCardInfo();
+      if (roomList && roomList.length > 0) {
+        if (state != null) //게시글에서 "코끼리톡으로 교환하기" 버튼을 클릭해서 들어온 경우
+        {
+          let authorIdInState = state.post.userInfoWithAddress.userDetail.id;
+          let postId = state.post.id;
+          //state에 있는 유저 id와 roomlist의 authorid를 비교
+          roomList.forEach(function(item, idx) {
+            if (authorIdInState === item.authorId && postId === item.postId) {
+              //둘다 검증된다면 만들어진 방이 존재한다는것, 새로운 빈 껍질 UI 만들지 않기
+              console.log('--------');
+              console.log(isClicked);
+              setInitialRoom(false);
+              setIsClicked(idx);
+              localIsClicked = idx;
+              foundRoom = true;
+              return false;
+            }
+
+            //상대방 닉네임 확인
+          });
+          if (!foundRoom) {
+            //빈 껍질 UI 만들기
+            setInitialRoom(true);
+            setIsClicked(-1);
+          } else {
+            getMessageContent(roomList[localIsClicked].messageRoomId);
           }
-
-          //상대방 닉네임 확인
-        });
-        if (!foundRoom) {
-          //빈 껍질 UI 만들기
-          setInitialRoom(true);
-          setIsClicked(-1);
-        } else {
-          getMessageContent(roomList[localIsClicked].messageRoomId);
+        } else { //일반 코끼리톡 버튼을 클릭해서 들어온 경우 : 맨 위에 있는 쪽지방 선택
+          getMessageContent(roomList[0].messageRoomId); //맨 위에 있는(최신순) 쪽지방을 선택하고, 메시지를 띄워준다
+          setIsClicked(0);
         }
-        // setIsClicked(0);
-      } else { //일반 코끼리톡 버튼을 클릭해서 들어온 경우 : 맨 위에 있는 쪽지방 선택
-        getMessageContent(roomList[0].messageRoomId); //맨 위에 있는(최신순) 쪽지방을 선택하고, 메시지를 띄워준다
-        setIsClicked(0);
-      }
 
+      }
 
     }
   }, [roomList]);
 
   useEffect(() => {
     if (talkCardChanged > 0) {
-      getTalkCardInfo()
+      getTalkCardInfo();
     }
   }, [talkCardChanged]);
 
@@ -306,6 +311,7 @@ const KokiriTalk2 = () => {
 
   const createMessageRoom = async () => {
     try {
+      console.log('asdff');
       const postId = state.post.id;
       //buyerid는 코키리톡으로 교환하기를 클릭한 자신임
       const buyerId = store.userInfoReducer.id;
@@ -318,9 +324,12 @@ const KokiriTalk2 = () => {
 
   };
   const sendMessage = async () => {
+    setInitialRender(prevState => false);
+    console.log('sendMessage isClicked : ', isClicked);
     try {
       if (isClicked != -1) //새로운 방이 생성되지 않은경우
       {
+        console.log('sendMessage isClicked : 2', isClicked);
         let messageInfo = {
           content: input,
           senderId: store.userInfoReducer.id,
@@ -330,8 +339,9 @@ const KokiriTalk2 = () => {
         };
         let messageRoomId = roomList[isClicked].messageRoomId;
         const res = await Api.post(`/messageRooms/${messageRoomId}`, messageInfo);
-        console.log('메세지 전송', res.data);
+        console.log('메세지 전송 새로운 방이 생성되지 않은 경우', res.data);
       } else { //새로운 방이 생성된경우
+        console.log('sendMessage isClicked:3새로운방생성', isClicked);
         const newMessageRoomInfo = await createMessageRoom();
         console.log(newMessageRoomInfo);
 
@@ -344,10 +354,11 @@ const KokiriTalk2 = () => {
         };
 
         const res = await Api.post(`/messageRooms/${newMessageRoomInfo.id}`, messageInfo);
-        console.log('메세지 전송', res.data);
+        console.log('메세지 전송2', res.data);
       }
 
       setCount(prevState => prevState + 1);
+      setIsClicked(0);
 
 
     } catch (err) {
@@ -367,6 +378,7 @@ const KokiriTalk2 = () => {
 
   const onClickPencil = async () => {
     await sendMessage();
+    setIsClicked(0);
     setInput('');
   };
 
@@ -426,7 +438,7 @@ const KokiriTalk2 = () => {
 
                   </div>) ||
                   (isClicked != idx && <div key={room.messageRoomId}>
-                    <TalkList2 keys={room['messageRoomId']}
+                    <TalkList2 keys={idx}
                                partner={room['partnerName']}
                                lastContent={room['lastMsg']}
                                date={timeConvert(room['createdDate'])}
