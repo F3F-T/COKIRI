@@ -40,7 +40,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // CSRF 설정 Disable
-        http.httpBasic().disable()csrf().disable().cors().configurationSource(corsConfigurationSource());
+        http.httpBasic().disable().csrf().disable().cors().configurationSource(corsConfigurationSource());
         http
 
                 // exception handling 할 때 우리가 만든 클래스를 추가
