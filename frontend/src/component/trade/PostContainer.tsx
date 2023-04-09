@@ -49,6 +49,7 @@ const PostContainer = (postProps: postProps) => {
   const navigate = useNavigate();
   //tagsearch에서 사용한 query string을 받아오기 위함
   const queryString = window.location.search;
+  const [isLoading, setIsLoading] = useState(false);
 
   let wishCategory = '';
   let productCategory = '';
@@ -104,13 +105,14 @@ const PostContainer = (postProps: postProps) => {
           setPostList(prevState => {
             return [...prevState, ...res.data.content];
           });
+          setIsLoading(false);
         }
       } else if (queryString.includes('?tags=')) {
         const currentPage = pageInfo.number;
         if (!pageInfo.last) {
 
           console.log('스크롤 맨 끝');
-          const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
+          const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=${currentPage + 1}`);
           // console.log(res)
           setPageInfo(prevState => {
             return {
@@ -128,6 +130,7 @@ const PostContainer = (postProps: postProps) => {
           setPostList(prevState => {
             return [...prevState, ...res.data.content];
           });
+          setIsLoading(false);
         }
       }
     } catch (err) {
@@ -137,11 +140,10 @@ const PostContainer = (postProps: postProps) => {
   }
 
   useEffect(() => {
-    if (inView) {
+    if (inView && !isLoading) {
       // console.log("스크롤의 끝입니다")
+      setIsLoading(true);
       getMorePostList();
-    } else {
-      // console.log("스크롤의 끝이 아니다")
     }
   }, [inView]);
 
