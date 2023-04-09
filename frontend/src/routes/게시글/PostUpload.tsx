@@ -24,6 +24,17 @@ const PostUpload = () => {
     tag: string[];
   }
 
+  interface UploadValidationCheck {
+    photo: boolean;
+    title: boolean;
+    price: boolean;
+    content: boolean;
+    productCategory: boolean;
+    wishCategory: boolean;
+    tag: boolean;
+  }
+
+
   const [uploadData, setUploadData] = useState<UploadData>();
   let tradeEachOther: boolean = undefined;
   const store = useSelector((state: Rootstate) => state);
@@ -32,6 +43,10 @@ const PostUpload = () => {
   const [photoUrl, setPhotoUrl] = useState<string[]>(null);
   let formData;
   const [isOpenModal, setOpenModal] = useState<boolean>(false);
+
+  //중복클릭 업로드 방지
+  const [isUploading, setIsUploading] = useState(false);
+
 
   const onClickToggleModal = useCallback(() => {
     setOpenModal(!isOpenModal);
@@ -146,9 +161,11 @@ const PostUpload = () => {
       alert('업로드 성공');
       navigate(`/`);
     } catch (err) {
+      setIsUploading(false);
       console.log(err);
       alert('업로드 실패');
     }
+
   }
 
   const imageUpload = async () => {
@@ -164,6 +181,13 @@ const PostUpload = () => {
   };
 
   const onClickUploadButton = async () => {
+
+    if (isUploading) {
+      return;
+    }
+
+    setIsUploading(true);
+
     console.log(uploadData);
 
     if (uploadData.productCategory === uploadData.wishCategory) {
@@ -178,29 +202,40 @@ const PostUpload = () => {
     }
 
 
-    //사진 업로드
-    const photoUrlList = await imageUpload();
-
-    if (photoUrlList.length < 1) {
-      alert('사진을 한장 이상 업로드해주세요.');
+    //사진 업로드 필수항목 검증
+    if (!(uploadData.title &&
+      uploadData.tag &&
+      uploadData.price &&
+      uploadData.content &&
+      uploadData.wishCategory &&
+      uploadData.productCategory)) {
+      alert('업로드 할 내용을 다 채워주세요.');
     } else {
-      console.log(photoUrlList);
-      const jsonObj = {
-        'title': uploadData.title,
-        'content': uploadData.content,
-        'price': uploadData.price,
-        'tradeEachOther': tradeEachOther,
-        'authorId': store.userInfoReducer.id,
-        'productCategory': uploadData.productCategory,
-        'wishCategory': uploadData.wishCategory,
-        'tagNames': [...uploadData.tag],
-        'images': [...photoUrlList],
-        'thumbnail': photoUrlList[0],
-      };
-      //업로드 유효검증 로직 추가로 짜야함
-      uploadPost(jsonObj);
-      console.log('업로드 성공');
+      const photoUrlList = await imageUpload();
+
+      if (photoUrlList.length < 1) {
+        alert('사진을 한장 이상 업로드해주세요.');
+      } else {
+        console.log(photoUrlList);
+        const jsonObj = {
+          'title': uploadData.title,
+          'content': uploadData.content,
+          'price': uploadData.price,
+          'tradeEachOther': tradeEachOther,
+          'authorId': store.userInfoReducer.id,
+          'productCategory': uploadData.productCategory,
+          'wishCategory': uploadData.wishCategory,
+          'tagNames': [...uploadData.tag],
+          'images': [...photoUrlList],
+          'thumbnail': photoUrlList[0],
+        };
+        //업로드 유효검증 로직 추가로 짜야함
+        uploadPost(jsonObj);
+
+        console.log('업로드 성공');
+      }
     }
+
   };
 
 
@@ -259,24 +294,39 @@ const PostUpload = () => {
     });
   };
 
+  // const deleteImg = (index) => {
+  //   setShowImages((prevState) => {
+  //     prevState.splice(index, 1);
+  //     return [...prevState];
+  //   });
+  //
+  //   const newPhotoData = new FormData();
+  //   showImages.forEach((image, i) => {
+  //     if (i !== index) {
+  //       newPhotoData.append('imageFiles', image);
+  //     }
+  //   });
+  //
+  //   setPhotoData(newPhotoData);
+  // };
+
+
   const deleteImg = (index) => {
     setShowImages((prevState) => {
-      prevState.splice(index, 1);
-      return [...prevState];
+      const updatedImages = [...prevState];
+      updatedImages.splice(index, 1);
+      return updatedImages;
     });
 
-    //로컬 Url -> formdata -> s3 Url로 거쳐 저장해야한다
-    //미리보기인 showImages와 별개로 formdata를 지워줘야한다
-
-    const tempPhotoData = photoData.getAll('imageFiles');
-    tempPhotoData.splice(index, 1);
-
-    // formdata 전부 지워주기(formData는 index로 접근할 수 없기때문에 전부 지워주고 새로 만든다
     setPhotoData((prevState) => {
-      prevState.delete('imageFiles');
+      const newPhotoData = new FormData();
+      prevState.getAll('imageFiles').forEach((file, i) => {
+        if (i !== index) {
+          newPhotoData.append('imageFiles', file);
+        }
+      });
+      return newPhotoData;
     });
-
-
   };
 
   /**
@@ -290,6 +340,8 @@ const PostUpload = () => {
       navigate(-1);
     }
   }, [store.jwtTokenReducer.authenticated]);
+
+  console.log(photoData);
 
 
   return (
@@ -412,7 +464,9 @@ const PostUpload = () => {
         </div>
 
         <div className={styles.btnPlace}>
-          <button className={styles.uploadBtn} onClick={onClickUploadButton}>내 물건 올리기</button>
+          <button className={styles.uploadBtn} onClick={onClickUploadButton} disabled={isUploading}>
+            내 물건 올리기
+          </button>
         </div>
 
       </div>

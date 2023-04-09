@@ -94,8 +94,6 @@ const SignUp = () => {
       if (duplicated) //중복인 경우 -> true 반환
       {
         setValidationCheck((prevState) => {
-          console.log('프리베이트 슽이트', prevState);
-
           return { ...prevState, emailCheck: 'duplicated', emailCheckBoolean: false };
         });
       } else //중복이 아닌 경우 -> false 반환
@@ -474,7 +472,7 @@ const SignUp = () => {
             <Message validCheck={validationCheck.phoneNumberCheckBoolean}
                      content={'❌ 이미 가입된 핸드폰 번호입니다.'} />)}
       </div>
-
+      정
       <div className={styles.btnPlace}>
         <Button content={'회원가입'} className={'black'} onClick={signUpButtonClick} />
       </div>
