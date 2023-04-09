@@ -335,6 +335,10 @@ const PostUpload = () => {
   useEffect(() => {
     if (store.jwtTokenReducer.authenticated) {
       console.log('로그인 상태');
+      //토큰 만료되면 reissue걸때 게시글 두개 올라가는 버그 막기 위해 reissue먼저 해줌
+      const jsonObj = { 'accessToken': store.jwtTokenReducer.accessToken };
+      const data = Api.post('http://localhost:8080/auth/reissue', jsonObj);
+      // console.log(data);
     } else {
       alert('로그인후에 가능한 서비스입니다.');
       navigate(-1);

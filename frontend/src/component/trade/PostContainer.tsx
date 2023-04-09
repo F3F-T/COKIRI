@@ -105,6 +105,7 @@ const PostContainer = (postProps: postProps) => {
           });
         }
       } else if (queryString.includes('?tags=')) {
+        console.log('스크롤 맨 끝');
         const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
         // console.log(res)
         setPageInfo(prevState => {
