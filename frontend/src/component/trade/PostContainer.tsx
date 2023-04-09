@@ -83,6 +83,7 @@ const PostContainer = (postProps: postProps) => {
       //query string 날리기
       if (queryString.length < 1 || !queryString.includes('?tags=')) {
         const currentPage = pageInfo.number;
+
         if (!pageInfo.last) {
           const res = await Api.get(`/post?productCategory=${productCategory}&wishCategory=${wishCategory}&minPrice=${minPrice}&maxPrice=${maxPrice}&sort=${sortType}&size=8&page=${currentPage + 1}`);
 
@@ -105,25 +106,29 @@ const PostContainer = (postProps: postProps) => {
           });
         }
       } else if (queryString.includes('?tags=')) {
-        console.log('스크롤 맨 끝');
-        const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
-        // console.log(res)
-        setPageInfo(prevState => {
-          return {
-            empty: res.data.empty,
-            first: res.data.first,
-            last: res.data.last,
-            number: res.data.number,
-            numberOfElements: res.data.numberOfElements,
-            size: res.data.size,
-            totalElements: res.data.totalElements,
-            totalPages: res.data.totalPages,
-          };
-        });
+        const currentPage = pageInfo.number;
+        if (!pageInfo.last) {
 
-        setPostList(prevState => {
-          return [...prevState, ...res.data.content];
-        });
+          console.log('스크롤 맨 끝');
+          const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
+          // console.log(res)
+          setPageInfo(prevState => {
+            return {
+              empty: res.data.empty,
+              first: res.data.first,
+              last: res.data.last,
+              number: res.data.number,
+              numberOfElements: res.data.numberOfElements,
+              size: res.data.size,
+              totalElements: res.data.totalElements,
+              totalPages: res.data.totalPages,
+            };
+          });
+
+          setPostList(prevState => {
+            return [...prevState, ...res.data.content];
+          });
+        }
       }
     } catch (err) {
       console.log(err);
