@@ -22,6 +22,7 @@ interface PostType {
   scrapCount?: number;
   messageRoomCount?: number;
   thumbnail?: string;
+  price: number;
 }
 
 interface Page {
@@ -300,7 +301,7 @@ const PostContainer = (postProps: postProps) => {
         {
           postList.map((post, index) => (
             <Card key={index} className={'forTrade'} like={post.scrapCount} postTitle={post.title}
-                  postContent={post.content} wishCategory={post.wishCategory}
+                  postContent={post.content} wishCategory={post.wishCategory} price={post.price}
                   messageRoomCount={post.messageRoomCount}
                   onClick={() => {
                     onClickPost(post);

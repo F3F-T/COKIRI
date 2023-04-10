@@ -1,6 +1,6 @@
 
 .priceBox {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     display: flex; /*내용물 가로 정렬*/
     flex-direction: row;
     position: relative;
