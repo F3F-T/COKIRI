@@ -12,7 +12,7 @@ import { FaExchangeAlt } from 'react-icons/fa';
 const ck = classNames.bind(styles);
 
 //물물교환에 쓸 css와 내 정보에 쓸 css를 구분하기 위해 사용  유니온 뭐시기였어 이게
-type cardTypes = 'forTrade' | 'forMypage'
+type cardTypes = 'forTrade' | 'forMypage' | 'forHome'
 
 
 //props에서 받을 카드 속 컨탠츠들
@@ -94,6 +94,13 @@ const Card = (props1: props) => {
   return (
     <>
       {props1.className === 'forTrade' &&
+        <div className={ck(props1.className)} onClick={props1.onClick}>
+          <TradeCard postTitle={props1.postTitle} postContent={props1.postContent} like={props1.like}
+                     messageRoomCount={props1.messageRoomCount}
+                     comment={props1.comment} wishCategory={props1.wishCategory} thumbnail={props1.thumbnail}
+                     price={props1.price} />
+        </div>}
+      {props1.className === 'forHome' &&
         <div className={ck(props1.className)} onClick={props1.onClick}>
           <TradeCard postTitle={props1.postTitle} postContent={props1.postContent} like={props1.like}
                      messageRoomCount={props1.messageRoomCount}

@@ -6,7 +6,7 @@
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    background-color: #EAEDEF;
+    background-color: var(--background-color);
     /*background-color: var(--primary-color);*/
     gap: 0px;
 }
@@ -15,7 +15,7 @@
     font-family: OhouseSans, Noto Sans KR, Apple SD Gothic Neo, 맑은 고딕, Malgun Gothic, sans-serif;
     border: none;
     /*background-color: transparent;*/
-    background-color: #EAEDEF;
+    background-color: var(--background-color);
     /*background-color: var(--primary-color);*/
     text-align: left;
     margin-left: 0.6rem;

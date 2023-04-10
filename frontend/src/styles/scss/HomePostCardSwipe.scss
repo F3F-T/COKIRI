@@ -43,9 +43,14 @@
 
   }
 
+  .swiper-pagination-fraction, .swiper-pagination-custom, .swiper-container-horizontal > .swiper-pagination-bullets {
+    bottom: -8.5px;
+  }
+
   .swiper-pagination-bullet {
     background: var(--primary-color) !important;
   }
+
 
   //.swiper-pagination-bullet-active {
   //  background: yellow !important;

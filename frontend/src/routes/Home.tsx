@@ -43,6 +43,7 @@ interface PostType {
   scrapCount?: number;
   messageRoomCount?: number;
   thumbnail?: string;
+  price?: number;
 }
 
 const HomeMulmulTrade = () => {
