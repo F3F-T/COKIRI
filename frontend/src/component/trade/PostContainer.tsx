@@ -68,8 +68,11 @@ const PostContainer = (postProps: postProps) => {
 
   const [postList, setPostList] = useState<PostType[]>(null);
   const [pageInfo, setPageInfo] = useState<Page>(null);
+  //최신순, 인기도 순의 filtertype을 변경할때 비동기적으로 처리되는것을 예방
   const [loading, setLoading] = useState(false);
+  const [loading2, setLoading2] = useState(true);
   let page;
+
 
   //무한 스크롤 구현
   // const loadingRef = useRef();
@@ -82,6 +85,7 @@ const PostContainer = (postProps: postProps) => {
   async function getMorePostList() {
     //interceptor를 사용한 방식 (header에 token값 전달)
     try {
+      console.log('여기냐');
       //query string 날리기
       if (queryString.length < 1 || !queryString.includes('?tags=')) {
         const currentPage = pageInfo.number;
@@ -142,7 +146,7 @@ const PostContainer = (postProps: postProps) => {
   }
 
   useEffect(() => {
-    if (inView && !isLoading) {
+    if (inView && !isLoading && !loading2) {
       // console.log("스크롤의 끝입니다")
       setIsLoading(true);
       getMorePostList();
@@ -199,6 +203,7 @@ const PostContainer = (postProps: postProps) => {
       setPostList(prevState => {
         return null;
       });
+      console.log(postList);
       // console.log(sortType);
       //query string 날리기
       if (queryString.length < 1 || !queryString.includes('?tags=')) {
@@ -220,6 +225,7 @@ const PostContainer = (postProps: postProps) => {
         setPostList(prevState => {
           return [...res.data.content];
         });
+        setLoading2(false);
       } else if (queryString.includes('?tags=')) {
         const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=10&page=0`);
         // console.log(res)
@@ -239,7 +245,9 @@ const PostContainer = (postProps: postProps) => {
         setPostList(prevState => {
           return [...res.data.content];
         });
+        setLoading2(false);
       }
+      console.log(postList);
     } catch (err) {
       console.log(err);
       alert('get 실패');
@@ -268,8 +276,15 @@ const PostContainer = (postProps: postProps) => {
   // getPostList();
   useEffect(() => {
     getPostList();
-    // console.log(page)
-  }, [wishCategory, productCategory, minPrice, maxPrice, postProps.filterType, store.refreshReducer.postChange]);
+  }, [wishCategory, productCategory, minPrice, maxPrice]);
+
+  useEffect(() => {
+    console.log(postProps.filterType);
+    setLoading2(prevState => true);
+    getPostList();
+
+  }, [postProps.filterType, store.refreshReducer.postChange]);
+
 
   /**
    * 중요) postList를 async로 받긴 하지만 받아오는 시간 전까지는 postList가 null이기 때문에 밑에있는 render 에서 postList.map 이 null을 접근하게 돼서 오류가 발생하고, 켜지지 않는다
@@ -298,7 +313,9 @@ const PostContainer = (postProps: postProps) => {
   return (
     <div>
       <div className={styles.postContainer}>
-        {
+        {loading2 ? (
+          <h1>loading</h1>
+        ) : (
           postList.map((post, index) => (
             <Card key={index} className={'forTrade'} like={post.scrapCount} postTitle={post.title}
                   postContent={post.content} wishCategory={post.wishCategory} price={post.price}
@@ -306,7 +323,7 @@ const PostContainer = (postProps: postProps) => {
                   onClick={() => {
                     onClickPost(post);
                   }} thumbnail={post.thumbnail} />
-          ))
+          )))
         }
       </div>
       <div className={styles.loadingDiv} ref={ref}>

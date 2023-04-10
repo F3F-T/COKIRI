@@ -20,8 +20,8 @@ const MulmulTrade1 = () => {
 
   const store = useSelector((state: Rootstate) => state);
   const categories2: string[] =
-    ['생활가전', '유아동', '뷰티/미용',
-      '티켓/교환권', '식물', '반려동물용품', '가공용품', '취미/게임', '생활/주방', '식품'];
+    ['식품', '티켓/교환권', '서비스/기술',
+      '유아동용품', '운동용품', '식물', '취미/게임', '반려동물용품', '생활/주방'];
   return (
     <div className={styles.mulmulTrade}>
       <div className={styles.mulmulTradeContent}>

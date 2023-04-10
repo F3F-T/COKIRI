@@ -1,10 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/home/Home.module.scss';
-import book from '../img/book.png';
-import fashion from '../img/fashion.png';
-import ticket from '../img/ticket.png';
-import young from '../img/young.png';
+import newfood from '../img/newfood.png';
+import newbook from '../img/newbook.png';
+import newticket from '../img/newticket.png';
+import newclothes from '../img/newclothes.png';
+import newservice from '../img/newservice.png';
+import newbaby from '../img/newbaby.png';
+import newexercise from '../img/newexercise.png';
+import newfurniture from '../img/newfurniture.png';
 import { useSelector } from 'react-redux';
 import { Rootstate } from '../index';
 import Api from '../utils/api';
@@ -140,7 +144,8 @@ const HomeKirikiriTrade = () => {
 
         <div className={styles.kirikiriCatagoryCardView}>
           <div className={'roundImageSwiper'}>
-            <RoundImageSwiper imageList={[book, fashion, ticket, young, book, fashion, ticket, young]} />
+            <RoundImageSwiper
+              imageList={[newbook, newfood, newticket, newclothes, newservice, newbaby, newexercise, newfurniture]} />
           </div>
         </div>
         <div className={styles.mulmulCardView}>
@@ -233,8 +238,8 @@ const Home = () => {
             <div className={styles.startLeft}>CO끼리</div>
             <div className={styles.startRight}>
               <div className={styles.startRight1}>
-                사용하지 않는 물건이 있나요? <br />
-                끼리끼리 교환하며 새로운 가치를 만나보세요.
+                혹시 사용하지 않는 물건이 있나요? <br />
+                끼리끼리 교환하며 새로운 가치를 만들어가요.
               </div>
               <div className={styles.startRight2}>
                 {

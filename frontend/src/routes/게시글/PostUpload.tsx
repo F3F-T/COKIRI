@@ -7,12 +7,14 @@ import Tags from '@yaireo/tagify/dist/react.tagify'; // React-wrapper file
 import '../../styles/scss/main.scss';
 import Api from '../../utils/api';
 import { Rootstate } from '../../index';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 //https://github.com/yairEO/tagify 에서 tagify 참조
 import { NumericFormat } from 'react-number-format';
 import Select from 'react-select';
 import Modal from '../로그인 & 회원가입/NeighborModal';
 import { TiDelete } from 'react-icons/ti';
+import { setToken } from '../../store/jwtTokenReducer';
+
 
 const PostUpload = () => {
   interface UploadData {
@@ -34,6 +36,7 @@ const PostUpload = () => {
     tag: boolean;
   }
 
+  const dispatch = useDispatch();
 
   const [uploadData, setUploadData] = useState<UploadData>();
   let tradeEachOther: boolean = undefined;
@@ -62,24 +65,45 @@ const PostUpload = () => {
 
   const categories: Category[] =
     [
-      { name: '전체' },
       { name: '도서' },
-      { name: '생활가전' },
-      { name: '의류' },
-      { name: '유아도서' },
-      { name: '유아동' },
-      { name: '여성의류' },
-      { name: '남성의류' },
-      { name: '스포츠/레저' },
+      { name: '식품' },
       { name: '티켓/교환권' },
-      { name: '식물' },
+      { name: '의류' },
+      { name: '서비스/기술' },
+      { name: '유아동용품' },
+      { name: '운동용품' },
       { name: '가구' },
+      { name: '뷰티/미용' },
       { name: '반려동물용품' },
-      { name: '가공용품' },
+      { name: '식물' },
       { name: '취미/게임' },
+      { name: '수집품' },
       { name: '인테리어' },
       { name: '생활/주방' },
+      { name: '전자기기' },
+      { name: '기타' },
+    ];
+
+  const categories2: Category[] =
+    [
+      { name: '도서' },
       { name: '식품' },
+      { name: '티켓/교환권' },
+      { name: '의류' },
+      { name: '서비스/기술' },
+      { name: '유아동용품' },
+      { name: '운동용품' },
+      { name: '가구' },
+      { name: '뷰티/미용' },
+      { name: '반려동물용품' },
+      { name: '식물' },
+      { name: '취미/게임' },
+      { name: '수집품' },
+      { name: '인테리어' },
+      { name: '생활/주방' },
+      { name: '전자기기' },
+      { name: '기타' },
+      { name: '상관없음' },
     ];
 
   const navigate = useNavigate();
@@ -329,6 +353,19 @@ const PostUpload = () => {
     });
   };
 
+  async function reissue() {
+
+    //interceptor를 사용한 방식 (header에 token값 전달)
+    try {
+      const jsonObj = { 'accessToken': store.jwtTokenReducer.accessToken };
+      const data = await Api.post('http://localhost:8080/auth/reissue', jsonObj);
+      dispatch(setToken(data.data));
+    } catch (err) {
+      console.log(err);
+      alert('get 실패');
+    }
+  }
+
   /**
    * 로그인 상태를 확인하고 비로그인일때 이전화면으로 돌아가기
    */
@@ -336,9 +373,8 @@ const PostUpload = () => {
     if (store.jwtTokenReducer.authenticated) {
       console.log('로그인 상태');
       //토큰 만료되면 reissue걸때 게시글 두개 올라가는 버그 막기 위해 reissue먼저 해줌
-      const jsonObj = { 'accessToken': store.jwtTokenReducer.accessToken };
-      const data = Api.post('http://localhost:8080/auth/reissue', jsonObj);
-      // console.log(data);
+      reissue();
+
     } else {
       alert('로그인후에 가능한 서비스입니다.');
       navigate(-1);
@@ -446,7 +482,7 @@ const PostUpload = () => {
               }}
               getOptionLabel={(category: Category) => category.name}
               getOptionValue={(category: Category) => category.name}
-              options={categories}
+              options={categories2}
               isClearable={true}
               backspaceRemovesValue={true}
               placeholder={'전체'}

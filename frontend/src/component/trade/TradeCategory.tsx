@@ -17,8 +17,8 @@ const TradeCategory = () => {
   const dispatch = useDispatch();
   const [isClicked, setIsClicked] = useState<number>();
   const categories: string[] =
-    ['전체', '도서', '식품', '생활가전', '유아도서', '유아동', '여성의류', '남성의류', '뷰티/미용', '스포츠/레저',
-      '티켓/교환권', '식물', '가구', '반려동물용품', '가공용품', '취미/게임', '인테리어', '생활/주방'];
+    ['전체', '도서', '식품', '티켓/교환권', '의류', '서비스/기술', '유아동용품', '운동용품', '가구', '뷰티/미용',
+      '반려동물용품', '식물', '취미/게임', '수집품', '인테리어', '생활/주방', '전자기기', '기타'];
 
 
   const onClickCategoryButton = (e, category) => {
@@ -40,17 +40,33 @@ const TradeCategory = () => {
       setIsClicked(prevState => {
         return 1;
       });
-    } else if (store.categoryReducer.category === '남성의류') {
+    } else if (store.categoryReducer.category === '식품') {
       setIsClicked(prevState => {
-        return 7;
+        return 2;
       });
     } else if (store.categoryReducer.category === '티켓/교환권') {
       setIsClicked(prevState => {
-        return 10;
+        return 3;
+      });
+    } else if (store.categoryReducer.category === '의류') {
+      setIsClicked(prevState => {
+        return 4;
+      });
+    } else if (store.categoryReducer.category === '서비스/기술') {
+      setIsClicked(prevState => {
+        return 5;
       });
     } else if (store.categoryReducer.category === '유아동') {
       setIsClicked(prevState => {
-        return 5;
+        return 6;
+      });
+    } else if (store.categoryReducer.category === '운동용품') {
+      setIsClicked(prevState => {
+        return 7;
+      });
+    } else if (store.categoryReducer.category === '가구') {
+      setIsClicked(prevState => {
+        return 8;
       });
     }
 
