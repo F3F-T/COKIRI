@@ -2,26 +2,30 @@
     border-radius: 10px;
     border: 1px solid rgba(200, 200, 200);
     width: 1200px;
-    height :10rem; /*192px*/
+    height: 10rem; /*192px*/
     display: grid;
-    grid-template-columns: repeat(6,1fr);
-    grid-template-rows: repeat(3,1fr);
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(3, 1fr);
     background-color: #EAEDEF;
+    /*background-color: var(--primary-color);*/
     gap: 0px;
 }
+
 .itemC {
-    font-family: OhouseSans,Noto Sans KR,Apple SD Gothic Neo,맑은 고딕,Malgun Gothic,sans-serif;
+    font-family: OhouseSans, Noto Sans KR, Apple SD Gothic Neo, 맑은 고딕, Malgun Gothic, sans-serif;
     border: none;
     /*background-color: transparent;*/
     background-color: #EAEDEF;
+    /*background-color: var(--primary-color);*/
     text-align: left;
     margin-left: 0.6rem;
     font-weight: 700;
     font-size: 1rem;
 }
 
-.colored{
-    color: #5DC8CD;
-    font-size: 1.5rem;
+.colored {
+    color: var(--primary-color);
+    /*background-color: var(--primary-color);*/
+    font-size: 1.15rem;
     /*color : white;*/
 }

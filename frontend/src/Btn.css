@@ -1,16 +1,17 @@
-.priceBtn{
-    background-color: #5DC8CD;
-    border :none;
-    margin-right :0.5rem;
+.priceBtn {
+    background-color: var(--primary-color);
+    border: none;
+    margin-right: 0.5rem;
     height: 1.8rem;
     border-radius: 10px;
     color: #FFF;
 
 }
 
-.red{
+.red {
     background-color: red;
 }
-.blue{
+
+.blue {
     background-color: blue;
 }

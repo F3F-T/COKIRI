@@ -137,6 +137,7 @@ const PostContainer = (postProps: postProps) => {
       console.log(err);
       alert('get 실패');
     }
+    setIsLoading(false);
   }
 
   useEffect(() => {

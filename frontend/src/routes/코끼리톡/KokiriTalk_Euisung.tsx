@@ -86,6 +86,8 @@ interface TalkCardInfo {
   postId: number,
   price: number,
   authorId: number,
+  partnerName: string,
+  partnerId: number
 }
 
 
@@ -115,6 +117,7 @@ const KokiriTalk2 = () => {
   const [initialRender, setInitialRender] = useState(true);
   const [talkCardChanged, setTalkCardChanged] = useState(0);
   const [firstTimeTalk, setFirstTimeTalk] = useState(false);
+  console.log(state);
 
   //최초 게시글 정보 불러오기
   //오른쪽 위 post 정보를 불러옴
@@ -133,6 +136,8 @@ const KokiriTalk2 = () => {
           postId: state.post.id,
           price: state.post.price,
           authorId: state.post.userInfoWithAddress.userDetail.id,
+          partnerName: state.post.userInfoWithAddress.userDetail.nickname,
+          partnerId: state.post.userInfoWithAddress.userDetail.id,
         };
         return jsonObj;
       });
@@ -150,6 +155,8 @@ const KokiriTalk2 = () => {
             postId: roomList[0].postId,
             price: roomList[0].price,
             authorId: roomList[0].authorId,
+            partnerName: roomList[0].partnerName,
+            partnerId: roomList[0].partnerId,
           };
           return jsonObj;
         });
@@ -176,6 +183,8 @@ const KokiriTalk2 = () => {
           postId: roomList[isClicked].postId,
           price: roomList[isClicked].price,
           authorId: roomList[isClicked].authorId,
+          partnerName: roomList[isClicked].partnerName,
+          partnerId: roomList[isClicked].partnerId,
         };
         return jsonObj;
       });
@@ -192,6 +201,8 @@ const KokiriTalk2 = () => {
           postId: state.post.id,
           price: state.post.price,
           authorId: state.post.userInfoWithAddress.userDetail.id,
+          partnerName: state.post.userInfoWithAddress.userDetail.nickname,
+          partnerId: state.post.userInfoWithAddress.userDetail.id,
         };
         return jsonObj;
       });
@@ -199,11 +210,13 @@ const KokiriTalk2 = () => {
 
   }
 
+
   //왼쪽 메시지룸 리스트를 갖고오는 api 호출
   async function getMessageRoom() {
     try {
       const res = await Api.get('/user/messageRooms');
       roomList_original = res.data.content;
+      console.log(roomList_original);
       if (roomList_original.length < 1) {
         setFirstTimeTalk(true);
       }
@@ -315,6 +328,7 @@ const KokiriTalk2 = () => {
         //TODO: buyeruserId랑 sellerUserId 동준이가 만들면 partneruserId 만들기
         room['partnerName'] = partnerNickname;
         room['partnerId'] = partnerId;
+
       });
       return newRoomList;
     });
@@ -457,6 +471,9 @@ const KokiriTalk2 = () => {
 
   }
 
+  console.log(roomList);
+  console.log(talkCardInfo);
+
 
   return (
     <div className={styles.wrap}>
@@ -528,7 +545,10 @@ const KokiriTalk2 = () => {
               </div>
             </div>
             {/*<div className={styles.right_header1_2}>{talkCard.opponentNickname}님과의 쪽지방입니다.</div>*/}
-            <div className={styles.right_header1_2}>님과의 쪽지방입니다.</div>
+            <div className={styles.right_header1_2}><span className={styles.partnerName}
+                                                          onClick={() => navigate(`/mypage/${talkCardInfo.partnerId}`)}>{talkCardInfo.partnerName}</span>님과의
+              쪽지방입니다.
+            </div>
           </div>
           <div ref={scrollRef} className={styles.talkContainer2}>
             {//최초 생성된 방이 클릭된 경우 메세지를 null로 설정

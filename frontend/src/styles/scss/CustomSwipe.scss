@@ -6,34 +6,34 @@
 
 }
 
-.swiper-slide{
+.swiper-slide {
   font-size: 2rem;
 }
 
-.swiper-container
-{
+.swiper-container {
   height: 23.5rem;
-  width : 22rem
+  width: 22rem
 }
 
-.image{
+.image {
   height: 23.5rem;
-  width : 22rem
+  width: 22rem
 }
 
-.swiper-button-next{
-    color: #5DC8CD !important;
+.swiper-button-next {
+  color: var(--primary-color) !important;
 
 }
 
-.swiper-button-prev{
-  color: #5DC8CD !important;
+.swiper-button-prev {
+  color: var(--primary-color) !important;
 
 }
 
 .swiper-pagination-bullet {
-  background: #5DC8CD !important;
+  background: var(--primary-color) !important;
 }
+
 //.swiper-pagination-bullet-active {
 //  background: yellow !important;
 //}
