@@ -85,6 +85,7 @@ const MyPage = () => {
   const [newNick, setNewNick] = useState(info.nickname);
   const [postNum, setNum] = useState('');
   const [otherpostNum, setotherNum] = useState('');
+  const [tradedNum, setTradedNum] = useState();
 
 
   //모달창
@@ -194,7 +195,14 @@ const MyPage = () => {
     //interceptor를 사용한 방식 (header에 token값 전달)
     try {
       const res = await Api.get('/user/posts?');
-      console.log('내 게시글rdd', Object.keys(res.data.content).length);
+      const array = res.data.content.slice();
+      const result = array.filter(item => {
+        return item.tradeStatus === 'TRADED';
+      });
+
+      setTradedNum(result.length);
+
+
       // @ts-ignore
       setNum(Object.keys(res.data.content).length);
     } catch (err) {
@@ -238,6 +246,7 @@ const MyPage = () => {
       alert('로그아웃 실패');
     }
   }
+
 
   return (
     <>
@@ -322,7 +331,7 @@ const MyPage = () => {
               }
             </div>
             <div className={styles.i1}>
-              <p>상품 거래</p> <p className={styles.tradeNum}>8</p>
+              <p>상품 거래</p> <p className={styles.tradeNum}>{tradedNum}</p>
             </div>
           </div>
           {/*다른 유저면 다른 if문 하나 더 걸어서 분리*/
