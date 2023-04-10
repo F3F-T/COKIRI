@@ -97,7 +97,14 @@
 }
 
 .partnerName {
+  cursor: pointer;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1rem;
 
+  &:hover {
+    font-weight: 900;
+  }
 }
 
 .right_header2 {
