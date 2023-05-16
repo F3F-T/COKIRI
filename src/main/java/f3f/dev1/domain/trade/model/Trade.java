@@ -28,7 +28,7 @@ public class Trade extends BaseTimeEntity {
     @JoinColumn(name = "seller_id")
     private Member seller;
 
-
+//    @Enumerated(EnumType.STRING)
     private TradeStatus tradeStatus;
 
     @Builder

@@ -21,7 +21,7 @@
 //  border-bottom: 2px black;
 //  background-color: transparent;
 //}
-.kokiritalk{
+.kokiritalk {
 
   //padding-bottom: 600px;
   width: 1200px;
@@ -39,12 +39,14 @@
   margin-right: 1rem;
   border-radius: 13px;
 }
-.left2{
+
+.left2 {
   overflow: auto;
   height: 36rem;
 
 }
-.leftHeader{
+
+.leftHeader {
   font-size: 2rem;
   font-weight: bolder;
   padding-top: 0.5rem;
@@ -54,6 +56,7 @@
   height: 4rem;
 
 }
+
 .right {
   height: 40rem;
   width: 75%;
@@ -62,35 +65,38 @@
 }
 
 
-.wrapper{
-  border: 2px solid  #5DC8CD;
+.wrapperOn {
+  border: 2px solid #5DC8CD;
 }
-.talkContainer{
+
+.talkContainer {
   display: grid;
 
 }
 
 
-
-.right_header{
+.right_header {
   display: flex;
   justify-content: space-between;
 
 }
 
-.right_header1{
+.right_header1 {
   justify-content: left;
 }
-.right_header1_1{
+
+.right_header1_1 {
   display: flex;
 }
-.right_header1_2{
-  margin-left: 0.9rem ;
+
+.right_header1_2 {
+  margin-left: 0.9rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
 
 }
-.right_header2{
+
+.right_header2 {
   display: flex;
   margin-top: 0.5rem;
   margin-right: 1rem;
@@ -99,9 +105,10 @@
   color: gray;
   font-size: 0.9rem;
 }
-.sideBtn{
+
+.sideBtn {
   height: 1.5rem;
-  border:none;
+  border: none;
   background-color: white;
   color: gray;
   //border: 0.5px solid rgba(0, 0, 0);
@@ -109,17 +116,19 @@
 
 }
 
-.talkContainer2{
+.talkContainer2 {
   overflow: scroll;
   height: 25rem;
   border-bottom: 0.5px solid rgba(200, 200, 200);
 }
-.writeComments{
+
+.writeComments {
   margin-top: 3.3rem;
   display: flex;
 
 }
-.writeInput{
+
+.writeInput {
   border-bottom-left-radius: 10px;
   padding: 10px 20px 10px 10px;
   border: 0;
@@ -132,10 +141,10 @@
   overflow: hidden;
   resize: none;
   background-color: #F8F8F8;
-  text-align: right ;
+  text-align: right;
 }
 
-.pencilIcon{
+.pencilIcon {
   cursor: pointer;
   border-bottom-right-radius: 10px;
   background-color: #F8F8F8;
@@ -145,14 +154,15 @@
 
 
 ///컴포넌트화 한거 다시 한곳으로 모으자
-.sendTitle{
+.sendTitle {
   font-size: 0.8rem;
   font-weight: bold;
   color: #f7ce4d;
   margin-left: 1rem;
 
 }
-.sendContent{
+
+.sendContent {
   font-weight: bolder;
   margin-left: 1rem;
   margin-bottom: 0rem;
@@ -160,7 +170,8 @@
   font-size: 0.9rem;
 
 }
-.receiveContent{
+
+.receiveContent {
   font-weight: bolder;
   margin-left: 1rem;
   margin-bottom: 0rem;
@@ -169,16 +180,19 @@
 
 
 }
-.receiveTitle{
+
+.receiveTitle {
   margin-left: 1rem;
   font-size: 0.8rem;
   font-weight: bolder;
   color: #4ba2ad;
 }
-.send{
+
+.send {
   border-bottom: 0.5px solid rgba(200, 200, 200);
 }
-.receive{
+
+.receive {
   border-bottom: 0.5px solid rgba(200, 200, 200);
 }
 
