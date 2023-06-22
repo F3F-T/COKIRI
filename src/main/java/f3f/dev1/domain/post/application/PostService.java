@@ -1,17 +1,20 @@
 package f3f.dev1.domain.post.application;
 
+import com.amazonaws.services.s3.AmazonS3Client;
 import f3f.dev1.domain.category.dao.CategoryRepository;
 import f3f.dev1.domain.category.exception.NotFoundProductCategoryNameException;
 import f3f.dev1.domain.category.exception.NotFoundWishCategoryNameException;
 import f3f.dev1.domain.category.model.Category;
 import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.dao.MemberCustomRepository;
 import f3f.dev1.domain.member.dao.MemberCustomRepositoryImpl;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.message.dao.MessageRoomRepository;
 import f3f.dev1.domain.message.model.MessageRoom;
 import f3f.dev1.domain.model.TradeStatus;
+import f3f.dev1.domain.post.dao.PostCustomRepository;
 import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotContainAuthorInfoException;
@@ -77,6 +80,8 @@ public class PostService {
     private final PostCustomRepositoryImpl postCustomRepository;
     private final MemberCustomRepositoryImpl memberCustomRepository;
 
+    private final AmazonS3Client amazonS3Client;
+
     // TODO 게시글 사진 개수 제한 걸기
     @Transactional
     public Long savePost(PostSaveRequest postSaveRequest, Long currentMemberId) {
@@ -88,7 +93,7 @@ public class PostService {
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
 
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
-        member.getPosts().add(post);
+//        member.getPosts().add(post);
         postRepository.save(post);
         Trade trade = CreateTradeDto.builder().sellerId(member.getId()).postId(post.getId()).build().toEntity(member, post);
         tradeRepository.save(trade);
@@ -133,30 +138,6 @@ public class PostService {
         return new PageImpl<>(resultList, pageable, all.getTotalElements());
     }
 
-
-    // findByIdPostListDTO는 검색된 포스트 리스트를 가지고 있는 DTO이다.
-    // controller에서 사용되지 않는 로직. 현재 테스트에서만 사용되고 있다.
-//    @Transactional(readOnly = true)
-//    public List<PostInfoDtoWithTag> findPostByAuthor(Long authorId) {
-//        // TODO 없애도 될 예외같음. 게시글이 없으면 빈 리스트를 반환해주면 된다.
-//        if(!postRepository.existsByAuthorId(authorId)) {
-//            throw new NotFoundPostListByAuthorException("해당 작성자의 게시글이 없습니다.");
-//        }
-//        List<PostInfoDtoWithTag> response = new ArrayList<>();
-//        List<Post> byAuthor = postRepository.findByAuthorId(authorId);
-//        for (Post post : byAuthor) {
-//            List<PostTag> postTags = postTagRepository.findByPost(post);
-//            List<String> tagNames = new ArrayList<>();
-//            for (PostTag postTag : postTags) {
-//                tagNames.add(postTag.getTag().getName());
-//            }
-//            List<ScrapPost> scrapPosts = scrapPostRepository.findByPostId(post.getId());
-//            List<MessageRoom> messageRooms = messageRoomRepository.findByPostId(post.getId());
-//            PostInfoDtoWithTag responseEach = post.toInfoDtoWithTag(tagNames, (long) scrapPosts.size(), (long) messageRooms.size());
-//            response.add(responseEach);
-//        }
-//        return response;
-//    }
 
 //    @Cacheable(value = AUTHOR_POST_LIST, key = "#authorId")
     @Transactional(readOnly = true)
@@ -296,10 +277,11 @@ public class PostService {
                             .tag(tag)
                             .build();
                     postTagRepository.save(postTag);
-                    tag.getPostTags().add(postTag);
-                    postTags.add(postTag);
+//                    tag.getPostTags().add(postTag);
+//                    postTags.add(postTag);
                 } else {
                     // 기존에 존재하는 태그라면 다시 클리어된 리스트에 추가해주기
+                    // TODO 너무 비효율적인 코드. 리팩토링 예정
                     PostTag postTag = postTagRepository.findByPostAndTag(post, tag).orElseThrow(NotFoundByPostAndTagException::new);
                     tag.getPostTags().add(postTag);
                     postTags.add(postTag);
@@ -386,6 +368,7 @@ public class PostService {
             throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
         }
 
+        deletePostImage(post.getPostImages());
         postRepository.delete(post);
         return "DELETE";
     }
@@ -406,5 +389,14 @@ public class PostService {
 //    @Scheduled(fixedDelay = 5 * 1000)   // 5초마다 호출
 //    public void removeAuthorPostListCache() {
 //    }
+
+    private void deletePostImage(List<PostImage> images) {
+        String s3Bucket = "cokiri-image/image/profileImage";
+        for (PostImage image : images) {
+            String key = image.getImgPath().substring(image.getImgPath().lastIndexOf("/") + 1);
+            amazonS3Client.deleteObject(s3Bucket, key);
+        }
+
+    }
 
 }
