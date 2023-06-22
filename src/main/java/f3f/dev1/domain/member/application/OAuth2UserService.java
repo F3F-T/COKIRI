@@ -10,6 +10,7 @@ import f3f.dev1.domain.member.model.UserLoginType;
 import f3f.dev1.global.common.constants.OAuthConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
