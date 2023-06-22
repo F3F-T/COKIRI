@@ -22,13 +22,13 @@ public class GoogleAuth implements SocialAuth{
     @Value("${spring.OAuth2.google.url}")
     private String GOOGLE_SNS_LOGIN_URL;
 
-    @Value("${GOOGLE_CLIENT}")
+    @Value("${google.client}")
     private String GOOGLE_SNS_CLIENT_ID;
 
     @Value("${spring.OAuth2.google.callback-url}")
     private String GOOGLE_SNS_CALLBACK_URL;
 
-    @Value("${GOOGLE_SECRET}")
+    @Value("${google.secret}")
     private String GOOGLE_SNS_CLIENT_SECRET;
 
     @Value("${spring.OAuth2.google.scope}")
