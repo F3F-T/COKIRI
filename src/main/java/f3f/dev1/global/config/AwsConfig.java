@@ -14,7 +14,7 @@ public class AwsConfig {
     private final String region = "ap-northeast-2";
 
     @Bean
-    public AmazonS3Client amazonS3Client(@Value("aws.iam.access") String iamAccessKey, @Value("aws.iam.secret") String iamSecretKey) {
+    public AmazonS3Client amazonS3Client(@Value("${aws.iam.access}") String iamAccessKey, @Value("${aws.iam.secret}") String iamSecretKey) {
         BasicAWSCredentials basicAWSCredentials = new BasicAWSCredentials(iamAccessKey, iamSecretKey);
         return (AmazonS3Client) AmazonS3ClientBuilder
                 .standard()

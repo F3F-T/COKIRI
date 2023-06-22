@@ -13,7 +13,7 @@ public class MailConfig {
 
 
     @Bean
-    public JavaMailSender javaMailService(@Value("email.password") String emailPassword) {
+    public JavaMailSender javaMailService(@Value("${email.password}") String emailPassword) {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost("smtp.naver.com");
         javaMailSender.setUsername("cokiri_dev_team");
