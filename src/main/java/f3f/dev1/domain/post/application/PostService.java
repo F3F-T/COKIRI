@@ -93,7 +93,7 @@ public class PostService {
         memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
 
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
-        member.getPosts().add(post);
+//        member.getPosts().add(post);
         postRepository.save(post);
         Trade trade = CreateTradeDto.builder().sellerId(member.getId()).postId(post.getId()).build().toEntity(member, post);
         tradeRepository.save(trade);
@@ -277,10 +277,11 @@ public class PostService {
                             .tag(tag)
                             .build();
                     postTagRepository.save(postTag);
-                    tag.getPostTags().add(postTag);
-                    postTags.add(postTag);
+//                    tag.getPostTags().add(postTag);
+//                    postTags.add(postTag);
                 } else {
                     // 기존에 존재하는 태그라면 다시 클리어된 리스트에 추가해주기
+                    // TODO 너무 비효율적인 코드. 리팩토링 예정
                     PostTag postTag = postTagRepository.findByPostAndTag(post, tag).orElseThrow(NotFoundByPostAndTagException::new);
                     tag.getPostTags().add(postTag);
                     postTags.add(postTag);
