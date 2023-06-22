@@ -29,7 +29,7 @@ import static java.lang.System.getenv;
 public class JwtTokenProvider {
     private final Key key;
 
-    public JwtTokenProvider(@Value("jwt.secret") String jwtSecret) {
+    public JwtTokenProvider(@Value("${jwt.secret}") String jwtSecret) {
         byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
