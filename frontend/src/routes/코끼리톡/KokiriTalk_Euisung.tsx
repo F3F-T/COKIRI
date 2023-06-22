@@ -30,7 +30,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import styles from '../../styles/talk/kokiriTalk.module.scss';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Api from '../../utils/api';
 import TalkList2 from '../../component/talk/TalkList2';
 import TalkCard2 from '../../component/talk/TalkCard2';
@@ -55,6 +55,12 @@ interface MessageRoomInfo {
   sellerId: number,
   postId: number
   partnerId?: number,
+  thumbnailImgPath: string,
+  title: string,
+  tradeStatus: string,
+  wishCategory: string,
+  productCategory: string,
+  price: number,
   // buyerThumbnail : string
 
 }
@@ -79,7 +85,7 @@ interface TalkCardInfo {
   wishCategory: string
   postId: number,
   price: number,
-  authorId: number
+  authorId: number,
 }
 
 
@@ -96,18 +102,24 @@ const KokiriTalk2 = () => {
   const [talkCardInfo, setTalkCardInfo] = useState<TalkCardInfo>();
   const [isClicked, setIsClicked] = useState<number>();
   const [initialRoom, setInitialRoom] = useState<boolean>();
+  const navigate = useNavigate();
 
   const [count, setCount] = useState(0);
 
   const [input, setInput] = useState('');
+  const [condition, setCondition] = useState(false);
 
-  let talkCardChanged = 0;
   let roomList_original: MessageRoomInfo[];
 
   let localIsClicked;
+  const [initialRender, setInitialRender] = useState(true);
+  const [talkCardChanged, setTalkCardChanged] = useState(0);
+  const [firstTimeTalk, setFirstTimeTalk] = useState(false);
 
   //최초 게시글 정보 불러오기
   //오른쪽 위 post 정보를 불러옴
+
+  //최초에만 오른쪽 위 게시글 정보(talkCardInfo)를 불러옴,
   function getInitialTalkCardInfo() {
     if (state) { //게시글에서 코키리톡으로 교환하기 버튼을 눌렀을때
 
@@ -126,7 +138,50 @@ const KokiriTalk2 = () => {
       });
     } else {
       //코끼리톡 버튼을 직접 들어갔을때
+      //코끼리톡이 처음이 아닐때
+      if (!firstTimeTalk) {
+        setTalkCardInfo(prevState => {
+          let jsonObj = {
+            productImg: roomList[0].thumbnailImgPath,
+            tradeStatus: roomList[0].tradeStatus,
+            title: roomList[0].title,
+            tradeCategory: roomList[0].productCategory,
+            wishCategory: roomList[0].wishCategory,
+            postId: roomList[0].postId,
+            price: roomList[0].price,
+            authorId: roomList[0].authorId,
+          };
+          return jsonObj;
+        });
+      } else {
+        //코끼리톡이 처음일때
+        setCondition(true);
+      }
+    }
 
+
+  }
+
+  //왼쪽 roomlist를 클릭할때마다 talkCardList가 변화하는 로직
+  function getTalkCardInfo() {
+    //새로운 방이 만들어지지 않았을떄 일반적인 로직
+    if (isClicked != -1) {
+      setTalkCardInfo(prevState => {
+        let jsonObj = {
+          productImg: roomList[isClicked].thumbnailImgPath,
+          tradeStatus: roomList[isClicked].tradeStatus,
+          title: roomList[isClicked].title,
+          tradeCategory: roomList[isClicked].productCategory,
+          wishCategory: roomList[isClicked].wishCategory,
+          postId: roomList[isClicked].postId,
+          price: roomList[isClicked].price,
+          authorId: roomList[isClicked].authorId,
+        };
+        return jsonObj;
+      });
+    }
+    //새로운 방이 만들어졌을때는 roomList에 정보가 없으니, state에서 불러온다
+    else {
       setTalkCardInfo(prevState => {
         let jsonObj = {
           productImg: state.post.images[0],
@@ -144,28 +199,14 @@ const KokiriTalk2 = () => {
 
   }
 
-  function getTalkCardInfo() {
-    setTalkCardInfo(prevState => {
-      let jsonObj = {
-        productImg: state.post.images[0],
-        tradeStatus: state.post.tradeStatus,
-        title: state.post.title,
-        tradeCategory: state.post.productCategory,
-        wishCategory: state.post.wishCategory,
-        postId: state.post.id,
-        price: state.post.price,
-        authorId: state.post.userInfoWithAddress.userDetail.id,
-      };
-      return jsonObj;
-    });
-  }
-
   //왼쪽 메시지룸 리스트를 갖고오는 api 호출
   async function getMessageRoom() {
     try {
       const res = await Api.get('/user/messageRooms');
-      console.log(res);
       roomList_original = res.data.content;
+      if (roomList_original.length < 1) {
+        setFirstTimeTalk(true);
+      }
       changeMessageRoomState(roomList_original);
 
     } catch (err) {
@@ -178,8 +219,8 @@ const KokiriTalk2 = () => {
     getMessageRoom();
   }, [count]);
 
+
   useEffect(() => {
-    console.log(contentInfo);
     if (contentInfo != null) {
       setTimeout(() => {
         // @ts-ignore
@@ -194,46 +235,60 @@ const KokiriTalk2 = () => {
 
   //getMessageRoom에서 비동기적으로 처리된 roomList를 접근해서 오른쪽의 messageContent를 띄우기 위해 사용
   useEffect(() => {
-    getInitialTalkCardInfo();
-    if (roomList && roomList.length > 0) {
-      console.log(roomList);
-      if (state != null) //게시글에서 "코끼리톡으로 교환하기" 버튼을 클릭해서 들어온 경우
-      {
-        let authorIdInState = state.post.userInfoWithAddress.userDetail.id;
-        let postId = state.post.id;
-        //state에 있는 유저 id와 roomlist의 authorid를 비교
-        roomList.forEach(function(item, idx) {
-          if (authorIdInState === item.authorId && postId === item.postId) {
-            //둘다 검증되지 않는다면 만들어진 방이 없다는것, 새로운 빈 껍질 UI 만들지 않기
-            setInitialRoom(false);
-            setIsClicked(idx);
-            localIsClicked = idx;
-            foundRoom = true;
-            return false;
-          }
+    //첫번째 렌더때만 아래 코드 실행, 그 이외 roomList가 변화할때는 호출하지 않기 (isClicked 가 변화함에 따라 데이터 변환)
+    if (initialRender) {
+      if (roomList && roomList.length > 0) {
+        getInitialTalkCardInfo();
+        if (state != null) //게시글에서 "코끼리톡으로 교환하기" 버튼을 클릭해서 들어온 경우
+        {
+          let authorIdInState = state.post.userInfoWithAddress.userDetail.id;
+          let postId = state.post.id;
+          //state에 있는 유저 id와 roomlist의 authorid를 비교
+          roomList.forEach(function(item, idx) {
+            if (authorIdInState === item.authorId && postId === item.postId) {
+              //둘다 검증된다면 만들어진 방이 존재한다는것, 새로운 빈 껍질 UI 만들지 않기
+              setInitialRoom(false);
+              setIsClicked(idx);
+              localIsClicked = idx;
+              foundRoom = true;
+              return false;
+            }
 
-          //상대방 닉네임 확인
-        });
-        if (!foundRoom) {
-          //빈 껍질 UI 만들기
-          setInitialRoom(true);
-          setIsClicked(-1);
-        } else {
-          getMessageContent(roomList[localIsClicked].messageRoomId);
+            //상대방 닉네임 확인
+          });
+          if (!foundRoom) {
+            //빈 껍질 UI 만들기
+            setInitialRoom(true);
+            setIsClicked(-1);
+          } else {
+            getMessageContent(roomList[localIsClicked].messageRoomId);
+          }
+        } else { //일반 코끼리톡 버튼을 클릭해서 들어온 경우 : 맨 위에 있는 쪽지방 선택
+          getInitialTalkCardInfo();
+          getMessageContent(roomList[0].messageRoomId); //맨 위에 있는(최신순) 쪽지방을 선택하고, 메시지를 띄워준다
+          setIsClicked(0);
         }
-        // setIsClicked(0);
-      } else { //일반 코끼리톡 버튼을 클릭해서 들어온 경우 : 맨 위에 있는 쪽지방 선택
-        getMessageContent(roomList[0].messageRoomId); //맨 위에 있는(최신순) 쪽지방을 선택하고, 메시지를 띄워준다
-        setIsClicked(0);
+
+      }
+      //완전 처음일때 ㅜㅜㅜㅜㅜㅜㅜㅜㅜ
+      if (firstTimeTalk) {
+        getInitialTalkCardInfo();
+        setInitialRoom(true);
+        setIsClicked(-1);
       }
 
-
+    }
+    //sendMessage를 해서 렌더링이 최초가 아닐때
+    else {
+      getMessageContent(roomList[isClicked].messageRoomId);
     }
   }, [roomList]);
 
+  //talkCardChanged가 변화할때 실행
+  //변화하는 조건 : 왼쪽 roomList를 클릭할때마다
   useEffect(() => {
     if (talkCardChanged > 0) {
-      getTalkCardInfo()
+      getTalkCardInfo();
     }
   }, [talkCardChanged]);
 
@@ -290,7 +345,7 @@ const KokiriTalk2 = () => {
       getMessageContent(messageRoomId);
       setIsClicked(idx);
       localIsClicked = idx;
-      talkCardChanged++;
+      setTalkCardChanged(prevState => prevState + 1);
       //TODO: 의성) talkCard의 정보들이 roomList가 변할때마다 postId로 오른쪽 위의 게시글정보를 띄워준다. 동준이한테 postId 뿐만아니라 여기에 필요한 post DTO를 다 넘겨달라고 하면 좋을듯 아니면 post api를 사용해야함
       //TODO: 원래는 setKey로 식별후에 talkCard component에서 api를 호출해서 문제가 되었다. 그냥 부모에서 정보를 다 갖고 자식에선 api를 호출하지 않는 방식으로 구현함
       // console.log(contentInfo);
@@ -307,17 +362,17 @@ const KokiriTalk2 = () => {
   const createMessageRoom = async () => {
     try {
       const postId = state.post.id;
-      //buyerid는 코키리톡으로 교환하기를 클릭한 자신임
+      //buyerid는 코키리톡으로 교환하기를 클리릭한 자신임
       const buyerId = store.userInfoReducer.id;
       const res = await Api.post(`/post/${postId}/messageRooms`, { postId, buyerId });
       return res.data;
-      console.log(res);
     } catch (err) {
       console.log(err);
     }
 
   };
   const sendMessage = async () => {
+    setInitialRender(prevState => false);
     try {
       if (isClicked != -1) //새로운 방이 생성되지 않은경우
       {
@@ -330,10 +385,9 @@ const KokiriTalk2 = () => {
         };
         let messageRoomId = roomList[isClicked].messageRoomId;
         const res = await Api.post(`/messageRooms/${messageRoomId}`, messageInfo);
-        console.log('메세지 전송', res.data);
+
       } else { //새로운 방이 생성된경우
         const newMessageRoomInfo = await createMessageRoom();
-        console.log(newMessageRoomInfo);
 
         let messageInfo = {
           content: input,
@@ -344,10 +398,13 @@ const KokiriTalk2 = () => {
         };
 
         const res = await Api.post(`/messageRooms/${newMessageRoomInfo.id}`, messageInfo);
-        console.log('메세지 전송', res.data);
+        console.log('메세지 전송2', res.data);
       }
 
       setCount(prevState => prevState + 1);
+      localIsClicked = 0;
+      setIsClicked(0);
+      setInitialRoom(false);
 
 
     } catch (err) {
@@ -360,32 +417,46 @@ const KokiriTalk2 = () => {
     return (event: React.MouseEvent) => {
       setIsClicked(-1);
       localIsClicked = -1;
-      talkCardChanged++;
+      setTalkCardChanged(prevState => prevState + 1);
       event.preventDefault();
     };
   };
 
   const onClickPencil = async () => {
     await sendMessage();
+    setIsClicked(0);
     setInput('');
   };
 
+  if (firstTimeTalk != true) {
 
-  if (!roomList) {
-    return null;
-  }
-
-  // if (!talkCardInfo) {
-  //   return null;
-  // }
-  if (foundRoom) {
-    if (!contentInfo) {
+    if (!roomList) {
       return null;
     }
+
+    if (!talkCardInfo) {
+      return null;
+    }
+
+    if (foundRoom) {
+      if (!contentInfo) {
+        return null;
+      }
+    }
+  } else {
+    if (roomList.length < 1) {
+      if (condition) {
+        alert('대화중인 방이 없습니다.');
+        navigate(`/mulmultrade`);
+      }
+
+    }
+    if (!talkCardInfo) {
+      return null;
+    }
+
   }
-  // console.log('----------state---');
-  //
-  // console.log(state);
+
 
   return (
     <div className={styles.wrap}>
@@ -426,7 +497,7 @@ const KokiriTalk2 = () => {
 
                   </div>) ||
                   (isClicked != idx && <div key={room.messageRoomId}>
-                    <TalkList2 keys={room['messageRoomId']}
+                    <TalkList2 keys={idx}
                                partner={room['partnerName']}
                                lastContent={room['lastMsg']}
                                date={timeConvert(room['createdDate'])}
