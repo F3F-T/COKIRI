@@ -66,8 +66,8 @@ jobs:
     - name: web docker build and push
       run: |
         docker login -u ${{ secrets.WAS1_DOCKER_USERNAME }} -p ${{ secrets.WAS1_DOCKER_PASSWORD }}
-        docker build -t ${{ secrets.WAS1_DOCKER_REPO }}/COKIRI .
-        docker push ${{ secrets.WAS1_DOCKER_REPO }}/COKIRI 
+        docker build -t ${{ secrets.WAS1_DOCKER_REPO }}/cokiri .
+        docker push ${{ secrets.WAS1_DOCKER_REPO }}/cokiri 
 
 
     - name: executing remote ssh commands using password
@@ -78,5 +78,5 @@ jobs:
         key: ${{ secrets.WAS1_PEM_KEY }}
         port: 22
         script: |
-          sudo docker pull ${{ secrets.WAS1_DOCKER_REPO }}/COKIRI 
-          sudo docker run ${{ secrets.WAS1_DOCKER_REPO }}/COKIRI 
+          sudo docker pull ${{ secrets.WAS1_DOCKER_REPO }}/cokiri 
+          sudo docker run ${{ secrets.WAS1_DOCKER_REPO }}/cokiri 
