@@ -78,5 +78,6 @@ jobs:
         key: ${{ secrets.WAS1_PEM_KEY }}
         port: 22
         script: |
+          sudo docker container prune -f
           sudo docker pull ${{ secrets.WAS1_DOCKER_REPO }}/cokiri 
-          sudo docker run ${{ secrets.WAS1_DOCKER_REPO }}/cokiri 
+          sudo docker run -d -p 8080:8080 --name f3f_was1 ${{ secrets.WAS1_DOCKER_REPO }}/cokiri 
