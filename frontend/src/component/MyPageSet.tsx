@@ -224,7 +224,7 @@ const MyPage = () =>  {
             console.log('uploadFile',uploadFile);
             const formData = new FormData()
             formData.append('imageFiles',uploadFile)
-            const res = await axios.post("http://localhost:8080/auth/image/profileImage", formData);
+            const res = await axios.post("https://f3f-cokiri.site/auth/image/profileImage", formData);
             console.log("리턴 데이터 ", res.data.imageUrls[0])
             dispatch(setUserProfile(res.data.imageUrls[0]))
             const mbody = {
