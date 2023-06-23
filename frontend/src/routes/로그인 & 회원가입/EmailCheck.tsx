@@ -25,7 +25,7 @@ const EmailCheck = () => {
 
     async function SignUpData() {
         try {
-            const res = await axios.post("http://localhost:8080/auth/signup", userInfo);
+            const res = await axios.post("https://f3f-cokiri.site/auth/signup", userInfo);
 
             const result = {
                 status: res.status + "-" + res.statusText,
@@ -47,7 +47,7 @@ const EmailCheck = () => {
     async function CodeConfirm(code:object){
         console.log(code)
         try {
-            const res = await axios.post("http://localhost:8080/auth/codeConfirm", code);
+            const res = await axios.post("https://f3f-cokiri.site/auth/codeConfirm", code);
 
             const result = {
                 status: res.status + "-" + res.statusText,

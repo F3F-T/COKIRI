@@ -64,7 +64,7 @@ const NickNameChange = () =>  {
     async function CheckNickNameDuplicated(nickname: object) {
 
         try {
-            const res = await axios.post("http://localhost:8080/auth/check-nickname", nickname);
+            const res = await axios.post("https://f3f-cokiri.site/auth/check-nickname", nickname);
             const result = res.data;
             const duplicated = result.exists
 
