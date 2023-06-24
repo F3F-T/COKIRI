@@ -109,7 +109,7 @@ public class MemberControllerTest {
     public LoginRequest createLoginRequest() {
         return LoginRequest.builder()
                 .email("userTest@email.com")
-                .password("password")
+                .password("12345678")
                 .build();
     }
 
@@ -162,43 +162,43 @@ public class MemberControllerTest {
     }
 
 
-//    @Test
-//    @DisplayName("로그인 성공 테스트")
-//    public void loginTestSuccess() throws Exception{
-//        //given
+    @Test
+    @DisplayName("로그인 성공 테스트")
+    public void loginTestSuccess() throws Exception{
+        //given
 //        SignUpRequest signUpRequest = createSignUpRequest();
 //        authService.signUp(signUpRequest);
-//        LoginRequest loginRequest = createLoginRequest();
-//        UserLoginDto userLoginDto = UserLoginDto.builder()
-//                .userInfo(UserInfoWithAddress.builder()
-//                        .userDetail(UserDetail.builder()
-//                                .userName("username")
-//                                .scrapId(1L)
-//                                .loginType(EMAIL)
-//                                .nickname("nickname")
-//                                .imageUrl("imageUrl")
-//                                .description("description")
-//                                .phoneNumber("01012341234")
-//                                .birthDate("990101")
-//                                .build())
-//                        .address(new ArrayList<>())
-//                        .build())
-//                .tokenInfo(TokenDTO.TokenIssueDTO.builder()
-//                        .accessToken("accessToken")
-//                        .accessTokenExpiresIn(1L)
-//                        .grantType("type").build()).build();
-//        when(authService.login(any())).thenReturn(userLoginDto);
-//        // then
-//        mockMvc.perform(post("/auth/login")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(loginRequest)))
-//                .andDo(print())
-//                .andExpect(status().isOk())
-//                .andDo(document("auth/login/success", requestFields(
-//                        fieldWithPath("email").description("User's id for login which is email"),
-//                        fieldWithPath("password").description("User's login password"))
-//                ));
-//    }
+        LoginRequest loginRequest = createLoginRequest();
+        UserLoginDto userLoginDto = UserLoginDto.builder()
+                .userInfo(UserInfoWithAddress.builder()
+                        .userDetail(UserDetail.builder()
+                                .userName("username")
+                                .scrapId(1L)
+                                .loginType(EMAIL)
+                                .nickname("nickname")
+                                .imageUrl("imageUrl")
+                                .description("description")
+                                .phoneNumber("01012341234")
+                                .birthDate("990101")
+                                .build())
+                        .address(new ArrayList<>())
+                        .build())
+                .tokenInfo(TokenDTO.TokenIssueDTO.builder()
+                        .accessToken("accessToken")
+                        .accessTokenExpiresIn(1L)
+                        .grantType("type").build()).build();
+        when(authService.login(any())).thenReturn(userLoginDto);
+        // then
+        mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("auth/login/successful", requestFields(
+                        fieldWithPath("email").description("User's id for login which is email"),
+                        fieldWithPath("password").description("User's login password"))
+                ));
+    }
 
     @Test
     @DisplayName("로그인 실패 테스트 - 잘못된 이메일")
