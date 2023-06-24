@@ -12,6 +12,7 @@ let store;
 
 
 //이렇게 store을 index파일에서 주입해주는 식으로 하면 순환오류를 막을수있다.
+//배포 확인
 //https://redux.js.org/faq/code-structure#how-can-i-use-the-redux-store-in-non-component-files
 export const injectStore = _store => {
     store = _store;
