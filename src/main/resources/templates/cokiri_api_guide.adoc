@@ -64,7 +64,56 @@ This code is used in situations where the user might be able to resolve the conf
 
 == USER API
 
-=== 1. CRUD USER
+=== 1. Authentication API
+
+==== 이메일 중복 확인
+
+`*_1. Success_*`
+
+**요청 필드**
+
+include::{snippets}/auth/check-email/success/request-fields.adoc[]
+
+**Example request**
+
+include::{snippets}/auth/check-email/success/http-request.adoc[]
+
+**Example response**
+
+include::{snippets}/auth/check-email/success/http-response.adoc[]
+
+`*_2. Fail_*`
+
+**요청 필드**
+
+include::{snippets}/auth/check-email/fail/request-fields.adoc[]
+
+**Example request**
+
+include::{snippets}/auth/check-email/fail/http-request.adoc[]
+
+**Example response**
+
+include::{snippets}/auth/check-email/fail/http-response.adoc[]
+
+==== 닉네임 중복 확인
+
+`*_1. Success_*`
+
+**요청 필드**
+
+include::{snippets}/auth/check-nickname/success/request-fields.adoc[]
+
+**Example request**
+
+include::{snippets}/auth/check-nickname/success/http-request.adoc[]
+
+**Example response**
+
+include::{snippets}/auth/check-nickname/success/http-response.adoc[]
+
+
+=== 2. CRUD USER
 
 ==== 회원가입
 
@@ -82,4 +131,33 @@ include::{snippets}/auth/signup/successful/http-response.adoc[]
 
 
 '''
+==== 로그인
+
+`*_1. Success_*`
+
+** 요청 필드 **
+
+include::{snippets}/auth/login/successful/request-fields.adoc[]
+
+**Example request**
+include::{snippets}/auth/login/successful/http-request.adoc[]
+
+**Example response**
+include::{snippets}/auth/login/successful/http-response.adoc[]
+
+`*_2. Fail_*`
+
+** 요청 필드 **
+
+include::{snippets}/auth/login/fail/wrongPassword/request-fields.adoc[]
+
+**Example request**
+include::{snippets}/auth/login/fail/wrongPassword/http-request.adoc[]
+
+**Example response**
+include::{snippets}/auth/login/fail/wrongPassword/http-response.adoc[]
+
+
+
+
 
