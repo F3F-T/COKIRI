@@ -10,4 +10,8 @@ public class InfraController {
         return "index";
     }
 
+    @GetMapping("/api-guide")
+    public String apiGuide(){
+        return "cokiri_api_guide";}
+
 }
