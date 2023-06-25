@@ -67,7 +67,7 @@ const FindID = () => {
 
     async function findEmail() {
         try {
-            const res = await Api.post("http://localhost:8080/auth/find/email", userInfo);
+            const res = await Api.post("https://f3f-cokiri.site/auth/find/email", userInfo);
             console.log(res)
             if(res.status === 200)
             {

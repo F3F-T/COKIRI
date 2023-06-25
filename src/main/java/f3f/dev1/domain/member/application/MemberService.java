@@ -2,6 +2,7 @@ package f3f.dev1.domain.member.application;
 
 import f3f.dev1.domain.address.dao.AddressRepository;
 import f3f.dev1.domain.address.dto.AddressDTO.AddressInfoDTO;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.member.dao.MemberCustomRepositoryImpl;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.*;
@@ -89,6 +90,7 @@ public class MemberService {
             throw new DuplicatePhoneNumberExepction();
         }
         member.updateUserInfo(updateUserInfo);
+
         Scrap scrap = scrapRepository.findScrapByMemberId(member.getId()).orElseThrow(UserScrapNotFoundException::new);
 
         return member.toUserInfo(scrap.getId());

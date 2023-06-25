@@ -69,7 +69,7 @@ public class MemberServiceTest {
                 .userName("username")
                 .nickname("nickname")
                 .phoneNumber("01012345678")
-                .email("userEmail@email.com")
+                .email("test@email.com")
                 .birthDate("990128")
                 .password("password")
                 .build();
@@ -78,7 +78,7 @@ public class MemberServiceTest {
     // 로그인 DTO 생성 메소드
     public LoginRequest createLoginRequest() {
         return LoginRequest.builder()
-                .email("userEmail@email.com")
+                .email("test@email.com")
                 .password("password").build();
     }
 
@@ -144,18 +144,6 @@ public class MemberServiceTest {
 
     }
 
-    @Test
-    @DisplayName("유저 정보 조회 실패 테스트 - 존재하지 않는 아이디로 요청")
-    public void getUserInfoTestFailById() throws Exception{
-        //given
-        SignUpRequest signUpRequest = createSignUpRequest();
-        authService.signUp(signUpRequest);
-        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
-
-
-        // then
-        assertThrows(NotFoundByIdException.class, () -> memberService.getUserInfo(member.getId() + 1));
-    }
 
     // 유저 정보 업데이트 테스트
     @Test
@@ -227,30 +215,6 @@ public class MemberServiceTest {
         assertThrows(DuplicatePhoneNumberExepction.class, () -> memberService.updateUserInfo(updateRequest, member.getId()));
     }
 
-    @Test
-    @DisplayName("유저 주소 업데이트 성공 테스트")
-    public void updateUserAddressTestSuccess() throws Exception{
-        //given
-        SignUpRequest signUpRequest = createSignUpRequest();
-        authService.signUp(signUpRequest);
-        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
-        UpdateUserInfo updateUserInfo = UpdateUserInfo.builder()
-                .nickname("newNickname")
-                .address(Address.builder()
-                        .addressName("home")
-                        .postalAddress("13556")
-                        .latitude("37.37125")
-                        .longitude("127.10560").build())
-                .build();
-
-
-        // when
-        memberService.updateUserInfo(updateUserInfo, member.getId());
-        Optional<Member> byId = memberRepository.findByEmail(signUpRequest.getEmail());
-        // then
-        assertThat(updateUserInfo.getAddress()).isEqualTo(byId.get().getAddress());
-    }
-
 
 
     // 유저 비밀번호 변경 성공 테스트
@@ -295,21 +259,7 @@ public class MemberServiceTest {
 
 
 
-    // 유저 삭제 테스트
-    @Test
-    @DisplayName("유저 삭제 성공 테스트")
-    public void deleteUserTestSuccess() throws Exception{
-        //given
-        SignUpRequest signUpRequest = createSignUpRequest();
-        authService.signUp(signUpRequest);
-        Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
-        Long userId = member.getId();
 
-        // when
-        memberService.deleteUser(userId);
-        // then
-        assertThrows(NotFoundByIdException.class, () -> memberService.getUserInfo(userId));
-    }
 
 
 

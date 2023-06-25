@@ -1,5 +1,6 @@
 package f3f.dev1.member;
 
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.domain.member.api.MemberAuthController;
 import f3f.dev1.domain.member.api.MemberController;
@@ -13,6 +14,8 @@ import f3f.dev1.domain.member.exception.DuplicatePhoneNumberExepction;
 import f3f.dev1.domain.member.exception.InvalidPasswordException;
 import f3f.dev1.domain.member.exception.UserNotFoundException;
 import f3f.dev1.domain.address.model.Address;
+import f3f.dev1.domain.member.model.UserLoginType;
+import f3f.dev1.domain.token.dto.TokenDTO;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,14 +33,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.*;
 import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -65,6 +68,8 @@ public class MemberControllerTest {
     @MockBean
     private MemberRepository memberRepository;
 
+    @MockBean
+    private AmazonS3Client amazonS3Client;
     private MockMvc mockMvc;
 
     @Autowired
@@ -93,7 +98,7 @@ public class MemberControllerTest {
                 .userName("username")
                 .nickname("nickname")
                 .phoneNumber("01012345678")
-                .email("userEmail@email.com")
+                .email("userTest@email.com")
                 .birthDate("990128")
                 .password("password")
                 .userLoginType(EMAIL)
@@ -103,8 +108,8 @@ public class MemberControllerTest {
     // 로그인 DTO 생성 메소드
     public LoginRequest createLoginRequest() {
         return LoginRequest.builder()
-                .email("userEmail@email.com")
-                .password("password")
+                .email("userTest@email.com")
+                .password("12345678")
                 .build();
     }
 
@@ -161,16 +166,35 @@ public class MemberControllerTest {
     @DisplayName("로그인 성공 테스트")
     public void loginTestSuccess() throws Exception{
         //given
-        SignUpRequest signUpRequest = createSignUpRequest();
-        authService.signUp(signUpRequest);
+//        SignUpRequest signUpRequest = createSignUpRequest();
+//        authService.signUp(signUpRequest);
         LoginRequest loginRequest = createLoginRequest();
+        UserLoginDto userLoginDto = UserLoginDto.builder()
+                .userInfo(UserInfoWithAddress.builder()
+                        .userDetail(UserDetail.builder()
+                                .userName("username")
+                                .scrapId(1L)
+                                .loginType(EMAIL)
+                                .nickname("nickname")
+                                .imageUrl("imageUrl")
+                                .description("description")
+                                .phoneNumber("01012341234")
+                                .birthDate("990101")
+                                .build())
+                        .address(new ArrayList<>())
+                        .build())
+                .tokenInfo(TokenDTO.TokenIssueDTO.builder()
+                        .accessToken("accessToken")
+                        .accessTokenExpiresIn(1L)
+                        .grantType("type").build()).build();
+        when(authService.login(any())).thenReturn(userLoginDto);
         // then
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("auth/login/success", requestFields(
+                .andDo(document("auth/login/successful", requestFields(
                         fieldWithPath("email").description("User's id for login which is email"),
                         fieldWithPath("password").description("User's login password"))
                 ));
@@ -225,14 +249,9 @@ public class MemberControllerTest {
     @WithMockCustomUser
     public void getUserInfoTestSuccess() throws Exception{
         //given
-        UserInfo userInfo = UserInfo.builder()
-                .id(1L)
-                .loginType(EMAIL)
-                .scrapId(2L)
-                .userName("userName")
-                .email("email")
-                .nickname("nickname")
-                .phoneNumber("01012345678").build();
+        UserInfoWithAddress userInfo = UserInfoWithAddress.builder()
+                .userDetail(UserDetail.builder().id(1L).userName("userName").birthDate("990101").description("description").email("email").imageUrl("imageUrl").nickname("phoneNumber").loginType(EMAIL).scrapId(1L).build())
+                .address(new ArrayList<>()).build();
 
 
         // when
@@ -242,18 +261,18 @@ public class MemberControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("user/get-info/success", responseFields(
-                        fieldWithPath("id").description("Id of user"),
-                        fieldWithPath("loginType").description("login type of user"),
-                        fieldWithPath("userName").description("name of user"),
-                        fieldWithPath("scrapId").description("Id of scrap"),
-                        fieldWithPath("email").description("email of user"),
+                        fieldWithPath("userDetail.id").description("Id of user"),
+                        fieldWithPath("userDetail.loginType").description("login type of user"),
+                        fieldWithPath("userDetail.userName").description("name of user"),
+                        fieldWithPath("userDetail.scrapId").description("Id of scrap"),
+                        fieldWithPath("userDetail.email").description("email of user"),
                         fieldWithPath("address").description("The user's address class"),
-                        fieldWithPath("address.addressName").description("The user's address name"),
-                        fieldWithPath("address.postalAddress").description("The user's postal address"),
-                        fieldWithPath("address.latitude").description("latitude of user address"),
-                        fieldWithPath("address.longitude").description("longitude of user address"),
-                        fieldWithPath("nickname").description("The user's nickname"),
-                        fieldWithPath("phoneNumber").description("The user's phoneNumber")
+                        fieldWithPath("userDetail.nickname").description("The user's nickname"),
+                        fieldWithPath("userDetail.phoneNumber").description("The user's phoneNumber"),
+                        fieldWithPath("userDetail.imageUrl").description("The user's image url"),
+                        fieldWithPath("userDetail.description").description("user description"),
+                        fieldWithPath("userDetail.birthDate").description("The user's birthdate")
+
                 )));
     }
 
@@ -273,7 +292,7 @@ public class MemberControllerTest {
         // then
         mockMvc.perform(get("/user"))
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isBadRequest())
                 .andDo(document("user/get-info/fail/non-login", responseFields(
                         fieldWithPath("status").description("status of http response"),
                         fieldWithPath("message").description("description of error message")
@@ -297,6 +316,9 @@ public class MemberControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("user/update/success",requestFields(
+                        fieldWithPath("userId").description("id value of user"),
+                        fieldWithPath("address.id").description("id value of address"),
+                        fieldWithPath("address.member").description("member of address"),
                         fieldWithPath("address").description("The user's address class"),
                         fieldWithPath("address.addressName").description("The user's address name"),
                         fieldWithPath("address.postalAddress").description("The user's postal address"),
@@ -318,8 +340,11 @@ public class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isBadRequest())
                 .andDo(document("user/update/fail/non-login", requestFields(
+                        fieldWithPath("userId").description("id value of user"),
+                        fieldWithPath("address.id").description("id value of address"),
+                        fieldWithPath("address.member").description("member value of address"),
                         fieldWithPath("address").description("The user's address class"),
                         fieldWithPath("address.addressName").description("The user's address name"),
                         fieldWithPath("address.postalAddress").description("The user's postal address"),
@@ -350,6 +375,9 @@ public class MemberControllerTest {
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andDo(document("user/update/fail/duplicate-nickname", requestFields(
+                        fieldWithPath("userId").description("id value of user"),
+                        fieldWithPath("address.id").description("id value of address"),
+                        fieldWithPath("address.member").description("member of address"),
                         fieldWithPath("address").description("The user's address class"),
                         fieldWithPath("address.addressName").description("The user's address name"),
                         fieldWithPath("address.postalAddress").description("The user's postal address"),
@@ -379,7 +407,10 @@ public class MemberControllerTest {
                 .andDo(print())
                 .andExpect(status().isConflict())
                 .andDo(document("user/update/fail/duplicate-nickname", requestFields(
+                        fieldWithPath("userId").description("id value of user"),
                         fieldWithPath("address").description("The user's address class"),
+                        fieldWithPath("address.id").description("id value of address"),
+                        fieldWithPath("address.member").description("member of address"),
                         fieldWithPath("address.addressName").description("The user's address name"),
                         fieldWithPath("address.postalAddress").description("The user's postal address"),
                         fieldWithPath("address.latitude").description("latitude of user address"),
@@ -411,6 +442,7 @@ public class MemberControllerTest {
                 ).andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("user/update-password/success", requestFields(
+                        fieldWithPath("userId").description("id value of user"),
                         fieldWithPath("oldPassword").description("Previous password"),
                         fieldWithPath("newPassword").description("New password")
                 )));
@@ -431,8 +463,9 @@ public class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateUserPassword))
                 ).andDo(print())
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isBadRequest())
                 .andDo(document("user/update-password/fail/non-login", requestFields(
+                        fieldWithPath("userId").description("id value of user"),
                         fieldWithPath("oldPassword").description("Previous password"),
                         fieldWithPath("newPassword").description("New password")
                 )));
@@ -459,7 +492,9 @@ public class MemberControllerTest {
                         .content(objectMapper.writeValueAsString(updateUserPassword)))
                 .andDo(print())
                 .andExpect(status().isConflict())
-                .andDo(document("user/update-password/fail/wrong-password", requestFields(fieldWithPath("oldPassword").description("Previous password that is wrong"),
+                .andDo(document("user/update-password/fail/wrong-password", requestFields(
+                        fieldWithPath("userId").description("id value of user"),
+                        fieldWithPath("oldPassword").description("Previous password that is wrong"),
                         fieldWithPath("newPassword").description("New password")
                 )));
     }
@@ -492,7 +527,7 @@ public class MemberControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString("")))
                 .andDo(print())
-                .andExpect(status().isUnauthorized())
+                .andExpect(status().isBadRequest())
                 .andDo(document("user/delete-user/fail"));
     }
 

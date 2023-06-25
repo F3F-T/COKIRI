@@ -1,5 +1,6 @@
 package f3f.dev1.global.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,11 +13,11 @@ public class MailConfig {
 
 
     @Bean
-    public JavaMailSender javaMailService() {
+    public JavaMailSender javaMailService(@Value("${email.password}") String emailPassword) {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost("smtp.naver.com");
         javaMailSender.setUsername("cokiri_dev_team");
-        javaMailSender.setPassword(System.getenv("EMAIL_PASSWORD"));
+        javaMailSender.setPassword(emailPassword);
 
         javaMailSender.setPort(465);
 

@@ -133,7 +133,7 @@ const Login = () => {
                     token :response.access_token
                 }
                 console.log("유저정보",googleUserInfo1)
-                const res1 = await axios.post("http://localhost:8080/auth/social_login/google", googleUserInfo1)
+                const res1 = await axios.post("https://f3f-cokiri.site/auth/social_login/google", googleUserInfo1)
                 console.log("res2...", res1)
                 const jwtToken = res1.data.tokenInfo;
                 console.log("토큰",jwtToken)

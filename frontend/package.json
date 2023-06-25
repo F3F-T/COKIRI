@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@react-oauth/google": "^0.5.1",
-    "@reduxjs/toolkit": "^1.9.1",
+    "@reduxjs/toolkit": "^1.9.3",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -43,6 +43,7 @@
     "redux": "^4.2.0",
     "redux-persist": "^6.0.0",
     "sass": "^1.57.1",
+    "styled-components": "^5.3.9",
     "swiper": "^6.8.4",
     "web-vitals": "^2.1.4",
     "webp-converter": "^2.3.3"

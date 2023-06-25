@@ -12,13 +12,14 @@ let store;
 
 
 //이렇게 store을 index파일에서 주입해주는 식으로 하면 순환오류를 막을수있다.
+//배포 확인
 //https://redux.js.org/faq/code-structure#how-can-i-use-the-redux-store-in-non-component-files
 export const injectStore = _store => {
     store = _store;
 }
 
 const Api = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "https://f3f-cokiri.site/",
 });
 
 const sourceRequest: any = {};
@@ -97,7 +98,7 @@ Api.interceptors.response.use(
                     if (accessToken) {
                         //accessToken 만료가 되면 백엔드에 있는 refreshToken으로 accessToken을 다시 받아온다.
                         try {
-                            const data = await axios.post("http://localhost:8080/auth/reissue", jsonObj);
+                            const data = await axios.post("https://f3f-cokiri.site/auth/reissue", jsonObj);
                             const jwtToken = data.data.accessToken;
                             //reissue가 성공하여 accessToken을 받아왔을때(reissue가 200번일때)
                             if (jwtToken) {
