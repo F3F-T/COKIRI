@@ -185,9 +185,9 @@ const PostUpload = () => {
       alert('업로드 성공');
       navigate(`/`);
     } catch (err) {
-      setIsUploading(false);
+      // setIsUploading(false);
       console.log(err);
-      alert('업로드 실패');
+      alert('업로드 실ㅌ패');
     }
 
   }
@@ -206,11 +206,11 @@ const PostUpload = () => {
 
   const onClickUploadButton = async () => {
 
-    if (isUploading) {
-      return;
-    }
-
-    setIsUploading(true);
+    // if (isUploading) {
+    //   return;
+    // }
+    //
+    // setIsUploading(true);
 
     console.log(uploadData);
 
@@ -504,7 +504,8 @@ const PostUpload = () => {
         </div>
 
         <div className={styles.btnPlace}>
-          <button className={styles.uploadBtn} onClick={onClickUploadButton} disabled={isUploading}>
+          {/*<button className={styles.uploadBtn} onClick={onClickUploadButton} disabled={isUploading}>*/}
+          <button className={styles.uploadBtn} onClick={onClickUploadButton}>
             내 물건 올리기
           </button>
         </div>

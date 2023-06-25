@@ -227,8 +227,8 @@ const PostContainer = (postProps: postProps) => {
         });
         setLoading2(false);
       } else if (queryString.includes('?tags=')) {
-        const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=10&page=0`);
-        // console.log(res)
+        const res = await Api.get(`/post/tagSearch/${queryString}&sort=${sortType}&size=20&page=0`);
+        console.log(res);
         setPageInfo(prevState => {
           return {
             empty: res.data.empty,
