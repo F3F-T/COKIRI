@@ -158,6 +158,62 @@ include::{snippets}/auth/login/fail/wrongPassword/http-request.adoc[]
 include::{snippets}/auth/login/fail/wrongPassword/http-response.adoc[]
 
 
+=== 3. Member management API
 
+==== 이메일 찾기
 
+`*_1. Success_*`
 
+**요청 필드 **
+
+include::{snippets}/auth/find-email/success/request-fields.adoc[]
+
+**Example request**
+
+include::{snippets}/auth/find-email/success/http-request.adoc[]
+
+**Example response**
+
+`*_2. Fail_*`
+
+**요청 필드**
+
+include::{snippets}/auth/find-email/fail/no-user/request-fields.adoc[]
+
+**Example request**
+
+include::{snippets}/auth/find-email/fail/no-user/http-request.adoc[]
+
+**Example response**
+
+include::{snippets}/auth/find-email/fail/no-user/http-response.adoc[]
+
+==== 비밀번호 찾기
+
+`*_1. Success_*`
+
+**요청 필드**
+
+include::{snippets}/auth/find-password/success/request-fields.adoc[]
+
+**Example request**
+
+include::{snippets}/auth/find-password/success/http-request.adoc[]
+
+**Example response**
+
+include::{snippets}/auth/find-password/success/http-response.adoc[]
+
+`*_2. Fail_*`
+
+**요청 필드**
+
+include::{snippets}/auth/find-password/fail/no-user/request-fields.adoc[]
+
+**Example request**
+
+include::{snippets}/auth/find-password/fail/no-user/http-request.adoc[]
+
+**Example response**
+
+include::{snippets}/auth/find-password/fail/no-user/http-response.adoc[]
