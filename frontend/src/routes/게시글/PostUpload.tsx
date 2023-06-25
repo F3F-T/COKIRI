@@ -358,7 +358,7 @@ const PostUpload = () => {
     //interceptor를 사용한 방식 (header에 token값 전달)
     try {
       const jsonObj = { 'accessToken': store.jwtTokenReducer.accessToken };
-      const data = await Api.post('http://localhost:8080/auth/reissue', jsonObj);
+      const data = await Api.post('/auth/reissue', jsonObj);
       dispatch(setToken(data.data));
     } catch (err) {
       console.log(err);
