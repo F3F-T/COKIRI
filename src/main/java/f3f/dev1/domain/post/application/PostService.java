@@ -18,6 +18,7 @@ import f3f.dev1.domain.post.dao.PostCustomRepository;
 import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotContainAuthorInfoException;
+import f3f.dev1.domain.postImage.application.PostImageService;
 import f3f.dev1.domain.postImage.dao.PostImageCustomRepositoryImpl;
 import f3f.dev1.domain.postImage.model.PostImage;
 import f3f.dev1.domain.scrap.dao.ScrapPostRepository;
@@ -29,6 +30,7 @@ import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
 import f3f.dev1.domain.scrap.model.Scrap;
+import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.exception.NotFoundByPostAndTagException;
@@ -76,6 +78,10 @@ public class PostService {
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final PostTagRepository postTagRepository;
+
+    private final TagService tagService;
+    private final PostImageService postImageService;
+
     // Custom repository
     private final PostCustomRepositoryImpl postCustomRepository;
     private final MemberCustomRepositoryImpl memberCustomRepository;
@@ -95,9 +101,16 @@ public class PostService {
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
 //        member.getPosts().add(post);
         postRepository.save(post);
+
         Trade trade = CreateTradeDto.builder().sellerId(member.getId()).postId(post.getId()).build().toEntity(member, post);
         tradeRepository.save(trade);
 
+        tagService.addTagsToPost(post.getId(), postSaveRequest.getTagNames());
+
+        if(postSaveRequest.getImages() != null) {
+            List<String> images = postSaveRequest.getImages();
+            postImageService.savePostImages(images, post.getId());
+        }
         return post.getId();
     }
 
@@ -161,9 +174,15 @@ public class PostService {
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
             for (Post post : dtoPages) {
-                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
-                PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
-                list.add(build);
+                if(member.getScrap() != null) {
+                    boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
+                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), isScrap);
+                    list.add(build);
+                } else {
+                    PostSearchResponseDto build = post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(), false);
+                    list.add(build);
+                }
+
             }
         }
         // 조회하는 사용자가 비회원일 경우
@@ -234,13 +253,16 @@ public class PostService {
         // 비회원일 경우 member를 조회하면 오류가 발생한다. 따라서 null 여부를 체크하고, 이에 따라 로직이 분기해야 한다.
         if(currentMemberId != null) {
             Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-            boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), id);
-            SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, isScrap);
-            return response;
-        } else {
-            SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, false);
-            return response;
+            // 프론트의 요청으로 로그인한 사용자가 조회한 게시글을 스크랩했을 경우 표시를 해줘야 한다.
+            // 하지만 사용자의 스크랩이 존재하지 않은 경우 (이론상 불가능한 경우지만) 이에 대한 예외도 처리 해주어야 한다.
+            if(member.getScrap() != null) {
+                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), id);
+                SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, isScrap);
+                return response;
+            }
         }
+        SinglePostInfoDto response = post.toSinglePostInfoDto(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size(), userInfo, commentInfoDtoList, postImages, false);
+        return response;
     }
 
     /* TODO

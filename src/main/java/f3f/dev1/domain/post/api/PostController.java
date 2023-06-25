@@ -89,9 +89,7 @@ public class PostController {
     public ResponseEntity<Long> createPost(@RequestBody PostSaveRequest postSaveRequest) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Long postId = postService.savePost(postSaveRequest, currentMemberId);
-        tagService.addTagsToPost(postId, postSaveRequest.getTagNames());
-        List<String> images = postSaveRequest.getImages();
-        postImageService.savePostImages(images, postId);
+
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }
 
