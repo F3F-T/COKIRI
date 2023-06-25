@@ -201,10 +201,16 @@ public class Post extends BaseTimeEntity {
     }
 
     public SinglePostInfoDto toSinglePostInfoDto(List<String> tagNames, Long scrapCount, Long messageRoomCount, UserInfoWithAddress userInfo, List<CommentInfoDto> commentInfoDtoList, List<String> images, boolean scrapExists) {
+        TradeStatus tradeStatus;
+        if (this.trade == null) {
+            tradeStatus = TradeStatus.TRADABLE;
+        } else {
+            tradeStatus = this.trade.getTradeStatus();
+        }
         return SinglePostInfoDto.builder()
                 .productCategory(this.productCategory.getName())
                 .wishCategory(this.wishCategory.getName())
-                .tradeStatus(this.trade.getTradeStatus())
+                .tradeStatus(tradeStatus)
                 .commentInfoDtoList(commentInfoDtoList)
                 .tradeEachOther(this.tradeEachOther)
                 .messageRoomCount(messageRoomCount)
