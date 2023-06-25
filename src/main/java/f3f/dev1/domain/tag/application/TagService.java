@@ -55,6 +55,7 @@ public class TagService {
         return tag.getId();
     }
 
+    @Transactional
     public Long addTagToPost(AddTagToPostRequest addTagToPostRequest) {
         Post post = postRepository.findById(addTagToPostRequest.getPostId()).orElseThrow(NotFoundByIdException::new);
         Tag tag = tagRepository.findById(addTagToPostRequest.getTagId()).orElseThrow(NotFoundByIdException::new);
@@ -75,6 +76,7 @@ public class TagService {
         return postTag.getId();
     }
 
+    @Transactional
     // TODO 테스트코드 필시 작성해봐야 함.
     public Long addTagsToPost(Long postId, List<String> tagNames) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);

@@ -551,6 +551,7 @@ public class PostServiceTest {
         PageRequest pageRequest = PageRequest.of(0, 20);
         Page<PostSearchResponseDto> list1 = postService.findPostsByCategoryAndPriceRange(searchPostRequestExcludeTag, member.getId(), pageRequest);
         assertThat(list1).extracting("title").hasSize(2).contains("첫번째 게시글", "두번째 게시글");
+        // 첫번째 게시글은 스크랩을 했기 때문에 스크랩 갯수가 1이 나와야 한다.
         assertThat(list1.getContent().get(0).getScrapCount()).isEqualTo(1L);
     }
 

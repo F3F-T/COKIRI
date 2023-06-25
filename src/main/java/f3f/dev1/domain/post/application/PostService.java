@@ -18,6 +18,7 @@ import f3f.dev1.domain.post.dao.PostCustomRepository;
 import f3f.dev1.domain.post.dao.PostCustomRepositoryImpl;
 import f3f.dev1.domain.post.dao.PostRepository;
 import f3f.dev1.domain.post.exception.NotContainAuthorInfoException;
+import f3f.dev1.domain.postImage.application.PostImageService;
 import f3f.dev1.domain.postImage.dao.PostImageCustomRepositoryImpl;
 import f3f.dev1.domain.postImage.model.PostImage;
 import f3f.dev1.domain.scrap.dao.ScrapPostRepository;
@@ -29,6 +30,7 @@ import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
 import f3f.dev1.domain.scrap.model.Scrap;
+import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
 import f3f.dev1.domain.tag.exception.NotFoundByPostAndTagException;
@@ -76,6 +78,10 @@ public class PostService {
     private final TagRepository tagRepository;
     private final CategoryRepository categoryRepository;
     private final PostTagRepository postTagRepository;
+
+    private final TagService tagService;
+    private final PostImageService postImageService;
+
     // Custom repository
     private final PostCustomRepositoryImpl postCustomRepository;
     private final MemberCustomRepositoryImpl memberCustomRepository;
@@ -95,9 +101,16 @@ public class PostService {
         Post post = postSaveRequest.toEntity(member, productCategory, wishCategory, resultsList);
 //        member.getPosts().add(post);
         postRepository.save(post);
+
         Trade trade = CreateTradeDto.builder().sellerId(member.getId()).postId(post.getId()).build().toEntity(member, post);
         tradeRepository.save(trade);
 
+        tagService.addTagsToPost(post.getId(), postSaveRequest.getTagNames());
+
+        if(postSaveRequest.getImages() != null) {
+            List<String> images = postSaveRequest.getImages();
+            postImageService.savePostImages(images, post.getId());
+        }
         return post.getId();
     }
 
