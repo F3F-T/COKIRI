@@ -1,81 +1,85 @@
-.wrap{
-    min-height: 200vh;
-    position: relative;
-    width: 100%;
+.wrap {
+  min-height: 200vh;
+  position: relative;
+  width: 100%;
 }
+
 :root {
 
-    --start-height: 20rem; /*변수 할당, start div의 height*/
-    --mulmul-height: 21rem;
+  --start-height: 20rem; /*변수 할당, start div의 height*/
+  --mulmul-height: 21rem;
 }
 
-.home{
-    width:1200px;
-    margin: auto;
-    position : relative;
+.home {
+  width: 1200px;
+  margin: auto;
+  position: relative;
 }
-.boxbox{
-    width: 100%;
-    height: 100%;
-    //padding-bottom: 900px;
-}
-.hrFull{
 
-    position: absolute;
-    width : 150%;
-    left : -20rem;
+.boxbox {
+  width: 100%;
+  height: 100%;
+  //padding-bottom: 900px;
 }
+
+.hrFull {
+
+  position: absolute;
+  width: 150%;
+  left: -20rem;
+}
+
 /************************************************************************
  시작하기 Component
  현재 크기를 줄일때 띠껍게 되는 문제 발생하는데 미디어 쿼리를 이용해서 해야하는듯
  ************************************************************************/
 /*시작하기 전체*/
 
-.start{
-    /*margin: auto; !* content를 중앙으로 보낸다*!*/
-    min-width: 5vw; /*최소를 정해줬는데 이건 적용이 안된듯*/
-    /*border-style: solid;*/
-    height: var( --start-height);  /* start 전체크기 200px */
-    display: flex;  /*div 안에서 start left와 start right의 비율로 분할해준다*/
-    font-size: 1.5rem;
+.start {
+  /*margin: auto; !* content를 중앙으로 보낸다*!*/
+  min-width: 5vw; /*최소를 정해줬는데 이건 적용이 안된듯*/
+  /*border-style: solid;*/
+  height: var(--start-height); /* start 전체크기 200px */
+  display: flex; /*div 안에서 start left와 start right의 비율로 분할해준다*/
+  font-size: 1.5rem;
 
 
 }
 
 
 /*시작하기 왼쪽*/
-.startLeft{
+.startLeft {
 
-    padding-left : 50px;
-    /*padding-left: 6rem; !*left padding*!*/
-    /*padding-top: calc(var( --start-height) /2 - 3.7rem); !*추후 height를 변경할시에 동적으로 변경될수 있게 calc 사용, -2.5는 startLeft의 font-size를 고려한것*!*/
-    padding-top: 6rem;
-    flex: 4.0; /*div 안에서 start left와 start right의 비율로 분할해준다*/
-    font-size: 4.5rem;
-    font-weight: 600;
+  padding-left: 50px;
+  /*padding-left: 6rem; !*left padding*!*/
+  /*padding-top: calc(var( --start-height) /2 - 3.7rem); !*추후 height를 변경할시에 동적으로 변경될수 있게 calc 사용, -2.5는 startLeft의 font-size를 고려한것*!*/
+  padding-top: 6rem;
+  flex: 4.0; /*div 안에서 start left와 start right의 비율로 분할해준다*/
+  font-size: 4.5rem;
+  font-weight: 600;
 
 }
 
 /*시작하기 오른쪽 전체*/
-.startRight{
-    padding-top: 6rem;
-    padding-left: 8rem;
-    flex: 5;
-    font-size: 1.5rem;
+.startRight {
+  padding-top: 6rem;
+  padding-left: 8rem;
+  flex: 5;
+  font-size: 1.5rem;
 }
 
 /*시작하기 설명 폰트 사이즈*/
-.startRight1{
-    //margin-left: 3rem;
-    font-size: 1em;
+.startRight1 {
+  //margin-left: 3rem;
+  font-size: 1em;
 
 }
 
 /*시작하기 버튼*/
-.startRight2 button{
-    margin-right: 1.7rem;
-    margin-top: 1.2rem;
-    font-size: 0.75em;
+.startRight2 button {
+  margin-right: 1.7rem;
+  margin-top: 1.2rem;
+  font-size: 0.75em;
 }
 
 
@@ -84,71 +88,71 @@
  ************************************************************************/
 
 /*물물교환 전체*/
-.mulmulTrade{
+.mulmulTrade {
 
-    margin-top: 3rem;    /*width : 75%;*/
-    height: var( --mulmul-height);
-    max-height: var( --mulmul-height);
+  margin-top: 3rem; /*width : 75%;*/
+  height: var(--mulmul-height);
+  max-height: var(--mulmul-height);
 }
+
 /*물물교환 h2(우리 동네 인기 물물교환)*/
-.mulmulTrade h2{
+.mulmulTrade h2 {
 
-    font-size : 1.7rem;
-    font-weight: 600;
-    padding-left: 50px;
-    //text-align: center;
+  font-size: 1.7rem;
+  font-weight: 600;
+  padding-left: 50px;
+  //text-align: center;
 }
 
-.startBtn{
-    cursor: pointer;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
-    background-color: #F1F3F5;
-    border :none;
-    font-size: 18px;
-    font-weight: bold;
-    text-decoration: none;
-    border-radius: 6px;
-    color: black;
+.startBtn {
+  cursor: pointer;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !important;
+  background-color: #F1F3F5;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 6px;
+  color: black;
 
-    padding: 14.5px 26px;
-    letter-spacing: -0.3px;
-    line-height: 1.47;
+  padding: 14.5px 26px;
+  letter-spacing: -0.3px;
+  line-height: 1.47;
 
-    &:hover{
-        background-color: #E9ECEF;
-    }
+  &:hover {
+    background-color: #E9ECEF;
+  }
 }
 
-.uploadBtn{
-    font-family: OhouseSans,Noto Sans KR,Apple SD Gothic Neo,맑은 고딕,Malgun Gothic,sans-serif;
-    background-color: #EAEDEF;
-    border :none;
-    margin-right :0.5rem;
-    font-size: 1.1rem;
-    font-weight: 700;
-    height: 2.8rem;
-    border-radius: 10px;
-    color: black;
-    padding: 0rem 0.75rem 0rem 0.75rem;
+.uploadBtn {
+  font-family: OhouseSans, Noto Sans KR, Apple SD Gothic Neo, 맑은 고딕, Malgun Gothic, sans-serif;
+  background-color: var(--background-color);
+  border: none;
+  margin-right: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  height: 2.8rem;
+  border-radius: 10px;
+  color: black;
+  padding: 0rem 0.75rem 0rem 0.75rem;
 }
 
 
-.tradeTop{
-    position: relative;
+.tradeTop {
+  position: relative;
 }
 
-.tradeTop li{
-    cursor: pointer;
-    color: #5DC8CD;
-    list-style: none;
-    position : absolute;
-    right : -0.4rem;
-    margin-right : 4rem;
-    font-weight: bold;
-    font-size : 1.3rem;
-    line-height: 2.3rem;
-    top : 0rem;
-
+.tradeTop li {
+  cursor: pointer;
+  color: var(--primary-color);
+  list-style: none;
+  position: absolute;
+  right: -0.4rem;
+  margin-right: 4rem;
+  font-weight: bold;
+  font-size: 1.3rem;
+  line-height: 2.3rem;
+  top: 0rem;
 
 
 }
@@ -157,67 +161,70 @@
 /*TODO: 물물교환 MulMulcardView안에 있는 css, 현재는 home module에 있지만
 추후엔 MulMulcardView module을 따로 빼서 넣어야 함*/
 
-.mulmulCardView{
-    position : relative;
-    margin-top: 1rem;
-    width:1200px;
-    display: flex;
-    flex-direction: row;
-    //justify-content: space-between;
-    font-size: 1rem;
-    height: 22rem;
+.mulmulCardView {
+  position: relative;
+  margin-top: 1rem;
+  width: 1200px;
+  display: flex;
+  flex-direction: row;
+  //justify-content: space-between;
+  font-size: 1rem;
+  height: 22rem;
 
 }
-.carou{
-    width: 100%;
+
+.carou {
+  width: 100%;
 }
-.changeReactBootstrap{
-    width: 100%;
-    background-color: red;
-    nextLabel : next;
-    variant : dark;
+
+.changeReactBootstrap {
+  width: 100%;
+  background-color: red;
+  nextLabel: next;
+  variant: dark;
 
 
 }
-.carousenner{
-    width: 150%;
-    background-color: red;
+
+.carousenner {
+  width: 150%;
+  background-color: red;
 }
 
-.cardViewPlease{
-    margin-right: 2rem;
+.cardViewPlease {
+  margin-right: 2rem;
 }
 
 /*MulMulCardView 안에 있는 이미지*/
-.mulmulCardImg{
-    /*width: 100%;*/
-    height: 13rem;
+.mulmulCardImg {
+  /*width: 100%;*/
+  height: 13rem;
 
 }
 
 /*MulMulCardView 안에 있는 디테일(title, content, bottomdetail을 포함한다*/
-.mulmulCardDetail{
-    padding-left: 0.5rem;
+.mulmulCardDetail {
+  padding-left: 0.5rem;
 }
 
 /*MulMulCardView 안에 있는 title*/
-.mulmulCardViewTitle{
-    font-size: 1rem;
-    color: black;
+.mulmulCardViewTitle {
+  font-size: 1rem;
+  color: black;
 }
 
 /*MulMulCardView 안에 있는 content(본문)*/
-.mulmulCardViewContent{
-    font-size: 0.7rem;
-    margin-top: 0.2rem;
-    color: grey;
+.mulmulCardViewContent {
+  font-size: 0.7rem;
+  margin-top: 0.2rem;
+  color: grey;
 }
 
 /*MulMulCardView 안에 있는 좋아요, 댓글, 교환할 물건*/
-.mulmulCardViewBottomDetail li{
-    margin-top: 0.2rem;
-    display: flex;
-    font-size: 0.1rem;
+.mulmulCardViewBottomDetail li {
+  margin-top: 0.2rem;
+  display: flex;
+  font-size: 0.1rem;
 
 }
 
@@ -227,56 +234,57 @@
  ************************************************************************/
 
 /*끼리끼리 전체*/
-.kirikiriTrade{
-    padding-top : 5rem;
-    //width : 75%;
-    margin: auto; /* content를 중앙으로 보낸다*/
-    height: var( --mulmul-height);
-    max-height: var( --mulmul-height);
+.kirikiriTrade {
+  padding-top: 5rem;
+  //width : 75%;
+  margin: auto; /* content를 중앙으로 보낸다*/
+  height: var(--mulmul-height);
+  max-height: var(--mulmul-height);
 
 }
 
 /*끼리끼리 h2(다른 카테고리 뿐만 아니라 같은 카테고리 끼리도 교환할 수 있어요)*/
-.kirikiriTrade h2{
-    margin-top: 3rem;
-    margin-left : 50px;
-    font-size : 1.7rem;
+.kirikiriTrade h2 {
+  margin-top: 3rem;
+  margin-left: 50px;
+  font-size: 1.7rem;
 }
 
 /*끼리끼리 카테고리 원형 이미지*/
-.kirikiriCatagoryCardView{
-    display: flex;
-    justify-content: center;
-    width:100%;
-    margin-left: 1rem;
-    max-height: var( --mulmul-height);
+.kirikiriCatagoryCardView {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-left: 1rem;
+  max-height: var(--mulmul-height);
 }
 
-.HomePostContainer{
-    margin-top: 3rem;
-    width: 1200px;
-    border-radius: 10px;
-    /*border: 0.5px solid red;*/
-    display: grid;
-    grid-template-columns: repeat(4,1fr);
-    gap: 1rem;
+.HomePostContainer {
+  margin-top: 3rem;
+  width: 1200px;
+  border-radius: 10px;
+  /*border: 0.5px solid red;*/
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
 }
 
-.kiriTop{
-    position: relative;
-    z-index: 0;
+.kiriTop {
+  position: relative;
+  z-index: 0;
 }
-.kiriLi{
-    cursor: pointer;
-    color: #5DC8CD;
-    list-style: none;
-    position : absolute;
-    right : -0.4rem;
-    margin-right : 4rem;
-    font-weight: bold;
-    font-size : 1.3rem;
-    line-height: 2.3rem;
-    top : -2rem;
-    background-size: 60px 60px;
+
+.kiriLi {
+  cursor: pointer;
+  color: var(--primary-color);
+  list-style: none;
+  position: absolute;
+  right: -0.4rem;
+  margin-right: 4rem;
+  font-weight: bold;
+  font-size: 1.3rem;
+  line-height: 2.3rem;
+  top: -2rem;
+  background-size: 60px 60px;
 
 }

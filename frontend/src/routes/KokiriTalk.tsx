@@ -395,6 +395,8 @@ const KokiriTalk = () => {
   if (!roomList) {
     return null;
   }
+
+  console.log(talkCard);
   console.log('state확인좀할게', state);
   return (
     <div className={styles.wrap}>
@@ -483,7 +485,8 @@ const KokiriTalk = () => {
             </div>
             <div className={styles.right_header1_2}>{talkCard.opponentNickname}님과의 쪽지방입니다.</div>
           </div>
-          <div className={styles.talkContainer2}>
+          님
+          <div className={styles.talkContainer2}>님
             {key === null ?
               <></> : <Message keys={key} counts={count} />
             }

@@ -66,7 +66,7 @@
 
 
 .wrapperOn {
-  border: 2px solid #5DC8CD;
+  border: 2px solid var(--primary-color);
 }
 
 .talkContainer {
@@ -94,6 +94,18 @@
   font-weight: bold;
   margin-bottom: 0.5rem;
 
+}
+
+.partnerName {
+  cursor: pointer;
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1rem;
+
+  결
+  &:hover {
+    font-weight: 900;
+  }
 }
 
 .right_header2 {
