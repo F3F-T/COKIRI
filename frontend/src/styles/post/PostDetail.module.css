@@ -1,50 +1,58 @@
-.postDetail{
+.postDetail {
     width: 800px;
     margin: auto;
 }
-.Box{
+
+.Box {
     width: 100%;
     height: 100%;
 }
+
 /*.post{*/
 /*    width: 800px;*/
 /*    margin: auto;*/
 /*}*/
-.post{
+.post {
 
 }
-.postTop{
-    display : flex;
+
+.postTop {
+    display: flex;
     position: relative;
     /*flex-direction: row;*/
 }
-.postTopProfile{
+
+.postTopProfile {
 
 }
-.postTopProfileImg{
-    width: 4.5rem;
-    height: 4.5rem;
+
+.postTopProfileImg {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 30px;
 }
 
-.postTopProfileInfo{
+.postTopProfileInfo {
     flex-direction: column;
     display: inline-block;
-    margin-left:1rem;
+    margin-left: 0.7rem;
 
 }
-.postTopNickname{
-    margin-top: 1rem;
+
+.postTopNickname {
+    margin-top: 0.7rem;
     font-size: 1rem;
     font-weight: bold;
 }
 
-.postTopAddress{
+.postTopAddress {
     font-size: 0.8rem;
+
     color: gray;
 }
 
 
-.postTopReport{
+.postTopReport {
     position: relative;
     display: inline;
     margin-left: auto;
@@ -55,29 +63,30 @@
 
 }
 
-.postBody{
-    margin-top: 1.5rem;
+.postBody {
+    margin-top: 0.5rem;
     display: flex;
-    position : relative;
+    position: relative;
     /*padding-bottom: 2rem;*/
     /*height: 26rem;*/
     border-bottom: 1px solid gray;
 
 }
-.postImg{
+
+.postImg {
 
 }
 
-.postBodyImg{
+.postBodyImg {
     width: 22rem;
     /*height : 23rem;*/
     border-radius: 10px;
 }
 
-.postDetailInfo{
-    width: 25rem;
+.postDetailInfo {
+    width: 27rem;
     height: 26.5rem;
-    max-height: 26.5rem;
+    /*max-height: 26.5rem;*/
     /*height : 22rem;*/
     margin-left: 2rem;
     /*margin-right: 1rem;*/
@@ -86,160 +95,170 @@
 
 }
 
-.postDetailInfo .postDetailTitle{
+.postDetailInfo .postDetailTitle {
     /*margin-top : 1rem;*/
     font-size: 2rem;
-    width : 26rem;
+    width: 26rem;
     max-height: 4.5rem;
-    overflow:hidden;
+    overflow: hidden;
     font-weight: bold;
     /*line-height: 100%;*/
 
 
 }
 
-.postDetailInfo .postDetailCategory{
+.postDetailInfo .postDetailCategory {
     margin-top: 0.5rem;
     font-size: 1.7rem;
     color: gray;
 }
 
-.postDetailInfo .postDetailPrice{
+.postDetailInfo .postDetailPrice {
     margin-top: 0.4rem;
     font-size: 1.4rem;
 }
 
-.postDetailInfo .postDetailContent{
+.postDetailInfo .postDetailContent {
     margin-top: 0.7rem;
     font-size: 1.1rem;
     /*margin-right: 1.8rem;*/
     font-weight: 500;
     max-height: 13.5rem;
-    overflow:hidden;
+    overflow: hidden;
     white-space: pre-wrap;
 }
 
-.postDetailInfo .postDetailTag{
+.postDetailInfo .postDetailTag {
     color: blue;
     margin-top: 0.4rem;
     font-size: 1rem;
-    text-overflow:ellipsis;
+    text-overflow: ellipsis;
 }
 
-.tagC{
+.tagC {
     cursor: pointer;
     margin-left: 0.3rem;
 }
 
-.contentAndTag{
+.contentAndTag {
     max-height: 16rem;
     overflow: hidden;
 }
 
-.categoryandStatus{
+.categoryandStatus {
     width: 22rem;
     /*height: 38px;*/
-    position : absolute;
+    position: absolute;
     bottom: 0rem;
-    display : flex;
+    display: flex;
     justify-content: space-between;
 }
 
-.tradeStatusDiv{
+.tradeStatusDiv {
 
 }
 
-.tradeStatus{
+.tradeStatus {
     font-size: 1.1rem;
     margin-bottom: 0.2rem;
 }
 
-.tradeStatusString{
+.tradeStatusString {
     font-size: 1.4rem;
     color: gray;
     /*margin-bottom: 0.2rem;*/
 }
 
-.postDetailSwapCategoryBox{
+.postDetailSwapCategoryBox {
     padding: 0.3rem;
     display: flex;
 
 }
-.transfer{
+
+.transfer {
     width: 2rem;
     height: 2rem;
 
 }
-.postDetailSwapCategory{
-    margin-left:0.4rem;
+
+.postDetailSwapCategory {
+    margin-left: 0.4rem;
     font-size: 1.2rem;
 }
 
-.tradeAndTalk{
+.tradeAndTalk {
     display: flex;
 }
 
-.postBottom{
+.postBottom {
     display: flex;
     justify-content: space-between;
-    position : relative;
+    position: relative;
 }
-.metaBox{
-    margin-top:0.5rem;
+
+.metaBox {
+    margin-top: 0.5rem;
     display: flex;
     gap: 1rem;
 }
-.imgBox{
+
+.imgBox {
     display: flex;
-    gap:0.2rem;
+    gap: 0.2rem;
 }
-.likeImg{
+
+.likeImg {
     cursor: pointer;
-    width:1rem;
+    width: 1rem;
     height: 1rem;
     margin-top: 0.3rem;
     margin-right: 0.2rem;
 }
-.commentBox{
+
+.commentBox {
     display: flex;
-    gap:0.2rem;
+    gap: 0.2rem;
 }
-.commentImg{
-    width:1rem;
+
+.commentImg {
+    width: 1rem;
     height: 1rem;
     margin-top: 0.3rem;
     margin-right: 0.2rem;
 
 }
-.timeBox{
-    gap:0.2rem;
+
+.timeBox {
+    gap: 0.2rem;
     display: flex;
 }
-.timeImg{
-    width:1rem;
+
+.timeImg {
+    width: 1rem;
     height: 1rem;
     margin-top: 0.3rem;
     margin-right: 0.2rem;
 }
-.exchangeBtn{
+
+.exchangeBtn {
     margin-top: 0.4rem;
     border: none;
     border-radius: 10px;
-    height:2rem;
+    height: 2rem;
 }
 
-.comments{
-    border: 1px #e5e8eb solid ;
+.comments {
+    border: 1px #e5e8eb solid;
     border-radius: 10px;
     margin-top: 3rem;
 
 }
 
-.writeComments{
+.writeComments {
     display: flex;
 }
 
-.writeCommentsInput{
+.writeCommentsInput {
     margin: 0;
     padding: 10px 85px 10px 10px;
     border: 0;
@@ -254,13 +273,13 @@
     background-color: #F8F8F8;
 }
 
-.pencilIcon{
+.pencilIcon {
     background-color: #F8F8F8;
     height: 40px;
     font-size: 25px;
 }
 
-.moreDot{
+.moreDot {
     position: absolute;
     top: 10%;
     right: 0;

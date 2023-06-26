@@ -8,10 +8,10 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    //1. restdocs
-    id "org.asciidoctor.jvm.convert" version "3.3.2"
     // 2. querydsl plugins 추가
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+    //1. restdocs
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
 }
 
 group 'org.example'
@@ -109,4 +109,8 @@ configurations {
         extendsFrom annotationProcessor
     }
     querydsl.extendsFrom compileClasspath
+}
+
+clean {
+    delete file('src/main/generated')
 }

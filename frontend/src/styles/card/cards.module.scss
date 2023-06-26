@@ -1,64 +1,89 @@
-.forTrade{
+.forTrade {
   cursor: pointer;
-  height : 18.375rem;
-  font-size : 1rem;
-  .postItem{
+  //height: 18.375rem;
+  height: 19rem;
+  font-size: 1rem;
+
+  .postItem {
     border: 1px solid rgba(200, 200, 200);
     border-radius: 10px;
   }
-  .postImage{
 
-    width: 15rem;
+  .postImage {
+
+    width: 15.5rem;
     height: 12rem;
     margin: 0.2rem;
     border-radius: 10px;
   }
-  .postTitle{
+
+  .postTitle {
     width: 15rem;
     text-align: left;
     font-weight: bold;
     font-size: 1rem;
-    overflow:hidden;
+    overflow: hidden;
     display: inline-block;
 
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    margin:0.3rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 0.3rem;
+    margin-bottom: 0;
   }
-  .postContent{
-    width : 15rem;
+
+  .postContent {
+    width: 15rem;
     text-align: left;
     font-weight: bold;
     font-size: 0.75rem;
-    color : gray;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    color: gray;
+    overflow: hidden;
+    text-overflow: ellipsis;
     display: inline-block;
-    white-space:nowrap;
-    margin:0.3rem;
+    white-space: nowrap;
+    margin-top: 0.5rem;
+    padding: 0rem;
+    margin-bottom: 0;
   }
-  .detail{
+
+  .postPrice {
+    width: 15rem;
+    text-align: left;
+    height: 1rem;
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin-left: 0.3rem;
+    //color: gray;
+    display: inline-block;
+    margin: 0;
+  }
+
+  .detail {
     display: flex;
     justify-content: space-between;
     margin-bottom: 0rem;
   }
-  .heart{
+
+  .heart {
     font-weight: bold;
     margin-top: 0.3rem;
     margin-left: 0.3rem;
-    margin-bottom: 0.7rem;
+    margin-bottom: 0.5rem;
   }
-  .like{
+
+  .like {
     vertical-align: middle;
     font-size: 0.75rem;
     //margin-left:0.3rem;
   }
-  .tradeImage{
-    width: 1.4rem;
-    height: 1.4rem;
+
+  .tradeImage {
+    width: 1rem;
+    height: 1rem;
     margin-right: 0.3rem;
   }
-  .detail2{
+
+  .detail2 {
     vertical-align: middle;
     display: flex;
     justify-content: space-between;
@@ -66,39 +91,172 @@
     margin-right: 1rem;
 
   }
-  .likeImg{
-    width:1rem;
+
+  .likeImg {
+    width: 1rem;
     height: 1rem;
     //margin-top: 0.3rem;
     margin-right: 0.2rem;
   }
-  .commentBox{
+
+  .commentBox {
     display: flex;
-    gap:0.2rem;
+    gap: 0.2rem;
   }
-  .commentImg{
+
+  .commentImg {
     vertical-align: middle;
     margin-left: 0.6rem;
-    width:1rem;
+    width: 1rem;
     height: 1rem;
     //margin-top: 0.1rem;
     margin-right: 0.2rem;
 
   }
-  .commmentNum{
+
+  .commmentNum {
     vertical-align: middle;
     font-size: 0.75rem;
   }
-  .tradestring{
+
+  .tradestring {
+    vertical-align: middle;
+    font-size: 0.75rem;
+  }
+}
+
+.forHome {
+  cursor: pointer;
+  //height: 18.375rem;
+  height: 19rem;
+  font-size: 1rem;
+
+  .postItem {
+    width: 15.5rem;
+    padding: 0.3rem;
+    border: 1px solid rgba(200, 200, 200);
+    border-radius: 10px;
+  }
+
+  .postImage {
+
+    width: 14.5rem;
+    height: 12rem;
+    margin: 0.2rem;
+    border-radius: 10px;
+  }
+
+  .postTitle {
+    width: 15rem;
+    text-align: left;
+    font-weight: bold;
+    font-size: 1rem;
+    overflow: hidden;
+    display: inline-block;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 0.3rem;
+    margin-bottom: 0;
+  }
+
+  .postContent {
+    width: 15rem;
+    text-align: left;
+    font-weight: bold;
+    font-size: 0.75rem;
+    color: gray;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    white-space: nowrap;
+    margin-top: 0.5rem;
+    padding: 0rem;
+    margin-bottom: 0;
+  }
+
+  .postPrice {
+    width: 15rem;
+    text-align: left;
+    height: 1rem;
+    font-weight: 500;
+    font-size: 1.1rem;
+    margin-left: 0.3rem;
+    //color: gray;
+    display: inline-block;
+    margin: 0;
+  }
+
+  .detail {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0rem;
+  }
+
+  .heart {
+    font-weight: bold;
+    margin-top: 0.3rem;
+    margin-left: 0.3rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .like {
+    vertical-align: middle;
+    font-size: 0.75rem;
+    //margin-left:0.3rem;
+  }
+
+  .tradeImage {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.3rem;
+  }
+
+  .detail2 {
+    vertical-align: middle;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    margin-right: 1rem;
+
+  }
+
+  .likeImg {
+    width: 1rem;
+    height: 1rem;
+    //margin-top: 0.3rem;
+    margin-right: 0.2rem;
+  }
+
+  .commentBox {
+    display: flex;
+    gap: 0.2rem;
+  }
+
+  .commentImg {
+    vertical-align: middle;
+    margin-left: 0.6rem;
+    width: 1rem;
+    height: 1rem;
+    //margin-top: 0.1rem;
+    margin-right: 0.2rem;
+
+  }
+
+  .commmentNum {
+    vertical-align: middle;
+    font-size: 0.75rem;
+  }
+
+  .tradestring {
+    vertical-align: middle;
     font-size: 0.75rem;
   }
 }
 
 
-
-
-.forMypage{
-  .postItem{
+.forMypage {
+  .postItem {
     //border: 1px solid rgba(200, 200, 200);
     border: none;
     width: 14.2rem;
@@ -106,41 +264,48 @@
     border-radius: 10px;
     margin-bottom: 0.9rem;
   }
-  .postImage{
+
+  .postImage {
     width: 13.7rem;
-    height:10rem;
+    height: 10rem;
     margin: 0.2rem;
     border-radius: 10px;
   }
-  .postTitle{
+
+  .postTitle {
     width: 15rem;
     text-align: left;
     font-weight: bold;
     font-size: 1rem;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    margin:0.3rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0.3rem;
   }
-  .detail{
+
+  .detail {
     display: flex;
     justify-content: space-between;
   }
-  .like{
+
+  .like {
     font-weight: bold;
-    margin-left:0.3rem;
+    margin-left: 0.3rem;
     font-size: 0.5rem;
   }
-  .tradeImage{
+
+  .tradeImage {
     width: 1rem;
     height: 1rem;
   }
-  .detail2{
+
+  .detail2 {
     width: 4rem;
     display: flex;
     justify-content: space-evenly;
     margin-right: 1rem;
   }
+
   //.postImage{
   //  width: 5rem;
   //  margin-left: 0rem;
@@ -151,68 +316,77 @@
   //}
 }
 
-.more{
+.more {
   cursor: pointer;
-  margin-top : 2.5rem;
-  height : 18.375rem;
-  font-size : 1rem;
-  .postItem{
+  margin-top: 2.5rem;
+  height: 18.375rem;
+  font-size: 1rem;
+
+  .postItem {
     border: 1px solid rgba(200, 200, 200);
     border-radius: 10px;
   }
-  .postImage{
+
+  .postImage {
 
     width: 15rem;
     height: 12rem;
     margin: 0.2rem;
     border-radius: 10px;
   }
-  .postTitle{
+
+  .postTitle {
     width: 15rem;
     text-align: left;
     font-weight: bold;
     font-size: 1rem;
-    overflow:hidden;
+    overflow: hidden;
     display: inline-block;
 
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    margin:0.3rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0.3rem;
   }
-  .postContent{
-    width : 15rem;
+
+  .postContent {
+    width: 15rem;
     text-align: left;
     font-weight: bold;
     font-size: 0.75rem;
-    color : gray;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    color: gray;
+    overflow: hidden;
+    text-overflow: ellipsis;
     display: inline-block;
-    white-space:nowrap;
-    margin:0.3rem;
+    white-space: nowrap;
+    margin: 0.3rem;
   }
-  .detail{
+
+  .detail {
     display: flex;
     justify-content: space-between;
     margin-bottom: 0rem;
   }
-  .heart{
+
+  .heart {
     font-weight: bold;
     margin-top: 0.3rem;
     margin-left: 0.3rem;
     margin-bottom: 0.7rem;
   }
-  .like{
+
+  .like {
     vertical-align: middle;
     font-size: 0.75rem;
     //margin-left:0.3rem;
   }
-  .tradeImage{
+
+  .tradeImage {
     width: 1.4rem;
     height: 1.4rem;
     margin-right: 0.3rem;
   }
-  .detail2{
+
+  .detail2 {
     vertical-align: middle;
     display: flex;
     justify-content: space-between;
@@ -220,30 +394,35 @@
     margin-right: 1rem;
 
   }
-  .likeImg{
-    width:1rem;
+
+  .likeImg {
+    width: 1rem;
     height: 1rem;
     //margin-top: 0.3rem;
     margin-right: 0.2rem;
   }
-  .commentBox{
+
+  .commentBox {
     display: flex;
-    gap:0.2rem;
+    gap: 0.2rem;
   }
-  .commentImg{
+
+  .commentImg {
     vertical-align: middle;
     margin-left: 0.6rem;
-    width:1rem;
+    width: 1rem;
     height: 1rem;
     //margin-top: 0.1rem;
     margin-right: 0.2rem;
 
   }
-  .commmentNum{
+
+  .commmentNum {
     vertical-align: middle;
     font-size: 0.75rem;
   }
-  .tradestring{
+
+  .tradestring {
     font-size: 0.75rem;
   }
 }

@@ -516,6 +516,7 @@ const PostDetail = () => {
   };
   console.log('post.authorNickname', post.userInfoWithAddress.userDetail.nickname);
 
+
   return (
     <div className={styles.Box}>
       {isOpenModal && (
@@ -531,31 +532,31 @@ const PostDetail = () => {
             <div className={styles.postTopProfile}>
               <img className={styles.postTopProfileImg} onClick={onClickUserPage}
                    src={post.userInfoWithAddress.userDetail.imageUrl} />
-              <div className={styles.postTopProfileInfo}>
-
-                <div className={styles.postTopNickname}
-                     onClick={onClickUserPage}>{post.userInfoWithAddress.userDetail.nickname}</div>
-                {
-                  ((post.userInfoWithAddress.address.length < 1) ?
-                      null :
-                      <div
-                        className={styles.postTopAddress}>{post.userInfoWithAddress.address[0].postalAddress}</div>
-                  )
-                }
-              </div>
-              <ul className={styles.ProfileActionList}>
-                {
-                  isAuthor ?
-                    (<>
-                      <li onClick={updatePost}>수정</li>
-                      <li>|</li>
-                      <li onClick={deletePost}>삭제</li>
-                    </>)
-                    :
-                    (<li>신고하기</li>)
-                }
-              </ul>
             </div>
+            <div className={styles.postTopProfileInfo}>
+
+              <div className={styles.postTopNickname}
+                   onClick={onClickUserPage}>{post.userInfoWithAddress.userDetail.nickname}</div>
+              {
+                ((post.userInfoWithAddress.address.length < 1) ?
+                    null :
+                    <div
+                      className={styles.postTopAddress}>{post.userInfoWithAddress.address[0].postalAddress}</div>
+                )
+              }
+            </div>
+            <ul className={styles.ProfileActionList}>
+              {
+                isAuthor ?
+                  (<>
+                    <li onClick={updatePost}>수정</li>
+                    <li>|</li>
+                    <li onClick={deletePost}>삭제</li>
+                  </>)
+                  :
+                  (<li>신고하기</li>)
+              }
+            </ul>
           </section>
           <section className={styles.postBody}>
             <div className={styles.postImg}>

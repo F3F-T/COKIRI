@@ -69,7 +69,7 @@ public class MemberServiceTest {
                 .userName("username")
                 .nickname("nickname")
                 .phoneNumber("01012345678")
-                .email("userTest@email.com")
+                .email("test@email.com")
                 .birthDate("990128")
                 .password("password")
                 .build();
@@ -78,7 +78,7 @@ public class MemberServiceTest {
     // 로그인 DTO 생성 메소드
     public LoginRequest createLoginRequest() {
         return LoginRequest.builder()
-                .email("userTest@email.com")
+                .email("test@email.com")
                 .password("password").build();
     }
 

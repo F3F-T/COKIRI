@@ -1,23 +1,26 @@
 
 .priceBox {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
     display: flex; /*내용물 가로 정렬*/
     flex-direction: row;
     position: relative;
     /*border: 0.5px solid red;*/
 }
+
 .priceList {
 
     /*border: 0.5px solid red;*/
 
 }
-.priceI{
+
+.priceI {
     padding: 6px;
     margin: 15px 6px 6px 6px;
 }
+
 .priceSet {
-    position : absolute;
-    right : 0;
+    position: absolute;
+    right: 0;
     /*margin-left: 7.3rem;*/
     display: flex;
     flex-direction: row;
@@ -27,14 +30,16 @@
     align-items: center;
     /*flex로 가로정렬 후 space-evenly로 가로 위치 잡고 alogn-items로 세로 가운데에 위치*/
 }
-.setBox1{
+
+.setBox1 {
     background-color: white;
     border-radius: 10px;
     border: none;
     height: 1.5rem;
     /*height: 30%;*/
 }
-.setBox2{
+
+.setBox2 {
     background-color: white;
     border-radius: 10px;
     height: 1.5rem;
@@ -44,11 +49,11 @@
 }
 
 /*깔끔한 btn */
-.priceBtn{
-    font-family: OhouseSans,Noto Sans KR,Apple SD Gothic Neo,맑은 고딕,Malgun Gothic,sans-serif;
-    background-color: #EAEDEF;
-    border :none;
-    margin-right :0.5rem;
+.priceBtn {
+    font-family: OhouseSans, Noto Sans KR, Apple SD Gothic Neo, 맑은 고딕, Malgun Gothic, sans-serif;
+    background-color: var(--background-color);
+    border: none;
+    margin-right: 0.5rem;
     font-size: 14px;
     font-weight: 700;
     height: 1.8rem;
@@ -58,13 +63,15 @@
 
 }
 
-.red{
+.red {
     background-color: red;
 }
-.blue{
+
+.blue {
     background-color: blue;
 }
-.colored{
-    background-color: #5DC8CD;
-    color : white;
+
+.colored {
+    background-color: var(--primary-color);
+    color: white;
 }

@@ -18,6 +18,7 @@
     "axios": "^1.2.1",
     "bootstrap": "^5.2.3",
     "classnames": "^2.3.2",
+    "helper-lib": "^0.2.6",
     "history": "^5.3.0",
     "http-proxy-middleware": "^2.0.6",
     "js-joda": "^1.11.0",
@@ -44,7 +45,8 @@
     "sass": "^1.57.1",
     "styled-components": "^5.3.9",
     "swiper": "^6.8.4",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "webp-converter": "^2.3.3"
   },
   "scripts": {
     "start": "react-scripts start",
