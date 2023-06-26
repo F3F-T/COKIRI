@@ -133,7 +133,6 @@ const MyPage = () => {
       console.log('다른유저 프로필asdfasdfasdf', res.data.address);
       console.log('다른유저 프로필', res.data.userInfo.imageUrl);
       console.log('다른유저 닉네임', res.data.userInfo.nickname);
-
       if (res.data.address == '') {
         setOtherUser({
           otherUserAddress: '아직 동네 인증을 안한 ',
