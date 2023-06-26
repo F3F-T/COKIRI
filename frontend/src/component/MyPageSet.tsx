@@ -128,7 +128,7 @@ const MyPage = () =>  {
 
 
 
-///////////
+
 //     다른유저로 들어왔을때 서버에서 받아야되는 정보 : 유저아이디, postalAddress, 닉네임, 프사
     async function getOtherUserProfile(){
         try{
