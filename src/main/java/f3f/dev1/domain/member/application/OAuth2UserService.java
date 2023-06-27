@@ -34,11 +34,13 @@ public class OAuth2UserService {
 
     private final MemberRepository memberRepository;
 
+    private final static String googleUserPwd = "googleUserPwd";
+
     /**
      * 랜덤한 비밀번호 생성하는 메서드
      * @return 새로운 비밀번호
      */
-    public String createRandomPassword() {
+    public static String createRandomPassword() {
         Random random = new Random();
 
         String spc = random.ints(35, 39)
@@ -77,16 +79,17 @@ public class OAuth2UserService {
 
         } else {
 
+
             SignUpRequest signUpRequest = SignUpRequest.builder()
                     .email(googleLoginRequest.getEmail())
                     .userName(googleLoginRequest.getName())
                     .userLoginType(UserLoginType.GOOGLE)
                     .nickname("코끼리 사용자 " + Long.toString(System.currentTimeMillis()))
-                    .password(createRandomPassword()).build();
+                    .password(googleUserPwd).build();
             authService.signUp(signUpRequest);
 
         }
-        return authService.login(LoginRequest.builder().email(googleLoginRequest.getEmail()).password(System.getenv("GOOGLE_USER_PWD")).build());
+        return authService.login(LoginRequest.builder().email(googleLoginRequest.getEmail()).password(googleUserPwd).build());
     }
 
     @Transactional
@@ -134,11 +137,11 @@ public class OAuth2UserService {
                             .userName(googleUser.getName())
                             .userLoginType(UserLoginType.GOOGLE)
                             .nickname("코끼리 사용자 " + Long.toString(System.currentTimeMillis()))
-                            .password(System.getenv("GOOGLE_USER_PWD")).build();
+                            .password(googleUserPwd).build();
                     authService.signUp(signUpRequest);
 
                 }
-                return authService.login(LoginRequest.builder().email(googleUser.getEmail()).password(System.getenv("GOOGLE_USER_PWD")).build());
+                return authService.login(LoginRequest.builder().email(googleUser.getEmail()).password(googleUserPwd).build());
 
             }
             default: {
