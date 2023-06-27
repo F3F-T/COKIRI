@@ -25,8 +25,7 @@ public class GoogleAuth implements SocialAuth{
     @Value("${google.client}")
     private String GOOGLE_SNS_CLIENT_ID;
 
-    @Value("${spring.OAuth2.google.callback-url}")
-    private String GOOGLE_SNS_CALLBACK_URL;
+    private final String GOOGLE_SNS_CALLBACK_URL = " https://f3f-cokiri.site/auth/social_login/google/callback";
 
     @Value("${google.secret}")
     private String GOOGLE_SNS_CLIENT_SECRET;
