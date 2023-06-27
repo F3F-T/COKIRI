@@ -40,7 +40,6 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler im
         valueOperations.getAndDelete(token);
 
         log.info(request.getRequestURI());
-        response.addHeader("Access-Control-Allow-Origin","http://localhost:3000");
         super.onLogoutSuccess(request, response, authentication);
     }
 
