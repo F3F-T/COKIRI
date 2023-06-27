@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.Random;
 
 import static f3f.dev1.domain.member.dto.MemberDTO.LoginRequest;
 import static f3f.dev1.domain.member.dto.MemberDTO.SignUpRequest;
@@ -32,6 +33,36 @@ public class OAuth2UserService {
     private final AuthService authService;
 
     private final MemberRepository memberRepository;
+
+    /**
+     * 랜덤한 비밀번호 생성하는 메서드
+     * @return 새로운 비밀번호
+     */
+    public String createRandomPassword() {
+        Random random = new Random();
+
+        String spc = random.ints(35, 39)
+                .limit(3)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        String numeral = random.ints(48, 58)
+                .limit(4)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+
+        String lower = random.ints(65, 91)
+                .limit(3)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+
+        String upper = random.ints(97, 123)
+                .limit(3)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
+        return upper + spc + lower + numeral;
+    }
 
     @Transactional
     public UserLoginDto googleLogin(GoogleLoginRequest googleLoginRequest) {
@@ -51,7 +82,7 @@ public class OAuth2UserService {
                     .userName(googleLoginRequest.getName())
                     .userLoginType(UserLoginType.GOOGLE)
                     .nickname("코끼리 사용자 " + Long.toString(System.currentTimeMillis()))
-                    .password(System.getenv("GOOGLE_USER_PWD")).build();
+                    .password(createRandomPassword()).build();
             authService.signUp(signUpRequest);
 
         }
