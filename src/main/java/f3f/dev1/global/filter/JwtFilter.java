@@ -51,6 +51,8 @@ public class JwtFilter extends OncePerRequestFilter {
                     if (user.getUsername() != null && redisTemplate.hasKey(user.getUsername())) {
                         log.info("memberId : " + user.getUsername());
                         SecurityContextHolder.getContext().setAuthentication(authentication);
+                    } else {
+                        throw new ExpireAccessTokenException();
                     }
                 } else {
                     log.info("만료된 엑세스 토큰이다");
@@ -66,7 +68,7 @@ public class JwtFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
             response.setStatus(response.SC_UNAUTHORIZED);
-            response.setHeader("Access-Control-Allow-Origin", "https://www.ouruliga.com");
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
             try {
                 response.getWriter().write(result);
             } catch (IOException exception) {
@@ -81,7 +83,7 @@ public class JwtFilter extends OncePerRequestFilter {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
             response.setStatus(response.SC_INTERNAL_SERVER_ERROR);
-            response.setHeader("Access-Control-Allow-Origin", "https://www.ouruliga.com");
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
             try {
                 response.getWriter().write(result);
             } catch (IOException exception) {

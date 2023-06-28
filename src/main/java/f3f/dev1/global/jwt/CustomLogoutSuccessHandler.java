@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
@@ -37,7 +38,8 @@ public class CustomLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler im
         log.info("token = " + token);
 
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.getAndDelete(token);
+        User user = (User) authentication.getPrincipal();
+        valueOperations.getAndDelete(user.getUsername());
 
         log.info(request.getRequestURI());
         super.onLogoutSuccess(request, response, authentication);
