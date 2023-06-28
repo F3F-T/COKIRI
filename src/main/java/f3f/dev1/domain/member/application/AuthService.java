@@ -70,7 +70,7 @@ public class AuthService {
         // 4. refesh token 저장
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(authenticate.getName(), tokenInfoDTO.getRefreshToken());
-        redisTemplate.expire(authenticate.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(authenticate.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
         // 5. 토큰 발급
 
         return UserLoginDto.builder().userInfo(memberCustomRepositoryImpl.getUserInfo(Long.parseLong(authenticate.getName()))).tokenInfo(tokenInfoDTO.toTokenIssueDTO()).build();
@@ -89,7 +89,7 @@ public class AuthService {
         // 4. refesh token 저장
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(authenticate.getName(), tokenInfoDTO.getRefreshToken());
-        redisTemplate.expire(authenticate.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(authenticate.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
 
         // 5. 토큰 발급
         return SimpleLoginDto.builder().userId(authenticate.getName()).tokenInfo(tokenInfoDTO.toTokenIssueDTO()).build();
@@ -120,7 +120,7 @@ public class AuthService {
         // 저장소 정보 업데이트
         log.info("토큰 재발급 성공후 레디스에 값 저장");
         valueOperations.set(authentication.getName(), tokenInfoDTO.getRefreshToken());
-        redisTemplate.expire(authentication.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        redisTemplate.expire(authentication.getName(), REFRESH_TOKEN_EXPIRE_TIME, TimeUnit.SECONDS);
 
 
         // 토큰 발급
@@ -131,7 +131,6 @@ public class AuthService {
     public String logout(String token) throws IOException {
         ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.getAndDelete(Long.toString(SecurityUtil.getCurrentMemberId()));
-        valueOperations.getAndDelete(token);
 
 
         return "SUCCESS";
