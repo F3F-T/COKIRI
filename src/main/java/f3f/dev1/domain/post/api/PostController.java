@@ -60,6 +60,7 @@ public class PostController {
             @RequestParam(value="trade", required = true, defaultValue = "1") long trade,
             Pageable pageable) {
         Page<PostSearchResponseDto> resultList;
+        // DB에서 찾아오는 행위가 아니라, enum 클래스에서 키 값으로 value를 찾아오는 코드이다. 헷갈리지 말자.
         TradeStatus tradeStatus = TradeStatus.findById(trade);
         Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
         if(!tagNames.isEmpty()) {
