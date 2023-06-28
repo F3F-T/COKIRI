@@ -30,6 +30,7 @@ import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
 import f3f.dev1.domain.scrap.model.Scrap;
+import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
@@ -81,6 +82,7 @@ public class PostService {
 
     private final TagService tagService;
     private final PostImageService postImageService;
+    private final PostTagService postTagService;
 
     // Custom repository
     private final PostCustomRepositoryImpl postCustomRepository;
@@ -112,25 +114,6 @@ public class PostService {
             postImageService.savePostImages(images, post.getId());
         }
         return post.getId();
-    }
-
-    @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findAll(Long currentMemberId, Pageable pageable) {
-        Page<Post> all = postRepository.findAll(pageable);
-        List<PostSearchResponseDto> resultList = new ArrayList<>();
-        if(currentMemberId != null) {
-            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-            for (Post post : all) {
-                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
-                resultList.add(post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(),isScrap));
-            }
-        } else {
-            for (Post post : all) {
-                resultList.add(post.toSearchResponseDto((long) post.getMessageRooms().size(), (long) post.getScrapPosts().size(), false));
-            }
-        }
-
-        return new PageImpl<>(resultList, pageable, all.getTotalElements());
     }
 
     @Transactional(readOnly = true)
@@ -195,16 +178,6 @@ public class PostService {
         return new PageImpl<>(list, pageable, dtoPages.getTotalElements());
     }
 
-
-    // 쿼리 DSL 테스트용 기능, 테스트 실패로 잠시 주석처리 해두겠다.
-//    @Transactional(readOnly = true)
-//    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRangeWithCustomQuery(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Long currentMemberId, Pageable pageable) {
-//        List<PostSearchResponseDto> list = new ArrayList<>();
-//        Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
-//        Page<PostSearchResponseDto> postDTOByConditions = postCustomRepository.findPostDTOByConditionsWIthQ(searchPostRequestExcludeTag, currentMemberId, pageable);
-//        return postDTOByConditions;
-//    }
-
     @Cacheable(value = POST_LIST_WITH_TAG, keyGenerator = "customKeyGenerator")
     @Transactional(readOnly = true)
     public Page<PostSearchResponseDto> findPostsWithTagNameList(List<String> tagNames, Long currentMemberId, TradeStatus tradeStatus, Pageable pageable) {
@@ -225,8 +198,6 @@ public class PostService {
         }
         return new PageImpl<>(resultList, pageable, dtoList.getTotalElements());
     }
-
-    // TODO 거래 가능한 게시글만 검색하기
 
     @Transactional(readOnly = true)
     public SinglePostInfoDto findPostById(Long id, Long currentMemberId) {
@@ -270,59 +241,16 @@ public class PostService {
      */
 
     @Transactional
-    // 현재는 컨트롤러에서 사용하지 않는 로직. 테스트에서만 사용하고 있다.
-    public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long postId,Long currentMemberId) {
-
-        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
-        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
-        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
-        List<Tag> tags = tagRepository.findByNameIn(updatePostRequest.getTagNames());
-        List<PostTag> postTags = new ArrayList<>();
-        if(!updatePostRequest.getAuthorId().equals(currentMemberId)) {
-            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
-        }
-        if(!post.getAuthor().getId().equals(updatePostRequest.getAuthorId())) {
-            throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
-        }
-        // postTag에서 post는 아래의 코드로 지울 수 있지만, post 단에서 postTag는 여기서 지울 수 없다.
-        // 따라서 컨트롤러에서 tag 서비스에 먼저 들러 관련 postTag를 다 지우고 현재의 메소드를 호출하도록 하겠다.
-        // postTagRepository.deletePostTagByPost(post);
-        if(tags.isEmpty()) {
-            post.updatePostInfos(updatePostRequest, productCategory, wishCategory, new ArrayList<>());
-        } else {
-            // PostTag가 없으면 여기서 새로 만들어서 추가까지 해줘야 한다.
-            for (Tag tag : tags) {
-                if(!postTagRepository.existsByPostAndTag(post,tag)) {
-                    // 업데이트 요청으로 넘어온 태그가 기존에 포스트에 존재하지 않는 태그라면 새로 추가해주기
-                    PostTag postTag = PostTag.builder()
-                            .post(post)
-                            .tag(tag)
-                            .build();
-                    postTagRepository.save(postTag);
-//                    tag.getPostTags().add(postTag);
-//                    postTags.add(postTag);
-                } else {
-                    // 기존에 존재하는 태그라면 다시 클리어된 리스트에 추가해주기
-                    // TODO 너무 비효율적인 코드. 리팩토링 예정
-                    PostTag postTag = postTagRepository.findByPostAndTag(post, tag).orElseThrow(NotFoundByPostAndTagException::new);
-                    tag.getPostTags().add(postTag);
-                    postTags.add(postTag);
-                }
-            }
-            post.updatePostInfos(updatePostRequest, productCategory, wishCategory, postTags);
-        }
-        List<PostTag> postTagsOfPost = postTagRepository.findByPost(post);
-        List<String> tagNames = new ArrayList<>();
-        for (PostTag postTag : postTagsOfPost) {
-            tagNames.add(postTag.getTag().getName());
-        }
-        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size());
-        return response;
-    }
-
-    @Transactional
     public void updatePostWithPatch(UpdatePostRequest updatePostRequest, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
+
+
+        if(updatePostRequest.getTagNames() != null) {
+            postTagService.updatePostTagWithPatch(postId, updatePostRequest);
+        }
+        if(updatePostRequest.getImages() != null) {
+            postImageService.updatePostImagesWithPatch(postId, updatePostRequest.getImages());
+        }
 
         if(updatePostRequest.getAuthorId() == null) {
             throw new NotContainAuthorInfoException();
