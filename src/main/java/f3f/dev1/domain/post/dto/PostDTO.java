@@ -96,24 +96,6 @@ public class PostDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdatePostRequest {
-        // 태그도 수정될 수 있으니 태그 리스트를 받은 뒤 Post의 UpdatePostTags에서 수정하도록 하겠다.
-        // 카테고리도 같은 맥락
-//        @NotNull
-//        private Long id;
-//        @NotNull
-//        private Long authorId;
-//
-//        private String title;
-//
-//        private String content;
-//        private Long price;
-//        private String productCategory;
-//        private String wishCategory;
-//        private List<String> tagNames;
-
-        /*
-            Patch 메서드라서 게시글 생성 요청이랑 같은 형식을 가져야 한다.
-         */
 
         private String title;
 
@@ -244,8 +226,6 @@ public class PostDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SinglePostInfoDto{
-
-        // TODO 사진들 추가하기 : 조인으로 받아와야 하나?? 근데 게시글 렌더링 따로 이미지 렌더링 따로는 어떻게 구현하지??
 
         private Long id;
         private String title;

@@ -6,7 +6,6 @@ import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.postImage.application.PostImageService;
 import f3f.dev1.domain.tag.application.PostTagService;
-import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,12 +29,6 @@ import static f3f.dev1.domain.post.dto.PostDTO.*;
 public class PostController {
 
     private final PostService postService;
-
-    private final TagService tagService;
-
-    private final PostTagService postTagService;
-
-    private final PostImageService postImageService;
 
 
     // 게시글 전체 조회 세분화 - 태그 제외 조건들 검색
@@ -114,16 +107,7 @@ public class PostController {
             throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
 
-        // 아래 두 항목은 각각 코드가 길기도 하고 담당하는 서비스가 나눠지기 때문에 별도로 처리해준다.
-        // 두개를 제외한 나머지 로직은 postService에서 기존처럼 update한다.
-        if(updatePostRequest.getTagNames() != null) {
-            postTagService.updatePostTagWithPatch(postId, updatePostRequest);
-        }
-        if(updatePostRequest.getImages() != null) {
-            postImageService.updatePostImagesWithPatch(postId, updatePostRequest.getImages());
-        }
         postService.updatePostWithPatch(updatePostRequest, postId);
-//        return new ResponseEntity<>(postInfoDto, HttpStatus.OK);
         return new ResponseEntity<>("UPDATED", HttpStatus.OK);
     }
 

@@ -30,6 +30,7 @@ import f3f.dev1.domain.post.model.ScrapPost;
 import f3f.dev1.domain.scrap.dao.ScrapRepository;
 import f3f.dev1.domain.scrap.exception.UserScrapNotFoundException;
 import f3f.dev1.domain.scrap.model.Scrap;
+import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.domain.tag.dao.PostTagRepository;
 import f3f.dev1.domain.tag.dao.TagRepository;
@@ -81,6 +82,7 @@ public class PostService {
 
     private final TagService tagService;
     private final PostImageService postImageService;
+    private final PostTagService postTagService;
 
     // Custom repository
     private final PostCustomRepositoryImpl postCustomRepository;
@@ -112,25 +114,6 @@ public class PostService {
             postImageService.savePostImages(images, post.getId());
         }
         return post.getId();
-    }
-
-    @Transactional(readOnly = true)
-    public Page<PostSearchResponseDto> findAll(Long currentMemberId, Pageable pageable) {
-        Page<Post> all = postRepository.findAll(pageable);
-        List<PostSearchResponseDto> resultList = new ArrayList<>();
-        if(currentMemberId != null) {
-            Member member = memberRepository.findById(currentMemberId).orElseThrow(NotFoundByIdException::new);
-            for (Post post : all) {
-                boolean isScrap = scrapPostRepository.existsByScrapIdAndPostId(member.getScrap().getId(), post.getId());
-                resultList.add(post.toSearchResponseDto((long)post.getMessageRooms().size(), (long)post.getScrapPosts().size(),isScrap));
-            }
-        } else {
-            for (Post post : all) {
-                resultList.add(post.toSearchResponseDto((long) post.getMessageRooms().size(), (long) post.getScrapPosts().size(), false));
-            }
-        }
-
-        return new PageImpl<>(resultList, pageable, all.getTotalElements());
     }
 
     @Transactional(readOnly = true)
@@ -194,16 +177,6 @@ public class PostService {
         }
         return new PageImpl<>(list, pageable, dtoPages.getTotalElements());
     }
-
-
-    // 쿼리 DSL 테스트용 기능, 테스트 실패로 잠시 주석처리 해두겠다.
-//    @Transactional(readOnly = true)
-//    public Page<PostSearchResponseDto> findPostsByCategoryAndPriceRangeWithCustomQuery(SearchPostRequestExcludeTag searchPostRequestExcludeTag, Long currentMemberId, Pageable pageable) {
-//        List<PostSearchResponseDto> list = new ArrayList<>();
-//        Page<Post> dtoPages = postCustomRepository.findPostDTOByConditions(searchPostRequestExcludeTag, pageable);
-//        Page<PostSearchResponseDto> postDTOByConditions = postCustomRepository.findPostDTOByConditionsWIthQ(searchPostRequestExcludeTag, currentMemberId, pageable);
-//        return postDTOByConditions;
-//    }
 
     @Cacheable(value = POST_LIST_WITH_TAG, keyGenerator = "customKeyGenerator")
     @Transactional(readOnly = true)
@@ -323,6 +296,14 @@ public class PostService {
     @Transactional
     public void updatePostWithPatch(UpdatePostRequest updatePostRequest, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
+
+
+        if(updatePostRequest.getTagNames() != null) {
+            postTagService.updatePostTagWithPatch(postId, updatePostRequest);
+        }
+        if(updatePostRequest.getImages() != null) {
+            postImageService.updatePostImagesWithPatch(postId, updatePostRequest.getImages());
+        }
 
         if(updatePostRequest.getAuthorId() == null) {
             throw new NotContainAuthorInfoException();
