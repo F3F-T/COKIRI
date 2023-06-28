@@ -8,6 +8,7 @@ import f3f.dev1.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -48,7 +49,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
                     User user = (User) authentication.getPrincipal();
-                    if (user.getUsername() != null && redisTemplate.hasKey(user.getUsername())) {
+                    ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+                    Long expire = valueOperations.getOperations().getExpire(user.getUsername());
+                    if (user.getUsername() != null && expire != -2L) {
                         log.info("memberId : " + user.getUsername());
                         SecurityContextHolder.getContext().setAuthentication(authentication);
                     } else {
