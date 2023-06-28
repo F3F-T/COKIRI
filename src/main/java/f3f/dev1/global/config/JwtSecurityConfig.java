@@ -1,5 +1,6 @@
 package f3f.dev1.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.global.filter.JwtFilter;
 import f3f.dev1.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,12 @@ public class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurity
     private final JwtTokenProvider jwtTokenProvider;
 
     private final RedisTemplate<String, String> redisTemplate;
+
+    private final ObjectMapper mapper;
     // tokenProvider를 주입 받아서 JwtFilter를 통해 security 로직에 필터를 등록
     @Override
     public void configure(HttpSecurity httpSecurity) {
-        JwtFilter jwtFilter = new JwtFilter(jwtTokenProvider, redisTemplate);
+        JwtFilter jwtFilter = new JwtFilter(jwtTokenProvider, redisTemplate, mapper);
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }
