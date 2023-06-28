@@ -22,7 +22,9 @@ public class MemberController {
     @GetMapping(value = "/user")
     public ResponseEntity<UserInfoWithAddress> getUserInfo() {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
-        return ResponseEntity.ok(memberService.getUserInfo(currentMemberId));
+        UserInfoWithAddress userInfo = memberService.getUserInfo(currentMemberId);
+        log.info("이거보이면 토큰 문제임");
+        return ResponseEntity.ok(userInfo);
 
     }
 
