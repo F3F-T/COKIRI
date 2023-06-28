@@ -128,11 +128,16 @@ public class PostControllerTest {
 
     public UpdatePostRequest createUpdatePostRequest() {
         return UpdatePostRequest.builder()
-                .authorId(1L)
                 .title("게시글 수정 테스트 제목")
                 .content("게시글 수정 테스트 본문")
+                .tradeEachOther(false)
+                .authorId(1L)
+                .price(30000L)
                 .productCategory(null)
                 .wishCategory(null)
+                .tagNames(new ArrayList<>())
+                .images(new ArrayList<>())
+                .thumbnail(null)
                 .build();
     }
 
@@ -286,48 +291,24 @@ public class PostControllerTest {
                         fieldWithPath("number").description("current page number"),
                         fieldWithPath("size").description("the number of elements that shown in 1 page")
                 )));
-
-        //then
-    }
-    public ResponseEntity<Page<PostSearchResponseDto>> getPostsWithTagNames(
-            @RequestParam(value = "tags", required = false, defaultValue = "") List<String> tagNames,
-            @RequestParam(value="trade", required = true, defaultValue = "1") long trade,
-            Pageable pageable) {
-        Page<PostSearchResponseDto> resultList;
-        TradeStatus tradeStatus = TradeStatus.findById(trade);
-        Long currentMemberId = SecurityUtil.getCurrentNullableMemberId();
-        if(!tagNames.isEmpty()) {
-            resultList = postService.findPostsWithTagNameList(tagNames, currentMemberId, tradeStatus, pageable);
-        } else {
-            // TODO 태그 검색은 동적 쿼리로 작성을 못해서 분기를 나눴다. findAll에서 tradeStatus를 고려해주게 코드를 바꿔주면 될 것 같다.
-//            resultList = postService.findAll(currentMemberId, pageable);
-            resultList = postService.findOnlyWithTradeStatus(currentMemberId, tradeStatus, pageable);
-        }
-        return new ResponseEntity<>(resultList, HttpStatus.OK);
     }
 
 
     @Test
-    @DisplayName("게시글 수정 테스트")
+    @DisplayName("패치 매핑으로 게시글 수정하기")
     @WithMockCustomUser
-    public void updatePostSuccessTest() throws Exception {
-        //given
-        PostInfoDtoWithTag postInfoDto = PostInfoDtoWithTag.builder().title("테스트용 게시글").build();
-        doReturn(postInfoDto).when(postService).updatePost(any(), any(), any());
-        Member member = createMember();
+    public void updatePostWithPatchTest() throws Exception {
 
-        //when
-        PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
+        // given
+        // updatePostWithPatch는 반환 타입이 없기 때문에 doReturn을 지정해줄 수 없다.
         UpdatePostRequest updatePostRequest = createUpdatePostRequest();
-        Long postId = postService.savePost(postSaveRequest, member.getId());
 
-        //then
+        // when & then
         mockMvc.perform(patch("/post" + "/{postId}", 1L)
-        .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updatePostRequest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatePostRequest)))
                 .andDo(print())
                 .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.title").value(updatePostRequest.getTitle()))
                 .andDo(document("post/update/successful", requestFields(
                         fieldWithPath("authorId").description("Id value of author (requester)"),
                         fieldWithPath("title").description("title value of post"),
@@ -341,6 +322,7 @@ public class PostControllerTest {
                         fieldWithPath("thumbnail").description("the thumbnail value of changed post")
                 )));
     }
+
 
     @Test
     @DisplayName("게시글 아이디로 특정 게시글 조회 테스트")

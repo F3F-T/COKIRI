@@ -199,8 +199,6 @@ public class PostService {
         return new PageImpl<>(resultList, pageable, dtoList.getTotalElements());
     }
 
-    // TODO 거래 가능한 게시글만 검색하기
-
     @Transactional(readOnly = true)
     public SinglePostInfoDto findPostById(Long id, Long currentMemberId) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundByIdException::new);
@@ -241,57 +239,6 @@ public class PostService {
     /* TODO
         U : 게시글 업데이트
      */
-
-    @Transactional
-    // 현재는 컨트롤러에서 사용하지 않는 로직. 테스트에서만 사용하고 있다.
-    public PostInfoDtoWithTag updatePost(UpdatePostRequest updatePostRequest, Long postId,Long currentMemberId) {
-
-        Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
-        Category productCategory = categoryRepository.findCategoryByName(updatePostRequest.getProductCategory()).orElseThrow(NotFoundProductCategoryNameException::new);
-        Category wishCategory = categoryRepository.findCategoryByName(updatePostRequest.getWishCategory()).orElseThrow(NotFoundWishCategoryNameException::new);
-        List<Tag> tags = tagRepository.findByNameIn(updatePostRequest.getTagNames());
-        List<PostTag> postTags = new ArrayList<>();
-        if(!updatePostRequest.getAuthorId().equals(currentMemberId)) {
-            throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
-        }
-        if(!post.getAuthor().getId().equals(updatePostRequest.getAuthorId())) {
-            throw new NotMatchingAuthorException("게시글 작성자가 아닙니다.");
-        }
-        // postTag에서 post는 아래의 코드로 지울 수 있지만, post 단에서 postTag는 여기서 지울 수 없다.
-        // 따라서 컨트롤러에서 tag 서비스에 먼저 들러 관련 postTag를 다 지우고 현재의 메소드를 호출하도록 하겠다.
-        // postTagRepository.deletePostTagByPost(post);
-        if(tags.isEmpty()) {
-            post.updatePostInfos(updatePostRequest, productCategory, wishCategory, new ArrayList<>());
-        } else {
-            // PostTag가 없으면 여기서 새로 만들어서 추가까지 해줘야 한다.
-            for (Tag tag : tags) {
-                if(!postTagRepository.existsByPostAndTag(post,tag)) {
-                    // 업데이트 요청으로 넘어온 태그가 기존에 포스트에 존재하지 않는 태그라면 새로 추가해주기
-                    PostTag postTag = PostTag.builder()
-                            .post(post)
-                            .tag(tag)
-                            .build();
-                    postTagRepository.save(postTag);
-//                    tag.getPostTags().add(postTag);
-//                    postTags.add(postTag);
-                } else {
-                    // 기존에 존재하는 태그라면 다시 클리어된 리스트에 추가해주기
-                    // TODO 너무 비효율적인 코드. 리팩토링 예정
-                    PostTag postTag = postTagRepository.findByPostAndTag(post, tag).orElseThrow(NotFoundByPostAndTagException::new);
-                    tag.getPostTags().add(postTag);
-                    postTags.add(postTag);
-                }
-            }
-            post.updatePostInfos(updatePostRequest, productCategory, wishCategory, postTags);
-        }
-        List<PostTag> postTagsOfPost = postTagRepository.findByPost(post);
-        List<String> tagNames = new ArrayList<>();
-        for (PostTag postTag : postTagsOfPost) {
-            tagNames.add(postTag.getTag().getName());
-        }
-        PostInfoDtoWithTag response = post.toInfoDtoWithTag(tagNames, (long) post.getScrapPosts().size(), (long) post.getMessageRooms().size());
-        return response;
-    }
 
     @Transactional
     public void updatePostWithPatch(UpdatePostRequest updatePostRequest, Long postId) {
