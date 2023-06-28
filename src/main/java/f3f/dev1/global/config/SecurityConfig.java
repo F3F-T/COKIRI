@@ -1,5 +1,6 @@
 package f3f.dev1.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.global.jwt.CustomLogoutSuccessHandler;
 import f3f.dev1.global.jwt.JwtAccessDeniedHandler;
 import f3f.dev1.global.jwt.JwtAuthenticationEntryPoint;
@@ -27,6 +28,7 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+    private final ObjectMapper mapper;
     private final RedisTemplate<String, String> redisTemplate;
 
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
@@ -76,7 +78,7 @@ public class SecurityConfig {
 
                 // JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용
                 .and()
-                .apply(new JwtSecurityConfig(jwtTokenProvider, redisTemplate))
+                .apply(new JwtSecurityConfig(jwtTokenProvider, redisTemplate, mapper))
                 .and()
                 .logout()
                 .logoutUrl("/logout")
