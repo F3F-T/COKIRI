@@ -32,8 +32,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @SpringBootTest
-//public class MemberServiceTest {
-//
+public class MemberServiceTest {
+
 //    @Autowired
 //    MemberRepository memberRepository;
 //
@@ -256,7 +256,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 //        // then
 //        assertThrows(InvalidPasswordException.class, () -> memberService.updateUserPassword(updateUserPassword, member.getId()));
 //    }
-//
+
 
 
 
