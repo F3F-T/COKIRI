@@ -7,6 +7,10 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import javax.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.util.TimeZone;
+
 /**
  * @EnableCaching
  * @EnableScheduling
@@ -21,6 +25,15 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Application {
 
     public static void main(String[] args) {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
         SpringApplication.run(Application.class, args);
+
     }
+
+    @PostConstruct
+    public void init() {
+        // timezone 설정
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+    }
+
 }
