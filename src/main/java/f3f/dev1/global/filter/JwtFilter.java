@@ -41,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
         log.info(request.getMethod()+" "+ request.getRequestURI());
 
         try {
-            / 1. request Header에서 토큰 꺼냄, 여기서 HTTP ONLY 쿠키에서 읽어오게 변경 가능
+            // 1. request Header에서 토큰 꺼냄, 여기서 HTTP ONLY 쿠키에서 읽어오게 변경 가능
             String jwt = resolveToken(request);
             // 2. validateToken으로 유효성 검사
             // 정상 토큰이면, Authentication을 가져와서 SecurityContext에 저장
