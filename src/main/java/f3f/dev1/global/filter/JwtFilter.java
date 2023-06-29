@@ -41,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
         log.info(request.getMethod()+" "+ request.getRequestURI());
 
         try {
-            // 1. request Header에서 토큰 꺼냄, 여기서 HTTP ONLY 쿠키에서 읽어오게 변경 가능
+            / 1. request Header에서 토큰 꺼냄, 여기서 HTTP ONLY 쿠키에서 읽어오게 변경 가능
             String jwt = resolveToken(request);
             // 2. validateToken으로 유효성 검사
             // 정상 토큰이면, Authentication을 가져와서 SecurityContext에 저장
@@ -49,18 +49,15 @@ public class JwtFilter extends OncePerRequestFilter {
                 if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
                     User user = (User) authentication.getPrincipal();
-                    ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-                    Long expire = valueOperations.getOperations().getExpire(user.getUsername());
-                    if (user.getUsername() != null && expire != -2L) {
+                    if (user.getUsername() != null && redisTemplate.hasKey(user.getUsername())) {
                         log.info("memberId : " + user.getUsername());
                         SecurityContextHolder.getContext().setAuthentication(authentication);
-                    } else {
-                        throw new ExpireAccessTokenException();
                     }
                 } else {
                     log.info("만료된 엑세스 토큰이다");
                     throw new ExpireAccessTokenException();
                 }
+            }
             }
 
             filterChain.doFilter(request, response);
