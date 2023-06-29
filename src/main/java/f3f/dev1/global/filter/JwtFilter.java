@@ -57,7 +57,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     log.info("만료된 엑세스 토큰이다");
                     throw new ExpireAccessTokenException();
                 }
-            }
+            
             }
 
             filterChain.doFilter(request, response);
