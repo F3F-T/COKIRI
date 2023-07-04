@@ -138,7 +138,7 @@ public class PostControllerTest {
 
     public PostSaveRequest createPostSaveRequestWithDynamicAuthorId(Long authorId, boolean tradeEachOther) {
         return PostSaveRequest.builder()
-                .content("냄새가 조금 나긴 하는데 뭐 그럭저럭 괜찮아요")
+                .content("테스트용 게시글 본문")
                 .title("3년 신은 양말 거래 희망합니다")
                 .tradeEachOther(tradeEachOther)
                 .tagNames(new ArrayList<>())
