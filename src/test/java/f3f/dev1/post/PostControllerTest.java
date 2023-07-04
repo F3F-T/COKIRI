@@ -1,18 +1,17 @@
 package f3f.dev1.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.api.PostController;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
-import f3f.dev1.global.util.SecurityUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,34 +23,32 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static f3f.dev1.domain.member.dto.MemberDTO.GetUserPost;
+import static f3f.dev1.domain.member.dto.MemberDTO.SignUpRequest;
+import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
+import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static f3f.dev1.domain.member.dto.MemberDTO.*;
-import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
-import static f3f.dev1.domain.post.dto.PostDTO.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
 @WebMvcTest(PostController.class)
@@ -61,21 +58,6 @@ public class PostControllerTest {
 
     @MockBean
     private PostService postService;
-
-    @MockBean
-    private MemberService memberService;
-
-    @MockBean
-    private TagService tagService;
-
-    @MockBean
-    private PostTagService postTagService;
-
-    @MockBean
-    private AuthService authService;
-
-    @MockBean
-    private MemberRepository memberRepository;
 
     private MockMvc mockMvc;
 
@@ -253,7 +235,7 @@ public class PostControllerTest {
                 .param("page", "0")
                 .param("size", "5"))
                 .andExpect(status().isOk())
-                .andDo(document("post/tagSearch/successful", requestParameters(
+                .andDo(document("post/search/tag/successful", requestParameters(
                         parameterWithName("tags").description("tag name list for post search"),
                         parameterWithName("trade").description("trade value for search, 1 - tradable, 2 - trading, 3 - traded"),
                         parameterWithName("size").description("size value required by pageable"),
@@ -291,6 +273,69 @@ public class PostControllerTest {
                         fieldWithPath("number").description("current page number"),
                         fieldWithPath("size").description("the number of elements that shown in 1 page")
                 )));
+    }
+
+    @Test
+    @DisplayName("사용자 아이디로 게시글 찾기(프로필 조회에서 사용)")
+    @WithMockCustomUser
+    public void getPostsWithMemberIdTestForSuccess() throws Exception {
+        //given
+        Pageable pageable = Pageable.ofSize(10).withPage(0);
+        List<GetUserPost> list = new ArrayList<>();
+        GetUserPost dto = GetUserPost.builder()
+                .likeCount(3L)
+                .postId(1L)
+                .thumbNail("")
+                .tradeStatus(String.valueOf(TradeStatus.TRADABLE))
+                .wishCategory("테스트용 위시 카테고리")
+                .title("테스트용 게시글 제목")
+                .build();
+        list.add(dto);
+        Page<GetUserPost> page = new PageImpl<>(list, pageable, list.size());
+        doReturn(page).when(postService).findPostByAuthorId(any(), any());
+
+        //when & then
+        mockMvc.perform(get("/post/user/{memberId}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(page))
+                .param("tags", "스팸", "키보드")
+                .param("trade", "1")
+                .param("page", "0")
+                .param("size", "5"))
+                .andExpect(status().isOk())
+                .andDo(document("post/search/memberId/successful", requestParameters(
+                        parameterWithName("tags").description("tag name list for post search"),
+                        parameterWithName("trade").description("trade value for search, 1 - tradable, 2 - trading, 3 - traded"),
+                        parameterWithName("size").description("size value required by pageable"),
+                        parameterWithName("page").description("page value required by pageable")
+                ), responseFields(
+                        fieldWithPath("content[].postId").description("id value of searched post"),
+                        fieldWithPath("content[].title").description("title value of searched post"),
+                        fieldWithPath("content[].likeCount").description("the number of like of searched post"),
+                        fieldWithPath("content[].thumbNail").description("thumbnail value of searched post"),
+                        fieldWithPath("content[].tradeStatus").description("the trade status value of searched post"),
+                        fieldWithPath("content[].wishCategory").description("wish category of searched post"),
+                        fieldWithPath("pageable.pageNumber").description("current page number"),
+                        fieldWithPath("pageable.offset").description("page offset"),
+                        fieldWithPath("pageable.paged").description("is pagination applied?"),
+                        fieldWithPath("pageable.unpaged").description("is pagination not applied?"),
+                        fieldWithPath("pageable.pageSize").description("the size of page"),
+                        fieldWithPath("totalElements").description("the number of total elements"),
+                        fieldWithPath("numberOfElements").description("number of elements in current page"),
+                        fieldWithPath("sort.sorted").description("is sorting applied?"),
+                        fieldWithPath("sort.unsorted").description("is sorting not applied?"),
+                        fieldWithPath("totalPages").description("the number of total pages"),
+                        fieldWithPath("first").description("is this page is first?"),
+                        fieldWithPath("last").description("is this page is last?"),
+                        fieldWithPath("empty").description("is this page is empty?"),
+                        fieldWithPath("pageable.sort.sorted").description("is this page is sorted?"),
+                        fieldWithPath("pageable.sort.unsorted").description("is this page is not sorted?"),
+                        fieldWithPath("pageable.sort.empty").description("is there isn't any sorting information in this page?"),
+                        fieldWithPath("sort.empty").description("is there isn't any sorting information?"),
+                        fieldWithPath("number").description("current page number"),
+                        fieldWithPath("size").description("the number of elements that shown in 1 page")
+                )));
+
     }
 
 
@@ -340,7 +385,7 @@ public class PostControllerTest {
         .content(""))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("post/readPostById/successful", responseFields(
+                .andDo(document("post/search/id/successful", responseFields(
                         fieldWithPath("id").description("Id value of post"),
                         fieldWithPath("content").description("content value of post"),
                         fieldWithPath("scrapCount").description("scrap count value of post"),
