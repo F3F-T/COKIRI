@@ -1,11 +1,8 @@
 package f3f.dev1.domain.post.api;
 
-import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.application.PostService;
-import f3f.dev1.domain.postImage.application.PostImageService;
-import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-import static f3f.dev1.domain.member.dto.MemberDTO.*;
+import static f3f.dev1.domain.member.dto.MemberDTO.GetUserPost;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
 
 @RestController

@@ -1,18 +1,17 @@
 package f3f.dev1.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.member.application.AuthService;
 import f3f.dev1.domain.member.application.MemberService;
 import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.model.Member;
-import f3f.dev1.domain.address.model.Address;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.api.PostController;
 import f3f.dev1.domain.post.application.PostService;
 import f3f.dev1.domain.tag.application.PostTagService;
 import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
-import f3f.dev1.global.util.SecurityUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,34 +23,32 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static f3f.dev1.domain.member.dto.MemberDTO.GetUserPost;
+import static f3f.dev1.domain.member.dto.MemberDTO.SignUpRequest;
+import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
+import static f3f.dev1.domain.post.dto.PostDTO.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static f3f.dev1.domain.member.dto.MemberDTO.*;
-import static f3f.dev1.domain.member.model.UserLoginType.EMAIL;
-import static f3f.dev1.domain.post.dto.PostDTO.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.test.web.servlet.setup.SharedHttpSessionConfigurer.sharedHttpSession;
 
 @WebMvcTest(PostController.class)
@@ -61,21 +58,6 @@ public class PostControllerTest {
 
     @MockBean
     private PostService postService;
-
-    @MockBean
-    private MemberService memberService;
-
-    @MockBean
-    private TagService tagService;
-
-    @MockBean
-    private PostTagService postTagService;
-
-    @MockBean
-    private AuthService authService;
-
-    @MockBean
-    private MemberRepository memberRepository;
 
     private MockMvc mockMvc;
 
