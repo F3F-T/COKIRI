@@ -38,21 +38,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, PostCustomRep
     Page<GetUserPostInterface> getUserPostById(@Param(value = "userId") Long userId, Pageable pageable);
 
 
-//    // TODO column name을 기준으로 작성해야 한다.
-//    @Query(value = "SELECT " +
-//        "new f3f.dev1.domain.post.dto.PostDTO.PostSearchResponseDto(" +
-//            "p.post_id, p.title, p.content, p.thumbnail_img_path AS thumbnail, p.author.nickname AS nickname, " +
-//            "p.product_category.name AS productCategory, " +
-//            "COUNT(m.message_room) AS messageRoomCount, " +
-//            "p.wish_category.name AS wishCategory, p._super.create_date AS createdTime, " +
-//            "CASE WHEN (s.member.id == p.author.id) THEN true Else false END AS isScrap, " +
-//            "p.price)" +
-//            "FROM post p " +
-//            "LEFT JOIN message_room mr on p.post_id = mr.post_id " +
-//            "JOIN scrap_post sp on p.post_id = sp.post_id " +
-//            "WHERE "
-//    )
-
     interface GetUserPostInterface {
         Long getPostId();
 
