@@ -49,18 +49,15 @@ public class JwtFilter extends OncePerRequestFilter {
                 if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                     Authentication authentication = jwtTokenProvider.getAuthentication(jwt);
                     User user = (User) authentication.getPrincipal();
-                    ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-                    Long expire = valueOperations.getOperations().getExpire(user.getUsername());
-                    if (user.getUsername() != null && expire != -2L) {
+                    if (user.getUsername() != null && redisTemplate.hasKey(user.getUsername())) {
                         log.info("memberId : " + user.getUsername());
                         SecurityContextHolder.getContext().setAuthentication(authentication);
-                    } else {
-                        throw new ExpireAccessTokenException();
                     }
                 } else {
                     log.info("만료된 엑세스 토큰이다");
                     throw new ExpireAccessTokenException();
                 }
+            
             }
 
             filterChain.doFilter(request, response);
