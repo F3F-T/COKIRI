@@ -87,7 +87,7 @@ public class TagServiceTest {
                 .userName("username")
                 .nickname("nickname")
                 .phoneNumber("01012345678")
-                .email("userEmail@email.com")
+                .email("brandnewstyle@email.com")
                 .birthDate("990128")
                 .password("password")
                 .userLoginType(EMAIL)
