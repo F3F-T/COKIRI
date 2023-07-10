@@ -5,18 +5,17 @@ import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.comment.exception.DeletedCommentException;
 import f3f.dev1.domain.comment.exception.NotMatchingCommentAuthorException;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingCommentException;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
+
 import java.util.List;
 
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
