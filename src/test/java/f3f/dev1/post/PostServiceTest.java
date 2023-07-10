@@ -89,16 +89,6 @@ public class PostServiceTest {
         return new AddTagToPostRequest(tagId, postId);
     }
 
-
-    public CategorySaveRequest createCategorySaveRequest(String name, Long depth, Long parentId, Member author) {
-        return CategorySaveRequest.builder()
-                .name(name)
-                .depth(depth)
-                .parentId(parentId)
-                .memberId(author.getId())
-                .build();
-    }
-
     public Address createAddress() {
         return Address.builder()
                 .addressName("address")
@@ -162,19 +152,6 @@ public class PostServiceTest {
                 .build();
     }
 
-    public PostSaveRequest createPostSaveRequestWithDynamicTitle(Member author, String title, boolean tradeEachOther, String productName, String wishName) {
-        return PostSaveRequest.builder()
-                .tradeEachOther(tradeEachOther)
-                .productCategory(productName)
-                .tagNames(new ArrayList<>())
-                .authorId(author.getId())
-                .content("테스트 게시글 본문")
-                .wishCategory(wishName)
-                .price(10000L)
-                .title(title)
-                .build();
-    }
-
     public PostSaveRequest createCompletedPostSaveRequest(Member author, String title, String content, boolean tradeEachOther,
                                                           String productName, String wishName, List<String> tagNames, Long price) {
         // 최종 테스트에서 사용될 완성형 포스트 생성 요청 메소드
@@ -190,16 +167,6 @@ public class PostServiceTest {
                 .build();
     }
 
-    public SearchPostRequest createPostSearchRequest(String productName, String wishName, List<String> tagNames, String minPrice, String maxPrice) {
-        return SearchPostRequest.builder()
-                .productCategory(productName)
-                .wishCategory(wishName)
-                .tagNames(tagNames)
-                .minPrice(minPrice)
-                .maxPrice(maxPrice)
-                .build();
-    }
-
     public SearchPostRequestExcludeTag createSearchPostRequestExcludeTagWithTradable(String productName, String wishName,String minPrice, String maxPrice) {
         return SearchPostRequestExcludeTag.builder()
                 .tradeStatus(TradeStatus.TRADABLE)
@@ -208,21 +175,6 @@ public class PostServiceTest {
                 .maxPrice(maxPrice)
                 .minPrice(minPrice)
                 .build();
-    }
-
-    public SearchPostRequestExcludeTag createSearchPostRequestExcludeTagWithNotTradable(String productName, String wishName,String minPrice, String maxPrice) {
-        return SearchPostRequestExcludeTag.builder()
-                .tradeStatus(TradeStatus.TRADED)
-                .productCategory(productName)
-                .wishCategory(wishName)
-                .minPrice(minPrice)
-                .maxPrice(maxPrice)
-                .build();
-    }
-
-
-    public DeletePostRequest createDeletePostRequest(Long postId, Long authorId) {
-        return new DeletePostRequest(postId, authorId);
     }
 
     // 업데이트 요청
@@ -295,17 +247,6 @@ public class PostServiceTest {
         SignUpRequest signUpRequest = createSignUpRequest();
         authService.signUp(signUpRequest);
         Member member = memberRepository.findByEmail(signUpRequest.getEmail()).get();
-
-        // 루트 생성
-//        CategorySaveRequest rootRequest = createCategorySaveRequest("root", 0L, null, member);
-//        Long rootId = categoryService.createCategory(rootRequest);
-//        Category root = categoryRepository.findById(rootId).get();
-//        // product, wish 생성
-//
-//        CategorySaveRequest productRequest = createCategorySaveRequest("도서", 1L, rootId, member);
-//        CategorySaveRequest wishRequest = createCategorySaveRequest("전자기기", 1L, rootId, member);
-//        Long productCategoryId = categoryService.createCategory(productRequest);
-//        Long wishCategoryId = categoryService.createCategory(wishRequest);
 
         CreateTagRequest tagRequest = createTagRequest("해시태그1", member.getId());
         CreateTagRequest secondTagRequest = createTagRequest("해시태그2", member.getId());
