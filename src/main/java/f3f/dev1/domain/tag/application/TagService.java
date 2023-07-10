@@ -68,16 +68,11 @@ public class TagService {
                 .tag(tag)
                 .build();
         postTagRepository.save(postTag);
-//        tag.getPostTags().add(postTag);
-//        post.getPostTags().add(postTag);
-//        tag.addToPostTags(postTag);
-//        post.addToPostTags(postTag);
 
         return postTag.getId();
     }
 
     @Transactional
-    // TODO 테스트코드 필시 작성해봐야 함.
     public Long addTagsToPost(Long postId, List<String> tagNames) {
         Post post = postRepository.findById(postId).orElseThrow(NotFoundByIdException::new);
         if(tagNames.isEmpty()) {
@@ -101,19 +96,6 @@ public class TagService {
             }
             return post.getId();
         }
-//        else {
-//            List<Tag> tags = tagRepository.findByNameIn(tagNames);
-//            // 태그들을 일일이 게시글에 추가해주는 작업
-//            for (Tag tag : tags) {
-//                // 게시글을 처음 생성하는 시점에는 이미 존재하는 태그 자체가 없으니 예외처리는 따로 하지 않겠다.
-//                PostTag postTag = PostTag.builder()
-//                        .post(post)
-//                        .tag(tag)
-//                        .build();
-//                postTagRepository.save(postTag);
-//            }
-//            return post.getId();
-//        }
     }
 
     /*
@@ -208,7 +190,6 @@ public class TagService {
                     resultPostList.retainAll(posts);
                 }
             }
-//        List<Post> deduplicatedList = DeduplicationUtils.deduplication(resultPostList, Post::getId);
             for (Post post : resultPostList) {
                 List<PostTag> postTags = postTagRepository.findByPost(post);
                 List<String> tagNames = new ArrayList<>();
@@ -223,29 +204,10 @@ public class TagService {
         }
         return response;
     }
-
-
     /*
         U : update
         태그는 업데이트가 필요 없어보인다.
         게시글에 들어가는 태그는 삭제 후 재생성이 일반적이기 때문
      */
-
-    /*
-        D : delete
-        게시글에 포함된 태그를 지우는 경우와 태그 자체를 지우는 2가지 경우로 나눠야 하나?
-        TODO 태그 삭제가 조금 애매하다. 관리자가 태그를 지우나? 일반인이 지우면 문제가 생길 것 같은데
-     */
-
-    // TODO 삭제는 피드백에서 일단 보류하라고 했다.
-//    @Transactional
-//    public ResponseEntity<String> deleteTagFromPost(DeleteTagFromPostRequest request) {
-//        /*
-//            확인해야할 것들
-//            1. 요청으로 넘어온 태그가 존재하는 태그인가
-//            2. 해당 태그가 요청으로 넘어온 게시글에 포함되어있나
-//            3. 태그를 삭제하려는 요청자가 게시글 작성자 본인인가
-//         */
-//        return DELETE;
-//    }
+    
 }
