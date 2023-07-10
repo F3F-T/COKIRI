@@ -136,16 +136,11 @@ public class CommentService {
         if(!commentInPost.getAuthor().getId().equals(deleteCommentRequest.getAuthorId()) &&
             !currentMemberId.equals(post.getAuthor().getId())) {
             // 게시글 작성자는 예외적으로 모든 댓글을 삭제할 수 있다.
-            // TODO 에러 핸들링 좀 해야겠다.
             throw new NotMatchingCommentAuthorException("댓글 작성자가 아닙니다");
         }
         if(!currentMemberId.equals(deleteCommentRequest.getAuthorId())) {
             throw new NotAuthorizedException("요청자가 현재 로그인한 유저가 아닙니다");
         }
-
-        // 지금 접속한 사람 : 홍의성
-        // 삭제 요청 보낸 사람 : 최철웅
-
 
         // 하위 댓글들 다 삭제
         if(commentInPost.getParent() != null) {

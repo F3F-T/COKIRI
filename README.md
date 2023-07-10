@@ -23,6 +23,20 @@
 ### 화면 구성
 
 > 홈 화면
+> 
+![home](https://github.com/F3F-T/COKIRI/assets/97940568/fadcbe71-9320-40d5-8826-d6aab086484a)
+
+> 물물교환,끼리끼리
+> 
+![물물교환,끼리끼리](https://github.com/F3F-T/COKIRI/assets/97940568/03209643-4910-42c8-b39a-f3d27eece529)
+
+> 게시글 업로드,수정,삭제
+>
+![게시글 업로드,수정,삭제](https://github.com/F3F-T/COKIRI/assets/97940568/92ef16ed-e309-4844-83b5-5712800a28ff)
+
+> 마이페이지, 주소 설정, 관심 상품 등록
+>
+![마이페이지, 주소 설정, 관심 상품 등록](https://github.com/F3F-T/COKIRI/assets/97940568/6410b093-7e4b-42c4-9b43-bb986bae9375)
 
 ## Tech Stack
 
