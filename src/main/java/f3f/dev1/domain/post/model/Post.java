@@ -18,10 +18,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static f3f.dev1.domain.comment.dto.CommentDTO.*;
-import static f3f.dev1.domain.member.dto.MemberDTO.*;
+import static f3f.dev1.domain.comment.dto.CommentDTO.CommentInfoDto;
+import static f3f.dev1.domain.member.dto.MemberDTO.UserInfoWithAddress;
 import static f3f.dev1.domain.post.dto.PostDTO.*;
-import static f3f.dev1.domain.postImage.dto.PostImageDTO.*;
 
 @Getter
 @NoArgsConstructor
@@ -81,10 +80,6 @@ public class Post extends BaseTimeEntity {
 
     public void updateContent(String content) {
         this.content = content;
-    }
-
-    public void updateTradeEachOther(Boolean tradeEachOther) {
-        this.tradeEachOther = tradeEachOther;
     }
 
     public void updatePrice(Long price) {

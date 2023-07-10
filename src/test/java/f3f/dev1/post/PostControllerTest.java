@@ -2,15 +2,12 @@ package f3f.dev1.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import f3f.dev1.domain.address.model.Address;
-import f3f.dev1.domain.member.application.AuthService;
-import f3f.dev1.domain.member.application.MemberService;
-import f3f.dev1.domain.member.dao.MemberRepository;
+import f3f.dev1.domain.comment.dto.CommentDTO;
+import f3f.dev1.domain.member.dto.MemberDTO;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.model.TradeStatus;
 import f3f.dev1.domain.post.api.PostController;
 import f3f.dev1.domain.post.application.PostService;
-import f3f.dev1.domain.tag.application.PostTagService;
-import f3f.dev1.domain.tag.application.TagService;
 import f3f.dev1.global.common.annotation.WithMockCustomUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,6 +23,7 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -77,21 +75,21 @@ public class PostControllerTest {
         return Address.builder()
                 .addressName("address")
                 .postalAddress("13556")
-                .latitude("37.49455")
                 .longitude("127.12170")
+                .latitude("37.49455")
                 .build();
     }
 
     // 회원가입 DTO
     public SignUpRequest createSignUpRequest() {
         return SignUpRequest.builder()
+                .email("userEmail@email.com")
+                .phoneNumber("01012345678")
                 .userName("username")
                 .nickname("nickname")
-                .phoneNumber("01012345678")
-                .email("userEmail@email.com")
-                .birthDate("990128")
                 .password("password")
                 .userLoginType(EMAIL)
+                .birthDate("990128")
                 .build();
     }
 
@@ -100,8 +98,8 @@ public class PostControllerTest {
         Member member = Member.builder()
                 .phoneNumber(signUpRequest.getPhoneNumber())
                 .birthDate(signUpRequest.getBirthDate())
-                .nickname(signUpRequest.getNickname())
                 .password(signUpRequest.getPassword())
+                .nickname(signUpRequest.getNickname())
                 .email(signUpRequest.getEmail())
                 .id(1L)
                 .build();
@@ -110,16 +108,16 @@ public class PostControllerTest {
 
     public UpdatePostRequest createUpdatePostRequest() {
         return UpdatePostRequest.builder()
-                .title("게시글 수정 테스트 제목")
                 .content("게시글 수정 테스트 본문")
-                .tradeEachOther(false)
-                .authorId(1L)
-                .price(30000L)
-                .productCategory(null)
-                .wishCategory(null)
                 .tagNames(new ArrayList<>())
+                .title("게시글 수정 테스트 제목")
                 .images(new ArrayList<>())
+                .tradeEachOther(false)
+                .productCategory("")
+                .wishCategory("")
                 .thumbnail(null)
+                .price(30000L)
+                .authorId(1L)
                 .build();
     }
 
@@ -128,23 +126,12 @@ public class PostControllerTest {
                 .content("게시글 생성 api 테스트 본문")
                 .title("게시글 생성 api 테스트 제목")
                 .tradeEachOther(tradeEachOther)
+                .tagNames(new ArrayList<>())
+                .images(new ArrayList<>())
                 .authorId(author.getId())
+                .productCategory("")
+                .wishCategory("")
                 .price(3000L)
-                .tagNames(new ArrayList<>())
-                .productCategory(null)
-                .wishCategory(null)
-                .build();
-    }
-
-    public PostSaveRequest createPostSaveRequestWithDynamicAuthorId(Long authorId, boolean tradeEachOther) {
-        return PostSaveRequest.builder()
-                .content("테스트용 게시글 본문")
-                .title("3년 신은 양말 거래 희망합니다")
-                .tradeEachOther(tradeEachOther)
-                .tagNames(new ArrayList<>())
-                .productCategory(null)
-                .wishCategory(null)
-                .authorId(authorId)
                 .build();
     }
 
@@ -172,16 +159,16 @@ public class PostControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("post/create/successful",requestFields(
-                        fieldWithPath("productCategory").description("productCategory name value of post"),
-                        fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
-                        fieldWithPath("wishCategory").description("wishCategory name value of post"),
-                        fieldWithPath("tagNames").description("tag names list value of post"),
-                        fieldWithPath("thumbnail").description("thumbnail image of post"),
-                        fieldWithPath("authorId").description("author id value of post"),
-                        fieldWithPath("images").description("image list value of post"),
-                        fieldWithPath("content").description("content value of post"),
-                        fieldWithPath("price").description("price value of post"),
-                        fieldWithPath("title").description("title value of post")
+                        fieldWithPath("productCategory").description("productCategory name value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("thumbnail").description("thumbnail image of post").type(JsonFieldType.STRING).optional(),
+                        fieldWithPath("tradeEachOther").description("tradeEachOther value of post").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("wishCategory").description("wishCategory name value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("tagNames").description("tag names list value of post").type(JsonFieldType.ARRAY),
+                        fieldWithPath("authorId").description("author id value of post").type(JsonFieldType.NUMBER),
+                        fieldWithPath("images").description("image list value of post").type(JsonFieldType.ARRAY),
+                        fieldWithPath("content").description("content value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("price").description("price value of post").type(JsonFieldType.NUMBER),
+                        fieldWithPath("title").description("title value of post").type(JsonFieldType.STRING)
                 )));
     }
 
@@ -208,18 +195,18 @@ public class PostControllerTest {
         Pageable pageable = Pageable.ofSize(10).withPage(0);
         List<PostSearchResponseDto> list = new ArrayList<>();
         PostSearchResponseDto dto = PostSearchResponseDto.builder()
-                .authorNickname("Owen")
                 .createdTime(String.valueOf(LocalDateTime.now()))
-                .isScrap(false)
-                .messageRoomCount(0L)
-                .thumbnail("")
-                .scrapCount(0L)
-                .title("테스트용 게시글 검색 결과 제목")
-                .content("테스트용 게시글 검색 결과 본문")
-                .id(1L)
-                .price(3000L)
                 .productCategory("테스트용 프로덕트 카테고리")
+                .content("테스트용 게시글 검색 결과 본문")
+                .title("테스트용 게시글 검색 결과 제목")
                 .wishCategory("테스트용 위시 카테고리")
+                .authorNickname("Owen")
+                .messageRoomCount(0L)
+                .isScrap(false)
+                .scrapCount(0L)
+                .thumbnail("")
+                .price(3000L)
+                .id(1L)
                 .build();
         list.add(dto);
         Page<PostSearchResponseDto> page = new PageImpl<>(list, pageable, list.size());
@@ -241,37 +228,37 @@ public class PostControllerTest {
                         parameterWithName("size").description("size value required by pageable"),
                         parameterWithName("page").description("page value required by pageable")
                 ), responseFields(
-                        fieldWithPath("content[].id").description("id value of searched post"),
-                        fieldWithPath("content[].title").description("title value of searched post"),
-                        fieldWithPath("content[].content").description("content value of searched post"),
-                        fieldWithPath("content[].thumbnail").description("thumbnail value of searched post"),
-                        fieldWithPath("content[].authorNickname").description("author nick name of searched post"),
-                        fieldWithPath("content[].productCategory").description("product category value of searched post"),
-                        fieldWithPath("content[].createdTime").description("created time value of searched post"),
-                        fieldWithPath("content[].messageRoomCount").description("the number of message rooms of searched post"),
-                        fieldWithPath("content[].wishCategory").description("wish category of searched post"),
-                        fieldWithPath("content[].scrapCount").description("the number of scrap of searched post"),
-                        fieldWithPath("content[].price").description("price value of searched post"),
-                        fieldWithPath("content[].scrap").description("is user scrap this post?"),
-                        fieldWithPath("pageable.pageNumber").description("current page number"),
-                        fieldWithPath("pageable.offset").description("page offset"),
-                        fieldWithPath("pageable.paged").description("is pagination applied?"),
-                        fieldWithPath("pageable.unpaged").description("is pagination not applied?"),
-                        fieldWithPath("pageable.pageSize").description("the size of page"),
-                        fieldWithPath("totalElements").description("the number of total elements"),
-                        fieldWithPath("numberOfElements").description("number of elements in current page"),
-                        fieldWithPath("sort.sorted").description("is sorting applied?"),
-                        fieldWithPath("sort.unsorted").description("is sorting not applied?"),
-                        fieldWithPath("totalPages").description("the number of total pages"),
-                        fieldWithPath("first").description("is this page is first?"),
-                        fieldWithPath("last").description("is this page is last?"),
-                        fieldWithPath("empty").description("is this page is empty?"),
-                        fieldWithPath("pageable.sort.sorted").description("is this page is sorted?"),
-                        fieldWithPath("pageable.sort.unsorted").description("is this page is not sorted?"),
-                        fieldWithPath("pageable.sort.empty").description("is there isn't any sorting information in this page?"),
-                        fieldWithPath("sort.empty").description("is there isn't any sorting information?"),
-                        fieldWithPath("number").description("current page number"),
-                        fieldWithPath("size").description("the number of elements that shown in 1 page")
+                        fieldWithPath("pageable.sort.empty").description("is there isn't any sorting information in this page?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("content[].messageRoomCount").description("the number of message rooms of searched post").type(JsonFieldType.NUMBER),
+                        fieldWithPath("content[].productCategory").description("product category value of searched post").type(JsonFieldType.STRING),
+                        fieldWithPath("content[].thumbnail").description("thumbnail value of searched post").type(JsonFieldType.STRING).optional(),
+                        fieldWithPath("content[].authorNickname").description("author nick name of searched post").type(JsonFieldType.STRING),
+                        fieldWithPath("content[].scrapCount").description("the number of scrap of searched post").type(JsonFieldType.NUMBER),
+                        fieldWithPath("content[].createdTime").description("created time value of searched post").type(JsonFieldType.STRING),
+                        fieldWithPath("content[].wishCategory").description("wish category of searched post").type(JsonFieldType.STRING),
+                        fieldWithPath("pageable.sort.unsorted").description("is this page is not sorted?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("sort.empty").description("is there isn't any sorting information?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("numberOfElements").description("number of elements in current page").type(JsonFieldType.NUMBER),
+                        fieldWithPath("content[].content").description("content value of searched post").type(JsonFieldType.STRING),
+                        fieldWithPath("size").description("the number of elements that shown in 1 page").type(JsonFieldType.NUMBER),
+                        fieldWithPath("pageable.sort.sorted").description("is this page is sorted?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("content[].title").description("title value of searched post").type(JsonFieldType.STRING),
+                        fieldWithPath("content[].price").description("price value of searched post").type(JsonFieldType.NUMBER),
+                        fieldWithPath("pageable.unpaged").description("is pagination not applied?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("totalElements").description("the number of total elements").type(JsonFieldType.NUMBER),
+                        fieldWithPath("content[].scrap").description("is user scrap this post?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("pageable.pageNumber").description("current page number").type(JsonFieldType.NUMBER),
+                        fieldWithPath("content[].id").description("id value of searched post").type(JsonFieldType.NUMBER),
+                        fieldWithPath("pageable.paged").description("is pagination applied?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("sort.unsorted").description("is sorting not applied?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("totalPages").description("the number of total pages").type(JsonFieldType.NUMBER),
+                        fieldWithPath("pageable.pageSize").description("the size of page").type(JsonFieldType.NUMBER),
+                        fieldWithPath("sort.sorted").description("is sorting applied?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("empty").description("is this page is empty?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("first").description("is this page is first?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("pageable.offset").description("page offset").type(JsonFieldType.NUMBER),
+                        fieldWithPath("last").description("is this page is last?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("number").description("current page number").type(JsonFieldType.NUMBER)
                 )));
     }
 
@@ -309,31 +296,31 @@ public class PostControllerTest {
                         parameterWithName("size").description("size value required by pageable"),
                         parameterWithName("page").description("page value required by pageable")
                 ), responseFields(
-                        fieldWithPath("content[].postId").description("id value of searched post"),
-                        fieldWithPath("content[].title").description("title value of searched post"),
-                        fieldWithPath("content[].likeCount").description("the number of like of searched post"),
-                        fieldWithPath("content[].thumbNail").description("thumbnail value of searched post"),
-                        fieldWithPath("content[].tradeStatus").description("the trade status value of searched post"),
-                        fieldWithPath("content[].wishCategory").description("wish category of searched post"),
-                        fieldWithPath("pageable.pageNumber").description("current page number"),
-                        fieldWithPath("pageable.offset").description("page offset"),
-                        fieldWithPath("pageable.paged").description("is pagination applied?"),
-                        fieldWithPath("pageable.unpaged").description("is pagination not applied?"),
-                        fieldWithPath("pageable.pageSize").description("the size of page"),
-                        fieldWithPath("totalElements").description("the number of total elements"),
-                        fieldWithPath("numberOfElements").description("number of elements in current page"),
-                        fieldWithPath("sort.sorted").description("is sorting applied?"),
-                        fieldWithPath("sort.unsorted").description("is sorting not applied?"),
-                        fieldWithPath("totalPages").description("the number of total pages"),
-                        fieldWithPath("first").description("is this page is first?"),
-                        fieldWithPath("last").description("is this page is last?"),
-                        fieldWithPath("empty").description("is this page is empty?"),
-                        fieldWithPath("pageable.sort.sorted").description("is this page is sorted?"),
-                        fieldWithPath("pageable.sort.unsorted").description("is this page is not sorted?"),
-                        fieldWithPath("pageable.sort.empty").description("is there isn't any sorting information in this page?"),
-                        fieldWithPath("sort.empty").description("is there isn't any sorting information?"),
-                        fieldWithPath("number").description("current page number"),
-                        fieldWithPath("size").description("the number of elements that shown in 1 page")
+                        fieldWithPath("pageable.sort.empty").description("is there isn't any sorting information in this page?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("content[].tradeStatus").description("the trade status value of searched post").type(JsonFieldType.STRING),
+                        fieldWithPath("content[].likeCount").description("the number of like of searched post").type(JsonFieldType.NUMBER),
+                        fieldWithPath("content[].wishCategory").description("wish category of searched post").type(JsonFieldType.STRING),
+                        fieldWithPath("content[].thumbNail").description("thumbnail value of searched post").type(JsonFieldType.STRING),
+                        fieldWithPath("pageable.sort.unsorted").description("is this page is not sorted?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("sort.empty").description("is there isn't any sorting information?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("numberOfElements").description("number of elements in current page").type(JsonFieldType.NUMBER),
+                        fieldWithPath("size").description("the number of elements that shown in 1 page").type(JsonFieldType.NUMBER),
+                        fieldWithPath("pageable.sort.sorted").description("is this page is sorted?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("pageable.unpaged").description("is pagination not applied?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("content[].title").description("title value of searched post").type(JsonFieldType.STRING),
+                        fieldWithPath("content[].postId").description("id value of searched post").type(JsonFieldType.NUMBER),
+                        fieldWithPath("totalElements").description("the number of total elements").type(JsonFieldType.NUMBER),
+                        fieldWithPath("pageable.pageNumber").description("current page number").type(JsonFieldType.NUMBER),
+                        fieldWithPath("sort.unsorted").description("is sorting not applied?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("pageable.paged").description("is pagination applied?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("totalPages").description("the number of total pages").type(JsonFieldType.NUMBER),
+                        fieldWithPath("pageable.pageSize").description("the size of page").type(JsonFieldType.NUMBER),
+                        fieldWithPath("sort.sorted").description("is sorting applied?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("empty").description("is this page is empty?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("first").description("is this page is first?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("pageable.offset").description("page offset").type(JsonFieldType.NUMBER),
+                        fieldWithPath("last").description("is this page is last?").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("number").description("current page number").type(JsonFieldType.NUMBER)
                 )));
 
     }
@@ -355,16 +342,16 @@ public class PostControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post/update/successful", requestFields(
-                        fieldWithPath("authorId").description("Id value of author (requester)"),
-                        fieldWithPath("title").description("title value of post"),
-                        fieldWithPath("content").description("content value of post"),
-                        fieldWithPath("price").description("price value of post"),
-                        fieldWithPath("productCategory").description("product category name value of post"),
-                        fieldWithPath("wishCategory").description("wish category name value of post"),
-                        fieldWithPath("tagNames").description("list values of tag names"),
-                        fieldWithPath("tradeEachOther").description("the value that indicates the trade is inter-tradable or not"),
-                        fieldWithPath("images").description("image values that wants to be changed"),
-                        fieldWithPath("thumbnail").description("the thumbnail value of changed post")
+                        fieldWithPath("tradeEachOther").description("the value that indicates the trade is inter-tradable or not").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("thumbnail").description("the thumbnail value of changed post").type(JsonFieldType.STRING).optional(),
+                        fieldWithPath("productCategory").description("product category name value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("wishCategory").description("wish category name value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("images").description("image values that wants to be changed").type(JsonFieldType.ARRAY),
+                        fieldWithPath("authorId").description("Id value of author (requester)").type(JsonFieldType.NUMBER),
+                        fieldWithPath("tagNames").description("list values of tag names").type(JsonFieldType.ARRAY),
+                        fieldWithPath("content").description("content value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("title").description("title value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("price").description("price value of post").type(JsonFieldType.NUMBER)
                 )));
     }
 
@@ -375,7 +362,25 @@ public class PostControllerTest {
         //given
         Member member = new Member();
         PostSaveRequest postSaveRequest = createPostSaveRequest(member, false);
-        SinglePostInfoDto postInfoDto = SinglePostInfoDto.builder().title(postSaveRequest.getTitle()).build();
+        SinglePostInfoDto postInfoDto = SinglePostInfoDto
+                .builder()
+                .id(100L)
+                .title(postSaveRequest.getTitle())
+                .commentInfoDtoList(new ArrayList<>())
+                .content("test")
+                .tradeStatus(TradeStatus.TRADABLE)
+                .createdTime(LocalDateTime.now())
+                .userInfoWithAddress(new MemberDTO.UserInfoWithAddress())
+                .images(new ArrayList<>())
+                .isScrap(false)
+                .messageRoomCount(3L)
+                .scrapCount(3L)
+                .tradeEachOther(false)
+                .tagNames(new ArrayList<>())
+                .price(30000L)
+                .productCategory("test product")
+                .wishCategory("wish product")
+                .build();
         postService.savePost(postSaveRequest, member.getId());
         doReturn(postInfoDto).when(postService).findPostById(any(), any());
 
@@ -386,22 +391,22 @@ public class PostControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post/search/id/successful", responseFields(
-                        fieldWithPath("id").description("Id value of post"),
-                        fieldWithPath("content").description("content value of post"),
-                        fieldWithPath("scrapCount").description("scrap count value of post"),
-                        fieldWithPath("messageRoomCount").description("message room count value of post"),
-                        fieldWithPath("createdTime").description("created time value of post"),
-                        fieldWithPath("tradeEachOther").description("tradeEachOther value of post"),
-                        fieldWithPath("wishCategory").description("wishCategory name value of post"),
-                        fieldWithPath("productCategory").description("productCategory name value of post"),
-                        fieldWithPath("price").description("price value of post"),
-                        fieldWithPath("commentInfoDtoList").description("commentInfo DTO list value of post"),
-                        fieldWithPath("title").description("title name value of post"),
-                        fieldWithPath("tradeStatus").description("tradeStatus value of post"),
-                        fieldWithPath("tagNames").description("tag name list value of post"),
-                        fieldWithPath("userInfoWithAddress").description("DTO class that contains UserDetails and Address List"),
-                        fieldWithPath("images").description("image values of searched post"),
-                        fieldWithPath("scrap").description("boolean value of whether post is scraped or not")
+                        fieldWithPath("scrap").description("boolean value of whether post is scraped or not").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("commentInfoDtoList").description("commentInfo DTO list value of post").type(JsonFieldType.ARRAY),
+                        fieldWithPath("productCategory").description("productCategory name value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("messageRoomCount").description("message room count value of post").type(JsonFieldType.NUMBER),
+                        fieldWithPath("wishCategory").description("wishCategory name value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("tradeEachOther").description("tradeEachOther value of post").type(JsonFieldType.BOOLEAN),
+                        fieldWithPath("createdTime").description("created time value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("tradeStatus").description("tradeStatus value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("scrapCount").description("scrap count value of post").type(JsonFieldType.NUMBER),
+                        fieldWithPath("images").description("image values of searched post").type(JsonFieldType.ARRAY),
+                        fieldWithPath("tagNames").description("tag name list value of post").type(JsonFieldType.ARRAY),
+                        fieldWithPath("title").description("title name value of post").type(JsonFieldType.STRING),
+                        fieldWithPath("content").description("content value of post").type(JsonFieldType.STRING),
+                        subsectionWithPath("userInfoWithAddress").description("userInfoWithAddress details"),
+                        fieldWithPath("price").description("price value of post").type(JsonFieldType.NUMBER),
+                        fieldWithPath("id").description("Id value of post").type(JsonFieldType.NUMBER)
                 )));
     }
 
@@ -427,8 +432,8 @@ public class PostControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post/delete/succssful", requestFields(
-                        fieldWithPath("id").description("postId value of post"),
-                        fieldWithPath("authorId").description("delete requester Id value")
+                        fieldWithPath("authorId").description("delete requester Id value").type(JsonFieldType.NUMBER),
+                        fieldWithPath("id").description("postId value of post").type(JsonFieldType.NUMBER)
                 )));
     }
 

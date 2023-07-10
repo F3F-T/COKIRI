@@ -5,18 +5,17 @@ import f3f.dev1.domain.comment.dao.CommentRepository;
 import f3f.dev1.domain.comment.exception.DeletedCommentException;
 import f3f.dev1.domain.comment.exception.NotMatchingCommentAuthorException;
 import f3f.dev1.domain.comment.model.Comment;
+import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.domain.member.exception.NotAuthorizedException;
 import f3f.dev1.domain.member.model.Member;
 import f3f.dev1.domain.post.dao.PostRepository;
-import f3f.dev1.domain.post.exception.NotMatchingAuthorException;
 import f3f.dev1.domain.post.exception.NotMatchingCommentException;
 import f3f.dev1.domain.post.model.Post;
-import f3f.dev1.domain.member.dao.MemberRepository;
 import f3f.dev1.global.error.exception.NotFoundByIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
+
 import java.util.List;
 
 import static f3f.dev1.domain.comment.dto.CommentDTO.*;
@@ -37,7 +36,6 @@ public class CommentService {
      */
 
 
-    // TODO : 부모 댓글이 null인데 depth가 1 이상인 요청들 잡아내야함, 비슷한 맥락으로 부모 있는데 depth 0인 요청 잡아내야 함
     @Transactional
     public CommentInfoDto saveComment(CreateCommentRequest createCommentRequest, Long currentMemberId) {
         Member user = memberRepository.findById(createCommentRequest.getAuthorId()).orElseThrow(NotFoundByIdException::new);
@@ -65,27 +63,6 @@ public class CommentService {
         R : Read
         댓글 조회
      */
-
-    // id로 조회
-    // 현재는 사용하지 않는 로직
-    @Transactional(readOnly = true)
-    public CommentInfoDto findCommentById(Long id) {
-        Comment comment = commentRepository.findById(id).orElseThrow(NotFoundByIdException::new);
-        CommentInfoDto commentInfoDto = comment.toInfoDto();
-        return commentInfoDto;
-    }
-
-    // post로 조회
-//    @Transactional(readOnly = true)
-//    public List<CommentInfoDto> findCommentsByPostId(Long postId) {
-//        List<CommentInfoDto> commentInfoDtoList = new ArrayList<>();
-//        List<Comment> comments = commentRepository.findByPostId(postId);
-//        for (Comment comment : comments) {
-//            CommentInfoDto commentInfoDto = comment.toInfoDto();
-//            commentInfoDtoList.add(commentInfoDto);
-//        }
-//        return commentInfoDtoList;
-//    }
 
     @Transactional(readOnly = true)
     public List<CommentInfoDto> findCommentDtosByPostId(Long postId) {
