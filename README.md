@@ -43,7 +43,7 @@
 
 Frontend :  React, Typescript, Redux-toolkit, css module, bootstrap, aws amplify
 
-Backend : 
+Backend : JAVA, Spring Boot, JPA, QueryDSL, RestDocs, MySQL, Redis, AWS EC2, AWS S3, AWS RDS, Docker
 
 
 
